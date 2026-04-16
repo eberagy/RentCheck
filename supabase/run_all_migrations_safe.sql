@@ -301,6 +301,7 @@ CREATE TABLE IF NOT EXISTS public.landlord_submissions (
   website       TEXT,
   phone         TEXT,
   notes         TEXT,
+  proof_doc_url TEXT,
   status        TEXT NOT NULL DEFAULT 'pending'
                   CHECK (status IN ('pending','approved','rejected','duplicate')),
   admin_notes   TEXT,

@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   const { q, type, limit } = parsed.data
   const supabase = await createClient()
 
-  const { data, error } = await supabase.rpc('search_all', { query: q, limit_n: limit })
+  const { data, error } = await supabase.rpc('search_all', { query: q, result_limit: limit })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   const results = (data ?? []).filter((r: any) => type === 'all' || r.result_type === type)
