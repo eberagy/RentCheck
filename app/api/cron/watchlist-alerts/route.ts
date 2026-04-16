@@ -1,0 +1,78 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createServiceClient } from '@/lib/supabase/server'
+import { verifyCronSecret } from '@/lib/data-sync/utils'
+import { sendWatchlistAlertEmail } from '@/lib/email'
+
+export const maxDuration = 60
+
+export async function GET(req: NextRequest) {
+  if (!verifyCronSecret(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const supabase = createServiceClient()
+  const since = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString() // last 25h to avoid gaps
+
+  // Get public records added since last run, grouped by landlord
+  const { data: newRecords } = await supabase
+    .from('public_records')
+    .select('id, landlord_id, record_type, description, title')
+    .not('landlord_id', 'is', null)
+    .gte('created_at', since)
+    .order('created_at', { ascending: false })
+
+  if (!newRecords?.length) {
+    return NextResponse.json({ ok: true, alerts: 0 })
+  }
+
+  // Deduplicate by landlord (one alert per landlord per run)
+  const byLandlord = new Map<string, { type: string; summary: string }>()
+  for (const record of newRecords) {
+    if (!record.landlord_id) continue
+    if (!byLandlord.has(record.landlord_id)) {
+      const isEviction = record.record_type?.includes('eviction')
+      const isCourt = record.record_type?.includes('court')
+      byLandlord.set(record.landlord_id, {
+        type: isEviction ? 'new_court_case' : isCourt ? 'new_court_case' : 'new_violation',
+        summary: record.title ?? record.description ?? 'A new public record was added',
+      })
+    }
+  }
+
+  let alertsSent = 0
+
+  for (const [landlordId, info] of Array.from(byLandlord)) {
+    // Get landlord info
+    const { data: landlord } = await supabase
+      .from('landlords')
+      .select('display_name, slug')
+      .eq('id', landlordId)
+      .single()
+
+    if (!landlord) continue
+
+    // Get watchers who have email_watchlist enabled
+    const { data: watchers } = await supabase
+      .from('watchlist')
+      .select('user_id, user:profiles(full_name, email, email_watchlist)')
+      .eq('landlord_id', landlordId)
+
+    if (!watchers?.length) continue
+
+    for (const watcher of watchers) {
+      const profile = (watcher.user as unknown) as { full_name: string | null; email: string | null; email_watchlist: boolean } | null
+      if (!profile?.email || profile.email_watchlist === false) continue
+
+      await sendWatchlistAlertEmail(profile.email, {
+        firstName: profile.full_name?.split(' ')[0],
+        landlordName: landlord.display_name,
+        landlordSlug: landlord.slug,
+        alertType: info.type as 'new_review' | 'new_violation' | 'new_court_case',
+        summary: info.summary,
+      })
+      alertsSent++
+    }
+  }
+
+  return NextResponse.json({ ok: true, landlords: byLandlord.size, alerts: alertsSent })
+}

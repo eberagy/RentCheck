@@ -1,0 +1,102 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
+import { z } from 'zod'
+
+const createSchema = z.object({
+  landlordId: z.string().uuid(),
+  propertyId: z.string().uuid().optional(),
+  ratingOverall: z.number().int().min(1).max(5),
+  ratingResponsiveness: z.number().int().min(1).max(5).optional(),
+  ratingMaintenance: z.number().int().min(1).max(5).optional(),
+  ratingHonesty: z.number().int().min(1).max(5).optional(),
+  ratingLeaseFairness: z.number().int().min(1).max(5).optional(),
+  wouldRentAgain: z.boolean().optional(),
+  title: z.string().min(10).max(150),
+  body: z.string().min(50).max(2000),
+  rentalPeriodStart: z.string().optional(),
+  rentalPeriodEnd: z.string().optional(),
+  isCurrentTenant: z.boolean().default(false),
+  leaseDocPath: z.string().optional(),
+  leaseFilename: z.string().optional(),
+  leaseFileSize: z.number().int().positive().optional(),
+})
+
+export async function GET(req: NextRequest) {
+  const supabase = await createClient()
+  const { searchParams } = req.nextUrl
+  const landlordId = searchParams.get('landlordId')
+  const propertyId = searchParams.get('propertyId')
+  const page = parseInt(searchParams.get('page') ?? '1')
+  const limit = Math.min(parseInt(searchParams.get('limit') ?? '20'), 50)
+  const offset = (page - 1) * limit
+
+  let q = supabase
+    .from('reviews')
+    .select('*, reviewer:profiles(full_name, avatar_url), property:properties(address_line1, city, state_abbr), evidence:review_evidence(*)', { count: 'exact' })
+    .eq('status', 'approved')
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1)
+
+  if (landlordId) q = q.eq('landlord_id', landlordId)
+  if (propertyId) q = q.eq('property_id', propertyId)
+
+  const { data, error, count } = await q
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  return NextResponse.json({ reviews: data ?? [], total: count ?? 0, page, limit })
+}
+
+export async function POST(req: NextRequest) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const { data: profile } = await supabase.from('profiles').select('is_banned').eq('id', user.id).single()
+  if (profile?.is_banned) return NextResponse.json({ error: 'Account suspended' }, { status: 403 })
+
+  const body = await req.json()
+  const parsed = createSchema.safeParse(body)
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
+
+  const d = parsed.data
+
+  // Check for duplicate submission (same user + landlord in last 30 days)
+  const { data: existing } = await supabase
+    .from('reviews')
+    .select('id')
+    .eq('reviewer_id', user.id)
+    .eq('landlord_id', d.landlordId)
+    .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+    .limit(1)
+    .single()
+
+  if (existing) return NextResponse.json({ error: 'You recently submitted a review for this landlord' }, { status: 409 })
+
+  const { data: review, error } = await supabase
+    .from('reviews')
+    .insert({
+      reviewer_id: user.id,
+      landlord_id: d.landlordId,
+      property_id: d.propertyId ?? null,
+      rating_overall: d.ratingOverall,
+      rating_responsiveness: d.ratingResponsiveness ?? null,
+      rating_maintenance: d.ratingMaintenance ?? null,
+      rating_honesty: d.ratingHonesty ?? null,
+      rating_lease_fairness: d.ratingLeaseFairness ?? null,
+      would_rent_again: d.wouldRentAgain ?? null,
+      title: d.title,
+      body: d.body,
+      rental_period_start: d.rentalPeriodStart ?? null,
+      rental_period_end: d.rentalPeriodEnd ?? null,
+      is_current_tenant: d.isCurrentTenant,
+      lease_doc_path: d.leaseDocPath ?? null,
+      lease_filename: d.leaseFilename ?? null,
+      lease_file_size: d.leaseFileSize ?? null,
+      status: 'pending',
+    })
+    .select('id')
+    .single()
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ reviewId: review.id }, { status: 201 })
+}

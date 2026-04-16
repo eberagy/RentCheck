@@ -1,0 +1,67 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { verifyCronSecret, withSyncLog } from '@/lib/data-sync/utils'
+import { syncNycHpd } from '@/lib/data-sync/nyc-hpd'
+import { syncNycDob } from '@/lib/data-sync/nyc-dob'
+import { syncNycRegistration } from '@/lib/data-sync/nyc-registration'
+import { syncChicago } from '@/lib/data-sync/chicago'
+import { syncSf } from '@/lib/data-sync/sf'
+import { syncBoston } from '@/lib/data-sync/boston'
+import { syncPhiladelphia } from '@/lib/data-sync/philadelphia'
+import { syncAustin } from '@/lib/data-sync/austin'
+import { syncSeattle } from '@/lib/data-sync/seattle'
+import { syncLosAngeles } from '@/lib/data-sync/los-angeles'
+import { syncCourtListener } from '@/lib/data-sync/court-listener'
+import { syncLscEvictions } from '@/lib/data-sync/lsc-evictions'
+import type { SupabaseClient } from '@supabase/supabase-js'
+
+type SyncFn = (supabase: SupabaseClient) => Promise<{ added: number; updated: number; skipped: number; errors: string[] }>
+
+const SYNC_HANDLERS: Record<string, { fn: SyncFn; logKey: string }> = {
+  'nyc-hpd':          { fn: syncNycHpd, logKey: 'nyc_hpd' },
+  'nyc-dob':          { fn: syncNycDob, logKey: 'nyc_dob' },
+  'nyc-registration': { fn: syncNycRegistration, logKey: 'nyc_registration' },
+  'chicago':          { fn: syncChicago, logKey: 'chicago_buildings' },
+  'sf':               { fn: syncSf, logKey: 'sf_housing' },
+  'boston':           { fn: syncBoston, logKey: 'boston_isd' },
+  'philadelphia':     { fn: syncPhiladelphia, logKey: 'philly_li' },
+  'austin':           { fn: syncAustin, logKey: 'austin_code' },
+  'seattle':          { fn: syncSeattle, logKey: 'seattle_sdci' },
+  'los-angeles':      { fn: syncLosAngeles, logKey: 'la_lahd' },
+  'court-listener':   { fn: syncCourtListener, logKey: 'court_listener' },
+  'lsc-evictions':    { fn: syncLscEvictions, logKey: 'lsc_evictions' },
+}
+
+export const maxDuration = 300 // Vercel Pro: 5 min max for sync jobs
+
+export async function GET(req: NextRequest, { params }: { params: { source: string } }) {
+  return handleSync(req, (await params).source)
+}
+
+export async function POST(req: NextRequest, { params }: { params: { source: string } }) {
+  return handleSync(req, (await params).source)
+}
+
+async function handleSync(req: NextRequest, source: string) {
+  if (!verifyCronSecret(req)) {
+    // Also allow admin users — check supabase auth
+    const { createClient } = await import('@/lib/supabase/server')
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const { data: profile } = await supabase.from('profiles').select('user_type').eq('id', user.id).single()
+    if (profile?.user_type !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  const handler = SYNC_HANDLERS[source]
+  if (!handler) {
+    return NextResponse.json({ error: `Unknown source: ${source}`, available: Object.keys(SYNC_HANDLERS) }, { status: 404 })
+  }
+
+  try {
+    const result = await withSyncLog(handler.logKey, handler.fn)
+    return NextResponse.json({ ok: true, source, ...result })
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ ok: false, source, error: msg }, { status: 500 })
+  }
+}

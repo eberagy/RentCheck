@@ -1,0 +1,17 @@
+{
+  "crons": [
+    { "path": "/api/sync/nyc-hpd", "schedule": "0 3 * * *" },
+    { "path": "/api/sync/nyc-dob", "schedule": "0 3 * * *" },
+    { "path": "/api/sync/nyc-registration", "schedule": "0 2 * * *" },
+    { "path": "/api/sync/chicago", "schedule": "0 4 * * *" },
+    { "path": "/api/sync/sf", "schedule": "0 4 * * *" },
+    { "path": "/api/sync/boston", "schedule": "0 4 * * *" },
+    { "path": "/api/sync/philadelphia", "schedule": "0 5 * * *" },
+    { "path": "/api/sync/austin", "schedule": "0 5 * * *" },
+    { "path": "/api/sync/seattle", "schedule": "0 5 * * *" },
+    { "path": "/api/sync/los-angeles", "schedule": "0 5 * * *" },
+    { "path": "/api/sync/court-listener", "schedule": "0 6 * * 1" },
+    { "path": "/api/sync/lsc-evictions", "schedule": "0 6 1 * *" },
+    { "path": "/api/cron/watchlist-alerts", "schedule": "0 9 * * *" }
+  ]
+}
