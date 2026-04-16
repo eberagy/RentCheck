@@ -6,7 +6,7 @@ import ReviewRejectedEmail from '@/emails/review-rejected'
 import ClaimApprovedEmail from '@/emails/claim-approved'
 import WatchlistAlertEmail from '@/emails/watchlist-alert'
 
-const FROM = 'RentCheck <noreply@rentcheck.app>'
+const FROM = process.env.RESEND_FROM_EMAIL ?? 'RentCheck <noreply@rentcheck.app>'
 
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY)
