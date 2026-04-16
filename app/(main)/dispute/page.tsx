@@ -156,7 +156,7 @@ function DisputeForm() {
       </div>
 
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-800 leading-relaxed">
-        <strong>Note:</strong> RentCheck does not modify government records directly. If the underlying government data contains an error,
+        <strong>Note:</strong> Vett does not modify government records directly. If the underlying government data contains an error,
         we will refer you to the source agency and can add a "disputed" flag to the record in our database while it is under review.
       </div>
 
@@ -185,7 +185,7 @@ export default function DisputePage() {
         <h1 className="text-2xl font-bold text-gray-900">Dispute a Public Record</h1>
       </div>
       <p className="text-gray-500 mb-8 leading-relaxed">
-        If you believe a public record on RentCheck is inaccurate, out of date, or misattributed,
+        If you believe a public record on Vett is inaccurate, out of date, or misattributed,
         submit a dispute below. Our team reviews all disputes within 5–7 business days.
       </p>
 

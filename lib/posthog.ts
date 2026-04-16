@@ -1,7 +1,7 @@
 // PostHog analytics event tracking
 // Client-side only — use in 'use client' components
 
-export type RentCheckEvent =
+export type VettEvent =
   | 'landlord_viewed'
   | 'property_viewed'
   | 'search_performed'
@@ -16,7 +16,7 @@ export type RentCheckEvent =
   | 'record_viewed'
   | 'rights_page_viewed'
 
-export function track(event: RentCheckEvent, properties?: Record<string, unknown>) {
+export function track(event: VettEvent, properties?: Record<string, unknown>) {
   if (typeof window === 'undefined') return
   if (!process.env.NEXT_PUBLIC_POSTHOG_KEY) return
 

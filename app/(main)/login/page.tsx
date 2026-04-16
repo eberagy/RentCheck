@@ -77,7 +77,7 @@ export default function LoginPage() {
               <path d="M12 4L20 7.2V17.6C20 21.901 16.701 25.701 12 27.2C7.299 25.701 4 21.901 4 17.6V7.2L12 4Z" fill="#0F7B6C"/>
               <text x="6.5" y="19" fontFamily="Inter, system-ui" fontSize="9" fontWeight="700" fill="white" letterSpacing="-0.3">RC</text>
             </svg>
-            <span className="text-2xl font-bold tracking-tight">RentCheck</span>
+            <span className="text-2xl font-bold tracking-tight">Vett</span>
           </div>
         </div>
 
@@ -138,7 +138,7 @@ export default function LoginPage() {
           {/* Heading */}
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-navy-900 tracking-tight">
-              Sign in to RentCheck
+              Sign in to Vett
             </h1>
             {contextMessage && (
               <p className="mt-2 text-sm font-medium text-teal-600">

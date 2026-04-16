@@ -360,7 +360,7 @@ export default function ClaimProfilePage() {
             <div className="flex items-start gap-2 mt-3 p-3 bg-amber-50 border border-amber-100 rounded-xl">
               <AlertTriangle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-amber-700">
-                Documents are reviewed by RentCheck admins only and are never shared publicly or shown to renters.
+                Documents are reviewed by Vett admins only and are never shared publicly or shown to renters.
               </p>
             </div>
           </div>

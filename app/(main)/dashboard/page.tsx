@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { formatDate } from '@/lib/utils'
 
-export const metadata: Metadata = { title: 'Dashboard | RentCheck' }
+export const metadata: Metadata = { title: 'Dashboard | Vett' }
 
 const STATUS_STYLES: Record<string, string> = {
   approved: 'text-teal-700 border-teal-200 bg-teal-50',
@@ -229,7 +229,7 @@ export default async function DashboardPage() {
       {/* Onboarding nudge if no reviews */}
       {reviewList.length === 0 && watchList.length === 0 && (
         <div className="mt-6 bg-navy-50 border border-navy-100 rounded-xl p-5 text-center">
-          <h3 className="font-semibold text-navy-900 mb-1">Get started with RentCheck</h3>
+          <h3 className="font-semibold text-navy-900 mb-1">Get started with Vett</h3>
           <p className="text-sm text-navy-700 mb-4">Share your rental experience to help fellow renters</p>
           <div className="flex gap-3 justify-center flex-wrap">
             <Button asChild size="sm" className="bg-navy-500 hover:bg-navy-600 text-white">

@@ -17,7 +17,7 @@ export default function ClaimApprovedEmail({ firstName, landlordName, landlordSl
       <Body style={body}>
         <Container style={container}>
           <Section style={header}>
-            <Heading style={logo}>RentCheck</Heading>
+            <Heading style={logo}>Vett</Heading>
           </Section>
           <Section style={content}>
             <div style={iconWrap}>🎉</div>
@@ -30,12 +30,12 @@ export default function ClaimApprovedEmail({ firstName, landlordName, landlordSl
               <Text style={feature}>✏️ Update your business name, contact info, and bio</Text>
               <Text style={feature}>📊 View your rating breakdown and trends</Text>
             </Section>
-            <Button style={button} href="https://rentcheck.app/landlord-portal">
+            <Button style={button} href="https://vettrentals.com/landlord-portal">
               Open Landlord Portal →
             </Button>
             <Hr style={hr} />
             <Text style={footer}>
-              RentCheck · <a href="https://rentcheck.app/privacy" style={link}>Privacy</a>
+              Vett · <a href="https://vettrentals.com/privacy" style={link}>Privacy</a>
             </Text>
           </Section>
         </Container>

@@ -6,7 +6,7 @@ import ReviewRejectedEmail from '@/emails/review-rejected'
 import ClaimApprovedEmail from '@/emails/claim-approved'
 import WatchlistAlertEmail from '@/emails/watchlist-alert'
 
-const FROM = process.env.RESEND_FROM_EMAIL ?? 'RentCheck <noreply@rentcheck.app>'
+const FROM = process.env.RESEND_FROM_EMAIL ?? 'Vett <noreply@vettrentals.com>'
 
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY)
@@ -23,7 +23,7 @@ async function sendEmail(to: string, subject: string, react: React.ReactElement)
 }
 
 export async function sendWelcomeEmail(to: string, firstName?: string) {
-  await sendEmail(to, 'Welcome to RentCheck', WelcomeEmail({ firstName }) as any)
+  await sendEmail(to, 'Welcome to Vett', WelcomeEmail({ firstName }) as any)
 }
 
 export async function sendReviewApprovedEmail(to: string, props: {
@@ -40,7 +40,7 @@ export async function sendReviewRejectedEmail(to: string, props: {
   reviewTitle: string
   reason?: string
 }) {
-  await sendEmail(to, 'Update on your RentCheck review', ReviewRejectedEmail(props) as any)
+  await sendEmail(to, 'Update on your Vett review', ReviewRejectedEmail(props) as any)
 }
 
 export async function sendClaimApprovedEmail(to: string, props: {

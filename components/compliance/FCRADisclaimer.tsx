@@ -37,7 +37,7 @@ export function FCRADisclaimer({ variant = 'short' }: FCRADisclaimerProps) {
         <span className="font-semibold text-blue-900">Important Notice</span>
       </div>
       <p className="text-blue-800 leading-relaxed">
-        RentCheck is not a consumer reporting agency as defined by the Fair Credit Reporting Act
+        Vett is not a consumer reporting agency as defined by the Fair Credit Reporting Act
         (FCRA), 15 U.S.C. § 1681 et seq. The information on this page — including renter reviews
         and publicly sourced records — does not constitute a &ldquo;consumer report&rdquo; as defined by the
         FCRA and may not be used to make housing, employment, credit, or insurance decisions.{' '}

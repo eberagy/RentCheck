@@ -31,7 +31,7 @@ export default function WatchlistAlertEmail({ firstName, landlordName, landlordS
       <Body style={body}>
         <Container style={container}>
           <Section style={header}>
-            <Heading style={logo}>RentCheck</Heading>
+            <Heading style={logo}>Vett</Heading>
           </Section>
           <Section style={content}>
             <Heading as="h2" style={h2}>Watchlist Alert</Heading>
@@ -41,14 +41,14 @@ export default function WatchlistAlertEmail({ firstName, landlordName, landlordS
               <Text style={alertLandlord}><strong>{landlordName}</strong></Text>
               <Text style={alertSummary}>{summary}</Text>
             </Section>
-            <Button style={button} href={`https://rentcheck.app/landlord/${landlordSlug}`}>
+            <Button style={button} href={`https://vettrentals.com/landlord/${landlordSlug}`}>
               View Profile →
             </Button>
             <Hr style={hr} />
             <Text style={footer}>
-              You&apos;re receiving this because you watch {landlordName} on RentCheck.{' '}
-              <a href={`https://rentcheck.app/dashboard`} style={link}>Manage watchlist</a> ·{' '}
-              <a href="https://rentcheck.app/privacy" style={link}>Privacy</a>
+              You&apos;re receiving this because you watch {landlordName} on Vett.{' '}
+              <a href={`https://vettrentals.com/dashboard`} style={link}>Manage watchlist</a> ·{' '}
+              <a href="https://vettrentals.com/privacy" style={link}>Privacy</a>
             </Text>
           </Section>
         </Container>

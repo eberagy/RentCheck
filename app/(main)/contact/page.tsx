@@ -2,24 +2,24 @@ import { Mail, Shield } from 'lucide-react'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Contact — RentCheck',
-  description: 'Get in touch with the RentCheck team.',
+  title: 'Contact — Vett',
+  description: 'Get in touch with the Vett team.',
 }
 
 const CONTACTS = [
   {
     label: 'General Inquiries',
-    email: 'hello@rentcheck.app',
-    description: 'Questions about how RentCheck works, feedback, or partnership inquiries.',
+    email: 'hello@vettrentals.com',
+    description: 'Questions about how Vett works, feedback, or partnership inquiries.',
   },
   {
     label: 'Legal & Disputes',
-    email: 'legal@rentcheck.app',
+    email: 'legal@vettrentals.com',
     description: 'Review disputes, DMCA notices, defamation claims, or legal correspondence.',
   },
   {
     label: 'Privacy Requests',
-    email: 'privacy@rentcheck.app',
+    email: 'privacy@vettrentals.com',
     description: 'Data deletion requests, CCPA/GDPR inquiries, or privacy-related concerns.',
   },
 ]
@@ -52,8 +52,8 @@ export default function ContactPage() {
       <div className="mt-10 flex items-start gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200 text-sm text-gray-600">
         <Shield className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
         <p>
-          RentCheck is not a consumer reporting agency under the FCRA. For review disputes or removal requests,
-          email <a href="mailto:legal@rentcheck.app" className="text-navy-600 hover:underline">legal@rentcheck.app</a> with
+          Vett is not a consumer reporting agency under the FCRA. For review disputes or removal requests,
+          email <a href="mailto:legal@vettrentals.com" className="text-navy-600 hover:underline">legal@vettrentals.com</a> with
           the review URL and your reason.
         </p>
       </div>

@@ -22,7 +22,7 @@ export function VerifiedBadge({ size = 'md' }: VerifiedBadgeProps) {
       </TooltipTrigger>
       <TooltipContent>
         <p className="text-xs max-w-xs">
-          This landlord has verified their identity with RentCheck. Verification does not imply endorsement.
+          This landlord has verified their identity with Vett. Verification does not imply endorsement.
         </p>
       </TooltipContent>
     </Tooltip>

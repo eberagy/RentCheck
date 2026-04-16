@@ -13,11 +13,11 @@ export default function ReviewRejectedEmail({ firstName, reviewTitle, reason }: 
   return (
     <Html>
       <Head />
-      <Preview>Update on your RentCheck review submission</Preview>
+      <Preview>Update on your Vett review submission</Preview>
       <Body style={body}>
         <Container style={container}>
           <Section style={header}>
-            <Heading style={logo}>RentCheck</Heading>
+            <Heading style={logo}>Vett</Heading>
           </Section>
           <Section style={content}>
             <Heading as="h2" style={h2}>Review Not Approved</Heading>
@@ -32,12 +32,12 @@ export default function ReviewRejectedEmail({ firstName, reviewTitle, reason }: 
             <Text style={text}>
               Common reasons include: content that violates our guidelines, inability to verify the rental, or content that does not meet our minimum standards. You&apos;re welcome to submit a revised review.
             </Text>
-            <Button style={button} href="https://rentcheck.app/review/new">
+            <Button style={button} href="https://vettrentals.com/review/new">
               Submit a New Review
             </Button>
             <Hr style={hr} />
             <Text style={footer}>
-              Questions? Reply to this email or contact <a href="mailto:support@rentcheck.app" style={link}>support@rentcheck.app</a>
+              Questions? Reply to this email or contact <a href="mailto:support@vettrentals.com" style={link}>support@vettrentals.com</a>
             </Text>
           </Section>
         </Container>

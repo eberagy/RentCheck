@@ -15,7 +15,7 @@ export function ShareButton({ name }: ShareButtonProps) {
     const url = window.location.href
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
-        await navigator.share({ title: `${name} Reviews on RentCheck`, url })
+        await navigator.share({ title: `${name} Reviews on Vett`, url })
         return
       } catch {
         // User cancelled share or not supported — fall through to clipboard

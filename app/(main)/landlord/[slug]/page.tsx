@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: LandlordPageProps): Promise<M
     title: `${landlord.display_name} Reviews${location ? ` — ${location}` : ''}`,
     description: `Read ${landlord.review_count} verified renter reviews of ${landlord.display_name}. See public records, court cases, and violation history.`,
     openGraph: {
-      title: `${landlord.display_name} Reviews | RentCheck`,
+      title: `${landlord.display_name} Reviews | Vett`,
       description: `${landlord.review_count} renter reviews · ${landlord.avg_rating.toFixed(1)} avg rating`,
     },
   }

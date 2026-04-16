@@ -23,7 +23,7 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
     : 'Search Landlords'
   return {
     title,
-    description: `Search landlord reviews${city ? ` in ${city}` : ''} on RentCheck. Read verified renter reviews and public records.`,
+    description: `Search landlord reviews${city ? ` in ${city}` : ''} on Vett. Read verified renter reviews and public records.`,
     robots: { index: !!q, follow: true },
   }
 }

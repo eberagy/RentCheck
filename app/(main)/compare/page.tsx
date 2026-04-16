@@ -15,7 +15,7 @@ interface ComparePageProps {
 }
 
 export async function generateMetadata({ searchParams }: ComparePageProps): Promise<Metadata> {
-  return { title: 'Compare Landlords | RentCheck', robots: 'noindex' }
+  return { title: 'Compare Landlords | Vett', robots: 'noindex' }
 }
 
 export default async function ComparePage({ searchParams }: ComparePageProps) {
@@ -259,7 +259,7 @@ function CompareSearch() {
       <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
       <h1 className="text-2xl font-bold text-gray-900 mb-2">Compare Landlords</h1>
       <p className="text-gray-500 mb-6">
-        Search for two landlords on RentCheck and we'll compare their ratings, violations, and renter feedback side by side.
+        Search for two landlords on Vett and we'll compare their ratings, violations, and renter feedback side by side.
       </p>
       <p className="text-sm text-gray-400 bg-gray-50 rounded-lg p-4">
         To compare, visit a landlord's profile and use the <strong>Compare</strong> button, or go to any landlord page and add{' '}

@@ -76,7 +76,7 @@ export default function OnboardingPage() {
       return
     }
 
-    toast.success('Welcome to RentCheck!')
+    toast.success('Welcome to Vett!')
     router.push('/dashboard')
   }
 
@@ -110,7 +110,7 @@ export default function OnboardingPage() {
                   Who are you?
                 </h1>
                 <p className="mt-2 text-gray-500 text-base">
-                  This helps us personalise your RentCheck experience.
+                  This helps us personalise your Vett experience.
                 </p>
               </div>
 

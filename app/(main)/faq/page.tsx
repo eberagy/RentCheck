@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 const FAQS = [
   {
     id: 'how-reviews',
-    q: 'How does RentCheck verify reviews?',
+    q: 'How does Vett verify reviews?',
     a: 'When you submit a review, you can upload your lease agreement. Our admin team manually reviews the lease to confirm you lived at the property and rented from the landlord in question. Verified reviews display a "Lease Verified" badge. Reviews without a lease are still accepted but shown as "Self-Reported."',
   },
   {
@@ -43,8 +43,8 @@ const FAQS = [
   },
   {
     id: 'fcra',
-    q: 'Is RentCheck a consumer reporting agency?',
-    a: "No. RentCheck is a public-facing review and public records platform. We are not a consumer reporting agency (CRA) under the Fair Credit Reporting Act (FCRA), and our platform should not be used as a \"consumer report\" for employment, credit, insurance, or tenant screening decisions. See our FCRA Notice for full details.",
+    q: 'Is Vett a consumer reporting agency?',
+    a: "No. Vett is a public-facing review and public records platform. We are not a consumer reporting agency (CRA) under the Fair Credit Reporting Act (FCRA), and our platform should not be used as a \"consumer report\" for employment, credit, insurance, or tenant screening decisions. See our FCRA Notice for full details.",
   },
   {
     id: 'privacy',
@@ -84,8 +84,8 @@ export default function FAQPage() {
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Frequently Asked Questions</h1>
       <p className="text-gray-500 mb-10">
         Can&apos;t find your answer? Email{' '}
-        <a href="mailto:support@rentcheck.app" className="text-navy-600 hover:underline font-medium">
-          support@rentcheck.app
+        <a href="mailto:support@vettrentals.com" className="text-navy-600 hover:underline font-medium">
+          support@vettrentals.com
         </a>
       </p>
 
@@ -98,7 +98,7 @@ export default function FAQPage() {
       <div className="mt-10 bg-navy-50 border border-navy-100 rounded-xl p-6 text-sm text-navy-800">
         <p className="font-semibold mb-1">Legal Notice</p>
         <p className="leading-relaxed">
-          RentCheck&apos;s public records data is sourced from official government databases and is provided for
+          Vett&apos;s public records data is sourced from official government databases and is provided for
           informational purposes only. We are not responsible for errors in source data. For official dispute
           resolution, contact the government agency that issued the record. Read our{' '}
           <Link href="/fcra-notice" className="underline">FCRA Notice</Link>,{' '}

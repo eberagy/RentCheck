@@ -173,7 +173,7 @@ export default function SettingsPage() {
         <h2 className="font-semibold text-red-700 mb-1">Delete Account</h2>
         <p className="text-sm text-gray-500 mb-4">
           Permanently delete your account and all your reviews. This cannot be undone.
-          Please email <a href="mailto:support@rentcheck.app" className="text-navy-600 hover:underline">support@rentcheck.app</a> to request account deletion.
+          Please email <a href="mailto:support@vettrentals.com" className="text-navy-600 hover:underline">support@vettrentals.com</a> to request account deletion.
         </p>
       </div>
     </div>

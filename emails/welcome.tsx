@@ -24,14 +24,14 @@ export default function WelcomeEmail({ firstName }: WelcomeEmailProps) {
   return (
     <Html>
       <Head />
-      <Preview>Welcome to RentCheck — research your next landlord before you sign</Preview>
+      <Preview>Welcome to Vett — research your next landlord before you sign</Preview>
       <Body style={body}>
         <Container style={container}>
           {/* ── Hero header ── */}
           <Section style={hero}>
             <div style={logoLockup}>
               <div style={logoIcon}>RC</div>
-              <span style={logoText}>RentCheck</span>
+              <span style={logoText}>Vett</span>
             </div>
             <Heading as="h1" style={heroHeading}>
               Transparency for renters,<br />nationwide.
@@ -66,7 +66,7 @@ export default function WelcomeEmail({ firstName }: WelcomeEmailProps) {
                     Look up any landlord or address. See reviews, public records, and violation
                     history before you commit to a lease.
                   </Text>
-                  <Link href="https://rentcheck.app/search" style={stepLink}>
+                  <Link href="https://vettrentals.com/search" style={stepLink}>
                     Search landlords →
                   </Link>
                 </Column>
@@ -84,7 +84,7 @@ export default function WelcomeEmail({ firstName }: WelcomeEmailProps) {
                     Your experience — good or bad — helps other renters make informed decisions.
                     Verified reviews carry extra weight.
                   </Text>
-                  <Link href="https://rentcheck.app/review/new" style={stepLink}>
+                  <Link href="https://vettrentals.com/review/new" style={stepLink}>
                     Write a review →
                   </Link>
                 </Column>
@@ -102,7 +102,7 @@ export default function WelcomeEmail({ firstName }: WelcomeEmailProps) {
                     Watching a specific landlord or property? Add it to your watchlist and get
                     notified when new reviews or violations are filed.
                   </Text>
-                  <Link href="https://rentcheck.app/watchlist" style={stepLink}>
+                  <Link href="https://vettrentals.com/watchlist" style={stepLink}>
                     Go to watchlist →
                   </Link>
                 </Column>
@@ -111,7 +111,7 @@ export default function WelcomeEmail({ firstName }: WelcomeEmailProps) {
 
             {/* ── CTA ── */}
             <Section style={ctaSection}>
-              <Button style={ctaButton} href="https://rentcheck.app/search">
+              <Button style={ctaButton} href="https://vettrentals.com/search">
                 Start Researching Your Next Landlord
               </Button>
             </Section>
@@ -119,18 +119,18 @@ export default function WelcomeEmail({ firstName }: WelcomeEmailProps) {
             <Hr style={hr} />
 
             <Text style={footer}>
-              You received this because you created a RentCheck account.
+              You received this because you created a Vett account.
               <br />
-              <Link href="https://rentcheck.app/unsubscribe" style={footerLink}>
+              <Link href="https://vettrentals.com/unsubscribe" style={footerLink}>
                 Unsubscribe
               </Link>{' '}
               ·{' '}
-              <Link href="https://rentcheck.app/privacy" style={footerLink}>
+              <Link href="https://vettrentals.com/privacy" style={footerLink}>
                 Privacy Policy
               </Link>{' '}
               ·{' '}
-              <Link href="https://rentcheck.app" style={footerLink}>
-                rentcheck.app
+              <Link href="https://vettrentals.com" style={footerLink}>
+                vettrentals.com
               </Link>
             </Text>
           </Section>
