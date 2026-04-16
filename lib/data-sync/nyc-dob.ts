@@ -54,6 +54,7 @@ export async function syncNycDob(supabase: SupabaseClient): Promise<SyncResult> 
           source_id: sourceId,
           record_type: 'dob_complaint' as const,
           property_id: propertyId,
+          title: buildDobTitle(row.complaintcategory, row.status),
           description: row.complaintcategory ?? row.status ?? null,
           severity: 'medium',
           status: row.status?.toLowerCase().includes('close') ? 'closed' : 'open',
@@ -74,4 +75,9 @@ export async function syncNycDob(supabase: SupabaseClient): Promise<SyncResult> 
   }
 
   return result
+}
+
+function buildDobTitle(category: string | null, status: string | null): string {
+  const label = [category, status].find(Boolean) ?? 'Complaint'
+  return `DOB Complaint: ${label}`.slice(0, 150)
 }

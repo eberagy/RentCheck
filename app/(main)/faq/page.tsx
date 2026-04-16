@@ -9,12 +9,12 @@ const FAQS = [
   {
     id: 'how-reviews',
     q: 'How does Vett verify reviews?',
-    a: 'When you submit a review, you can upload your lease agreement. Our admin team manually reviews the lease to confirm you lived at the property and rented from the landlord in question. Verified reviews display a "Lease Verified" badge. Reviews without a lease are still accepted but shown as "Self-Reported."',
+    a: 'When you submit a review, you upload your lease agreement before publication. Our founders and moderators manually review the lease to confirm you lived at the property and rented from the landlord in question. Published reviews display a "Lease Verified" badge only after that review is complete.',
   },
   {
     id: 'who-can-review',
     q: 'Who can submit a review?',
-    a: "Anyone who has rented a residential property can submit a review. You must sign in with Google to ensure reviews are tied to a real account. We don't require a lease to submit — but uploading one earns a \"Verified\" badge.",
+    a: 'Anyone who has rented a residential property can start a review. You must sign in with Google so reviews are tied to a real account, and a lease upload is required before the review can be published.',
   },
   {
     id: 'public-records',
@@ -49,7 +49,7 @@ const FAQS = [
   {
     id: 'privacy',
     q: 'Are reviews anonymous?',
-    a: 'By default, reviews display only your first name and last initial (e.g., "John D."). You can choose to display your full name in your profile settings. We never display your email address or exact location publicly.',
+    a: 'Your public reviewer name comes from your profile settings. You can keep it minimal, and we never display your email address or exact location publicly.',
   },
   {
     id: 'college',
@@ -84,8 +84,8 @@ export default function FAQPage() {
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Frequently Asked Questions</h1>
       <p className="text-gray-500 mb-10">
         Can&apos;t find your answer? Email{' '}
-        <a href="mailto:support@vettrentals.com" className="text-navy-600 hover:underline font-medium">
-          support@vettrentals.com
+        <a href="mailto:support@vettrenters.com" className="text-navy-600 hover:underline font-medium">
+          support@vettrenters.com
         </a>
       </p>
 

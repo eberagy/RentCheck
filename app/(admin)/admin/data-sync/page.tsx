@@ -29,6 +29,8 @@ const SYNC_SOURCES = [
   { id: 'sf', label: 'San Francisco', schedule: 'Daily 4am', description: 'SF Housing violations (DataSF)' },
   { id: 'boston', label: 'Boston Inspections', schedule: 'Daily 4:30am', description: 'Boston Inspectional Services violations' },
   { id: 'philadelphia', label: 'Philadelphia L&I', schedule: 'Daily 4:30am', description: 'Philadelphia Licenses & Inspections violations' },
+  { id: 'baltimore', label: 'Baltimore Vacant Notices', schedule: 'Daily 5am', description: 'Baltimore open vacant-building notices' },
+  { id: 'pittsburgh', label: 'Pittsburgh PLI', schedule: 'Daily 5am', description: 'Pittsburgh PLI/DOMI/ES property violations' },
   { id: 'austin', label: 'Austin Complaints', schedule: 'Daily 5am', description: 'Austin Code complaints (Open Austin)' },
   { id: 'seattle', label: 'Seattle Violations', schedule: 'Daily 5am', description: 'Seattle rental housing code violations' },
   { id: 'los-angeles', label: 'Los Angeles LAHD', schedule: 'Daily 5am', description: 'LA Housing Dept code violations' },

@@ -62,11 +62,14 @@ CREATE TABLE public.watchlist (
   property_id  UUID REFERENCES public.properties(id) ON DELETE CASCADE,
   notify_email BOOLEAN DEFAULT TRUE,
   created_at   TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE (user_id, landlord_id),
   CONSTRAINT watch_target CHECK (landlord_id IS NOT NULL OR property_id IS NOT NULL)
 );
 CREATE INDEX idx_watchlist_user ON public.watchlist(user_id);
 CREATE INDEX idx_watchlist_landlord ON public.watchlist(landlord_id);
+CREATE UNIQUE INDEX idx_watchlist_user_landlord ON public.watchlist(user_id, landlord_id)
+  WHERE landlord_id IS NOT NULL;
+CREATE UNIQUE INDEX idx_watchlist_user_property ON public.watchlist(user_id, property_id)
+  WHERE property_id IS NOT NULL;
 
 -- ─── DATA SYNC LOG ────────────────────────────────────────────
 CREATE TABLE public.sync_log (

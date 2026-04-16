@@ -10,21 +10,22 @@ CREATE TABLE public.public_records (
   -- If landlord not claimed, show warning on property page
 
   record_type     TEXT CHECK (record_type IN (
-    'hpd_violation','dob_violation','court_case',
-    'eviction_filing','311_complaint','code_enforcement',
-    'lsc_eviction','chicago_violation','sf_eviction',
+    'hpd_violation','dob_violation','dob_complaint','court_case',
+    'eviction','eviction_filing','311_complaint','code_enforcement',
+    'lsc_eviction','chicago_violation','sf_violation','sf_eviction',
     'boston_violation','philly_violation','austin_complaint',
-    'seattle_violation','la_violation','court_listener'
+    'seattle_violation','la_violation','court_listener',
+    'pittsburgh_violation','baltimore_vacant_notice'
   )) NOT NULL,
 
   source          TEXT NOT NULL,   -- 'nyc_hpd','nyc_dob','nyc_registration','courtlistener','lsc', etc.
   source_id       TEXT,            -- Original ID in source system (for dedup)
   source_url      TEXT,            -- Link to original record
 
-  severity        TEXT CHECK (severity IN ('low','medium','high','critical')),
+  severity        TEXT CHECK (severity IN ('low','medium','high','critical','unknown')),
   status          TEXT,            -- 'open','closed','pending','dismissed'
 
-  title           TEXT NOT NULL,
+  title           TEXT NOT NULL CHECK (length(title) BETWEEN 10 AND 150),
   description     TEXT,
   violation_class TEXT,            -- 'A','B','C' for HPD; 'I' for info orders
   case_number     TEXT,

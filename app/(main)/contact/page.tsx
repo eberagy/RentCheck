@@ -9,17 +9,17 @@ export const metadata: Metadata = {
 const CONTACTS = [
   {
     label: 'General Inquiries',
-    email: 'hello@vettrentals.com',
+    email: 'hello@vettrenters.com',
     description: 'Questions about how Vett works, feedback, or partnership inquiries.',
   },
   {
     label: 'Legal & Disputes',
-    email: 'legal@vettrentals.com',
+    email: 'legal@vettrenters.com',
     description: 'Review disputes, DMCA notices, defamation claims, or legal correspondence.',
   },
   {
     label: 'Privacy Requests',
-    email: 'privacy@vettrentals.com',
+    email: 'privacy@vettrenters.com',
     description: 'Data deletion requests, CCPA/GDPR inquiries, or privacy-related concerns.',
   },
 ]
@@ -53,7 +53,7 @@ export default function ContactPage() {
         <Shield className="h-4 w-4 text-gray-400 flex-shrink-0 mt-0.5" />
         <p>
           Vett is not a consumer reporting agency under the FCRA. For review disputes or removal requests,
-          email <a href="mailto:legal@vettrentals.com" className="text-navy-600 hover:underline">legal@vettrentals.com</a> with
+          email <a href="mailto:legal@vettrenters.com" className="text-navy-600 hover:underline">legal@vettrenters.com</a> with
           the review URL and your reason.
         </p>
       </div>

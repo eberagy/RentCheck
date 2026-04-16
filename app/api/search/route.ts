@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { buildLandlordSummary, buildPropertySummary, truncateSummary } from '@/lib/summaries'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -15,10 +16,74 @@ export async function GET(req: NextRequest) {
   const { q, type, limit } = parsed.data
   const supabase = await createClient()
 
-  const { data, error } = await supabase.rpc('search_all', { query: q, result_limit: limit })
+  const { data, error } = await supabase.rpc('search_all', { query: q, limit_n: limit })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  const results = (data ?? []).filter((r: any) => type === 'all' || r.result_type === type)
+  const rawResults = (data ?? []).filter((r: any) => type === 'all' || r.result_type === type)
+  const landlordIds = rawResults.filter((r: any) => r.result_type === 'landlord').map((r: any) => r.id)
+  const propertyIds = rawResults.filter((r: any) => r.result_type === 'property').map((r: any) => r.id)
+
+  const [
+    { data: landlords },
+    { data: properties },
+    { data: propertyRecords },
+  ] = await Promise.all([
+    landlordIds.length
+      ? supabase
+          .from('landlords')
+          .select('id, display_name, avg_rating, review_count, open_violation_count, total_violation_count, eviction_count, city, state_abbr, is_verified')
+          .in('id', landlordIds)
+      : Promise.resolve({ data: [] as any[], error: null }),
+    propertyIds.length
+      ? supabase
+          .from('properties')
+          .select('id, address_line1, avg_rating, review_count, city, state_abbr, landlord:landlords(display_name)')
+          .in('id', propertyIds)
+      : Promise.resolve({ data: [] as any[], error: null }),
+    propertyIds.length
+      ? supabase
+          .from('public_records')
+          .select('property_id, title, status, filed_date')
+          .in('property_id', propertyIds)
+      : Promise.resolve({ data: [] as any[], error: null }),
+  ])
+
+  const landlordsById = new Map((landlords ?? []).map((landlord: any) => [landlord.id, landlord]))
+  const propertiesById = new Map((properties ?? []).map((property: any) => [property.id, property]))
+  const recordsByPropertyId = new Map<string, Array<{ title: string; status: string | null; filed_date: string | null }>>()
+
+  for (const record of propertyRecords ?? []) {
+    if (!record.property_id) continue
+    const bucket = recordsByPropertyId.get(record.property_id) ?? []
+    bucket.push(record)
+    recordsByPropertyId.set(record.property_id, bucket)
+  }
+
+  const results = rawResults.map((result: any) => {
+    if (result.result_type === 'landlord') {
+      const landlord = landlordsById.get(result.id)
+      if (!landlord) return result
+      return {
+        ...result,
+        summary: truncateSummary(buildLandlordSummary({ landlord }), 140),
+      }
+    }
+
+    const property = propertiesById.get(result.id)
+    if (!property) return result
+
+    return {
+      ...result,
+      summary: truncateSummary(
+        buildPropertySummary({
+          property,
+          landlordName: property.landlord?.display_name ?? null,
+          records: recordsByPropertyId.get(result.id) ?? [],
+        }),
+        140
+      ),
+    }
+  })
 
   return NextResponse.json({ results, query: q })
 }

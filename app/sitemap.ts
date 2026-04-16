@@ -9,7 +9,7 @@ function citySlug(city: string) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrenters.com'
   const supabase = await createClient()
 
   const [

@@ -62,7 +62,7 @@ export async function syncPhiladelphia(supabase: SupabaseClient): Promise<SyncRe
           source_id: sourceId,
           record_type: 'philly_violation',
           property_id: propertyId,
-          title: row.violationdescription ?? row.casetype ?? 'L&I Violation',
+          title: buildPhillyTitle(row.violationdescription, row.casetype, row.caseprioritydesc),
           description: row.casetype ?? null,
           severity: row.caseprioritydesc?.toLowerCase().includes('immed') ? 'high' : 'medium',
           status: row.casestatus?.toLowerCase().includes('close') ? 'closed' : 'open',
@@ -82,4 +82,9 @@ export async function syncPhiladelphia(supabase: SupabaseClient): Promise<SyncRe
   }
 
   return result
+}
+
+function buildPhillyTitle(description: string | null, caseType: string | null, priority: string | null): string {
+  const label = [description, caseType, priority].find(Boolean) ?? 'L&I Violation'
+  return `Philadelphia Violation: ${label}`.slice(0, 150)
 }

@@ -58,6 +58,7 @@ export async function syncCourtListener(supabase: SupabaseClient): Promise<SyncR
             source_id: sourceId,
             record_type: 'court_case',
             landlord_id: landlordId,
+            title: buildCourtTitle(caseName, item.docket_number ?? item.id ?? null),
             description: caseName || item.text?.slice(0, 500) || null,
             severity: 'high',
             status: item.dateFiled ? 'open' : 'unknown',
@@ -80,4 +81,9 @@ export async function syncCourtListener(supabase: SupabaseClient): Promise<SyncR
   }
 
   return result
+}
+
+function buildCourtTitle(caseName: string, docketNumber: string | null): string {
+  const label = [caseName, docketNumber ? `#${docketNumber}` : null].filter(Boolean).join(' ')
+  return `Court Case: ${label || 'Housing Matter'}`.slice(0, 150)
 }

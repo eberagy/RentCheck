@@ -4,14 +4,14 @@ import { Shield, Search, BarChart3, Scale } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'About Vett | Glassdoor for Landlords',
-  description: 'Vett is a free platform that combines verified renter reviews with public government records to help renters make informed housing decisions.',
+  description: 'Vett is a free platform that combines lease-verified renter reviews with public government records to help renters make informed housing decisions.',
 }
 
 export default function AboutPage() {
   const values = [
-    { icon: Shield, title: 'Transparency', desc: 'We surface public records and verified experiences that have historically been difficult for renters to access.' },
+    { icon: Shield, title: 'Transparency', desc: 'We surface public records and lease-verified experiences that have historically been difficult for renters to access.' },
     { icon: Scale, title: 'Fairness', desc: 'All landlords — claimed or not — follow the same fair process. No pay-to-remove, no pay-to-hide.' },
-    { icon: Search, title: 'Accuracy', desc: 'Public records are sourced directly from government APIs. Reviews require lease verification by our team.' },
+    { icon: Search, title: 'Accuracy', desc: 'Public records are sourced directly from government APIs. Reviews require lease verification before publication.' },
     { icon: BarChart3, title: 'Empowerment', desc: 'Renters deserve the same information advantage that landlords have. We exist to level that playing field.' },
   ]
 
@@ -19,7 +19,7 @@ export default function AboutPage() {
     <div className="max-w-3xl mx-auto px-4 py-12">
       <h1 className="text-3xl font-bold text-gray-900 mb-4">About Vett</h1>
       <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-        Vett is the transparency platform for the rental market — combining verified renter reviews, housing court records, code violation histories, and eviction filings in one searchable database.
+        Vett is the transparency platform for the rental market — combining lease-verified renter reviews, housing court records, code violation histories, and eviction filings in one searchable database.
       </p>
 
       <h2 className="text-xl font-bold text-gray-900 mb-3">Why We Exist</h2>
@@ -27,7 +27,7 @@ export default function AboutPage() {
         When you apply for a job, you can look up the company on Glassdoor. When you pick a restaurant, you check Yelp. But when you sign a 12-month lease — often the largest financial commitment in a renter&apos;s life — there&apos;s nowhere to look up the landlord&apos;s track record.
       </p>
       <p className="text-gray-600 mb-8 leading-relaxed">
-        We started Vett because we believe renters deserve the same tools everyone else has. Public records like HPD violations, eviction filings, and housing court cases are publicly available — but buried, fragmented, and hard to use. We aggregate them, normalize them, and make them searchable next to verified reviews from real tenants.
+        We started Vett because we believe renters deserve the same tools everyone else has. Public records like HPD violations, eviction filings, and housing court cases are publicly available — but buried, fragmented, and hard to use. We aggregate them, normalize them, and make them searchable next to lease-verified reviews from real tenants.
       </p>
 
       <h2 className="text-xl font-bold text-gray-900 mb-6">Our Values</h2>
@@ -45,7 +45,7 @@ export default function AboutPage() {
 
       <h2 className="text-xl font-bold text-gray-900 mb-3">How Reviews Work</h2>
       <p className="text-gray-600 mb-4">
-        Every review on Vett goes through a moderation process. Reviewers are encouraged to upload their lease to earn a &ldquo;Lease Verified&rdquo; badge, which our admin team manually confirms. All reviews are screened for our{' '}
+        Every review on Vett goes through a moderation process. Reviewers upload their lease before publication, and our founders or moderators manually confirm it. All published reviews carry a &ldquo;Lease Verified&rdquo; badge and are screened for our{' '}
         <Link href="/terms" className="text-navy-600 hover:underline">content guidelines</Link> before publication.
       </p>
 

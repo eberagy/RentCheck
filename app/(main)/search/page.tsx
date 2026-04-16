@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { SearchBar } from '@/components/search/SearchBar'
 import { LandlordCard } from '@/components/landlord/LandlordCard'
 import { Skeleton } from '@/components/ui/skeleton'
-import { US_STATES } from '@/types'
+import { COLLEGE_CITIES, US_STATES } from '@/types'
 import type { Landlord } from '@/types'
 
 interface SearchPageProps {
@@ -23,7 +23,7 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
     : 'Search Landlords'
   return {
     title,
-    description: `Search landlord reviews${city ? ` in ${city}` : ''} on Vett. Read verified renter reviews and public records.`,
+    description: `Search landlord reviews${city ? ` in ${city}` : ''} on Vett. Read lease-verified renter reviews and public records.`,
     robots: { index: !!q, follow: true },
   }
 }
@@ -115,12 +115,34 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const minRating = parseFloat(params.rating ?? '0')
   const verifiedOnly = params.verified === 'true'
   const page = parseInt(params.page ?? '1', 10)
+  const priorityCities = COLLEGE_CITIES.filter((city) =>
+    ['Baltimore', 'Pittsburgh', 'State College', 'Philadelphia', 'New York', 'Chicago'].includes(city.city)
+  )
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Search bar */}
-      <div className="mb-8">
+      <div className="mb-6">
         <SearchBar size="md" className="max-w-2xl" />
+      </div>
+
+      <div className="mb-8 flex flex-wrap gap-2">
+        {priorityCities.map((priorityCity) => {
+          const active = priorityCity.city === city && priorityCity.state === state && !q
+          return (
+            <a
+              key={`${priorityCity.city}-${priorityCity.state}`}
+              href={`/search?city=${encodeURIComponent(priorityCity.city)}&state=${priorityCity.state}`}
+              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                active
+                  ? 'bg-navy-600 text-white'
+                  : 'bg-white text-gray-600 border border-gray-200 hover:border-navy-300 hover:text-navy-700'
+              }`}
+            >
+              {priorityCity.city}, {priorityCity.state}
+            </a>
+          )
+        })}
       </div>
 
       <div className="flex flex-col lg:flex-row gap-8">

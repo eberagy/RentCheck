@@ -44,6 +44,7 @@ export async function syncLosAngeles(supabase: SupabaseClient): Promise<SyncResu
           source_id: sourceId,
           record_type: 'la_violation',
           property_id: propertyId,
+          title: buildLaTitle(row.violation_description, row.case_type, row.case_status),
           description: row.violation_description ?? row.case_type ?? null,
           severity: 'medium',
           status: row.case_status?.toLowerCase().includes('close') ? 'closed' : 'open',
@@ -63,4 +64,9 @@ export async function syncLosAngeles(supabase: SupabaseClient): Promise<SyncResu
   }
 
   return result
+}
+
+function buildLaTitle(description: string | null, caseType: string | null, status: string | null): string {
+  const label = [description, caseType, status].find(Boolean) ?? 'Code Violation'
+  return `Los Angeles Violation: ${label}`.slice(0, 150)
 }

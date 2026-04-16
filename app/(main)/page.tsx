@@ -8,7 +8,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Vett — Know Before You Rent',
-  description: 'Verified renter reviews and public records on landlords nationwide. Know before you rent.',
+  description: 'Lease-verified renter reviews and public records on landlords nationwide. Know before you rent.',
 }
 
 async function getStats() {
@@ -44,7 +44,7 @@ const FEATURES = [
   {
     icon: Shield,
     title: 'Lease-Verified Reviews',
-    description: 'Every review is backed by a real lease document. No fake reviews — just real tenant experiences you can trust.',
+    description: 'Every published review is backed by a real lease document and founder review. No fake reviews — just real tenant experiences you can trust.',
     color: 'text-teal-600',
     bg: 'bg-teal-50',
     border: 'border-teal-100',
@@ -69,7 +69,7 @@ const FEATURES = [
 
 const HOW_IT_WORKS = [
   { step: '01', title: 'Search your landlord', desc: 'Search by name, management company, or property address.' },
-  { step: '02', title: 'See the full picture', desc: 'Read verified reviews and government violation records side-by-side.' },
+  { step: '02', title: 'See the full picture', desc: 'Read lease-verified reviews and government violation records side-by-side.' },
   { step: '03', title: 'Make a confident decision', desc: 'Sign knowing exactly what you\'re getting into.' },
 ]
 
@@ -88,6 +88,9 @@ function StarDisplay({ rating }: { rating: number }) {
 
 export default async function HomePage() {
   const [stats, recentReviews] = await Promise.all([getStats(), getRecentReviews()])
+  const priorityCities = COLLEGE_CITIES.filter((city) =>
+    ['Baltimore', 'Pittsburgh', 'State College', 'Philadelphia', 'New York', 'Chicago'].includes(city.city)
+  )
 
   return (
     <div className="min-h-screen">
@@ -102,7 +105,7 @@ export default async function HomePage() {
           {/* Trust badge */}
           <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-8 text-sm text-teal-200">
             <CheckCircle className="h-3.5 w-3.5 text-teal-400" />
-            <span>Verified reviews • Public records • No fake data</span>
+            <span>Lease-verified reviews • Public records • Founder review</span>
           </div>
 
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-none tracking-tight text-balance">
@@ -113,7 +116,7 @@ export default async function HomePage() {
 
           <p className="mt-6 text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
             Landlords screen tenants with credit checks and background reports.
-            Now renters have <strong className="text-white font-semibold">Vett</strong> — verified reviews and government violation records in one place.
+            Now renters have <strong className="text-white font-semibold">Vett</strong> — lease-verified reviews and government violation records in one place.
           </p>
 
           {/* Search */}
@@ -124,6 +127,17 @@ export default async function HomePage() {
             <p className="mt-3 text-sm text-slate-400">
               Search by landlord name, management company, address, or city
             </p>
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+              {priorityCities.map((city) => (
+                <Link
+                  key={`${city.city}-${city.state}`}
+                  href={`/search?city=${encodeURIComponent(city.city)}&state=${city.state}`}
+                  className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-slate-200 transition-colors hover:border-teal-300/40 hover:bg-white/15 hover:text-white"
+                >
+                  {city.city}, {city.state}
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -138,7 +152,7 @@ export default async function HomePage() {
               </div>
               <div>
                 <div className="text-xl font-bold text-gray-900">{stats.reviews.toLocaleString()}</div>
-                <div className="text-xs text-gray-500">Verified reviews</div>
+                <div className="text-xs text-gray-500">Lease-verified reviews</div>
               </div>
             </div>
             <div className="h-8 w-px bg-gray-100 hidden sm:block" />
@@ -212,7 +226,7 @@ export default async function HomePage() {
             <div className="flex items-center justify-between mb-8">
               <div>
                 <p className="text-xs uppercase tracking-widest text-teal-600 font-semibold mb-1">Community</p>
-                <h2 className="text-xl font-bold text-gray-900">Recent verified reviews</h2>
+                <h2 className="text-xl font-bold text-gray-900">Recent lease-verified reviews</h2>
               </div>
               <Link href="/search" className="text-sm text-navy-600 hover:text-navy-700 font-medium flex items-center gap-1">
                 Browse all <ArrowRight className="h-3.5 w-3.5" />

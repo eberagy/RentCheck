@@ -57,7 +57,12 @@ export default function AdminReviewsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ reviewId, action, adminNotes: notes[reviewId] }),
     })
-    if (!res.ok) { toast.error('Failed to update'); setProcessing(null); return }
+    if (!res.ok) {
+      const data = await res.json().catch(() => null)
+      toast.error(data?.error ?? 'Failed to update')
+      setProcessing(null)
+      return
+    }
     toast.success(`Review ${action} — email sent to reviewer`)
     setReviews(prev => prev.filter(r => r.id !== reviewId))
     setProcessing(null)
@@ -70,7 +75,7 @@ export default function AdminReviewsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Review Queue</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Approve or reject submitted reviews</p>
+          <p className="text-sm text-gray-500 mt-0.5">Only lease-verified reviews can be approved and published</p>
         </div>
         <Select value={filter} onValueChange={(v) => setFilter(v ?? 'pending')}>
           <SelectTrigger className="w-36">
@@ -177,7 +182,7 @@ export default function AdminReviewsPage() {
                           size="sm"
                           className="bg-teal-600 hover:bg-teal-700 text-white"
                           onClick={() => moderate(review.id, 'approved')}
-                          disabled={processing === review.id}
+                          disabled={processing === review.id || !review.lease_verified}
                         >
                           {processing === review.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
                           Approve
@@ -193,6 +198,11 @@ export default function AdminReviewsPage() {
                           Reject
                         </Button>
                       </div>
+                    )}
+                    {review.status === 'pending' && !review.lease_verified && (
+                      <p className="text-xs text-amber-700">
+                        Verify the uploaded lease in the Lease Verification queue before approving this review.
+                      </p>
                     )}
                   </div>
                 )}

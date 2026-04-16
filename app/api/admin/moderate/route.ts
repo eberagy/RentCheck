@@ -32,9 +32,13 @@ export async function POST(req: NextRequest) {
   const serviceClient = createServiceClient()
   const { data: review } = await serviceClient
     .from('reviews')
-    .select('id, title, reviewer_id, landlord_id, reviewer:profiles(full_name, email), landlord:landlords(display_name, slug)')
+    .select('id, title, reviewer_id, landlord_id, lease_verified, reviewer:profiles(full_name, email), landlord:landlords(display_name, slug)')
     .eq('id', reviewId)
     .single()
+
+  if (action === 'approved' && !review?.lease_verified) {
+    return NextResponse.json({ error: 'Lease must be verified before a review can be approved' }, { status: 409 })
+  }
 
   const { error } = await supabase
     .from('reviews')
@@ -87,14 +91,14 @@ async function fireWatchlistAlerts(
   // Get all users watching this landlord (excluding the reviewer themselves)
   const { data: watchers } = await serviceClient
     .from('watchlist')
-    .select('user_id, user:profiles(full_name, email, email_watchlist)')
+    .select('user_id, notify_email, user:profiles(full_name, email, email_watchlist)')
     .eq('landlord_id', landlordId)
 
   if (!watchers?.length) return
 
   for (const watcher of watchers) {
     const profile = (watcher.user as unknown) as { full_name: string | null; email: string | null; email_watchlist: boolean } | null
-    if (!profile?.email || profile.email_watchlist === false) continue
+    if (!profile?.email || profile.email_watchlist === false || watcher.notify_email === false) continue
     sendWatchlistAlertEmail(profile.email, {
       firstName: profile.full_name?.split(' ')[0],
       landlordName,

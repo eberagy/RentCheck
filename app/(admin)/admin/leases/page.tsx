@@ -65,6 +65,9 @@ export default function AdminLeasesPage() {
     }
     if (!verified) {
       updates.lease_rejection_reason = notes[reviewId] ?? 'Document could not be verified'
+      updates.status = 'rejected'
+      updates.admin_notes = notes[reviewId] ?? 'Lease verification failed'
+      updates.moderated_at = new Date().toISOString()
     }
     const { error } = await supabase.from('reviews').update(updates).eq('id', reviewId)
     if (error) { toast.error('Update failed'); setProcessing(null); return }
@@ -84,7 +87,7 @@ export default function AdminLeasesPage() {
     <div className="p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Lease Verification</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Review uploaded lease documents to verify renter tenancy</p>
+        <p className="text-sm text-gray-500 mt-0.5">Review uploaded lease documents before any renter review can be approved and published</p>
       </div>
 
       {loading ? (

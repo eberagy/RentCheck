@@ -18,6 +18,8 @@ const TYPE_COLORS: Record<string, string> = {
   court_case: '#7c3aed',
   court_listener: '#7c3aed',
   chicago_violation: '#ef4444',
+  pittsburgh_violation: '#ef4444',
+  baltimore_vacant_notice: '#f97316',
   sf_violation: '#ef4444',
   sf_eviction: '#dc2626',
   boston_violation: '#ef4444',

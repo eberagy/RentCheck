@@ -47,6 +47,7 @@ export async function syncBoston(supabase: SupabaseClient): Promise<SyncResult> 
           source_id: sourceId,
           record_type: 'boston_violation',
           property_id: propertyId,
+          title: buildBostonTitle(row.description, row.code_description, row.status),
           description: row.description ?? row.code_description ?? null,
           severity: 'medium',
           status: row.status?.toLowerCase().includes('close') ? 'closed' : 'open',
@@ -67,4 +68,9 @@ export async function syncBoston(supabase: SupabaseClient): Promise<SyncResult> 
   }
 
   return result
+}
+
+function buildBostonTitle(description: string | null, codeDescription: string | null, status: string | null): string {
+  const label = [description, codeDescription, status].find(Boolean) ?? 'Inspectional Services Violation'
+  return `Boston Violation: ${label}`.slice(0, 150)
 }

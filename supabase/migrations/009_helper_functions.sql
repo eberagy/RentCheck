@@ -47,12 +47,10 @@ BEGIN
 
   IF already_voted THEN
     DELETE FROM public.review_helpful WHERE review_id = p_review_id AND user_id = p_user_id;
-    UPDATE public.reviews SET helpful_count = GREATEST(helpful_count - 1, 0) WHERE id = p_review_id;
     RETURN FALSE;
   ELSE
     INSERT INTO public.review_helpful (review_id, user_id) VALUES (p_review_id, p_user_id)
       ON CONFLICT DO NOTHING;
-    UPDATE public.reviews SET helpful_count = helpful_count + 1 WHERE id = p_review_id;
     RETURN TRUE;
   END IF;
 END;

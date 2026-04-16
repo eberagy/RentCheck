@@ -47,7 +47,7 @@ const config: Config = {
         muted: '#6B7280',
       },
       fontFamily: {
-        sans: ['Inter', ...fontFamily.sans],
+        sans: ['var(--font-sans)', ...fontFamily.sans],
       },
       borderRadius: {
         card: '8px',

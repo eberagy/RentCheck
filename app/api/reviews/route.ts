@@ -16,9 +16,9 @@ const createSchema = z.object({
   rentalPeriodStart: z.string().optional(),
   rentalPeriodEnd: z.string().optional(),
   isCurrentTenant: z.boolean().default(false),
-  leaseDocPath: z.string().optional(),
-  leaseFilename: z.string().optional(),
-  leaseFileSize: z.number().int().positive().optional(),
+  leaseDocPath: z.string().min(1),
+  leaseFilename: z.string().min(1),
+  leaseFileSize: z.number().int().positive(),
 })
 
 export async function GET(req: NextRequest) {
@@ -60,6 +60,10 @@ export async function POST(req: NextRequest) {
 
   const d = parsed.data
 
+  if (!d.leaseDocPath.startsWith(`${user.id}/`)) {
+    return NextResponse.json({ error: 'Lease upload must belong to the signed-in renter' }, { status: 403 })
+  }
+
   // Check for duplicate submission (same user + landlord in last 30 days)
   const { data: existing } = await supabase
     .from('reviews')
@@ -89,9 +93,10 @@ export async function POST(req: NextRequest) {
       rental_period_start: d.rentalPeriodStart ?? null,
       rental_period_end: d.rentalPeriodEnd ?? null,
       is_current_tenant: d.isCurrentTenant,
-      lease_doc_path: d.leaseDocPath ?? null,
-      lease_filename: d.leaseFilename ?? null,
-      lease_file_size: d.leaseFileSize ?? null,
+      lease_doc_path: d.leaseDocPath,
+      lease_filename: d.leaseFilename,
+      lease_file_size: d.leaseFileSize,
+      lease_verified: false,
       status: 'pending',
     })
     .select('id')

@@ -44,6 +44,7 @@ export async function syncSf(supabase: SupabaseClient): Promise<SyncResult> {
           source_id: sourceId,
           record_type: 'sf_violation',
           property_id: propertyId,
+          title: buildSfTitle(row.description, row.complaint_type, row.priority),
           description: row.description ?? row.complaint_type ?? null,
           severity: mapSfSeverity(row.priority),
           status: row.status?.toLowerCase().includes('close') ? 'closed' : 'open',
@@ -71,4 +72,9 @@ function mapSfSeverity(priority: string | null): string {
   if (p.includes('high') || p.includes('immed') || p === '1') return 'high'
   if (p.includes('low') || p === '3') return 'low'
   return 'medium'
+}
+
+function buildSfTitle(description: string | null, complaintType: string | null, priority: string | null): string {
+  const label = [description, complaintType, priority].find(Boolean) ?? 'Housing Inspection'
+  return `San Francisco Violation: ${label}`.slice(0, 150)
 }

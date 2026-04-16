@@ -44,6 +44,7 @@ export async function syncChicago(supabase: SupabaseClient): Promise<SyncResult>
           source_id: sourceId,
           record_type: 'chicago_violation',
           property_id: propertyId,
+          title: buildChicagoTitle(row.violation_description, row.violation_ordinance, row.violation_status),
           description: [row.violation_description, row.violation_ordinance].filter(Boolean).join(' — '),
           severity: row.violation_status?.toLowerCase().includes('fail') ? 'high' : 'medium',
           status: row.violation_status_date ? 'closed' : 'open',
@@ -64,4 +65,9 @@ export async function syncChicago(supabase: SupabaseClient): Promise<SyncResult>
   }
 
   return result
+}
+
+function buildChicagoTitle(description: string | null, ordinance: string | null, status: string | null): string {
+  const label = [description, ordinance, status].find(Boolean) ?? 'Violation'
+  return `Chicago Violation: ${label}`.slice(0, 150)
 }

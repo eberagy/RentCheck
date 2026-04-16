@@ -61,11 +61,12 @@ export async function syncNycHpd(supabase: SupabaseClient): Promise<SyncResult> 
           record_type: 'hpd_violation' as const,
           landlord_id: landlordId,
           property_id: propertyId,
+          title: buildHpdTitle(row.class, row.novdescription),
           description: row.novdescription ?? row.class ?? null,
           severity: mapHpdClass(row.class),
           status: mapHpdStatus(row.currentstatus),
           filed_date: row.approveddate ? new Date(row.approveddate).toISOString().split('T')[0] : null,
-          resolved_date: row.closedate ? new Date(row.closedate).toISOString().split('T')[0] : null,
+          closed_date: row.closedate ? new Date(row.closedate).toISOString().split('T')[0] : null,
           raw_data: row,
         }
 
@@ -83,6 +84,11 @@ export async function syncNycHpd(supabase: SupabaseClient): Promise<SyncResult> 
   }
 
   return result
+}
+
+function buildHpdTitle(cls: string | null, description: string | null): string {
+  const label = [cls ? `Class ${cls}` : null, description?.trim() ?? null].filter(Boolean).join(' - ')
+  return `HPD Violation: ${label || 'Housing Violation'}`.slice(0, 150)
 }
 
 function mapHpdClass(c: string | null): string {

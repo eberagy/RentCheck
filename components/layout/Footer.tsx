@@ -28,9 +28,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <Logo size="md" href="/" className="[&_span]:text-white mb-4" />
+            <Logo size="lg" href="/" className="mb-4" />
             <p className="text-sm text-gray-400 mt-3 max-w-xs leading-relaxed">
-              Verified renter reviews and public records on landlords nationwide.
+              Lease-verified renter reviews and public records on landlords nationwide.
               Know before you rent.
             </p>
             <div className="flex items-center gap-2 mt-4 text-xs text-gray-500">
@@ -65,11 +65,11 @@ export function Footer() {
             © {new Date().getFullYear()} Vett. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-xs text-gray-500">
-            <a href="mailto:legal@vettrentals.com" className="flex items-center gap-1 hover:text-gray-300">
-              <Mail className="h-3 w-3" /> legal@vettrentals.com
+            <a href="mailto:legal@vettrenters.com" className="flex items-center gap-1 hover:text-gray-300">
+              <Mail className="h-3 w-3" /> legal@vettrenters.com
             </a>
-            <a href="mailto:privacy@vettrentals.com" className="flex items-center gap-1 hover:text-gray-300">
-              <Mail className="h-3 w-3" /> privacy@vettrentals.com
+            <a href="mailto:privacy@vettrenters.com" className="flex items-center gap-1 hover:text-gray-300">
+              <Mail className="h-3 w-3" /> privacy@vettrenters.com
             </a>
           </div>
         </div>

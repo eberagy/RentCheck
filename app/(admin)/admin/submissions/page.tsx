@@ -33,7 +33,7 @@ function ProofDocLink({ path }: { path: string }) {
   const [url, setUrl] = useState<string | null>(null)
 
   useEffect(() => {
-    supabase.storage.from('verification-docs').createSignedUrl(path, 3600).then(({ data }) => {
+    supabase.storage.from('landlord-verification-docs').createSignedUrl(path, 3600).then(({ data }) => {
       if (data?.signedUrl) setUrl(data.signedUrl)
     })
   }, [path]) // eslint-disable-line

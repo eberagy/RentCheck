@@ -98,6 +98,16 @@ export function truncate(str: string, maxLen: number): string {
   return str.slice(0, maxLen).trim() + '…'
 }
 
+export function formatReviewerName(fullName?: string | null): string {
+  if (!fullName) return 'Anonymous Renter'
+  const parts = fullName.trim().split(/\s+/).filter(Boolean)
+  if (parts.length === 0) return 'Anonymous Renter'
+  const first = parts[0] ?? 'Anonymous Renter'
+  if (parts.length === 1) return first
+  const lastInitial = parts.at(-1)?.charAt(0)?.toUpperCase()
+  return lastInitial ? `${first} ${lastInitial}.` : first
+}
+
 export function slugify(str: string): string {
   return str
     .toLowerCase()

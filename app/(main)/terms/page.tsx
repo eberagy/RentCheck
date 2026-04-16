@@ -24,8 +24,8 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-lg font-semibold text-gray-900">3. User-Generated Content</h2>
-          <p>You retain ownership of reviews and content you submit. By submitting content, you grant Vett a worldwide, royalty-free license to display, distribute, and moderate that content. You represent that you have personal knowledge of the facts stated in your review and that those facts are accurate to the best of your knowledge.</p>
-          <p className="mt-2">We reserve the right to remove content that violates our guidelines, including content that is defamatory, contains personal information, is fraudulent, or violates applicable law.</p>
+          <p>You retain ownership of reviews and content you submit. By submitting content, you grant Vett a worldwide, royalty-free license to display, distribute, and moderate that content. You represent that you have personal knowledge of the facts stated in your review and, where requested, can provide a lease or other verification document supporting your experience.</p>
+          <p className="mt-2">We reserve the right to remove content that violates our guidelines, including content that is defamatory, contains personal information, is fraudulent, or cannot be verified through our review process before publication.</p>
         </section>
 
         <section>
@@ -50,7 +50,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-lg font-semibold text-gray-900">8. Limitation of Liability</h2>
-          <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, RENTCHECK SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF THE SERVICE.</p>
+          <p>TO THE MAXIMUM EXTENT PERMITTED BY LAW, VETT SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF THE SERVICE.</p>
         </section>
 
         <section>
@@ -60,7 +60,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-lg font-semibold text-gray-900">10. Contact</h2>
-          <p>For questions about these Terms, contact us at <a href="mailto:legal@vettrentals.com" className="text-navy-600 hover:underline">legal@vettrentals.com</a>.</p>
+          <p>For questions about these Terms, contact us at <a href="mailto:legal@vettrenters.com" className="text-navy-600 hover:underline">legal@vettrenters.com</a>.</p>
         </section>
       </div>
     </div>

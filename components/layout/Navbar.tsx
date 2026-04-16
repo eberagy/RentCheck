@@ -7,7 +7,7 @@ import { Menu, ChevronDown, User, LogOut, LayoutDashboard, Shield, Settings } fr
 import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Sheet, SheetContent } from '@/components/ui/sheet'
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger,
@@ -110,9 +110,14 @@ export function Navbar() {
 
           {/* Mobile menu */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-            <SheetTrigger className="md:hidden rounded-md p-1 text-gray-600 hover:bg-gray-100 transition-colors">
+            <button
+              type="button"
+              aria-label="Open navigation menu"
+              onClick={() => setMobileOpen(true)}
+              className="md:hidden rounded-md p-1 text-gray-600 hover:bg-gray-100 transition-colors"
+            >
               <Menu className="h-5 w-5" />
-            </SheetTrigger>
+            </button>
             <SheetContent side="right" className="w-72 pt-8">
               <Logo size="sm" className="mb-6" />
               <nav className="flex flex-col gap-1">

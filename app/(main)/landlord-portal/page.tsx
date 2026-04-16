@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
-import { formatDate, gradeColor, gradeBgLight, ratingToColor } from '@/lib/utils'
+import { formatDate, formatReviewerName, gradeColor, gradeBgLight, ratingToColor } from '@/lib/utils'
 import { toast } from 'sonner'
 import type { Landlord, Review, LandlordClaim, LandlordGrade } from '@/types'
 
@@ -322,7 +322,7 @@ export default function LandlordPortalPage() {
                           <div className="text-right flex-shrink-0">
                             <span className="text-xs text-gray-400">{formatDate(review.created_at)}</span>
                             {(review.reviewer as any)?.full_name && (
-                              <p className="text-xs text-gray-500 mt-0.5">{(review.reviewer as any).full_name}</p>
+                              <p className="text-xs text-gray-500 mt-0.5">{formatReviewerName((review.reviewer as any).full_name)}</p>
                             )}
                           </div>
                         </div>

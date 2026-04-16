@@ -44,6 +44,7 @@ export async function syncSeattle(supabase: SupabaseClient): Promise<SyncResult>
           source_id: sourceId,
           record_type: 'seattle_violation',
           property_id: propertyId,
+          title: buildSeattleTitle(row.description, row.complaint_type, row.priority),
           description: row.description ?? row.complaint_type ?? null,
           severity: row.priority ? mapPriority(row.priority) : 'medium',
           status: row.status?.toLowerCase().includes('close') ? 'closed' : 'open',
@@ -70,4 +71,9 @@ function mapPriority(p: string): string {
   if (l.includes('high') || l.includes('urgent') || l === '1') return 'high'
   if (l.includes('low') || l === '3') return 'low'
   return 'medium'
+}
+
+function buildSeattleTitle(description: string | null, complaintType: string | null, priority: string | null): string {
+  const label = [description, complaintType, priority].find(Boolean) ?? 'Housing Violation'
+  return `Seattle Violation: ${label}`.slice(0, 150)
 }

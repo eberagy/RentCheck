@@ -44,6 +44,7 @@ export async function syncAustin(supabase: SupabaseClient): Promise<SyncResult> 
           source_id: sourceId,
           record_type: 'austin_complaint',
           property_id: propertyId,
+          title: buildAustinTitle(row.description, row.case_type, row.status_current),
           description: row.description ?? row.case_type ?? null,
           severity: 'medium',
           status: row.status_current?.toLowerCase().includes('close') ? 'closed' : 'open',
@@ -63,4 +64,9 @@ export async function syncAustin(supabase: SupabaseClient): Promise<SyncResult> 
   }
 
   return result
+}
+
+function buildAustinTitle(description: string | null, caseType: string | null, status: string | null): string {
+  const label = [description, caseType, status].find(Boolean) ?? 'Code Complaint'
+  return `Austin Complaint: ${label}`.slice(0, 150)
 }

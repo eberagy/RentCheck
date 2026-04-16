@@ -32,13 +32,14 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: 'Invalid' }, { status: 422 })
 
   const { landlordId, propertyId, notifyEmail } = parsed.data
+  const onConflict = landlordId ? 'user_id,landlord_id' : 'user_id,property_id'
 
   const { error } = await supabase.from('watchlist').upsert({
     user_id: user.id,
     landlord_id: landlordId ?? null,
     property_id: propertyId ?? null,
     notify_email: notifyEmail,
-  }, { onConflict: 'user_id,landlord_id' })
+  }, { onConflict })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ ok: true }, { status: 201 })

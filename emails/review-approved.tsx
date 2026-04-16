@@ -27,7 +27,7 @@ export default function ReviewApprovedEmail({
   landlordName,
   landlordSlug,
 }: ReviewApprovedEmailProps) {
-  const landlordUrl = `https://vettrentals.com/landlord/${landlordSlug}`
+  const landlordUrl = `https://vettrenters.com/landlord/${landlordSlug}`
 
   return (
     <Html>
@@ -40,7 +40,7 @@ export default function ReviewApprovedEmail({
           {/* ── Header bar ── */}
           <Section style={header}>
             <div style={logoLockup}>
-              <div style={logoIcon}>RC</div>
+              <div style={logoIcon}>V</div>
               <span style={logoText}>Vett</span>
             </div>
           </Section>
@@ -60,7 +60,7 @@ export default function ReviewApprovedEmail({
           <Section style={content}>
             <Text style={greetText}>Hi {firstName ?? 'there'},</Text>
             <Text style={bodyText}>
-              Your review has been approved and is now publicly visible on Vett. Thank you
+              Your lease-verified review has been approved and is now publicly visible on Vett. Thank you
               for helping make renting safer and more transparent for everyone.
             </Text>
 
@@ -119,11 +119,11 @@ export default function ReviewApprovedEmail({
             <Text style={footer}>
               You received this because you submitted a review on Vett.
               <br />
-              <Link href="https://vettrentals.com/privacy" style={footerLink}>
+              <Link href="https://vettrenters.com/privacy" style={footerLink}>
                 Privacy Policy
               </Link>{' '}
               ·{' '}
-              <Link href="https://vettrentals.com/unsubscribe" style={footerLink}>
+              <Link href="https://vettrenters.com/unsubscribe" style={footerLink}>
                 Unsubscribe
               </Link>
             </Text>

@@ -7,10 +7,11 @@ export type ReviewStatus = 'pending' | 'approved' | 'rejected' | 'flagged'
 export type ClaimStatus = 'pending' | 'approved' | 'rejected'
 export type SyncStatus = 'running' | 'completed' | 'failed'
 export type RecordType =
-  | 'hpd_violation' | 'dob_violation' | 'court_case' | 'eviction_filing'
-  | '311_complaint' | 'code_enforcement' | 'lsc_eviction' | 'chicago_violation'
-  | 'sf_eviction' | 'boston_violation' | 'philly_violation' | 'austin_complaint'
-  | 'seattle_violation' | 'la_violation' | 'court_listener'
+  | 'hpd_violation' | 'dob_violation' | 'dob_complaint' | 'court_case' | 'eviction'
+  | 'eviction_filing' | '311_complaint' | 'code_enforcement' | 'lsc_eviction'
+  | 'chicago_violation' | 'sf_violation' | 'sf_eviction' | 'boston_violation'
+  | 'philly_violation' | 'austin_complaint' | 'seattle_violation' | 'la_violation'
+  | 'court_listener' | 'pittsburgh_violation' | 'baltimore_vacant_notice'
 export type Severity = 'low' | 'medium' | 'high' | 'critical'
 export type LandlordGrade = 'A' | 'B' | 'C' | 'D' | 'F'
 
@@ -58,6 +59,7 @@ export interface Landlord {
   open_violation_count: number
   total_violation_count: number
   eviction_count: number
+  ai_summary?: string | null
   opencorporates_id: string | null
   created_at: string
   updated_at: string
@@ -226,6 +228,7 @@ export interface SearchResult {
   review_count: number | null
   is_verified: boolean
   rank: number
+  summary?: string
 }
 
 // ─── FORM INPUT TYPES ────────────────────────────────────────
@@ -299,12 +302,15 @@ export type StateAbbr = typeof US_STATES[number]['abbr']
 export const RECORD_TYPE_LABELS: Record<RecordType, string> = {
   hpd_violation: 'Housing Violation',
   dob_violation: 'Building Violation',
+  dob_complaint: 'Building Complaint',
   court_case: 'Court Case',
+  eviction: 'Eviction Filing',
   eviction_filing: 'Eviction Filing',
   '311_complaint': '311 Complaint',
   code_enforcement: 'Code Enforcement',
   lsc_eviction: 'Eviction Filing',
   chicago_violation: 'Building Violation',
+  sf_violation: 'Housing Violation',
   sf_eviction: 'Eviction Notice',
   boston_violation: 'Housing Violation',
   philly_violation: 'L&I Violation',
@@ -312,6 +318,8 @@ export const RECORD_TYPE_LABELS: Record<RecordType, string> = {
   seattle_violation: 'Code Violation',
   la_violation: 'Housing Violation',
   court_listener: 'Federal Court Case',
+  pittsburgh_violation: 'Pittsburgh Violation',
+  baltimore_vacant_notice: 'Vacant Building Notice',
 }
 
 export const SOURCE_LABELS: Record<string, string> = {
@@ -327,6 +335,8 @@ export const SOURCE_LABELS: Record<string, string> = {
   los_angeles: 'LA Open Data',
   courtlistener: 'CourtListener (Federal)',
   lsc: 'LSC Civil Court Data',
+  pittsburgh_pli: 'Pittsburgh Open Data',
+  baltimore_vacants: 'Baltimore Open Data',
 }
 
 export const COLLEGE_CITIES = [

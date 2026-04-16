@@ -116,6 +116,9 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
                   {[result.city, result.state_abbr].filter(Boolean).join(', ')}
                   {result.review_count != null && result.review_count > 0 && ` · ${result.review_count} reviews`}
                 </p>
+                {result.summary && (
+                  <p className="mt-0.5 text-xs text-gray-600 line-clamp-2">{result.summary}</p>
+                )}
               </div>
               {result.avg_rating != null && result.avg_rating > 0 && (
                 <span className="text-xs font-semibold text-amber-600 flex-shrink-0">

@@ -11,13 +11,13 @@ import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 
 const BENEFITS = [
-  'Read verified renter reviews',
+  'Read lease-verified renter reviews',
   'See public court records & violations',
   'Get alerts when landlords are flagged',
 ]
 
 const REDIRECT_MESSAGES: Record<string, string> = {
-  '/write-review': 'Sign in to write your review',
+  '/review/new': 'Sign in to write your review',
   '/watchlist': 'Sign in to manage your watchlist',
   '/dashboard': 'Sign in to access your dashboard',
 }
@@ -71,14 +71,7 @@ export default function LoginPage() {
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-navy-900 via-navy-800 to-navy-700 px-14 py-12 text-white">
         {/* Logo */}
         <div>
-          <div className="flex items-center gap-2">
-            <svg width="36" height="36" viewBox="0 0 24 28" fill="none" aria-hidden>
-              <path d="M12 0L24 4V18C24 23.523 18.627 28.523 12 31C5.373 28.523 0 23.523 0 18V4L12 0Z" fill="#1E3A5F"/>
-              <path d="M12 4L20 7.2V17.6C20 21.901 16.701 25.701 12 27.2C7.299 25.701 4 21.901 4 17.6V7.2L12 4Z" fill="#0F7B6C"/>
-              <text x="6.5" y="19" fontFamily="Inter, system-ui" fontSize="9" fontWeight="700" fill="white" letterSpacing="-0.3">RC</text>
-            </svg>
-            <span className="text-2xl font-bold tracking-tight">Vett</span>
-          </div>
+          <Logo size="lg" href="/" />
         </div>
 
         {/* Value proposition */}

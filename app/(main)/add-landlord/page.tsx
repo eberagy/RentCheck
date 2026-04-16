@@ -91,7 +91,7 @@ export default function AddLandlordPage() {
         const ext = proofFile.name.split('.').pop()
         const path = `submissions/${user.id}/${Date.now()}.${ext}`
         const { error: uploadErr } = await supabase.storage
-          .from('verification-docs')
+          .from('landlord-verification-docs')
           .upload(path, proofFile, { upsert: false })
         if (uploadErr) throw uploadErr
         proofDocUrl = path
@@ -147,7 +147,7 @@ export default function AddLandlordPage() {
           <CheckCircle2 className="h-8 w-8 text-teal-600" />
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Submission received!</h1>
-        <p className="text-gray-600 mb-2">Our team will review and add this landlord to Vett within 1–2 business days.</p>
+        <p className="text-gray-600 mb-2">Our founders will review and add this landlord to Vett within 1–2 business days.</p>
         <p className="text-sm text-gray-500 mb-8">Once approved, you&apos;ll be able to write a review.</p>
         <div className="flex gap-3 justify-center">
           <Button asChild className="bg-navy-500 hover:bg-navy-600 text-white">
@@ -240,7 +240,7 @@ export default function AddLandlordPage() {
           </Label>
           <div className="mt-1.5 flex items-start gap-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 mb-2">
             <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-            <span>Upload a lease, deed, property tax record, or utility bill showing the landlord&apos;s name and property address. Reviewed by Vett admins only — never shared publicly.</span>
+            <span>Upload a lease, deed, property tax record, or utility bill showing the landlord&apos;s name and property address. Reviewed by Vett founders and moderators only — never shared publicly.</span>
           </div>
           <div
             {...getRootProps()}
@@ -298,7 +298,7 @@ export default function AddLandlordPage() {
             {loading ? 'Submitting…' : 'Submit Landlord'}
           </Button>
           <p className="text-xs text-gray-400 text-center mt-3">
-            Submissions are reviewed by our team within 1–2 business days. We check for duplicates and verify basic info.
+            Submissions are reviewed by our founders within 1–2 business days. We check for duplicates and verify basic info.
           </p>
         </div>
       </form>

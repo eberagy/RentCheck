@@ -16,7 +16,7 @@ import type { Landlord } from '@/types'
 const STEPS = [
   { n: 1, label: 'Find Profile' },
   { n: 2, label: 'Upload Docs' },
-  { n: 3, label: 'Under Review' },
+  { n: 3, label: 'Founder Review' },
 ]
 
 function StepIndicator({ current }: { current: 1 | 2 | 3 }) {
@@ -149,7 +149,7 @@ export default function ClaimProfilePage() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-3">Claim Request Submitted!</h1>
           <p className="text-gray-500 text-sm leading-relaxed mb-2">
-            We&apos;ll review your documents within <strong className="text-gray-700">48 hours</strong>.
+            Our founders will review your documents within <strong className="text-gray-700">48 hours</strong>.
           </p>
           <p className="text-gray-500 text-sm mb-8">
             You&apos;ll receive an email when your claim is approved or if we need more information.
@@ -159,7 +159,7 @@ export default function ClaimProfilePage() {
             <h3 className="text-sm font-bold text-gray-700 mb-3">What happens next?</h3>
             <div className="flex items-start gap-3">
               <div className="h-6 w-6 rounded-full bg-navy-100 text-navy-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
-              <p className="text-sm text-gray-600">An admin reviews your verification document</p>
+              <p className="text-sm text-gray-600">A founder or moderator reviews your verification document</p>
             </div>
             <div className="flex items-start gap-3">
               <div className="h-6 w-6 rounded-full bg-navy-100 text-navy-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</div>
@@ -260,7 +260,7 @@ export default function ClaimProfilePage() {
           {!searching && !selectedLandlord && searchQuery.length >= 2 && searchResults.length === 0 && (
             <p className="text-xs text-gray-500 mt-2 text-center">
               No unclaimed profiles found.{' '}
-              <a href="/submit-landlord" className="text-navy-600 underline hover:text-navy-800">
+              <a href="/add-landlord" className="text-navy-600 underline hover:text-navy-800">
                 Add your profile
               </a>
             </p>
@@ -360,7 +360,7 @@ export default function ClaimProfilePage() {
             <div className="flex items-start gap-2 mt-3 p-3 bg-amber-50 border border-amber-100 rounded-xl">
               <AlertTriangle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-amber-700">
-                Documents are reviewed by Vett admins only and are never shared publicly or shown to renters.
+                Documents are reviewed by Vett founders and moderators only and are never shared publicly or shown to renters.
               </p>
             </div>
           </div>

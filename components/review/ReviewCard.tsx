@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { StarRating } from './StarRating'
 import { RatingBar } from '@/components/landlord/RatingBar'
 import { FlagReviewModal } from './FlagReviewModal'
-import { formatDate, formatRentalPeriod } from '@/lib/utils'
+import { formatDate, formatRentalPeriod, formatReviewerName } from '@/lib/utils'
 import { toast } from 'sonner'
 import type { Review } from '@/types'
 
@@ -73,15 +73,15 @@ export function ReviewCard({ review, onMarkHelpful, onFlag, isOwn }: ReviewCardP
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-sm font-semibold text-gray-900">
-              {review.reviewer?.full_name ?? 'Anonymous Renter'}
+              {formatReviewerName(review.reviewer?.full_name)}
             </span>
             {review.lease_verified ? (
               <span className="inline-flex items-center gap-1 text-xs bg-teal-50 text-teal-700 border border-teal-200 rounded-full px-2 py-0.5 font-medium">
-                <CheckCircle2 className="h-3 w-3" /> Verified
+                <CheckCircle2 className="h-3 w-3" /> Lease Verified
               </span>
             ) : (
-              <span className="text-xs bg-gray-100 text-gray-500 rounded-full px-2 py-0.5">
-                Self-reported
+              <span className="text-xs bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-2 py-0.5 font-medium">
+                Verification pending
               </span>
             )}
             {review.is_current_tenant && (

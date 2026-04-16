@@ -159,14 +159,15 @@ CREATE TABLE IF NOT EXISTS public.public_records (
     'chicago_violation','sf_violation','sf_eviction',
     'boston_violation','philly_violation','austin_complaint',
     'seattle_violation','la_violation','court_listener',
-    'code_enforcement','311_complaint'
+    'code_enforcement','311_complaint',
+    'pittsburgh_violation','baltimore_vacant_notice'
   )) NOT NULL,
   source          TEXT NOT NULL,
   source_id       TEXT,
   source_url      TEXT,
   severity        TEXT CHECK (severity IN ('low','medium','high','critical','unknown')),
   status          TEXT,
-  title           TEXT,
+  title           TEXT NOT NULL CHECK (length(title) BETWEEN 10 AND 150),
   description     TEXT,
   violation_class TEXT,
   case_number     TEXT,
@@ -262,11 +263,14 @@ CREATE TABLE IF NOT EXISTS public.watchlist (
   property_id  UUID REFERENCES public.properties(id) ON DELETE CASCADE,
   notify_email BOOLEAN DEFAULT TRUE,
   created_at   TIMESTAMPTZ DEFAULT NOW(),
-  UNIQUE (user_id, landlord_id),
   CONSTRAINT watch_target CHECK (landlord_id IS NOT NULL OR property_id IS NOT NULL)
 );
 CREATE INDEX IF NOT EXISTS idx_watchlist_user ON public.watchlist(user_id);
 CREATE INDEX IF NOT EXISTS idx_watchlist_landlord ON public.watchlist(landlord_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_watchlist_user_landlord ON public.watchlist(user_id, landlord_id)
+  WHERE landlord_id IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_watchlist_user_property ON public.watchlist(user_id, property_id)
+  WHERE property_id IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS public.sync_log (
   id              UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -446,7 +450,7 @@ CREATE INDEX IF NOT EXISTS idx_properties_fts ON public.properties
   USING GIN (to_tsvector('english', coalesce(address_line1,'') || ' ' || coalesce(city,'')));
 CREATE INDEX IF NOT EXISTS idx_landlords_trgm ON public.landlords USING GIN (display_name gin_trgm_ops);
 
-CREATE OR REPLACE FUNCTION public.search_all(query TEXT, result_limit INT DEFAULT 10)
+CREATE OR REPLACE FUNCTION public.search_all(query TEXT, limit_n INT DEFAULT 10)
 RETURNS TABLE (
   id UUID, result_type TEXT, display_name TEXT, subtitle TEXT,
   slug TEXT, avg_rating NUMERIC, review_count INT,
@@ -467,7 +471,7 @@ RETURNS TABLE (
   FROM public.properties p
   WHERE to_tsvector('english', p.address_line1 || ' ' || p.city) @@ plainto_tsquery('english', query)
      OR p.address_line1 ILIKE '%' || query || '%'
-  ORDER BY rank DESC LIMIT result_limit;
+  ORDER BY rank DESC LIMIT limit_n;
 $$;
 
 -- ─── TRIGGERS & FUNCTIONS ────────────────────────────────────
@@ -573,11 +577,9 @@ BEGIN
   SELECT EXISTS(SELECT 1 FROM public.review_helpful WHERE review_id=p_review_id AND user_id=p_user_id) INTO already_voted;
   IF already_voted THEN
     DELETE FROM public.review_helpful WHERE review_id=p_review_id AND user_id=p_user_id;
-    UPDATE public.reviews SET helpful_count=GREATEST(helpful_count-1,0) WHERE id=p_review_id;
     RETURN FALSE;
   ELSE
     INSERT INTO public.review_helpful (review_id, user_id) VALUES (p_review_id, p_user_id) ON CONFLICT DO NOTHING;
-    UPDATE public.reviews SET helpful_count=helpful_count+1 WHERE id=p_review_id;
     RETURN TRUE;
   END IF;
 END;

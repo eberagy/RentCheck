@@ -6,7 +6,7 @@ import ReviewRejectedEmail from '@/emails/review-rejected'
 import ClaimApprovedEmail from '@/emails/claim-approved'
 import WatchlistAlertEmail from '@/emails/watchlist-alert'
 
-const FROM = process.env.RESEND_FROM_EMAIL ?? 'Vett <noreply@vettrentals.com>'
+const FROM = process.env.RESEND_FROM_EMAIL ?? 'Vett <noreply@vettrenters.com>'
 
 function getResend() {
   return new Resend(process.env.RESEND_API_KEY)

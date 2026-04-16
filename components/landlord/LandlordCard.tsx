@@ -5,6 +5,7 @@ import { VerifiedBadge } from './VerifiedBadge'
 import { LandlordGrade } from './LandlordGrade'
 import { StarRating } from '@/components/review/StarRating'
 import { cn } from '@/lib/utils'
+import { buildLandlordSummary, truncateSummary } from '@/lib/summaries'
 import type { Landlord } from '@/types'
 
 const GRADE_BORDER: Record<string, string> = {
@@ -22,6 +23,12 @@ interface LandlordCardProps {
 
 export function LandlordCard({ landlord, className }: LandlordCardProps) {
   const gradeBorder = GRADE_BORDER[landlord.grade ?? ''] ?? 'border-l-gray-200'
+  const summary = truncateSummary(
+    buildLandlordSummary({
+      landlord,
+    }),
+    140
+  )
 
   return (
     <Link href={`/landlord/${landlord.slug}`} className="block group">
@@ -48,6 +55,7 @@ export function LandlordCard({ landlord, className }: LandlordCardProps) {
                   <span>{[landlord.city, landlord.state_abbr].filter(Boolean).join(', ')}</span>
                 </div>
               )}
+              <p className="mt-2 text-xs leading-relaxed text-gray-600 line-clamp-2">{summary}</p>
             </div>
             <LandlordGrade grade={landlord.grade} size="sm" />
           </div>

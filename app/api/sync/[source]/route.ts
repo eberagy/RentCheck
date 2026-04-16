@@ -12,6 +12,8 @@ import { syncSeattle } from '@/lib/data-sync/seattle'
 import { syncLosAngeles } from '@/lib/data-sync/los-angeles'
 import { syncCourtListener } from '@/lib/data-sync/court-listener'
 import { syncLscEvictions } from '@/lib/data-sync/lsc-evictions'
+import { syncPittsburgh } from '@/lib/data-sync/pittsburgh'
+import { syncBaltimore } from '@/lib/data-sync/baltimore'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 type SyncFn = (supabase: SupabaseClient) => Promise<{ added: number; updated: number; skipped: number; errors: string[] }>
@@ -27,6 +29,8 @@ const SYNC_HANDLERS: Record<string, { fn: SyncFn; logKey: string }> = {
   'austin':           { fn: syncAustin, logKey: 'austin_code' },
   'seattle':          { fn: syncSeattle, logKey: 'seattle_sdci' },
   'los-angeles':      { fn: syncLosAngeles, logKey: 'la_lahd' },
+  'pittsburgh':       { fn: syncPittsburgh, logKey: 'pittsburgh_pli' },
+  'baltimore':        { fn: syncBaltimore, logKey: 'baltimore_vacants' },
   'court-listener':   { fn: syncCourtListener, logKey: 'court_listener' },
   'lsc-evictions':    { fn: syncLscEvictions, logKey: 'lsc_evictions' },
 }

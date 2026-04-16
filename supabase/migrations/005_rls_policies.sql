@@ -175,7 +175,10 @@ CREATE POLICY "verification_admin" ON storage.objects
 CREATE POLICY "verification_insert" ON storage.objects
   FOR INSERT WITH CHECK (
     bucket_id = 'landlord-verification-docs'
-    AND auth.uid() IS NOT NULL
+    AND (
+      public.is_admin()
+      OR auth.uid()::text = (storage.foldername(name))[1]
+    )
   );
 
 -- Avatars: public read

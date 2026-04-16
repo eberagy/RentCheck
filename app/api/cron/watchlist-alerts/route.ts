@@ -54,14 +54,14 @@ export async function GET(req: NextRequest) {
     // Get watchers who have email_watchlist enabled
     const { data: watchers } = await supabase
       .from('watchlist')
-      .select('user_id, user:profiles(full_name, email, email_watchlist)')
+      .select('user_id, notify_email, user:profiles(full_name, email, email_watchlist)')
       .eq('landlord_id', landlordId)
 
     if (!watchers?.length) continue
 
     for (const watcher of watchers) {
       const profile = (watcher.user as unknown) as { full_name: string | null; email: string | null; email_watchlist: boolean } | null
-      if (!profile?.email || profile.email_watchlist === false) continue
+      if (!profile?.email || profile.email_watchlist === false || watcher.notify_email === false) continue
 
       await sendWatchlistAlertEmail(profile.email, {
         firstName: profile.full_name?.split(' ')[0],

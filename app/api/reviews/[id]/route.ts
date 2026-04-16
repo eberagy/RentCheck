@@ -40,8 +40,5 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  // Increment flag count
-  await supabase.rpc('increment_flag_count', { review_id: id })
-
   return NextResponse.json({ ok: true })
 }

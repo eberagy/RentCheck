@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
 const querySchema = z.object({
+  id: z.string().uuid().optional(),
   city: z.string().optional(),
   state: z.string().optional(),
   minRating: z.coerce.number().min(1).max(5).optional(),
@@ -15,9 +16,20 @@ export async function GET(req: NextRequest) {
   const parsed = querySchema.safeParse(Object.fromEntries(req.nextUrl.searchParams))
   if (!parsed.success) return NextResponse.json({ error: 'Invalid params' }, { status: 400 })
 
-  const { city, state, minRating, verified, page, limit } = parsed.data
+  const { id, city, state, minRating, verified, page, limit } = parsed.data
   const offset = (page - 1) * limit
   const supabase = await createClient()
+
+  if (id) {
+    const { data, error } = await supabase
+      .from('landlords')
+      .select('id, slug, display_name, business_name, city, state_abbr, avg_rating, review_count, grade, is_verified, is_claimed, open_violation_count')
+      .eq('id', id)
+      .single()
+
+    if (error || !data) return NextResponse.json({ error: 'Landlord not found' }, { status: 404 })
+    return NextResponse.json({ landlord: data })
+  }
 
   let q = supabase
     .from('landlords')

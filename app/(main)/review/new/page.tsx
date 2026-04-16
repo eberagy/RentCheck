@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useDropzone } from 'react-dropzone'
 import { useForm } from 'react-hook-form'
@@ -38,6 +38,11 @@ const reviewSchema = z.object({
 })
 
 type ReviewFormData = z.infer<typeof reviewSchema>
+type UploadedLease = {
+  docPath: string
+  filename: string
+  fileSize: number
+}
 
 const STEPS = ['Find Landlord', 'Lease Verification', 'Write Review', 'Confirm & Submit', 'Done']
 
@@ -52,7 +57,8 @@ export default function NewReviewPage() {
   const [searchResults, setSearchResults] = useState<Landlord[]>([])
   const [searching, setSearching] = useState(false)
   const [leaseFile, setLeaseFile] = useState<File | null>(null)
-  const [leaseStatus, setLeaseStatus] = useState<'idle' | 'uploading' | 'uploaded' | 'skipped'>('idle')
+  const [leaseStatus, setLeaseStatus] = useState<'idle' | 'uploading' | 'uploaded'>('idle')
+  const [uploadedLease, setUploadedLease] = useState<UploadedLease | null>(null)
   const [leaseError, setLeaseError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const supabase = createClient()
@@ -61,6 +67,18 @@ export default function NewReviewPage() {
     resolver: zodResolver(reviewSchema),
     defaultValues: { ratingOverall: 0, isCurrentTenant: false },
   })
+
+  useEffect(() => {
+    async function loadPreselectedLandlord() {
+      if (!preselectedLandlordId || selectedLandlord) return
+      const res = await fetch(`/api/landlords?id=${encodeURIComponent(preselectedLandlordId)}`)
+      if (!res.ok) return
+      const data = await res.json()
+      if (data.landlord) setSelectedLandlord(data.landlord as Landlord)
+    }
+
+    loadPreselectedLandlord().catch(console.error)
+  }, [preselectedLandlordId, selectedLandlord])
 
   // Step 0: search for landlord
   async function searchLandlords(q: string) {
@@ -91,6 +109,7 @@ export default function NewReviewPage() {
       return
     }
     setLeaseFile(file)
+    setUploadedLease(null)
   }, [])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -117,11 +136,17 @@ export default function NewReviewPage() {
       const res = await fetch('/api/verify-lease', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ filePath: path, landlordId: selectedLandlord.id, fileName: leaseFile.name, fileSize: leaseFile.size }),
+        body: JSON.stringify({ filePath: path, fileName: leaseFile.name, fileSize: leaseFile.size }),
       })
       if (!res.ok) throw new Error('Verification failed')
+      const payload = await res.json()
+      setUploadedLease({
+        docPath: payload.docPath,
+        filename: payload.filename,
+        fileSize: payload.fileSize,
+      })
       setLeaseStatus('uploaded')
-      toast.success('Lease uploaded — pending admin verification')
+      toast.success('Lease uploaded — pending founder verification')
       setStep(2)
     } catch (err) {
       setLeaseStatus('idle')
@@ -132,6 +157,11 @@ export default function NewReviewPage() {
 
   async function onSubmit(data: ReviewFormData) {
     if (!selectedLandlord) return
+    if (!uploadedLease) {
+      toast.error('Upload and validate your lease before submitting a review')
+      setStep(1)
+      return
+    }
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { toast.error('Please sign in to submit a review'); return }
 
@@ -153,7 +183,9 @@ export default function NewReviewPage() {
           rentalPeriodStart: data.rentalPeriodStart,
           rentalPeriodEnd: data.rentalPeriodEnd,
           isCurrentTenant: data.isCurrentTenant,
-          leaseVerified: leaseStatus === 'uploaded',
+          leaseDocPath: uploadedLease.docPath,
+          leaseFilename: uploadedLease.filename,
+          leaseFileSize: uploadedLease.fileSize,
         }),
       })
       if (!res.ok) throw new Error('Submission failed')
@@ -236,7 +268,7 @@ export default function NewReviewPage() {
             Reviewing: <strong>{selectedLandlord.display_name}</strong>
           </p>
           <div className="bg-teal-50 border border-teal-200 rounded-lg p-3 mb-6 text-sm text-teal-800">
-            <strong>Your privacy is protected.</strong> Your lease is stored privately and reviewed only by Vett admins to confirm you were a tenant. It is never shared with the landlord or public, and is deleted after 30 days.
+            <strong>Your privacy is protected.</strong> A lease is required for publication. It is stored privately, reviewed only by the Vett founders, never shown publicly, and used only to confirm tenancy before approval.
           </div>
 
           {/* Drop zone */}
@@ -280,15 +312,8 @@ export default function NewReviewPage() {
                 {leaseStatus === 'uploading' ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Uploading…</> : <><Upload className="h-4 w-4 mr-2" /> Upload & Continue</>}
               </Button>
             )}
-            <button
-              type="button"
-              className="text-sm text-gray-500 hover:text-gray-700 underline text-center"
-              onClick={() => { setLeaseStatus('skipped'); setStep(2) }}
-            >
-              Skip — I don&apos;t have my lease right now
-            </button>
             <p className="text-xs text-gray-400 text-center">
-              Reviews without lease verification show an &ldquo;Unverified&rdquo; badge but are still accepted.
+              Lease verification is required before a review can be published.
             </p>
           </div>
         </div>
@@ -296,7 +321,13 @@ export default function NewReviewPage() {
 
       {/* Step 2: Review form */}
       {step === 2 && (
-        <form onSubmit={handleSubmit(() => setStep(3))}>
+        <form onSubmit={handleSubmit(() => {
+          if (leaseStatus !== 'uploaded') {
+            toast.error('Upload your lease before continuing')
+            return
+          }
+          setStep(3)
+        })}>
           <h1 className="text-2xl font-bold text-gray-900 mb-1">Write your review</h1>
           {leaseStatus === 'uploaded' && (
             <div className="flex items-center gap-1.5 text-teal-700 text-xs mb-4 bg-teal-50 border border-teal-200 rounded-lg px-3 py-2">
@@ -408,7 +439,7 @@ export default function NewReviewPage() {
             <Button type="button" variant="outline" onClick={() => setStep(1)} className="flex-1">
               <ArrowLeft className="h-4 w-4 mr-1" /> Back
             </Button>
-            <Button type="submit" className="flex-1 bg-navy-500 hover:bg-navy-600 text-white" disabled={!ratingOverall}>
+            <Button type="submit" className="flex-1 bg-navy-500 hover:bg-navy-600 text-white" disabled={!ratingOverall || leaseStatus !== 'uploaded'}>
               Continue <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
@@ -424,7 +455,7 @@ export default function NewReviewPage() {
               <p><span className="font-medium">Landlord:</span> {selectedLandlord?.display_name}</p>
               <p><span className="font-medium">Overall rating:</span> {watch('ratingOverall')}/5 stars</p>
               <p className="line-clamp-2"><span className="font-medium">Review:</span> &ldquo;{watch('title')}&rdquo;</p>
-              <p><span className="font-medium">Lease verification:</span> {leaseStatus === 'uploaded' ? '✓ Uploaded (pending review)' : 'Not provided (unverified)'}</p>
+              <p><span className="font-medium">Lease verification:</span> {leaseStatus === 'uploaded' ? '✓ Uploaded (pending founder review)' : 'Not provided'}</p>
             </div>
             <div className="space-y-3">
               <label className="flex items-start gap-3 cursor-pointer">
@@ -465,7 +496,7 @@ export default function NewReviewPage() {
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Review Submitted!</h1>
           <p className="text-gray-600 mt-2 max-w-md mx-auto">
-            Your review is under moderation. We typically approve reviews within 24–48 hours.
+            Your review is under founder moderation. We typically approve reviews within 24–48 hours.
             You&apos;ll receive an email confirmation shortly.
           </p>
           <div className="flex gap-3 justify-center mt-6">

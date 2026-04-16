@@ -19,7 +19,7 @@ export async function syncLscEvictions(supabase: SupabaseClient): Promise<SyncRe
     try {
       const url = `https://eviction-lab-api.evictionlab.org/v2/filings?year=${currentYear}&geography=counties&state=${state}`
       const res = await fetch(url, {
-        headers: { 'User-Agent': 'Vett/1.0 (vettrentals.com; data@vettrentals.com)' }
+        headers: { 'User-Agent': 'Vett/1.0 (vettrenters.com; data@vettrenters.com)' }
       })
 
       if (!res.ok) {
@@ -41,6 +41,7 @@ export async function syncLscEvictions(supabase: SupabaseClient): Promise<SyncRe
             source: 'lsc_evictions',
             source_id: sourceId,
             record_type: 'eviction',
+            title: `Eviction Filings: ${props.name ?? state} County ${currentYear}`.slice(0, 150),
             description: `${props.name ?? state} County: ${props.filings ?? 0} eviction filings in ${currentYear}`,
             severity: 'high',
             status: 'open',

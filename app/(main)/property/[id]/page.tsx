@@ -20,6 +20,7 @@ import { StarRating } from '@/components/review/StarRating'
 import { VerifiedBadge } from '@/components/landlord/VerifiedBadge'
 import { Button } from '@/components/ui/button'
 import { formatAddress } from '@/lib/utils'
+import { buildPropertySummary } from '@/lib/summaries'
 import type { Review, PublicRecord } from '@/types'
 
 interface PropertyPageProps {
@@ -73,6 +74,11 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
   const reviewList = (reviews ?? []) as Review[]
   const recordList = (records ?? []) as PublicRecord[]
+  const propertySummary = buildPropertySummary({
+    property,
+    landlordName: landlord?.display_name ?? null,
+    records: recordList,
+  })
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -155,6 +161,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                 Built {property.year_built}
               </span>
             )}
+          </div>
+
+          <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <p className="text-sm leading-relaxed text-slate-700">{propertySummary}</p>
           </div>
 
           {/* Open violations banner */}

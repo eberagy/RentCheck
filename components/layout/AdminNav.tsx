@@ -26,7 +26,7 @@ export function AdminNav() {
   return (
     <aside className="w-56 min-h-screen bg-navy-900 text-white flex flex-col">
       <div className="p-4 border-b border-navy-700">
-        <Logo size="sm" href="/admin" className="[&_span]:text-white" />
+        <Logo size="sm" href="/admin" />
         <span className="text-xs text-navy-300 mt-1 block">Admin Panel</span>
       </div>
       <nav className="flex-1 p-3 space-y-1">

@@ -15,6 +15,7 @@ import { StarRating } from '@/components/review/StarRating'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { formatAddress } from '@/lib/utils'
+import { buildLandlordSummary } from '@/lib/summaries'
 import type { Review, PublicRecord, Property } from '@/types'
 
 interface LandlordPageProps {
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: LandlordPageProps): Promise<M
   const location = [landlord.city, landlord.state_abbr].filter(Boolean).join(', ')
   return {
     title: `${landlord.display_name} Reviews${location ? ` — ${location}` : ''}`,
-    description: `Read ${landlord.review_count} verified renter reviews of ${landlord.display_name}. See public records, court cases, and violation history.`,
+    description: `Read ${landlord.review_count} lease-verified renter reviews of ${landlord.display_name}. See public records, court cases, and violation history.`,
     openGraph: {
       title: `${landlord.display_name} Reviews | Vett`,
       description: `${landlord.review_count} renter reviews · ${landlord.avg_rating.toFixed(1)} avg rating`,
@@ -101,8 +102,11 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
     ? Math.round((approved.filter(r => r.would_rent_again === true).length / approved.length) * 100)
     : null
 
-  const propertyRecords = (records ?? []).filter((r: PublicRecord) => !r.landlord_id && r.property_id)
   const landlordRecords = (records ?? []).filter((r: PublicRecord) => r.landlord_id === landlord.id)
+  const landlordSummary = buildLandlordSummary({
+    landlord,
+    propertyCount: (properties ?? []).length,
+  })
 
   // JSON-LD structured data
   const jsonLd = {
@@ -171,6 +175,9 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                     <Phone className="h-3.5 w-3.5" /> {landlord.phone}
                   </span>
                 )}
+              </div>
+              <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <p className="text-sm leading-relaxed text-slate-700">{landlordSummary}</p>
               </div>
             </div>
             <div className="flex flex-col items-end gap-2">

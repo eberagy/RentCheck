@@ -46,7 +46,7 @@ export default function FcraNoticePage() {
           <p>Vett is designed for use by:</p>
           <ul className="mt-2 list-disc list-inside space-y-1">
             <li>Prospective renters researching a potential landlord or property before signing a lease</li>
-            <li>Current renters sharing their experience to help others</li>
+            <li>Current renters sharing their experience to help others after lease verification and moderation</li>
             <li>Journalists, researchers, and advocates examining housing conditions</li>
             <li>Landlords monitoring their public profile and responding to reviews</li>
           </ul>
@@ -59,7 +59,7 @@ export default function FcraNoticePage() {
 
         <section>
           <h2 className="text-base font-semibold text-gray-900 mb-2">Questions</h2>
-          <p>For questions about this notice, contact <a href="mailto:legal@vettrentals.com" className="text-navy-600 hover:underline">legal@vettrentals.com</a>.</p>
+          <p>For questions about this notice, contact <a href="mailto:legal@vettrenters.com" className="text-navy-600 hover:underline">legal@vettrenters.com</a>.</p>
         </section>
       </div>
     </div>

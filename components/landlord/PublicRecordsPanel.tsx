@@ -20,7 +20,8 @@ const GROUP_ORDER = [
   'eviction_filing', 'lsc_eviction', 'sf_eviction',
   'court_case', 'court_listener',
   'hpd_violation', 'dob_violation', 'boston_violation', 'philly_violation',
-  'chicago_violation', 'austin_complaint', 'seattle_violation', 'la_violation',
+  'chicago_violation', 'pittsburgh_violation', 'baltimore_vacant_notice',
+  'austin_complaint', 'seattle_violation', 'la_violation',
   '311_complaint', 'code_enforcement',
 ]
 

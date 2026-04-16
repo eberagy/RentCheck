@@ -5,10 +5,17 @@ import { detectFileType, ALLOWED_LEASE_TYPES, MAX_LEASE_SIZE } from '@/lib/utils
 
 const schema = z.object({
   reviewId: z.string().uuid().optional(),
-  docPath: z.string().min(1),
-  filename: z.string().min(1),
+  docPath: z.string().min(1).optional(),
+  filePath: z.string().min(1).optional(),
+  filename: z.string().min(1).optional(),
+  fileName: z.string().min(1).optional(),
   fileSize: z.number().int().positive(),
-})
+}).transform((value) => ({
+  reviewId: value.reviewId,
+  docPath: value.docPath ?? value.filePath ?? '',
+  filename: value.filename ?? value.fileName ?? '',
+  fileSize: value.fileSize,
+}))
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient()
@@ -17,7 +24,9 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json()
   const parsed = schema.safeParse(body)
-  if (!parsed.success) return NextResponse.json({ error: 'Invalid' }, { status: 422 })
+  if (!parsed.success || !parsed.data.docPath || !parsed.data.filename) {
+    return NextResponse.json({ error: 'Invalid lease upload payload' }, { status: 422 })
+  }
 
   const { docPath, filename, fileSize, reviewId } = parsed.data
 
@@ -47,7 +56,7 @@ export async function POST(req: NextRequest) {
   if (!detected || !ALLOWED_LEASE_TYPES.includes(detected)) {
     // Delete the invalid file
     await supabase.storage.from('lease-docs').remove([docPath])
-    return NextResponse.json({ error: 'Invalid file type. Only PDF, JPG, and PNG are accepted.' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid file type. Only PDF, JPG, PNG, and DOCX are accepted.' }, { status: 400 })
   }
 
   // If reviewId provided, update the review record
@@ -66,5 +75,12 @@ export async function POST(req: NextRequest) {
     if (updateError) return NextResponse.json({ error: 'Failed to update review' }, { status: 500 })
   }
 
-  return NextResponse.json({ ok: true, fileType: detected, message: 'Lease uploaded successfully. An admin will verify your document within 24-48 hours.' })
+  return NextResponse.json({
+    ok: true,
+    docPath,
+    filename,
+    fileSize,
+    fileType: detected,
+    message: 'Lease uploaded successfully. Your review will stay pending until a founder verifies the document.',
+  })
 }

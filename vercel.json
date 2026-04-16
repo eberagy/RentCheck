@@ -7,6 +7,8 @@
     { "path": "/api/sync/sf", "schedule": "0 4 * * *" },
     { "path": "/api/sync/boston", "schedule": "0 4 * * *" },
     { "path": "/api/sync/philadelphia", "schedule": "0 5 * * *" },
+    { "path": "/api/sync/baltimore", "schedule": "15 5 * * *" },
+    { "path": "/api/sync/pittsburgh", "schedule": "30 5 * * *" },
     { "path": "/api/sync/austin", "schedule": "0 5 * * *" },
     { "path": "/api/sync/seattle", "schedule": "0 5 * * *" },
     { "path": "/api/sync/los-angeles", "schedule": "0 5 * * *" },

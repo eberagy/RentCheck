@@ -1,6 +1,6 @@
-# RentCheck — Glassdoor for Landlords
+# Vett — Glassdoor for Landlords
 
-Verified renter reviews + public government records on landlords nationwide. Built for college-town distribution, growing nationwide.
+Lease-verified renter reviews + public government records on landlords nationwide. Built for college-town distribution, growing nationwide.
 
 ## Stack
 
@@ -21,7 +21,7 @@ Verified renter reviews + public government records on landlords nationwide. Bui
 ### 1. Install dependencies
 
 ```bash
-cd rentcheck
+cd Vett
 npm install
 ```
 
@@ -40,9 +40,14 @@ supabase/migrations/006_search_and_fts.sql
 supabase/migrations/007_triggers_functions.sql
 supabase/migrations/008_admin_columns.sql
 supabase/migrations/009_helper_functions.sql
+supabase/migrations/010_schema_fixes.sql
+supabase/migrations/011_landlord_submissions.sql
+supabase/migrations/012_notification_prefs.sql
+supabase/migrations/013_proof_doc_url.sql
 ```
 
-3. (Optional) Run `supabase/seed.sql` to populate sample landlords.
+3. `supabase/seed.sql` intentionally ships with no fabricated sample landlords or records.
+   Use the sync jobs below to populate real public data instead.
 
 4. Create these **Storage buckets** in Supabase Storage:
    - `lease-docs` — **private**
@@ -66,7 +71,7 @@ cp .env.example .env.local
 | `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Server-only. Never expose client-side |
 | `RESEND_API_KEY` | ✅ | From [resend.com](https://resend.com) |
 | `CRON_SECRET` | ✅ | `openssl rand -hex 32` — secures sync endpoints |
-| `NEXT_PUBLIC_SITE_URL` | ✅ | Your production URL (e.g. `https://rentcheck.app`) |
+| `NEXT_PUBLIC_SITE_URL` | ✅ | Your production URL (e.g. `https://vettrenters.com`) |
 | `NEXT_PUBLIC_POSTHOG_KEY` | ⚡ | PostHog project API key |
 | `NEXT_PUBLIC_POSTHOG_HOST` | ⚡ | Default: `https://app.posthog.com` |
 | `SENTRY_DSN` | ⚡ | From Sentry project settings |
@@ -108,12 +113,12 @@ WHERE email = 'your@email.com';
 | `/landlord/[slug]` | Landlord profile (ISR 1h) — reviews, violations, properties |
 | `/property/[id]` | Property page (ISR 1h) — violations, reviews |
 | `/city/[state]/[city]` | City landing page |
-| `/review/new` | 5-step review flow with lease upload |
+| `/review/new` | 5-step review flow with mandatory lease verification |
 | `/dashboard` | Renter dashboard — reviews, watchlist |
 | `/landlord-portal` | Landlord dashboard — claim, respond to reviews |
 | `/landlord-portal/claim` | Claim a landlord profile |
 | `/rights/[state]` | Tenant rights guide by state (all 50) |
-| `/about` | About RentCheck |
+| `/about` | About Vett |
 | `/faq` | FAQ |
 | `/terms` | Terms of Service |
 | `/privacy` | Privacy Policy |
@@ -142,6 +147,8 @@ WHERE email = 'your@email.com';
 | `sf` | San Francisco DataSF violations | Daily 4am ET |
 | `boston` | Boston Inspectional Services | Daily 4:30am ET |
 | `philadelphia` | Philadelphia L&I violations | Daily 4:30am ET |
+| `baltimore` | Baltimore vacant-building notices | Daily 5:15am ET |
+| `pittsburgh` | Pittsburgh PLI/DOMI/ES violations | Daily 5:30am ET |
 | `austin` | Austin Code enforcement | Daily 5am ET |
 | `seattle` | Seattle SDCI violations | Daily 5am ET |
 | `los-angeles` | LA LAHD code violations | Daily 5am ET |
@@ -157,7 +164,7 @@ Manual trigger (admin only): `POST /api/sync/nyc-hpd`
 ## Legal Notes
 
 - **Section 230**: User reviews protected under 47 U.S.C. § 230
-- **FCRA**: Not a consumer reporting agency — platform prohibited for tenant screening
+- **FCRA**: Not a consumer reporting agency — platform prohibited for tenant screening; published reviews require lease verification
 - **Fair Housing Act**: No protected-class data collected or displayed
 - **Public records**: Sourced directly from government APIs, displayed as-is
 
