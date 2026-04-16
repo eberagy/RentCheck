@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 
 :root {
-  --background: #F9FAFB;
-  --foreground: #111827;
+  --background: #F8FAFC;
+  --foreground: #0F172A;
   --font-inter: 'Inter', system-ui, sans-serif;
 }
 
@@ -14,23 +14,22 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-inter);
+  -webkit-font-smoothing: antialiased;
 }
 
 @layer base {
   * {
-    border-color: #e5e7eb;
+    border-color: #e2e8f0;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold tracking-tight;
   }
 
-  /* Smooth scrolling */
   html {
     scroll-behavior: smooth;
   }
 
-  /* Focus rings */
   :focus-visible {
     @apply outline-none ring-2 ring-navy-400 ring-offset-2;
   }
@@ -41,21 +40,60 @@ body {
     text-wrap: balance;
   }
 
+  /* Modern hero gradient with mesh */
+  .hero-gradient {
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(15, 123, 108, 0.35) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(30, 58, 95, 0.4) 0%, transparent 55%),
+      radial-gradient(ellipse at 60% 80%, rgba(15, 123, 108, 0.2) 0%, transparent 50%),
+      linear-gradient(135deg, #0F172A 0%, #1E3A5F 50%, #0c3330 100%);
+  }
+
+  /* Noise texture overlay */
+  .hero-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  /* Glassmorphism card */
+  .glass-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+  }
+
   /* Card hover */
   .card-hover {
-    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+    @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
   }
 
-  /* Gradient hero background */
-  .hero-gradient {
-    background: linear-gradient(135deg, #1E3A5F 0%, #0F7B6C 100%);
+  /* Gradient text */
+  .gradient-text {
+    background: linear-gradient(135deg, #0F7B6C 0%, #14b8a6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
-  /* Skeleton shimmer */
+  /* Shimmer loading */
   .skeleton-shimmer {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
+  }
+
+  /* Glow effect for search */
+  .search-glow:focus-within {
+    box-shadow: 0 0 0 3px rgba(15, 123, 108, 0.25), 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  /* Badge pulse */
+  .badge-pulse {
+    animation: badgePulse 2s ease-in-out infinite;
   }
 }
 
@@ -64,18 +102,45 @@ body {
   100% { background-position: 200% 0; }
 }
 
-/* Scrollbar styling */
+@keyframes badgePulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: #cbd5e1;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a1a1a1;
+  background: #94a3b8;
 }
+
+/* Star rating */
+.star-filled { color: #F59E0B; fill: #F59E0B; }
+.star-empty  { color: #E2E8F0; fill: #E2E8F0; }

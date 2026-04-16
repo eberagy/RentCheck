@@ -3,8 +3,8 @@ import Link from 'next/link'
 import { Shield, Search, BarChart3, Scale } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'About RentCheck | Glassdoor for Landlords',
-  description: 'RentCheck is a free platform that combines verified renter reviews with public government records to help renters make informed housing decisions.',
+  title: 'About Vett | Glassdoor for Landlords',
+  description: 'Vett is a free platform that combines verified renter reviews with public government records to help renters make informed housing decisions.',
 }
 
 export default function AboutPage() {
@@ -17,9 +17,9 @@ export default function AboutPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">About RentCheck</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-4">About Vett</h1>
       <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-        RentCheck is the transparency platform for the rental market — combining verified renter reviews, housing court records, code violation histories, and eviction filings in one searchable database.
+        Vett is the transparency platform for the rental market — combining verified renter reviews, housing court records, code violation histories, and eviction filings in one searchable database.
       </p>
 
       <h2 className="text-xl font-bold text-gray-900 mb-3">Why We Exist</h2>
@@ -27,7 +27,7 @@ export default function AboutPage() {
         When you apply for a job, you can look up the company on Glassdoor. When you pick a restaurant, you check Yelp. But when you sign a 12-month lease — often the largest financial commitment in a renter&apos;s life — there&apos;s nowhere to look up the landlord&apos;s track record.
       </p>
       <p className="text-gray-600 mb-8 leading-relaxed">
-        We started RentCheck because we believe renters deserve the same tools everyone else has. Public records like HPD violations, eviction filings, and housing court cases are publicly available — but buried, fragmented, and hard to use. We aggregate them, normalize them, and make them searchable next to verified reviews from real tenants.
+        We started Vett because we believe renters deserve the same tools everyone else has. Public records like HPD violations, eviction filings, and housing court cases are publicly available — but buried, fragmented, and hard to use. We aggregate them, normalize them, and make them searchable next to verified reviews from real tenants.
       </p>
 
       <h2 className="text-xl font-bold text-gray-900 mb-6">Our Values</h2>
@@ -45,7 +45,7 @@ export default function AboutPage() {
 
       <h2 className="text-xl font-bold text-gray-900 mb-3">How Reviews Work</h2>
       <p className="text-gray-600 mb-4">
-        Every review on RentCheck goes through a moderation process. Reviewers are encouraged to upload their lease to earn a &ldquo;Lease Verified&rdquo; badge, which our admin team manually confirms. All reviews are screened for our{' '}
+        Every review on Vett goes through a moderation process. Reviewers are encouraged to upload their lease to earn a &ldquo;Lease Verified&rdquo; badge, which our admin team manually confirms. All reviews are screened for our{' '}
         <Link href="/terms" className="text-navy-600 hover:underline">content guidelines</Link> before publication.
       </p>
 
@@ -56,7 +56,7 @@ export default function AboutPage() {
 
       <h2 className="text-xl font-bold text-gray-900 mb-3">Legal</h2>
       <p className="text-gray-600 mb-2">
-        RentCheck operates under Section 230 of the Communications Decency Act for user-generated content. We are not a consumer reporting agency and our platform does not constitute a &ldquo;consumer report&rdquo; under the FCRA for general browsing. For more, see our{' '}
+        Vett operates under Section 230 of the Communications Decency Act for user-generated content. We are not a consumer reporting agency and our platform does not constitute a &ldquo;consumer report&rdquo; under the FCRA for general browsing. For more, see our{' '}
         <Link href="/fcra-notice" className="text-navy-600 hover:underline">FCRA Notice</Link>.
       </p>
       <p className="text-gray-600">

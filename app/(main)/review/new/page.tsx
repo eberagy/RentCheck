@@ -236,7 +236,7 @@ export default function NewReviewPage() {
             Reviewing: <strong>{selectedLandlord.display_name}</strong>
           </p>
           <div className="bg-teal-50 border border-teal-200 rounded-lg p-3 mb-6 text-sm text-teal-800">
-            <strong>Your privacy is protected.</strong> Your lease is stored privately and reviewed only by RentCheck admins to confirm you were a tenant. It is never shared with the landlord or public, and is deleted after 30 days.
+            <strong>Your privacy is protected.</strong> Your lease is stored privately and reviewed only by Vett admins to confirm you were a tenant. It is never shared with the landlord or public, and is deleted after 30 days.
           </div>
 
           {/* Drop zone */}

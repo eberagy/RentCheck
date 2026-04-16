@@ -11,6 +11,7 @@ const schema = z.object({
   website: z.string().url().optional().or(z.literal('')),
   phone: z.string().max(20).optional(),
   notes: z.string().max(1000).optional(),
+  proof_doc_url: z.string().max(500).optional().nullable(),
 })
 
 export async function POST(req: NextRequest) {
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Invalid' }, { status: 422 })
 
-  const { display_name, business_name, city, state_abbr, zip, website, phone, notes } = parsed.data
+  const { display_name, business_name, city, state_abbr, zip, website, phone, notes, proof_doc_url } = parsed.data
 
   // Check if landlord already exists (fuzzy — just check ilike)
   const { data: existing } = await supabase
@@ -60,6 +61,7 @@ export async function POST(req: NextRequest) {
     website: website || null,
     phone: phone?.trim() || null,
     notes: notes?.trim() || null,
+    proof_doc_url: proof_doc_url || null,
   })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

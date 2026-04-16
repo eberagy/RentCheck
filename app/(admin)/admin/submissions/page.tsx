@@ -21,10 +21,36 @@ type Submission = {
   website: string | null
   phone: string | null
   notes: string | null
+  proof_doc_url: string | null
   status: string
   admin_notes: string | null
   created_at: string
   submitter: { full_name: string | null; email: string | null } | null
+}
+
+function ProofDocLink({ path }: { path: string }) {
+  const supabase = createClient()
+  const [url, setUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    supabase.storage.from('verification-docs').createSignedUrl(path, 3600).then(({ data }) => {
+      if (data?.signedUrl) setUrl(data.signedUrl)
+    })
+  }, [path]) // eslint-disable-line
+
+  if (!url) return null
+  return (
+    <div className="mb-3">
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1.5 text-xs text-navy-600 hover:underline bg-navy-50 border border-navy-200 rounded-lg px-3 py-1.5"
+      >
+        <ExternalLink className="h-3.5 w-3.5" /> View Proof Document
+      </a>
+    </div>
+  )
 }
 
 export default function AdminSubmissionsPage() {
@@ -41,7 +67,7 @@ export default function AdminSubmissionsPage() {
     setLoading(true)
     const q = supabase
       .from('landlord_submissions')
-      .select('id, display_name, business_name, city, state_abbr, zip, website, phone, notes, status, admin_notes, created_at, submitter:profiles(full_name, email)')
+      .select('id, display_name, business_name, city, state_abbr, zip, website, phone, notes, proof_doc_url, status, admin_notes, created_at, submitter:profiles(full_name, email)')
       .order('created_at', { ascending: true })
     if (filter !== 'all') q.eq('status', filter)
     const { data } = await q.limit(50)
@@ -78,7 +104,7 @@ export default function AdminSubmissionsPage() {
         .update({ status: 'approved', admin_notes: adminNotes[sub.id] ?? null, reviewed_at: new Date().toISOString() })
         .eq('id', sub.id)
 
-      toast.success(`Landlord "${sub.display_name}" added to RentCheck`)
+      toast.success(`Landlord "${sub.display_name}" added to Vett`)
       setSubmissions(prev => prev.filter(s => s.id !== sub.id))
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to approve')
@@ -161,6 +187,10 @@ export default function AdminSubmissionsPage() {
                   {sub.submitter?.email && ` (${sub.submitter.email})`}
                 </div>
 
+                {sub.proof_doc_url && (
+                  <ProofDocLink path={sub.proof_doc_url} />
+                )}
+
                 {sub.notes && (
                   <div className="bg-gray-50 rounded-lg p-3 mb-3 text-sm text-gray-600">
                     <span className="font-medium">Submitter notes: </span>{sub.notes}
@@ -184,7 +214,7 @@ export default function AdminSubmissionsPage() {
                         disabled={processing === sub.id}
                       >
                         {processing === sub.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
-                        Approve &amp; Add to RentCheck
+                        Approve &amp; Add to Vett
                       </Button>
                       <Button
                         size="sm"

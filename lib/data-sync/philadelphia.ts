@@ -1,12 +1,12 @@
 /**
  * Philadelphia Licenses & Inspections Violations
- * API: https://phl.carto.com/api/v2/sql (CartoDB/Socrata fallback)
- * Primary: https://data.phila.gov/resource/4t5c-jqex.json
+ * API: https://phl.carto.com/api/v2/sql (CartoDB — no token required)
+ * Dataset: https://opendataphilly.org/datasets/licenses-and-inspections-code-violations
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
 
-const ENDPOINT = 'https://data.phila.gov/resource/4t5c-jqex.json'
+const CARTO_ENDPOINT = 'https://phl.carto.com/api/v2/sql'
 const PAGE_SIZE = 1000
 
 export async function syncPhiladelphia(supabase: SupabaseClient): Promise<SyncResult> {
@@ -16,11 +16,20 @@ export async function syncPhiladelphia(supabase: SupabaseClient): Promise<SyncRe
   let offset = 0
 
   while (true) {
-    const url = `${ENDPOINT}?$where=violationdate>'${since}'&$limit=${PAGE_SIZE}&$offset=${offset}&$order=casenumber`
-    const res = await fetch(url, { headers: { 'X-App-Token': process.env.PHILLY_DATA_TOKEN ?? '' } })
-    if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }
+    const sql = `
+      SELECT casenumber, address, zip, violationdate, violationdescription,
+             casetype, casestatus, caseprioritydesc
+      FROM li_violations
+      WHERE violationdate > '${since}'
+      ORDER BY casenumber
+      LIMIT ${PAGE_SIZE} OFFSET ${offset}
+    `
+    const url = `${CARTO_ENDPOINT}?q=${encodeURIComponent(sql)}`
+    const res = await fetch(url)
+    if (!res.ok) { result.errors.push(`HTTP ${res.status}: ${await res.text()}`); break }
 
-    const rows: any[] = await res.json()
+    const json: { rows: any[] } = await res.json()
+    const rows = json.rows ?? []
     if (rows.length === 0) break
 
     for (const row of rows) {
@@ -35,17 +44,26 @@ export async function syncPhiladelphia(supabase: SupabaseClient): Promise<SyncRe
         if (!propertyId && addr) {
           const { data: newProp } = await supabase
             .from('properties')
-            .insert({ address_line1: addr, city: 'Philadelphia', state: 'Pennsylvania', state_abbr: 'PA', zip: row.zip ?? '', address_normalized: addrNorm })
-            .select('id').single()
+            .insert({
+              address_line1: addr,
+              city: 'Philadelphia',
+              state: 'Pennsylvania',
+              state_abbr: 'PA',
+              zip: row.zip ?? '',
+              address_normalized: addrNorm,
+            })
+            .select('id')
+            .single()
           propertyId = newProp?.id ?? null
         }
 
         const { error } = await supabase.from('public_records').upsert({
-          source: 'philly_li',
+          source: 'philadelphia',
           source_id: sourceId,
           record_type: 'philly_violation',
           property_id: propertyId,
-          description: row.violationdescription ?? row.casetype ?? null,
+          title: row.violationdescription ?? row.casetype ?? 'L&I Violation',
+          description: row.casetype ?? null,
           severity: row.caseprioritydesc?.toLowerCase().includes('immed') ? 'high' : 'medium',
           status: row.casestatus?.toLowerCase().includes('close') ? 'closed' : 'open',
           filed_date: row.violationdate ? new Date(row.violationdate).toISOString().split('T')[0] : null,

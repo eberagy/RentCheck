@@ -11,7 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // RentCheck brand colors
+        // Vett brand colors
         navy: {
           DEFAULT: '#1E3A5F',
           50: '#EEF2F7',

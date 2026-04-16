@@ -62,21 +62,21 @@ export function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-gray-700 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <p className="text-xs text-gray-500">
-            © {new Date().getFullYear()} RentCheck. All rights reserved.
+            © {new Date().getFullYear()} Vett. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-xs text-gray-500">
-            <a href="mailto:legal@rentcheck.app" className="flex items-center gap-1 hover:text-gray-300">
-              <Mail className="h-3 w-3" /> legal@rentcheck.app
+            <a href="mailto:legal@vettrentals.com" className="flex items-center gap-1 hover:text-gray-300">
+              <Mail className="h-3 w-3" /> legal@vettrentals.com
             </a>
-            <a href="mailto:privacy@rentcheck.app" className="flex items-center gap-1 hover:text-gray-300">
-              <Mail className="h-3 w-3" /> privacy@rentcheck.app
+            <a href="mailto:privacy@vettrentals.com" className="flex items-center gap-1 hover:text-gray-300">
+              <Mail className="h-3 w-3" /> privacy@vettrentals.com
             </a>
           </div>
         </div>
 
         {/* FCRA disclaimer */}
         <p className="text-xs text-gray-600 mt-4 leading-relaxed">
-          RentCheck is not a consumer reporting agency as defined by the Fair Credit Reporting Act (FCRA).
+          Vett is not a consumer reporting agency as defined by the Fair Credit Reporting Act (FCRA).
           Information on this site may not be used for tenant screening, employment, credit, or housing decisions.
           Public records are sourced from government databases and may not reflect recent changes.{' '}
           <Link href="/fcra-notice" className="underline hover:text-gray-400">See our FCRA Notice.</Link>

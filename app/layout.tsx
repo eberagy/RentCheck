@@ -9,18 +9,18 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://rentcheck.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'),
   title: {
-    default: 'RentCheck — Research Your Landlord Before You Sign',
-    template: '%s | RentCheck',
+    default: 'Vett — Know Before You Rent',
+    template: '%s | Vett',
   },
   description: 'Verified renter reviews and public records on landlords nationwide. Know before you rent.',
   keywords: ['landlord reviews', 'renter reviews', 'landlord background check', 'housing violations', 'eviction records'],
   openGraph: {
     type: 'website',
-    siteName: 'RentCheck',
+    siteName: 'Vett',
     locale: 'en_US',
-    title: 'RentCheck — Research Your Landlord Before You Sign',
+    title: 'Vett — Know Before You Rent',
     description: 'Verified renter reviews and public records on landlords nationwide.',
   },
   twitter: {

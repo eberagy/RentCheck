@@ -1,5 +1,5 @@
 // ============================================================
-// RentCheck — TypeScript Types
+// Vett — TypeScript Types
 // ============================================================
 
 export type UserType = 'renter' | 'landlord' | 'admin'
@@ -27,6 +27,8 @@ export interface Profile {
   subscription_status: string | null
   avatar_url: string | null
   bio: string | null
+  is_banned: boolean
+  email_watchlist: boolean
   created_at: string
   updated_at: string
 }
@@ -180,6 +182,7 @@ export interface SyncLog {
   source: string
   started_at: string
   completed_at: string | null
+  finished_at: string | null
   records_added: number
   records_updated: number
   records_skipped: number

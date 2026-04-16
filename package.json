@@ -1,5 +1,5 @@
 {
-  "name": "rentcheck",
+  "name": "vett",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -56,6 +56,6 @@
     "postcss": "^8",
     "supabase": "^1.226.4",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5"
+    "typescript": "^5.9.3"
   }
 }

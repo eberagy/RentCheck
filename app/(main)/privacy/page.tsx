@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | RentCheck',
-  description: 'RentCheck Privacy Policy',
+  title: 'Privacy Policy | Vett',
+  description: 'Vett Privacy Policy',
 }
 
 export default function PrivacyPage() {
@@ -35,7 +35,7 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="text-lg font-semibold text-gray-900">Document Storage</h2>
-          <p className="text-gray-600">Lease documents are stored in a private, encrypted Supabase Storage bucket. Only RentCheck admins can access them for verification purposes. Documents are automatically deleted 12 months after your account deletion or review removal.</p>
+          <p className="text-gray-600">Lease documents are stored in a private, encrypted Supabase Storage bucket. Only Vett admins can access them for verification purposes. Documents are automatically deleted 12 months after your account deletion or review removal.</p>
         </section>
 
         <section>
@@ -45,17 +45,17 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="text-lg font-semibold text-gray-900">Data Retention</h2>
-          <p className="text-gray-600">Account data is retained while your account is active. Reviews remain on the platform after account deletion unless a removal request is submitted. Contact <a href="mailto:privacy@rentcheck.app" className="text-navy-600 hover:underline">privacy@rentcheck.app</a> to request data deletion.</p>
+          <p className="text-gray-600">Account data is retained while your account is active. Reviews remain on the platform after account deletion unless a removal request is submitted. Contact <a href="mailto:privacy@vettrentals.com" className="text-navy-600 hover:underline">privacy@vettrentals.com</a> to request data deletion.</p>
         </section>
 
         <section>
           <h2 className="text-lg font-semibold text-gray-900">Your Rights</h2>
-          <p className="text-gray-600">Depending on your jurisdiction, you may have rights to access, correct, or delete your personal data. Email <a href="mailto:privacy@rentcheck.app" className="text-navy-600 hover:underline">privacy@rentcheck.app</a> with your request. We will respond within 30 days.</p>
+          <p className="text-gray-600">Depending on your jurisdiction, you may have rights to access, correct, or delete your personal data. Email <a href="mailto:privacy@vettrentals.com" className="text-navy-600 hover:underline">privacy@vettrentals.com</a> with your request. We will respond within 30 days.</p>
         </section>
 
         <section>
           <h2 className="text-lg font-semibold text-gray-900">Contact</h2>
-          <p className="text-gray-600">For privacy inquiries: <a href="mailto:privacy@rentcheck.app" className="text-navy-600 hover:underline">privacy@rentcheck.app</a></p>
+          <p className="text-gray-600">For privacy inquiries: <a href="mailto:privacy@vettrentals.com" className="text-navy-600 hover:underline">privacy@vettrentals.com</a></p>
         </section>
       </div>
     </div>
