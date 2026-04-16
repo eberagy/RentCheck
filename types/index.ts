@@ -12,6 +12,8 @@ export type RecordType =
   | 'chicago_violation' | 'sf_violation' | 'sf_eviction' | 'boston_violation'
   | 'philly_violation' | 'austin_complaint' | 'seattle_violation' | 'la_violation'
   | 'court_listener' | 'pittsburgh_violation' | 'baltimore_vacant_notice'
+  | 'houston_violation' | 'miami_violation' | 'denver_violation' | 'dallas_violation'
+  | 'dc_violation' | 'atlanta_violation' | 'nashville_violation'
 export type Severity = 'low' | 'medium' | 'high' | 'critical'
 export type LandlordGrade = 'A' | 'B' | 'C' | 'D' | 'F'
 
@@ -320,23 +322,37 @@ export const RECORD_TYPE_LABELS: Record<RecordType, string> = {
   court_listener: 'Federal Court Case',
   pittsburgh_violation: 'Pittsburgh Violation',
   baltimore_vacant_notice: 'Vacant Building Notice',
+  houston_violation: 'Houston Code Violation',
+  miami_violation: 'Miami-Dade Violation',
+  denver_violation: 'Denver Code Case',
+  dallas_violation: 'Dallas Code Violation',
+  dc_violation: 'DC Housing Violation',
+  atlanta_violation: 'Atlanta Building Permit',
+  nashville_violation: 'Nashville Code Violation',
 }
 
 export const SOURCE_LABELS: Record<string, string> = {
   nyc_hpd: 'NYC HPD',
   nyc_dob: 'NYC DOB',
   nyc_registration: 'NYC HPD Registration',
-  chicago: 'Chicago Data Portal',
-  sf: 'SF Open Data',
-  boston: 'Analyze Boston',
-  philadelphia: 'OpenDataPhilly',
-  austin: 'Austin Open Data',
-  seattle: 'Seattle Open Data',
-  los_angeles: 'LA Open Data',
-  courtlistener: 'CourtListener (Federal)',
-  lsc: 'LSC Civil Court Data',
+  chicago_buildings: 'Chicago Data Portal',
+  sf_housing: 'DataSF',
+  boston_isd: 'Analyze Boston',
+  philly_li: 'OpenDataPhilly',
+  austin_code: 'Austin Open Data',
+  seattle_sdci: 'Seattle Open Data',
+  la_lahd: 'LA Open Data',
+  court_listener: 'CourtListener (Federal)',
+  lsc_evictions: 'LSC Civil Court Data',
   pittsburgh_pli: 'Pittsburgh Open Data',
   baltimore_vacants: 'Baltimore Open Data',
+  houston_code: 'Houston Open Data',
+  miami_dade: 'Miami-Dade Open Data',
+  denver_code: 'Denver Open Data',
+  dallas_code: 'Dallas Open Data',
+  dc_dcra: 'DC Open Data',
+  atlanta_permits: 'Atlanta Regional Open Data',
+  nashville_code: 'Nashville Open Data',
 }
 
 export const COLLEGE_CITIES = [
@@ -353,4 +369,38 @@ export const COLLEGE_CITIES = [
   { city: 'Seattle', state: 'WA', universities: ['University of Washington', 'Seattle University', 'Seattle Pacific University'] },
   { city: 'Columbia', state: 'SC', universities: ['University of South Carolina'] },
   { city: 'Conway', state: 'SC', universities: ['Coastal Carolina University'] },
+  { city: 'Houston', state: 'TX', universities: ['University of Houston', 'Rice University'] },
+  { city: 'Miami', state: 'FL', universities: ['University of Miami', 'Florida International University'] },
+  { city: 'Denver', state: 'CO', universities: ['University of Denver', 'Colorado State University'] },
+  { city: 'Atlanta', state: 'GA', universities: ['Georgia Tech', 'Emory University', 'Georgia State University'] },
+  { city: 'Washington', state: 'DC', universities: ['Georgetown University', 'George Washington University', 'American University', 'Howard University'] },
+  { city: 'Nashville', state: 'TN', universities: ['Vanderbilt University', 'Belmont University'] },
+  { city: 'Dallas', state: 'TX', universities: ['SMU', 'UT Dallas', 'TCU'] },
+  { city: 'Phoenix', state: 'AZ', universities: ['Arizona State University', 'University of Arizona'] },
+  { city: 'Minneapolis', state: 'MN', universities: ['University of Minnesota', 'Macalester College'] },
+  { city: 'Portland', state: 'OR', universities: ['Portland State University', 'Reed College', 'University of Portland'] },
+] as const
+
+/** All major US metros with open data coverage */
+export const MAJOR_CITIES = [
+  { city: 'New York', state: 'NY', dataCoverage: true },
+  { city: 'Los Angeles', state: 'CA', dataCoverage: true },
+  { city: 'Chicago', state: 'IL', dataCoverage: true },
+  { city: 'Houston', state: 'TX', dataCoverage: true },
+  { city: 'Miami', state: 'FL', dataCoverage: true },
+  { city: 'Philadelphia', state: 'PA', dataCoverage: true },
+  { city: 'Dallas', state: 'TX', dataCoverage: true },
+  { city: 'Atlanta', state: 'GA', dataCoverage: true },
+  { city: 'Washington', state: 'DC', dataCoverage: true },
+  { city: 'Boston', state: 'MA', dataCoverage: true },
+  { city: 'Seattle', state: 'WA', dataCoverage: true },
+  { city: 'San Francisco', state: 'CA', dataCoverage: true },
+  { city: 'Denver', state: 'CO', dataCoverage: true },
+  { city: 'Nashville', state: 'TN', dataCoverage: true },
+  { city: 'Austin', state: 'TX', dataCoverage: true },
+  { city: 'Baltimore', state: 'MD', dataCoverage: true },
+  { city: 'Pittsburgh', state: 'PA', dataCoverage: true },
+  { city: 'Portland', state: 'OR', dataCoverage: false },
+  { city: 'Phoenix', state: 'AZ', dataCoverage: false },
+  { city: 'Minneapolis', state: 'MN', dataCoverage: false },
 ] as const

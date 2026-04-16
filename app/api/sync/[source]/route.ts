@@ -14,11 +14,19 @@ import { syncCourtListener } from '@/lib/data-sync/court-listener'
 import { syncLscEvictions } from '@/lib/data-sync/lsc-evictions'
 import { syncPittsburgh } from '@/lib/data-sync/pittsburgh'
 import { syncBaltimore } from '@/lib/data-sync/baltimore'
+import { syncHouston } from '@/lib/data-sync/houston'
+import { syncMiami } from '@/lib/data-sync/miami'
+import { syncDenver } from '@/lib/data-sync/denver'
+import { syncDallas } from '@/lib/data-sync/dallas'
+import { syncDC } from '@/lib/data-sync/dc'
+import { syncAtlanta } from '@/lib/data-sync/atlanta'
+import { syncNashville } from '@/lib/data-sync/nashville'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 type SyncFn = (supabase: SupabaseClient) => Promise<{ added: number; updated: number; skipped: number; errors: string[] }>
 
 const SYNC_HANDLERS: Record<string, { fn: SyncFn; logKey: string }> = {
+  // Original cities
   'nyc-hpd':          { fn: syncNycHpd, logKey: 'nyc_hpd' },
   'nyc-dob':          { fn: syncNycDob, logKey: 'nyc_dob' },
   'nyc-registration': { fn: syncNycRegistration, logKey: 'nyc_registration' },
@@ -31,11 +39,20 @@ const SYNC_HANDLERS: Record<string, { fn: SyncFn; logKey: string }> = {
   'los-angeles':      { fn: syncLosAngeles, logKey: 'la_lahd' },
   'pittsburgh':       { fn: syncPittsburgh, logKey: 'pittsburgh_pli' },
   'baltimore':        { fn: syncBaltimore, logKey: 'baltimore_vacants' },
+  // National
   'court-listener':   { fn: syncCourtListener, logKey: 'court_listener' },
   'lsc-evictions':    { fn: syncLscEvictions, logKey: 'lsc_evictions' },
+  // New cities
+  'houston':          { fn: syncHouston, logKey: 'houston_code' },
+  'miami':            { fn: syncMiami, logKey: 'miami_dade' },
+  'denver':           { fn: syncDenver, logKey: 'denver_code' },
+  'dallas':           { fn: syncDallas, logKey: 'dallas_code' },
+  'dc':               { fn: syncDC, logKey: 'dc_dcra' },
+  'atlanta':          { fn: syncAtlanta, logKey: 'atlanta_permits' },
+  'nashville':        { fn: syncNashville, logKey: 'nashville_code' },
 }
 
-export const maxDuration = 300 // Vercel Pro: 5 min max for sync jobs
+export const maxDuration = 300 // Vercel Pro: 5 min max
 
 export async function GET(req: NextRequest, { params }: { params: { source: string } }) {
   return handleSync(req, (await params).source)
@@ -47,7 +64,6 @@ export async function POST(req: NextRequest, { params }: { params: { source: str
 
 async function handleSync(req: NextRequest, source: string) {
   if (!verifyCronSecret(req)) {
-    // Also allow admin users — check supabase auth
     const { createClient } = await import('@/lib/supabase/server')
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
@@ -58,7 +74,10 @@ async function handleSync(req: NextRequest, source: string) {
 
   const handler = SYNC_HANDLERS[source]
   if (!handler) {
-    return NextResponse.json({ error: `Unknown source: ${source}`, available: Object.keys(SYNC_HANDLERS) }, { status: 404 })
+    return NextResponse.json(
+      { error: `Unknown source: ${source}`, available: Object.keys(SYNC_HANDLERS) },
+      { status: 404 }
+    )
   }
 
   try {
