@@ -1,11 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  serverExternalPackages: [
-    '@sentry/nextjs',
-    '@sentry/opentelemetry',
-    '@opentelemetry/instrumentation',
-    'require-in-the-middle',
-  ],
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -21,6 +15,12 @@ const nextConfig = {
     serverActions: {
       allowedOrigins: ['localhost:3000', 'vettrentals.com', '*.vettrentals.com', '*.vercel.app'],
     },
+    serverComponentsExternalPackages: [
+      '@sentry/nextjs',
+      '@sentry/opentelemetry',
+      '@opentelemetry/instrumentation',
+      'require-in-the-middle',
+    ],
   },
   async headers() {
     return [

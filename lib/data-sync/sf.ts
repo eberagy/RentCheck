@@ -95,7 +95,7 @@ export async function syncSf(supabase: SupabaseClient): Promise<SyncResult> {
           severity: mapSfSeverity(row.priority ?? row.permit_type),
           status: mapSfStatus(row.status ?? row.permit_status ?? row.inspection_result),
           filed_date: (row[dateField] ? new Date(row[dateField]).toISOString().split('T')[0] : null),
-          source_url: `https://data.sfgov.org/resource/${workingEndpoint.split('/resource/')[1].replace('.json', '')}`,
+          source_url: `https://data.sfgov.org/resource/${(workingEndpoint!.split('/resource/')[1] ?? '').replace('.json', '')}`,
           raw_data: row,
         }, { onConflict: 'source,source_id', ignoreDuplicates: false })
 
