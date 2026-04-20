@@ -22,14 +22,15 @@ export function Logo({ size = 'md', href = '/', className = '', inverted = false
       {/* Circular badge mark */}
       <svg
         viewBox="0 0 32 32"
-        fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className={cn('flex-shrink-0', s.badge)}
+        className={cn('flex-shrink-0 rounded-full', s.badge)}
         aria-hidden="true"
+        style={{ background: 'transparent' }}
       >
         <circle cx="16" cy="16" r="16" fill="#0d9488" />
         <path
           d="M9 16.5l5 5 9-10.5"
+          fill="none"
           stroke="white"
           strokeWidth="2.5"
           strokeLinecap="round"

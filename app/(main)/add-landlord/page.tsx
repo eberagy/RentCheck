@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useDropzone } from 'react-dropzone'
-import { Building2, ArrowLeft, CheckCircle2, Upload, FileText, X, Info } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Upload, FileText, X, Info } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -165,12 +165,7 @@ export default function AddLandlordPage() {
         <ArrowLeft className="h-4 w-4" /> Back
       </Link>
 
-      <div className="flex items-center gap-3 mb-1">
-        <div className="h-10 w-10 bg-navy-100 rounded-xl flex items-center justify-center">
-          <Building2 className="h-5 w-5 text-navy-600" />
-        </div>
-        <h1 className="text-2xl font-bold text-gray-900">Add a Missing Landlord</h1>
-      </div>
+      <h1 className="text-2xl font-black text-gray-900 tracking-tight mb-2">Add a Missing Landlord</h1>
       <p className="text-gray-500 mb-8">
         Can&apos;t find your landlord? Submit their info and we&apos;ll add them to Vett so you and others can leave reviews.
       </p>
