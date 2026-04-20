@@ -31,6 +31,10 @@ import { syncDetroit } from '@/lib/data-sync/detroit'
 import { syncCharlotte } from '@/lib/data-sync/charlotte'
 import { syncColumbus } from '@/lib/data-sync/columbus'
 import { syncHudInspections } from '@/lib/data-sync/hud-inspections'
+// Ownership / landlord sources
+import { syncNycPluto } from '@/lib/data-sync/nyc-pluto'
+import { syncHudMultifamily } from '@/lib/data-sync/hud-multifamily'
+import { syncCookCountyAssessor } from '@/lib/data-sync/cook-county-assessor'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 type SyncFn = (supabase: SupabaseClient) => Promise<{ added: number; updated: number; skipped: number; errors: string[] }>
@@ -70,6 +74,10 @@ const SYNC_HANDLERS: Record<string, { fn: SyncFn; logKey: string }> = {
   'court-listener':   { fn: syncCourtListener, logKey: 'court_listener' },
   'lsc-evictions':    { fn: syncLscEvictions, logKey: 'lsc_evictions' },
   'hud-inspections':  { fn: syncHudInspections, logKey: 'hud_reac' },
+  // Ownership / landlord databases
+  'nyc-pluto':        { fn: syncNycPluto, logKey: 'nyc_pluto' },
+  'hud-multifamily':  { fn: syncHudMultifamily, logKey: 'hud_multifamily' },
+  'cook-county':      { fn: syncCookCountyAssessor, logKey: 'cook_county_assessor' },
 }
 
 export const maxDuration = 300 // Vercel Pro: 5 min max

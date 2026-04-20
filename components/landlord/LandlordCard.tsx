@@ -46,7 +46,7 @@ export function LandlordCard({ landlord, className }: LandlordCardProps) {
           )}
 
           <div className="mt-2 flex items-center gap-4 flex-wrap">
-            {landlord.avg_rating > 0 ? (
+            {landlord.avg_rating > 0 && landlord.review_count > 0 ? (
               <div className="flex items-center gap-1.5">
                 <StarRating value={landlord.avg_rating} readonly size="sm" />
                 <span className="text-xs text-gray-400">

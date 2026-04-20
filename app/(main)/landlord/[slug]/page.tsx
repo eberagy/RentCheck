@@ -16,6 +16,8 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { formatAddress } from '@/lib/utils'
 import { buildLandlordSummary } from '@/lib/summaries'
+import { searchYelp } from '@/lib/yelp'
+import { ExternalReviewLinks } from '@/components/landlord/ExternalReviewLinks'
 import type { Review, PublicRecord, Property } from '@/types'
 
 interface LandlordPageProps {
@@ -40,7 +42,9 @@ export async function generateMetadata({ params }: LandlordPageProps): Promise<M
     description: `Read ${landlord.review_count} lease-verified renter reviews of ${landlord.display_name}. See public records, court cases, and violation history.`,
     openGraph: {
       title: `${landlord.display_name} Reviews | Vett`,
-      description: `${landlord.review_count} renter reviews · ${landlord.avg_rating.toFixed(1)} avg rating`,
+      description: landlord.review_count > 0
+        ? `${landlord.review_count} renter reviews · ${landlord.avg_rating.toFixed(1)} avg rating`
+        : `Public records, violation history, and renter reviews for ${landlord.display_name}.`,
     },
   }
 }
@@ -108,6 +112,11 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
     propertyCount: (properties ?? []).length,
   })
 
+  // Yelp enrichment (only for business accounts, non-blocking)
+  const yelpData = landlord.business_name
+    ? await searchYelp(landlord.business_name, landlord.city ?? '', landlord.state_abbr ?? '').catch(() => null)
+    : null
+
   // JSON-LD structured data
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -115,7 +124,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
     name: landlord.display_name,
     ...(landlord.business_name && { legalName: landlord.business_name }),
     ...(landlord.city && { address: { '@type': 'PostalAddress', addressLocality: landlord.city, addressRegion: landlord.state_abbr, postalCode: landlord.zip ?? undefined } }),
-    ...(landlord.avg_rating > 0 && {
+    ...(landlord.avg_rating > 0 && landlord.review_count > 0 && {
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: landlord.avg_rating,
@@ -231,6 +240,16 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
               )}
             </div>
           )}
+        </div>
+
+        {/* External review links */}
+        <div className="mb-6">
+          <ExternalReviewLinks
+            landlordName={landlord.business_name ?? landlord.display_name}
+            city={landlord.city ?? ''}
+            stateAbbr={landlord.state_abbr ?? ''}
+            yelp={yelpData}
+          />
         </div>
 
         {/* Violation warning — inline, not a box */}

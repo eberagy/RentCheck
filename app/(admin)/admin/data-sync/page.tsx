@@ -55,6 +55,10 @@ const SYNC_SOURCES = [
   { id: 'hud-inspections',  logKey: 'hud_reac',             label: 'HUD Inspections',         schedule: 'Weekly Monday',      description: 'HUD REAC physical inspection scores for subsidized housing' },
   { id: 'court-listener',   logKey: 'court_listener',       label: 'CourtListener Cases',     schedule: 'Weekly Monday',      description: 'Federal court eviction & housing cases (requires COURT_LISTENER_TOKEN)' },
   { id: 'lsc-evictions',    logKey: 'lsc_evictions',        label: 'LSC Eviction Data',       schedule: 'Monthly 1st',        description: 'County-level eviction filing counts (9 states)' },
+  // Ownership / landlord databases
+  { id: 'nyc-pluto',        logKey: 'nyc_pluto',            label: 'NYC MapPLUTO Owners',     schedule: 'Weekly Sunday',      description: 'NYC Dept of City Planning — 900k properties with owner names' },
+  { id: 'hud-multifamily',  logKey: 'hud_multifamily',      label: 'HUD Multifamily Owners',  schedule: 'Weekly Sunday',      description: 'HUD-subsidized property owners and management companies nationwide' },
+  { id: 'cook-county',      logKey: 'cook_county_assessor', label: 'Cook County Assessor',    schedule: 'Weekly Sunday',      description: 'Cook County (Chicago) property ownership records' },
 ]
 
 export default function AdminDataSyncPage() {
