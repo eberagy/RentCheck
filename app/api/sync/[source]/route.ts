@@ -3,6 +3,7 @@ import { verifyCronSecret, withSyncLog } from '@/lib/data-sync/utils'
 import { syncNycHpd } from '@/lib/data-sync/nyc-hpd'
 import { syncNycDob } from '@/lib/data-sync/nyc-dob'
 import { syncNycRegistration } from '@/lib/data-sync/nyc-registration'
+import { syncNyc311 } from '@/lib/data-sync/nyc-311'
 import { syncChicago } from '@/lib/data-sync/chicago'
 import { syncSf } from '@/lib/data-sync/sf'
 import { syncBoston } from '@/lib/data-sync/boston'
@@ -21,15 +22,26 @@ import { syncDallas } from '@/lib/data-sync/dallas'
 import { syncDC } from '@/lib/data-sync/dc'
 import { syncAtlanta } from '@/lib/data-sync/atlanta'
 import { syncNashville } from '@/lib/data-sync/nashville'
+// New cities
+import { syncPhoenix } from '@/lib/data-sync/phoenix'
+import { syncMinneapolis } from '@/lib/data-sync/minneapolis'
+import { syncPortland } from '@/lib/data-sync/portland'
+import { syncSanAntonio } from '@/lib/data-sync/san-antonio'
+import { syncDetroit } from '@/lib/data-sync/detroit'
+import { syncCharlotte } from '@/lib/data-sync/charlotte'
+import { syncColumbus } from '@/lib/data-sync/columbus'
+import { syncHudInspections } from '@/lib/data-sync/hud-inspections'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 type SyncFn = (supabase: SupabaseClient) => Promise<{ added: number; updated: number; skipped: number; errors: string[] }>
 
 const SYNC_HANDLERS: Record<string, { fn: SyncFn; logKey: string }> = {
-  // Original cities
+  // NYC
   'nyc-hpd':          { fn: syncNycHpd, logKey: 'nyc_hpd' },
   'nyc-dob':          { fn: syncNycDob, logKey: 'nyc_dob' },
   'nyc-registration': { fn: syncNycRegistration, logKey: 'nyc_registration' },
+  'nyc-311':          { fn: syncNyc311, logKey: 'nyc_311' },
+  // Original cities
   'chicago':          { fn: syncChicago, logKey: 'chicago_buildings' },
   'sf':               { fn: syncSf, logKey: 'sf_housing' },
   'boston':           { fn: syncBoston, logKey: 'boston_isd' },
@@ -39,10 +51,6 @@ const SYNC_HANDLERS: Record<string, { fn: SyncFn; logKey: string }> = {
   'los-angeles':      { fn: syncLosAngeles, logKey: 'la_lahd' },
   'pittsburgh':       { fn: syncPittsburgh, logKey: 'pittsburgh_pli' },
   'baltimore':        { fn: syncBaltimore, logKey: 'baltimore_vacants' },
-  // National
-  'court-listener':   { fn: syncCourtListener, logKey: 'court_listener' },
-  'lsc-evictions':    { fn: syncLscEvictions, logKey: 'lsc_evictions' },
-  // New cities
   'houston':          { fn: syncHouston, logKey: 'houston_code' },
   'miami':            { fn: syncMiami, logKey: 'miami_dade' },
   'denver':           { fn: syncDenver, logKey: 'denver_code' },
@@ -50,6 +58,18 @@ const SYNC_HANDLERS: Record<string, { fn: SyncFn; logKey: string }> = {
   'dc':               { fn: syncDC, logKey: 'dc_dcra' },
   'atlanta':          { fn: syncAtlanta, logKey: 'atlanta_permits' },
   'nashville':        { fn: syncNashville, logKey: 'nashville_code' },
+  // New cities
+  'phoenix':          { fn: syncPhoenix, logKey: 'phoenix_code' },
+  'minneapolis':      { fn: syncMinneapolis, logKey: 'minneapolis_code' },
+  'portland':         { fn: syncPortland, logKey: 'portland_bds' },
+  'san-antonio':      { fn: syncSanAntonio, logKey: 'san_antonio_code' },
+  'detroit':          { fn: syncDetroit, logKey: 'detroit_blight' },
+  'charlotte':        { fn: syncCharlotte, logKey: 'charlotte_code' },
+  'columbus':         { fn: syncColumbus, logKey: 'columbus_code' },
+  // National / federal
+  'court-listener':   { fn: syncCourtListener, logKey: 'court_listener' },
+  'lsc-evictions':    { fn: syncLscEvictions, logKey: 'lsc_evictions' },
+  'hud-inspections':  { fn: syncHudInspections, logKey: 'hud_reac' },
 }
 
 export const maxDuration = 300 // Vercel Pro: 5 min max

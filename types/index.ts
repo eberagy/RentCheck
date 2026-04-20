@@ -7,13 +7,15 @@ export type ReviewStatus = 'pending' | 'approved' | 'rejected' | 'flagged'
 export type ClaimStatus = 'pending' | 'approved' | 'rejected'
 export type SyncStatus = 'running' | 'completed' | 'failed'
 export type RecordType =
-  | 'hpd_violation' | 'dob_violation' | 'dob_complaint' | 'court_case' | 'eviction'
-  | 'eviction_filing' | '311_complaint' | 'code_enforcement' | 'lsc_eviction'
+  | 'hpd_violation' | 'dob_violation' | 'dob_complaint' | 'nyc_311' | 'court_case' | 'eviction'
+  | 'eviction_filing' | '311_complaint' | 'code_enforcement' | 'lsc_eviction' | 'hud_inspection'
   | 'chicago_violation' | 'sf_violation' | 'sf_eviction' | 'boston_violation'
   | 'philly_violation' | 'austin_complaint' | 'seattle_violation' | 'la_violation'
   | 'court_listener' | 'pittsburgh_violation' | 'baltimore_vacant_notice'
   | 'houston_violation' | 'miami_violation' | 'denver_violation' | 'dallas_violation'
   | 'dc_violation' | 'atlanta_violation' | 'nashville_violation'
+  | 'phoenix_violation' | 'minneapolis_violation' | 'portland_violation'
+  | 'san_antonio_violation' | 'detroit_violation' | 'charlotte_violation' | 'columbus_violation'
 export type Severity = 'low' | 'medium' | 'high' | 'critical'
 export type LandlordGrade = 'A' | 'B' | 'C' | 'D' | 'F'
 
@@ -329,6 +331,15 @@ export const RECORD_TYPE_LABELS: Record<RecordType, string> = {
   dc_violation: 'DC Housing Violation',
   atlanta_violation: 'Atlanta Building Permit',
   nashville_violation: 'Nashville Code Violation',
+  nyc_311: 'NYC 311 Complaint',
+  hud_inspection: 'HUD Inspection',
+  phoenix_violation: 'Phoenix Code Violation',
+  minneapolis_violation: 'Minneapolis Code Complaint',
+  portland_violation: 'Portland Code Violation',
+  san_antonio_violation: 'San Antonio Code Violation',
+  detroit_violation: 'Detroit Blight Violation',
+  charlotte_violation: 'Charlotte Code Violation',
+  columbus_violation: 'Columbus Code Violation',
 }
 
 export const SOURCE_LABELS: Record<string, string> = {
@@ -353,6 +364,15 @@ export const SOURCE_LABELS: Record<string, string> = {
   dc_dcra: 'DC Open Data',
   atlanta_permits: 'Atlanta Regional Open Data',
   nashville_code: 'Nashville Open Data',
+  nyc_311: 'NYC 311',
+  hud_reac: 'HUD REAC',
+  phoenix_code: 'Phoenix Open Data',
+  minneapolis_code: 'Minneapolis Open Data',
+  portland_bds: 'Portland Open Data',
+  san_antonio_code: 'San Antonio Open Data',
+  detroit_blight: 'Detroit Open Data',
+  charlotte_code: 'Charlotte Open Data',
+  columbus_code: 'Columbus Open Data',
 }
 
 export const COLLEGE_CITIES = [
@@ -387,20 +407,24 @@ export const MAJOR_CITIES = [
   { city: 'Los Angeles', state: 'CA', dataCoverage: true },
   { city: 'Chicago', state: 'IL', dataCoverage: true },
   { city: 'Houston', state: 'TX', dataCoverage: true },
-  { city: 'Miami', state: 'FL', dataCoverage: true },
+  { city: 'Phoenix', state: 'AZ', dataCoverage: true },
   { city: 'Philadelphia', state: 'PA', dataCoverage: true },
+  { city: 'San Antonio', state: 'TX', dataCoverage: true },
   { city: 'Dallas', state: 'TX', dataCoverage: true },
+  { city: 'San Francisco', state: 'CA', dataCoverage: true },
+  { city: 'Austin', state: 'TX', dataCoverage: true },
+  { city: 'Columbus', state: 'OH', dataCoverage: true },
+  { city: 'Charlotte', state: 'NC', dataCoverage: true },
+  { city: 'Miami', state: 'FL', dataCoverage: true },
   { city: 'Atlanta', state: 'GA', dataCoverage: true },
   { city: 'Washington', state: 'DC', dataCoverage: true },
   { city: 'Boston', state: 'MA', dataCoverage: true },
   { city: 'Seattle', state: 'WA', dataCoverage: true },
-  { city: 'San Francisco', state: 'CA', dataCoverage: true },
   { city: 'Denver', state: 'CO', dataCoverage: true },
   { city: 'Nashville', state: 'TN', dataCoverage: true },
-  { city: 'Austin', state: 'TX', dataCoverage: true },
+  { city: 'Detroit', state: 'MI', dataCoverage: true },
   { city: 'Baltimore', state: 'MD', dataCoverage: true },
   { city: 'Pittsburgh', state: 'PA', dataCoverage: true },
-  { city: 'Portland', state: 'OR', dataCoverage: false },
-  { city: 'Phoenix', state: 'AZ', dataCoverage: false },
-  { city: 'Minneapolis', state: 'MN', dataCoverage: false },
+  { city: 'Portland', state: 'OR', dataCoverage: true },
+  { city: 'Minneapolis', state: 'MN', dataCoverage: true },
 ] as const
