@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 interface LogoProps {
@@ -9,9 +10,9 @@ interface LogoProps {
 }
 
 const sizeMap = {
-  sm: { badge: 'h-6 w-6', text: 'text-lg', gap: 'gap-1.5' },
-  md: { badge: 'h-8 w-8', text: 'text-xl', gap: 'gap-2' },
-  lg: { badge: 'h-10 w-10', text: 'text-2xl', gap: 'gap-2.5' },
+  sm: { px: 24, text: 'text-lg', gap: 'gap-1.5' },
+  md: { px: 32, text: 'text-xl', gap: 'gap-2' },
+  lg: { px: 40, text: 'text-2xl', gap: 'gap-2.5' },
 }
 
 export function Logo({ size = 'md', href = '/', className = '', inverted = false }: LogoProps) {
@@ -19,24 +20,28 @@ export function Logo({ size = 'md', href = '/', className = '', inverted = false
 
   const el = (
     <span className={cn('inline-flex items-center', s.gap, className)}>
-      {/* Circular badge mark */}
-      <svg
-        viewBox="0 0 32 32"
-        xmlns="http://www.w3.org/2000/svg"
-        className={cn('flex-shrink-0 rounded-full', s.badge)}
-        aria-hidden="true"
-        style={{ background: 'transparent' }}
+      {/* House icon cropped to circle */}
+      <span
+        className="flex-shrink-0 rounded-full overflow-hidden bg-[#0e1628]"
+        style={{ width: s.px, height: s.px }}
       >
-        <circle cx="16" cy="16" r="16" fill="#0d9488" />
-        <path
-          d="M9 16.5l5 5 9-10.5"
-          fill="none"
-          stroke="white"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+        <Image
+          src="/vett-logo.png"
+          alt="Vett logo"
+          width={s.px * 3}
+          height={s.px * 3}
+          style={{
+            width: s.px,
+            height: s.px,
+            objectFit: 'cover',
+            // Center on the house icon (it sits slightly left of center in the image)
+            objectPosition: '42% 50%',
+            transform: 'scale(1.6)',
+            transformOrigin: '42% 50%',
+          }}
+          priority
         />
-      </svg>
+      </span>
 
       {/* Wordmark */}
       <span className={cn('font-black tracking-tight leading-none', s.text, inverted ? 'text-white' : 'text-slate-900')}>

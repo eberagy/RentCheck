@@ -48,13 +48,19 @@ export default async function CityPage({ params }: CityPageProps) {
 
   if (!landlords) notFound()
 
-  // Get public record counts for this city
-  const { count: recordCount } = await supabase
-    .from('public_records')
-    .select('*', { count: 'exact', head: true })
-    .in('property_id',
-      supabase.from('properties').select('id').ilike('city', `%${cityName}%`).eq('state_abbr', stateAbbr) as unknown as string[]
-    )
+  // Get property IDs for this city, then count public records
+  const { data: cityProps } = await supabase
+    .from('properties')
+    .select('id')
+    .ilike('city', `%${cityName}%`)
+    .eq('state_abbr', stateAbbr)
+  const cityPropIds = (cityProps ?? []).map((p: { id: string }) => p.id)
+  const { count: recordCount } = cityPropIds.length > 0
+    ? await supabase
+        .from('public_records')
+        .select('*', { count: 'exact', head: true })
+        .in('property_id', cityPropIds)
+    : { count: 0 }
 
   // Get college info
   const collegeInfo = COLLEGE_CITIES.find(
