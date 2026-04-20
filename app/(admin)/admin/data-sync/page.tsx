@@ -86,17 +86,22 @@ export default function AdminDataSyncPage() {
   async function triggerSync(sourceId: string): Promise<boolean> {
     setTriggering(prev => new Set(prev).add(sourceId))
     try {
-      const res = await fetch(`/api/sync/${sourceId}`, { method: 'POST' })
+      // 90-second timeout per sync — Vercel functions cap at 60-300s depending on plan
+      const res = await fetch(`/api/sync/${sourceId}`, {
+        method: 'POST',
+        signal: AbortSignal.timeout(90_000),
+      })
       if (res.ok) {
-        toast.success(`${sourceId} — sync complete`)
+        toast.success(`${sourceId} — done`)
         return true
       } else {
         const data = await res.json().catch(() => ({}))
         toast.error(`${sourceId}: ${data.error ?? 'failed'}`)
         return false
       }
-    } catch {
-      toast.error(`${sourceId}: could not reach endpoint`)
+    } catch (e) {
+      const msg = e instanceof Error && e.name === 'TimeoutError' ? 'timed out (>90s)' : 'network error'
+      toast.error(`${sourceId}: ${msg}`)
       return false
     } finally {
       setTriggering(prev => { const n = new Set(prev); n.delete(sourceId); return n })
@@ -105,14 +110,16 @@ export default function AdminDataSyncPage() {
 
   async function runAll() {
     setRunningAll(true)
-    toast.info('Running all syncs sequentially — this will take several minutes')
-    let succeeded = 0
-    for (const source of SYNC_SOURCES) {
-      await triggerSync(source.id)
-      succeeded++
-    }
+    toast.info(`Firing all ${SYNC_SOURCES.length} syncs in parallel…`)
+
+    // Run in parallel — all fire at once, each has its own 90s timeout
+    const results = await Promise.allSettled(
+      SYNC_SOURCES.map(s => triggerSync(s.id))
+    )
+
+    const succeeded = results.filter(r => r.status === 'fulfilled' && r.value).length
     await loadLogs()
-    toast.success(`All syncs complete — ${succeeded}/${SYNC_SOURCES.length} ran`)
+    toast.success(`All syncs done — ${succeeded}/${SYNC_SOURCES.length} succeeded`)
     setRunningAll(false)
   }
 
