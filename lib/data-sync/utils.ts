@@ -8,6 +8,127 @@ export interface SyncResult {
   errors: string[]
 }
 
+/** Simple retry wrapper — retries up to 3x on network errors */
+export async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
+  let lastError: unknown
+  for (let i = 0; i < retries; i++) {
+    try { return await fn() } catch (e) {
+      lastError = e
+      if (i < retries - 1) await new Promise(r => setTimeout(r, 500 * (i + 1)))
+    }
+  }
+  throw lastError
+}
+
+type RawRecord = {
+  source: string
+  source_id: string | null
+  record_type: string
+  status: string
+  description: string | null
+  address: string | null
+  city: string
+  state: string  // state abbreviation e.g. 'TN'
+  filed_date: string | null
+  closed_date?: string | null
+  raw: Record<string, unknown>
+}
+
+const STATE_ABBR_TO_FULL: Record<string, string> = {
+  AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas', CA: 'California',
+  CO: 'Colorado', CT: 'Connecticut', DE: 'Delaware', FL: 'Florida', GA: 'Georgia',
+  HI: 'Hawaii', ID: 'Idaho', IL: 'Illinois', IN: 'Indiana', IA: 'Iowa',
+  KS: 'Kansas', KY: 'Kentucky', LA: 'Louisiana', ME: 'Maine', MD: 'Maryland',
+  MA: 'Massachusetts', MI: 'Michigan', MN: 'Minnesota', MS: 'Mississippi', MO: 'Missouri',
+  MT: 'Montana', NE: 'Nebraska', NV: 'Nevada', NH: 'New Hampshire', NJ: 'New Jersey',
+  NM: 'New Mexico', NY: 'New York', NC: 'North Carolina', ND: 'North Dakota', OH: 'Ohio',
+  OK: 'Oklahoma', OR: 'Oregon', PA: 'Pennsylvania', RI: 'Rhode Island', SC: 'South Carolina',
+  SD: 'South Dakota', TN: 'Tennessee', TX: 'Texas', UT: 'Utah', VT: 'Vermont',
+  VA: 'Virginia', WA: 'Washington', WV: 'West Virginia', WI: 'Wisconsin', WY: 'Wyoming',
+  DC: 'District of Columbia',
+}
+
+/**
+ * Upsert an array of raw public records into the database.
+ * Handles property creation/lookup from address fields.
+ * All new-city syncs should use this instead of writing their own upsert logic.
+ */
+export async function upsertRecords(
+  supabase: SupabaseClient,
+  records: RawRecord[]
+): Promise<SyncResult> {
+  const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
+
+  for (const rec of records) {
+    try {
+      if (!rec.source_id) { result.skipped++; continue }
+
+      const stateAbbr = rec.state.length === 2 ? rec.state.toUpperCase() : rec.state
+      const stateFull = STATE_ABBR_TO_FULL[stateAbbr] ?? rec.state
+
+      // Get or create property from address
+      let propertyId: string | null = null
+      if (rec.address?.trim()) {
+        const addrNorm = normalizeAddress(rec.address)
+        // Try to find existing
+        const { data: existing } = await supabase
+          .from('properties')
+          .select('id')
+          .eq('address_normalized', addrNorm)
+          .eq('city', rec.city)
+          .eq('state_abbr', stateAbbr)
+          .limit(1)
+          .maybeSingle()
+
+        if (existing) {
+          propertyId = existing.id
+        } else {
+          const { data: created } = await supabase
+            .from('properties')
+            .insert({
+              address_line1: rec.address.trim(),
+              city: rec.city,
+              state: stateFull,
+              state_abbr: stateAbbr,
+              zip: '',
+              address_normalized: addrNorm,
+            })
+            .select('id')
+            .single()
+          propertyId = created?.id ?? null
+        }
+      }
+
+      // Build title (required, 10–150 chars)
+      const rawTitle = rec.description
+        ? `${rec.city} Code Violation: ${rec.description}`
+        : `${rec.city} Code Enforcement Case`
+      const title = rawTitle.slice(0, 150).padEnd(10, ' ')
+
+      const { error } = await supabase.from('public_records').upsert({
+        source: rec.source,
+        source_id: rec.source_id,
+        record_type: 'code_enforcement',
+        property_id: propertyId,
+        title,
+        description: rec.description,
+        severity: 'medium',
+        status: rec.status,
+        filed_date: rec.filed_date ? rec.filed_date.slice(0, 10) : null,
+        closed_date: rec.closed_date ? rec.closed_date.slice(0, 10) : null,
+        raw_data: rec.raw,
+      }, { onConflict: 'source,source_id', ignoreDuplicates: false })
+
+      if (error) { result.errors.push(error.message); continue }
+      result.added++
+    } catch (e) {
+      result.errors.push(e instanceof Error ? e.message : String(e))
+    }
+  }
+
+  return result
+}
+
 export async function withSyncLog(
   source: string,
   fn: (supabase: SupabaseClient) => Promise<SyncResult>
