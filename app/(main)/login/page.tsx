@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { CheckCircle2, Loader2, Mail } from 'lucide-react'
+import { CheckCircle2, Loader2, Mail, Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/Logo'
 import { useAuth } from '@/hooks/useAuth'
@@ -22,13 +22,21 @@ const REDIRECT_MESSAGES: Record<string, string> = {
   '/dashboard': 'Sign in to access your dashboard',
 }
 
+type Mode = 'password' | 'magic'
+type PasswordTab = 'signin' | 'signup'
+
 export default function LoginPage() {
   const [googleLoading, setGoogleLoading] = useState(false)
   const [email, setEmail] = useState('')
-  const [magicLoading, setMagicLoading] = useState(false)
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [magicSent, setMagicSent] = useState(false)
+  const [mode, setMode] = useState<Mode>('password')
+  const [passwordTab, setPasswordTab] = useState<PasswordTab>('signin')
 
   const { signInWithGoogle } = useAuth()
+  const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') ?? '/dashboard'
 
@@ -43,13 +51,54 @@ export default function LoginPage() {
       toast.error('Sign in failed. Please try again.')
       setGoogleLoading(false)
     }
-    // On success the browser redirects — no need to reset state
+  }
+
+  async function handlePasswordAuth(e: React.FormEvent) {
+    e.preventDefault()
+    if (!email.trim() || !password) return
+    setLoading(true)
+    const supabase = createClient()
+
+    if (passwordTab === 'signin') {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      })
+      setLoading(false)
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          toast.error('Wrong email or password.')
+        } else if (error.message.includes('Email not confirmed')) {
+          toast.error('Please confirm your email first.')
+        } else {
+          toast.error(error.message)
+        }
+      } else {
+        router.push(redirectTo)
+      }
+    } else {
+      const { error } = await supabase.auth.signUp({
+        email: email.trim(),
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+        },
+      })
+      setLoading(false)
+      if (error) {
+        toast.error(error.message)
+      } else {
+        toast.success('Account created! Check your email to confirm, then sign in.')
+        setPasswordTab('signin')
+        setPassword('')
+      }
+    }
   }
 
   async function handleMagicLink(e: React.FormEvent) {
     e.preventDefault()
     if (!email.trim()) return
-    setMagicLoading(true)
+    setLoading(true)
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
@@ -57,7 +106,7 @@ export default function LoginPage() {
         emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
       },
     })
-    setMagicLoading(false)
+    setLoading(false)
     if (error) {
       toast.error('Could not send magic link. Please try again.')
     } else {
@@ -67,24 +116,20 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* ── Left panel — hidden on mobile ── */}
+      {/* ── Left panel ── */}
       <div className="hidden lg:flex lg:w-1/2 flex-col justify-between bg-gradient-to-br from-navy-900 via-navy-800 to-navy-700 px-14 py-12 text-white">
-        {/* Logo */}
         <div>
           <Logo size="lg" href="/" />
         </div>
-
-        {/* Value proposition */}
         <div className="space-y-10">
           <div>
             <h2 className="text-4xl font-extrabold leading-tight tracking-tight">
               Know your landlord<br />before you sign.
             </h2>
             <p className="mt-4 text-navy-100 text-lg leading-relaxed max-w-sm">
-              Join 10,000+ renters who research before signing. Real reviews, public court records, and violation histories — all in one place.
+              Research landlords using real public records, court filings, and renter reviews — before you commit.
             </p>
           </div>
-
           <ul className="space-y-4">
             {BENEFITS.map((benefit) => (
               <li key={benefit} className="flex items-center gap-3 text-base text-white">
@@ -94,11 +139,8 @@ export default function LoginPage() {
             ))}
           </ul>
         </div>
-
-        {/* Social proof + privacy note */}
         <div className="space-y-3">
           <div className="flex items-center gap-3">
-            {/* Avatar stack */}
             <div className="flex -space-x-2">
               {['#4F46E5', '#0891B2', '#059669', '#D97706'].map((color, i) => (
                 <span
@@ -114,34 +156,25 @@ export default function LoginPage() {
               <span className="font-semibold text-white">10,000+</span> renters researching landlords
             </p>
           </div>
-          <p className="text-xs text-navy-300">
-            No spam. No selling data. Cancel anytime.
-          </p>
+          <p className="text-xs text-navy-300">No spam. No selling data. Cancel anytime.</p>
         </div>
       </div>
 
-      {/* ── Right panel — form ── */}
+      {/* ── Right panel ── */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 bg-white">
-        {/* Mobile logo */}
         <div className="lg:hidden mb-8">
           <Logo size="lg" href="/" />
         </div>
 
         <div className="w-full max-w-sm">
-          {/* Heading */}
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-navy-900 tracking-tight">
               Sign in to Vett
             </h1>
-            {contextMessage && (
-              <p className="mt-2 text-sm font-medium text-teal-600">
-                {contextMessage}
-              </p>
-            )}
-            {!contextMessage && (
-              <p className="mt-2 text-sm text-gray-500">
-                Protect yourself — research before you rent.
-              </p>
+            {contextMessage ? (
+              <p className="mt-2 text-sm font-medium text-teal-600">{contextMessage}</p>
+            ) : (
+              <p className="mt-2 text-sm text-gray-500">Protect yourself — research before you rent.</p>
             )}
           </div>
 
@@ -162,12 +195,12 @@ export default function LoginPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Google button */}
+              {/* Google */}
               <button
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading}
-                className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:opacity-60"
               >
                 {googleLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
@@ -182,40 +215,139 @@ export default function LoginPage() {
                 {googleLoading ? 'Signing in…' : 'Continue with Google'}
               </button>
 
-              {/* Divider */}
               <div className="flex items-center gap-3">
                 <div className="flex-1 border-t border-gray-200" />
                 <span className="text-xs text-gray-400 font-medium">or</span>
                 <div className="flex-1 border-t border-gray-200" />
               </div>
 
-              {/* Magic link form */}
-              <form onSubmit={handleMagicLink} className="space-y-3">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  required
-                  className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3.5 text-sm text-gray-900 placeholder-gray-400 transition-colors outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20 disabled:opacity-50"
-                />
-                <Button
-                  type="submit"
-                  disabled={magicLoading || !email.trim()}
-                  className="w-full h-11 bg-navy-700 text-white hover:bg-navy-800 text-sm font-semibold"
+              {/* Mode toggle */}
+              <div className="flex rounded-lg border border-gray-200 p-0.5 bg-gray-50">
+                <button
+                  type="button"
+                  onClick={() => setMode('password')}
+                  className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-colors ${mode === 'password' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
                 >
-                  {magicLoading ? (
-                    <span className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      Sending…
-                    </span>
-                  ) : (
-                    'Send magic link'
-                  )}
-                </Button>
-              </form>
+                  Email & password
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode('magic')}
+                  className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-colors ${mode === 'magic' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                >
+                  Magic link
+                </button>
+              </div>
 
-              {/* Legal */}
+              {mode === 'password' ? (
+                <div>
+                  {/* Sign in / Sign up tabs */}
+                  <div className="flex border-b border-gray-200 mb-4">
+                    <button
+                      type="button"
+                      onClick={() => setPasswordTab('signin')}
+                      className={`flex-1 pb-2 text-sm font-medium transition-colors ${passwordTab === 'signin' ? 'text-navy-700 border-b-2 border-navy-700' : 'text-gray-400 hover:text-gray-600'}`}
+                    >
+                      Sign in
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPasswordTab('signup')}
+                      className={`flex-1 pb-2 text-sm font-medium transition-colors ${passwordTab === 'signup' ? 'text-navy-700 border-b-2 border-navy-700' : 'text-gray-400 hover:text-gray-600'}`}
+                    >
+                      Create account
+                    </button>
+                  </div>
+
+                  <form onSubmit={handlePasswordAuth} className="space-y-3">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="your@email.com"
+                      required
+                      className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+                    />
+                    <div className="relative">
+                      <input
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder={passwordTab === 'signup' ? 'Create a password (8+ chars)' : 'Password'}
+                        required
+                        minLength={passwordTab === 'signup' ? 8 : undefined}
+                        className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3.5 pr-10 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        tabIndex={-1}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                    <Button
+                      type="submit"
+                      disabled={loading || !email.trim() || !password}
+                      className="w-full h-11 bg-navy-700 text-white hover:bg-navy-800 text-sm font-semibold"
+                    >
+                      {loading ? (
+                        <span className="flex items-center gap-2">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          {passwordTab === 'signup' ? 'Creating account…' : 'Signing in…'}
+                        </span>
+                      ) : (
+                        passwordTab === 'signup' ? 'Create account' : 'Sign in'
+                      )}
+                    </Button>
+                    {passwordTab === 'signin' && (
+                      <p className="text-center text-xs text-gray-400">
+                        Forgot your password?{' '}
+                        <button
+                          type="button"
+                          onClick={() => { setMode('magic'); toast.info('Enter your email and we\'ll send a magic link to reset access.') }}
+                          className="underline hover:text-gray-600"
+                        >
+                          Use magic link
+                        </button>
+                      </p>
+                    )}
+                  </form>
+                </div>
+              ) : (
+                <form onSubmit={handleMagicLink} className="space-y-3">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    required
+                    className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+                  />
+                  <Button
+                    type="submit"
+                    disabled={loading || !email.trim()}
+                    className="w-full h-11 bg-navy-700 text-white hover:bg-navy-800 text-sm font-semibold"
+                  >
+                    {loading ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Sending…
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        <Mail className="h-4 w-4" />
+                        Send magic link
+                      </span>
+                    )}
+                  </Button>
+                  <p className="text-xs text-center text-gray-400">
+                    We&apos;ll email you a one-click sign-in link. No password needed.
+                  </p>
+                </form>
+              )}
+
               <p className="text-xs text-center text-gray-400 pt-1">
                 By signing in, you agree to our{' '}
                 <Link href="/terms" className="underline hover:text-gray-600">Terms</Link>
@@ -225,12 +357,8 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Guest link */}
           <div className="mt-6 text-center">
-            <Link
-              href="/"
-              className="text-sm text-gray-400 hover:text-navy-600 transition-colors underline underline-offset-2"
-            >
+            <Link href="/" className="text-sm text-gray-400 hover:text-navy-600 transition-colors underline underline-offset-2">
               Continue as guest
             </Link>
           </div>

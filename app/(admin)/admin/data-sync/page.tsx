@@ -55,6 +55,17 @@ const SYNC_SOURCES = [
   { id: 'hud-inspections',  logKey: 'hud_reac',             label: 'HUD Inspections',         schedule: 'Weekly Monday',      description: 'HUD REAC physical inspection scores for subsidized housing' },
   { id: 'court-listener',   logKey: 'court_listener',       label: 'CourtListener Cases',     schedule: 'Weekly Monday',      description: 'Federal court eviction & housing cases (requires COURT_LISTENER_TOKEN)' },
   { id: 'lsc-evictions',    logKey: 'lsc_evictions',        label: 'LSC Eviction Data',       schedule: 'Monthly 1st',        description: 'County-level eviction filing counts (9 states)' },
+  // Additional cities
+  { id: 'memphis',          logKey: 'memphis_code',         label: 'Memphis Code',            schedule: 'Daily 10am',         description: 'Memphis code enforcement violations' },
+  { id: 'louisville',       logKey: 'louisville_code',      label: 'Louisville Code',         schedule: 'Daily 10:15am',      description: 'Louisville Metro code enforcement violations' },
+  { id: 'kansas-city',      logKey: 'kansas_city_code',     label: 'Kansas City Code',        schedule: 'Daily 10:30am',      description: 'Kansas City code cases & 311 housing complaints' },
+  { id: 'indianapolis',     logKey: 'indianapolis_code',    label: 'Indianapolis Code',       schedule: 'Daily 10:45am',      description: 'Indianapolis code enforcement violations' },
+  { id: 'st-louis',         logKey: 'stlouis_code',         label: 'St. Louis Code',          schedule: 'Daily 11am',         description: 'St. Louis code violations' },
+  { id: 'new-orleans',      logKey: 'new_orleans_code',     label: 'New Orleans Code',        schedule: 'Daily 11:15am',      description: 'New Orleans code enforcement & blight violations' },
+  { id: 'sacramento',       logKey: 'sacramento_code',      label: 'Sacramento Code',         schedule: 'Daily 11:30am',      description: 'Sacramento code enforcement violations' },
+  { id: 'san-jose',         logKey: 'san_jose_code',        label: 'San Jose Code',           schedule: 'Daily 11:45am',      description: 'San Jose code enforcement & housing violations' },
+  { id: 'cleveland',        logKey: 'cleveland_code',       label: 'Cleveland Code',          schedule: 'Daily 12pm',         description: 'Cleveland housing & code violations' },
+  { id: 'raleigh',          logKey: 'raleigh_code',         label: 'Raleigh Code',            schedule: 'Daily 12:15pm',      description: 'Raleigh code enforcement violations' },
   // Ownership / landlord databases
   { id: 'nyc-pluto',        logKey: 'nyc_pluto',            label: 'NYC MapPLUTO Owners',     schedule: 'Weekly Sunday',      description: 'NYC Dept of City Planning — 900k properties with owner names' },
   { id: 'hud-multifamily',  logKey: 'hud_multifamily',      label: 'HUD Multifamily Owners',  schedule: 'Weekly Sunday',      description: 'HUD-subsidized property owners and management companies nationwide' },

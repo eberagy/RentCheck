@@ -31,6 +31,17 @@ import { syncDetroit } from '@/lib/data-sync/detroit'
 import { syncCharlotte } from '@/lib/data-sync/charlotte'
 import { syncColumbus } from '@/lib/data-sync/columbus'
 import { syncHudInspections } from '@/lib/data-sync/hud-inspections'
+// Additional cities
+import { syncMemphis } from '@/lib/data-sync/memphis'
+import { syncLouisville } from '@/lib/data-sync/louisville'
+import { syncKansasCity } from '@/lib/data-sync/kansas-city'
+import { syncIndianapolis } from '@/lib/data-sync/indianapolis'
+import { syncStLouis } from '@/lib/data-sync/st-louis'
+import { syncNewOrleans } from '@/lib/data-sync/new-orleans'
+import { syncSacramento } from '@/lib/data-sync/sacramento'
+import { syncSanJose } from '@/lib/data-sync/san-jose'
+import { syncCleveland } from '@/lib/data-sync/cleveland'
+import { syncRaleigh } from '@/lib/data-sync/raleigh'
 // Ownership / landlord sources
 import { syncNycPluto } from '@/lib/data-sync/nyc-pluto'
 import { syncHudMultifamily } from '@/lib/data-sync/hud-multifamily'
@@ -70,6 +81,17 @@ const SYNC_HANDLERS: Record<string, { fn: SyncFn; logKey: string }> = {
   'detroit':          { fn: syncDetroit, logKey: 'detroit_blight' },
   'charlotte':        { fn: syncCharlotte, logKey: 'charlotte_code' },
   'columbus':         { fn: syncColumbus, logKey: 'columbus_code' },
+  // Additional cities
+  'memphis':          { fn: syncMemphis, logKey: 'memphis_code' },
+  'louisville':       { fn: syncLouisville, logKey: 'louisville_code' },
+  'kansas-city':      { fn: syncKansasCity, logKey: 'kansas_city_code' },
+  'indianapolis':     { fn: syncIndianapolis, logKey: 'indianapolis_code' },
+  'st-louis':         { fn: syncStLouis, logKey: 'stlouis_code' },
+  'new-orleans':      { fn: syncNewOrleans, logKey: 'new_orleans_code' },
+  'sacramento':       { fn: syncSacramento, logKey: 'sacramento_code' },
+  'san-jose':         { fn: syncSanJose, logKey: 'san_jose_code' },
+  'cleveland':        { fn: syncCleveland, logKey: 'cleveland_code' },
+  'raleigh':          { fn: syncRaleigh, logKey: 'raleigh_code' },
   // National / federal
   'court-listener':   { fn: syncCourtListener, logKey: 'court_listener' },
   'lsc-evictions':    { fn: syncLscEvictions, logKey: 'lsc_evictions' },

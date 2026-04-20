@@ -27,12 +27,22 @@
     { "path": "/api/sync/detroit",          "schedule": "0 9 * * *"   },
     { "path": "/api/sync/charlotte",        "schedule": "15 9 * * *"  },
     { "path": "/api/sync/columbus",         "schedule": "30 9 * * *"  },
-    { "path": "/api/sync/hud-inspections",  "schedule": "0 10 * * 1"  },
-    { "path": "/api/sync/court-listener",   "schedule": "30 10 * * 1" },
-    { "path": "/api/sync/lsc-evictions",    "schedule": "0 11 1 * *"  },
+    { "path": "/api/sync/memphis",          "schedule": "45 9 * * *"  },
+    { "path": "/api/sync/louisville",       "schedule": "0 10 * * *"  },
+    { "path": "/api/sync/kansas-city",      "schedule": "15 10 * * *" },
+    { "path": "/api/sync/indianapolis",     "schedule": "30 10 * * *" },
+    { "path": "/api/sync/st-louis",         "schedule": "45 10 * * *" },
+    { "path": "/api/sync/new-orleans",      "schedule": "0 11 * * *"  },
+    { "path": "/api/sync/sacramento",       "schedule": "15 11 * * *" },
+    { "path": "/api/sync/san-jose",         "schedule": "30 11 * * *" },
+    { "path": "/api/sync/cleveland",        "schedule": "45 11 * * *" },
+    { "path": "/api/sync/raleigh",          "schedule": "0 12 * * *"  },
+    { "path": "/api/cron/watchlist-alerts", "schedule": "30 12 * * *" },
+    { "path": "/api/sync/hud-inspections",  "schedule": "0 13 * * 1"  },
+    { "path": "/api/sync/court-listener",   "schedule": "30 13 * * 1" },
+    { "path": "/api/sync/lsc-evictions",    "schedule": "0 14 1 * *"  },
     { "path": "/api/sync/nyc-pluto",        "schedule": "0 1 * * 0"   },
     { "path": "/api/sync/hud-multifamily",  "schedule": "30 1 * * 0"  },
-    { "path": "/api/sync/cook-county",      "schedule": "0 2 * * 0"   },
-    { "path": "/api/cron/watchlist-alerts", "schedule": "0 12 * * *"  }
+    { "path": "/api/sync/cook-county",      "schedule": "0 2 * * 0"   }
   ]
 }
