@@ -14,7 +14,6 @@ const PAGE_SIZE = 1000
 
 export async function syncPhoenix(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
-  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
   let workingEndpoint: string | null = null
   for (const ep of ENDPOINTS) {
@@ -22,19 +21,19 @@ export async function syncPhoenix(supabase: SupabaseClient): Promise<SyncResult>
       const probe = await fetch(`${ep}?$limit=1`, { signal: AbortSignal.timeout(8000) })
       if (probe.ok) {
         const rows = await probe.json()
-        if (Array.isArray(rows) && rows.length > 0) { workingEndpoint = ep; break }
+        if (Array.isArray(rows)) { workingEndpoint = ep; break }
       }
     } catch { /* try next */ }
   }
 
   if (!workingEndpoint) {
-    result.errors.push('No working Phoenix endpoint found')
+    result.errors.push('No working Phoenix endpoint found. Browse data.phoenix.gov for code enforcement datasets and set PHOENIX_DATA_TOKEN env var.')
     return result
   }
 
   let offset = 0
   while (true) {
-    const url = `${workingEndpoint}?$where=case_opened_date>'${since}'&$limit=${PAGE_SIZE}&$offset=${offset}&$order=case_number`
+    const url = `${workingEndpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
     let rows: any[]
     try {
       const res = await fetch(url, {

@@ -1,40 +1,73 @@
 /**
  * Austin Code Enforcement Complaints
- * API: https://data.austintexas.gov/resource/i26j-ai4z.json (Socrata)
+ * Portal: https://data.austintexas.gov (Socrata)
+ * Tries multiple known dataset IDs in order.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
 
-const ENDPOINT = 'https://data.austintexas.gov/resource/i26j-ai4z.json'
+const BASE_DOMAIN = 'https://data.austintexas.gov'
+const DATASET_IDS = [
+  process.env.AUSTIN_DATASET,
+  '3ntu-iuld',   // Austin Code Cases (primary)
+  'rvvd-esxg',   // Austin Code Complaints alternate
+  '99qw-4hup',   // Austin Code Enforcement alternate
+  'i26j-ai4z',   // legacy
+].filter(Boolean) as string[]
+
 const PAGE_SIZE = 1000
 
 export async function syncAustin(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
 
-  const since = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  let workingEndpoint: string | null = null
+  for (const id of DATASET_IDS) {
+    const ep = `${BASE_DOMAIN}/resource/${id}.json`
+    try {
+      const probe = await fetch(`${ep}?$limit=1`, { signal: AbortSignal.timeout(8000) })
+      if (probe.ok) {
+        const rows = await probe.json()
+        if (Array.isArray(rows)) { workingEndpoint = ep; break }
+      }
+    } catch { /* try next */ }
+  }
+
+  if (!workingEndpoint) {
+    result.errors.push(
+      'No working Austin dataset found. Go to data.austintexas.gov, search "code complaints", ' +
+      'copy the 4x4 dataset ID, and set AUSTIN_DATASET env var.'
+    )
+    return result
+  }
+
   let offset = 0
 
   while (true) {
-    const url = `${ENDPOINT}?$where=date_entered>'${since}'&$limit=${PAGE_SIZE}&$offset=${offset}&$order=case_id`
-    const res = await fetch(url)
-    if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }
-
-    const rows: any[] = await res.json()
+    const url = `${workingEndpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
+    let rows: any[]
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(15000) })
+      if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }
+      rows = await res.json()
+      if (!Array.isArray(rows)) break
+    } catch (e) {
+      result.errors.push(e instanceof Error ? e.message : String(e)); break
+    }
     if (rows.length === 0) break
 
     for (const row of rows) {
       try {
-        const sourceId = String(row.case_id ?? '')
+        const sourceId = String(row.case_id ?? row.id ?? row.complaint_id ?? '')
         if (!sourceId) { result.skipped++; continue }
 
-        const addr = row.address ?? ''
+        const addr = row.address ?? row.property_address ?? row.location_address ?? ''
         const addrNorm = normalizeAddress(addr)
 
         let propertyId = await resolveProperty(supabase, addrNorm, 'Austin', 'TX')
         if (!propertyId && addr) {
           const { data: newProp } = await supabase
             .from('properties')
-            .insert({ address_line1: addr, city: 'Austin', state: 'Texas', state_abbr: 'TX', zip: row.zip ?? '', address_normalized: addrNorm })
+            .insert({ address_line1: addr, city: 'Austin', state: 'Texas', state_abbr: 'TX', zip: row.zip ?? row.zip_code ?? '', address_normalized: addrNorm })
             .select('id').single()
           propertyId = newProp?.id ?? null
         }
@@ -44,11 +77,13 @@ export async function syncAustin(supabase: SupabaseClient): Promise<SyncResult> 
           source_id: sourceId,
           record_type: 'austin_complaint',
           property_id: propertyId,
-          title: buildAustinTitle(row.description, row.case_type, row.status_current),
+          title: buildAustinTitle(row.description, row.case_type, row.status_current ?? row.status),
           description: row.description ?? row.case_type ?? null,
           severity: 'medium',
-          status: row.status_current?.toLowerCase().includes('close') ? 'closed' : 'open',
-          filed_date: row.date_entered ? new Date(row.date_entered).toISOString().split('T')[0] : null,
+          status: (row.status_current ?? row.status ?? '').toLowerCase().includes('close') ? 'closed' : 'open',
+          filed_date: (row.date_entered ?? row.open_date ?? row.created_date)
+            ? new Date(row.date_entered ?? row.open_date ?? row.created_date).toISOString().split('T')[0]
+            : null,
           raw_data: row,
         }, { onConflict: 'source,source_id', ignoreDuplicates: false })
 
@@ -61,6 +96,7 @@ export async function syncAustin(supabase: SupabaseClient): Promise<SyncResult> 
 
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break
+    if (offset > 100000) break
   }
 
   return result

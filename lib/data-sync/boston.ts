@@ -1,36 +1,72 @@
 /**
  * Boston Inspectional Services Violations
  * API: https://data.boston.gov/api/3/action/datastore_search (CKAN)
- * Resource ID: 90ed3816-5e70-443c-803d-9a71f6a7a77f
+ * Tries multiple known resource IDs in order.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.boston.gov/api/3/action/datastore_search'
-const RESOURCE_ID = '90ed3816-5e70-443c-803d-9a71f6a7a77f'
+// Try multiple known resource IDs — Analyze Boston may rotate these
+const RESOURCE_IDS = [
+  process.env.BOSTON_RESOURCE_ID,
+  'wc8w-nujj',   // ISD Property Violations
+  'ug4g-cbe8',   // Building and Property Violations
+  'uzih-pxpv',   // Property Violations alternate
+  '90ed3816-5e70-443c-803d-9a71f6a7a77f', // legacy
+].filter(Boolean) as string[]
+
 const PAGE_SIZE = 1000
 
 export async function syncBoston(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
 
+  // Find a working resource ID
+  let workingResourceId: string | null = null
+  for (const id of RESOURCE_IDS) {
+    try {
+      const probe = await fetch(`${ENDPOINT}?resource_id=${id}&limit=1`, {
+        signal: AbortSignal.timeout(8000),
+      })
+      if (probe.ok) {
+        const json = await probe.json()
+        if (json.success && Array.isArray(json.result?.records)) {
+          workingResourceId = id
+          break
+        }
+      }
+    } catch { /* try next */ }
+  }
+
+  if (!workingResourceId) {
+    result.errors.push(
+      'No working Boston ISD resource ID found. Go to data.boston.gov, search "property violations", ' +
+      'click the dataset, copy the resource_id from the URL, and set BOSTON_RESOURCE_ID env var.'
+    )
+    return result
+  }
+
   let offset = 0
 
   while (true) {
-    const url = `${ENDPOINT}?resource_id=${RESOURCE_ID}&limit=${PAGE_SIZE}&offset=${offset}`
-    const res = await fetch(url)
-    if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }
-
-    const json = await res.json()
-    const rows: any[] = json.result?.records ?? []
+    const url = `${ENDPOINT}?resource_id=${workingResourceId}&limit=${PAGE_SIZE}&offset=${offset}`
+    let rows: any[]
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(15000) })
+      if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }
+      const json = await res.json()
+      rows = json.result?.records ?? []
+    } catch (e) {
+      result.errors.push(e instanceof Error ? e.message : String(e)); break
+    }
     if (rows.length === 0) break
 
     for (const row of rows) {
       try {
-        const sourceId = String(row.case_no ?? row._id ?? '')
+        const sourceId = String(row.case_no ?? row.sam_id ?? row.case_number ?? row._id ?? '')
         if (!sourceId) { result.skipped++; continue }
 
-        const addr = [row.address, row.city].filter(Boolean).join(', ')
-        const street = row.address ?? ''
+        const street = row.address ?? row.stno ?? ''
         const addrNorm = normalizeAddress(street)
 
         let propertyId = await resolveProperty(supabase, addrNorm, 'Boston', 'MA')
@@ -64,7 +100,7 @@ export async function syncBoston(supabase: SupabaseClient): Promise<SyncResult> 
 
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break
-    if (offset > 20000) break
+    if (offset > 50000) break
   }
 
   return result

@@ -60,12 +60,16 @@ export async function syncNycRegistration(supabase: SupabaseClient): Promise<Syn
 
           if (!existing) {
             const baseSlug = slugify(ownerName + '-nyc', { lower: true, strict: true })
-            const { data: landlord } = await supabase
+            // Append a short hash to avoid slug collisions on similar names
+            const suffix = Math.random().toString(36).slice(2, 6)
+            const slug = `${baseSlug}-${suffix}`
+            const { data: landlord, error: insertErr } = await supabase
               .from('landlords')
-              .insert({ display_name: ownerName, slug: baseSlug, city, state: 'New York', state_abbr: state, zip })
+              .insert({ display_name: ownerName, slug, city, state: 'New York', state_abbr: state, zip })
               .select('id')
               .single()
 
+            if (insertErr) { result.errors.push(insertErr.message); continue }
             if (landlord && propertyId) {
               await supabase.from('properties').update({ landlord_id: landlord.id }).eq('id', propertyId)
             }

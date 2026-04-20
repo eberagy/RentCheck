@@ -13,14 +13,25 @@ export async function syncCourtListener(supabase: SupabaseClient): Promise<SyncR
 
   const token = process.env.COURT_LISTENER_TOKEN
   if (!token) {
-    result.errors.push('COURT_LISTENER_TOKEN not configured')
+    result.errors.push('COURT_LISTENER_TOKEN not configured. Get a free token at courtlistener.com/register/')
     return result
   }
 
-  const headers = { Authorization: `Token ${token}`, 'Content-Type': 'application/json' }
+  const headers: Record<string, string> = {
+    'Authorization': `Token ${token}`,
+    'Content-Type': 'application/json',
+  }
 
-  // Search for housing/eviction related cases filed in the last 7 days
-  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  // Verify token works before proceeding
+  const authCheck = await fetch(`${BASE_URL}/dockets/?format=json&page_size=1`, { headers, signal: AbortSignal.timeout(10000) })
+    .catch(() => null)
+  if (!authCheck?.ok) {
+    result.errors.push(`CourtListener auth failed (HTTP ${authCheck?.status ?? 'network error'}). Verify COURT_LISTENER_TOKEN in Vercel env vars.`)
+    return result
+  }
+
+  // Search for housing/eviction related cases filed in the last 30 days
+  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   const queries = [
     'eviction landlord',
     'unlawful detainer',

@@ -15,7 +15,6 @@ const PAGE_SIZE = 1000
 
 export async function syncMinneapolis(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
-  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
   let workingEndpoint: string | null = null
   for (const ep of ENDPOINTS) {
@@ -35,8 +34,7 @@ export async function syncMinneapolis(supabase: SupabaseClient): Promise<SyncRes
 
   let offset = 0
   while (true) {
-    const dateField = workingEndpoint.includes('q4re') ? 'complaintdate' : 'opendate'
-    const url = `${workingEndpoint}?$where=${dateField}>'${since}'&$limit=${PAGE_SIZE}&$offset=${offset}`
+    const url = `${workingEndpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
     let rows: any[]
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(30000) })
@@ -86,6 +84,7 @@ export async function syncMinneapolis(supabase: SupabaseClient): Promise<SyncRes
 
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break
+    if (offset > 100000) break
   }
 
   return result

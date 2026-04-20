@@ -11,16 +11,18 @@ const PAGE_SIZE = 1000
 export async function syncNycDob(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
 
-  const since = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   let offset = 0
 
   while (true) {
-    const url = `${ENDPOINT}?$where=dateentered>'${since}'&$limit=${PAGE_SIZE}&$offset=${offset}&$order=complaintnumber`
+    const url = `${ENDPOINT}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=complaintnumber`
     const res = await fetch(url, { headers: { 'X-App-Token': process.env.NYC_OPEN_DATA_TOKEN ?? '' } })
     if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }
 
     const rows: any[] = await res.json()
     if (rows.length === 0) break
+
+    // Cap at 100k records per run to avoid timeout
+    if (offset > 100000) break
 
     for (const row of rows) {
       try {

@@ -7,10 +7,19 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
 
-const FEATURE_SERVICES = [
+// Nashville has both ArcGIS and Socrata portals — try both
+const ARCGIS_SERVICES = [
   process.env.NASHVILLE_ARCGIS_SERVICE,
   'https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Nashville_Code_Enforcement/FeatureServer/0',
   'https://services2.arcgis.com/HdTo6HJqh92wn4D8/arcgis/rest/services/Nashville_Property_Violations/FeatureServer/0',
+].filter(Boolean) as string[]
+
+// Nashville Socrata portal (data.nashville.gov)
+const SOCRATA_ENDPOINTS = [
+  process.env.NASHVILLE_DATASET ? `https://data.nashville.gov/resource/${process.env.NASHVILLE_DATASET}.json` : null,
+  'https://data.nashville.gov/resource/3h5e-5zk6.json',  // Building permits
+  'https://data.nashville.gov/resource/gyqh-bcsi.json',  // Code complaints
+  'https://data.nashville.gov/resource/p3gd-8c4k.json',  // Code enforcement cases
 ].filter(Boolean) as string[]
 
 const PAGE_SIZE = 1000
@@ -18,8 +27,11 @@ const PAGE_SIZE = 1000
 export async function syncNashville(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
 
+  // Try ArcGIS first, then Socrata
   let workingService: string | null = null
-  for (const svc of FEATURE_SERVICES) {
+  let isSocrata = false
+
+  for (const svc of ARCGIS_SERVICES) {
     try {
       const probe = await fetch(
         `${svc}/query?where=1%3D1&outFields=OBJECTID&f=json&resultRecordCount=1`,
@@ -33,26 +45,44 @@ export async function syncNashville(supabase: SupabaseClient): Promise<SyncResul
   }
 
   if (!workingService) {
-    result.errors.push('No working Nashville ArcGIS endpoint. Browse data.nashville.gov for code enforcement data, then set NASHVILLE_ARCGIS_SERVICE env var.')
+    for (const ep of SOCRATA_ENDPOINTS) {
+      try {
+        const probe = await fetch(`${ep}?$limit=1`, { signal: AbortSignal.timeout(8000) })
+        if (probe.ok) {
+          const rows = await probe.json()
+          if (Array.isArray(rows)) { workingService = ep; isSocrata = true; break }
+        }
+      } catch { /* try next */ }
+    }
+  }
+
+  if (!workingService) {
+    result.errors.push('No working Nashville endpoint. Set NASHVILLE_ARCGIS_SERVICE or NASHVILLE_DATASET env var.')
     return result
   }
 
   let offset = 0
   while (true) {
-    const url = `${workingService}/query?where=1%3D1&outFields=*&f=json&resultRecordCount=${PAGE_SIZE}&resultOffset=${offset}&orderByFields=OBJECTID`
+    let url: string
+    if (isSocrata) {
+      url = `${workingService}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
+    } else {
+      url = `${workingService}/query?where=1%3D1&outFields=*&f=json&resultRecordCount=${PAGE_SIZE}&resultOffset=${offset}&orderByFields=OBJECTID`
+    }
+
     let features: any[]
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(15000) })
       if (!res.ok) { result.errors.push(`HTTP ${res.status} from Nashville API`); break }
       const json = await res.json()
-      features = json.features ?? []
+      features = isSocrata ? (Array.isArray(json) ? json : []) : (json.features ?? [])
     } catch (e) {
       result.errors.push(e instanceof Error ? e.message : String(e)); break
     }
     if (features.length === 0) break
 
     for (const feat of features) {
-      const row = feat.attributes ?? feat
+      const row = (isSocrata ? feat : feat.attributes) ?? feat
       try {
         const sourceId = String(row.OBJECTID ?? row.CASE_NUMBER ?? row.VIOLATION_ID ?? '')
         if (!sourceId) { result.skipped++; continue }
@@ -106,6 +136,7 @@ export async function syncNashville(supabase: SupabaseClient): Promise<SyncResul
 
     offset += PAGE_SIZE
     if (features.length < PAGE_SIZE) break
+    if (offset > 100000) break
   }
 
   return result

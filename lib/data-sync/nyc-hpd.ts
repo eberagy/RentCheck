@@ -12,7 +12,8 @@ const PAGE_SIZE = 1000
 export async function syncNycHpd(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
 
-  const since = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  // 90-day lookback for initial population; tighten to 2 days once data is seeded
+  const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   let offset = 0
 
   while (true) {
@@ -81,6 +82,7 @@ export async function syncNycHpd(supabase: SupabaseClient): Promise<SyncResult> 
 
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break
+    if (offset > 100000) break
   }
 
   return result

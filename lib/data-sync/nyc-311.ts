@@ -35,14 +35,12 @@ const HOUSING_COMPLAINT_TYPES = [
 
 export async function syncNyc311(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
-  const since = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
+  const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()
 
-  // Build filter for housing complaint types
-  const typeFilter = HOUSING_COMPLAINT_TYPES.map(t => `complaint_type='${t.replace(/'/g, "''")}'`).join(' OR ')
-
+  // Filter by HPD agency only (keeps URL short — HPD handles all housing complaints)
   let offset = 0
   while (true) {
-    const url = `${ENDPOINT}?$where=created_date>'${since}' AND agency='HPD' AND (${typeFilter})&$limit=${PAGE_SIZE}&$offset=${offset}&$order=unique_key`
+    const url = `${ENDPOINT}?$where=created_date>'${since}' AND agency='HPD'&$limit=${PAGE_SIZE}&$offset=${offset}&$order=unique_key`
     let rows: any[]
     try {
       const res = await fetch(url, {
@@ -55,6 +53,7 @@ export async function syncNyc311(supabase: SupabaseClient): Promise<SyncResult> 
       result.errors.push(e instanceof Error ? e.message : String(e)); break
     }
     if (rows.length === 0) break
+    if (offset > 100000) break
 
     for (const row of rows) {
       try {

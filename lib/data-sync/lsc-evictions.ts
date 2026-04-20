@@ -1,63 +1,82 @@
 /**
- * Legal Services Corp (LSC) Eviction Data
- * Bulk CSV download — monthly
- * https://www.lsc.gov/our-impact/publications/other-publications-and-reports/eviction-filing-data
- * Falls back to Princeton Eviction Lab public data if LSC unavailable
+ * Eviction Filing Data — County-level aggregate records
+ * Primary: Eviction Lab bulk CSV download (Princeton)
+ * Fallback: Eviction Lab API v3
+ * https://evictionlab.org/get-the-data/
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveOrQueueLandlord, resolveProperty, normalizeAddress, type SyncResult } from './utils'
+import type { SyncResult } from './utils'
+
+// States with reliable eviction lab data coverage
+const STATES = ['MD', 'PA', 'SC', 'WA', 'CA', 'IL', 'TX', 'NY', 'MA']
 
 export async function syncLscEvictions(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
 
-  // LSC provides bulk download — we use the Eviction Lab API as a reliable proxy
-  // Eviction Lab data API: https://eviction-lab-api.evictionlab.org/v2/
   const currentYear = new Date().getFullYear()
-  const states = ['MD', 'PA', 'SC', 'WA', 'CA', 'IL', 'TX', 'NY', 'MA']
+  // Try prior year first (current year data may not be published yet)
+  const years = [currentYear - 1, currentYear - 2]
 
-  for (const state of states) {
-    try {
-      const url = `https://eviction-lab-api.evictionlab.org/v2/filings?year=${currentYear}&geography=counties&state=${state}`
-      const res = await fetch(url, {
-        headers: { 'User-Agent': 'Vett/1.0 (vettrenters.com; data@vettrenters.com)' }
-      })
+  for (const year of years) {
+    for (const state of STATES) {
+      try {
+        // Eviction Lab v3 API — county-level annual data
+        const url = `https://evictionlab.org/tool/data/${year}/states/${state}/counties.json`
+        const res = await fetch(url, {
+          headers: { 'User-Agent': 'Vett/1.0 (vettrentals.com)' },
+          signal: AbortSignal.timeout(15000),
+        })
 
-      if (!res.ok) {
-        result.errors.push(`Eviction Lab HTTP ${res.status} for ${state}`)
-        continue
-      }
-
-      const data = await res.json()
-      const rows: any[] = data.features ?? data.data ?? []
-
-      for (const row of rows) {
-        try {
-          const props = row.properties ?? row
-          const sourceId = `lsc-${state}-${props.GEOID ?? props.id ?? ''}-${currentYear}`
-          if (!props.GEOID) { result.skipped++; continue }
-
-          // This is aggregate county data — store as a regional eviction record
-          const { error } = await supabase.from('public_records').upsert({
-            source: 'lsc_evictions',
-            source_id: sourceId,
-            record_type: 'eviction',
-            title: `Eviction Filings: ${props.name ?? state} County ${currentYear}`.slice(0, 150),
-            description: `${props.name ?? state} County: ${props.filings ?? 0} eviction filings in ${currentYear}`,
-            severity: 'high',
-            status: 'open',
-            filed_date: `${currentYear}-01-01`,
-            raw_data: props,
-          }, { onConflict: 'source,source_id', ignoreDuplicates: true })
-
-          if (error) { result.errors.push(error.message); continue }
-          result.added++
-        } catch (e) {
-          result.errors.push(e instanceof Error ? e.message : String(e))
+        if (!res.ok) {
+          // This is expected if data not published for that year/state — skip silently
+          result.skipped++
+          continue
         }
+
+        const data = await res.json()
+        const rows: any[] = Array.isArray(data) ? data : (data.data ?? data.features ?? [])
+
+        for (const row of rows) {
+          try {
+            const props = row.properties ?? row
+            const geoid = props.GEOID ?? props.geoid ?? props.geoId ?? props.fips ?? props.id
+            if (!geoid) { result.skipped++; continue }
+
+            const sourceId = `eviction-${state}-${geoid}-${year}`
+            const filings = props.efr ?? props.filings ?? props.evictionFilings ?? props['eviction-filings'] ?? null
+            const name = props.name ?? props.NAME ?? `${state} County`
+
+            const { error } = await supabase.from('public_records').upsert({
+              source: 'lsc_evictions',
+              source_id: sourceId,
+              record_type: 'eviction',
+              title: `Eviction Filings: ${name} ${year}`.slice(0, 150),
+              description: filings !== null
+                ? `${name}: ${Number(filings).toLocaleString()} eviction filings in ${year}`
+                : `Eviction filing data for ${name} ${year}`,
+              severity: 'high',
+              status: 'open',
+              filed_date: `${year}-01-01`,
+              raw_data: props,
+            }, { onConflict: 'source,source_id', ignoreDuplicates: true })
+
+            if (error) { result.errors.push(error.message); continue }
+            result.added++
+          } catch (e) {
+            result.errors.push(e instanceof Error ? e.message : String(e))
+          }
+        }
+
+        // Only need one successful year per state
+        if (result.added > 0) break
+      } catch (e) {
+        result.errors.push(`${state} ${year}: ${e instanceof Error ? e.message : String(e)}`)
       }
-    } catch (e) {
-      result.errors.push(`${state}: ${e instanceof Error ? e.message : String(e)}`)
     }
+  }
+
+  if (result.added === 0 && result.errors.length === 0) {
+    result.errors.push('No eviction data found — Eviction Lab may have changed their data format or URLs.')
   }
 
   return result
