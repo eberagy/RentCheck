@@ -22,39 +22,39 @@ type SyncJob = {
 
 const SYNC_SOURCES = [
   // NYC
-  { id: 'nyc-hpd',          label: 'NYC HPD Violations',      schedule: 'Daily 2am',         description: 'NYC Housing Preservation & Development housing violations' },
-  { id: 'nyc-dob',          label: 'NYC DOB Complaints',      schedule: 'Daily 2:30am',       description: 'NYC Dept of Buildings complaints and violations' },
-  { id: 'nyc-registration', label: 'NYC Rent Registration',   schedule: 'Daily 3am',          description: 'NYC rent-stabilized building landlord registration (~50k landlords)' },
-  { id: 'nyc-311',          label: 'NYC 311 Housing',         schedule: 'Daily 3:30am',       description: 'Heat, mold, pests, water leak complaints via 311' },
+  { id: 'nyc-hpd',          logKey: 'nyc_hpd',              label: 'NYC HPD Violations',      schedule: 'Daily 2am',         description: 'NYC Housing Preservation & Development housing violations' },
+  { id: 'nyc-dob',          logKey: 'nyc_dob',              label: 'NYC DOB Complaints',      schedule: 'Daily 2:30am',       description: 'NYC Dept of Buildings complaints and violations' },
+  { id: 'nyc-registration', logKey: 'nyc_registration',     label: 'NYC Rent Registration',   schedule: 'Daily 3am',          description: 'NYC rent-stabilized building landlord registration (~50k landlords)' },
+  { id: 'nyc-311',          logKey: 'nyc_311',              label: 'NYC 311 Housing',         schedule: 'Daily 3:30am',       description: 'Heat, mold, pests, water leak complaints via 311' },
   // Original cities
-  { id: 'chicago',          label: 'Chicago Violations',      schedule: 'Daily 4am',          description: 'Chicago Dept of Buildings violations' },
-  { id: 'sf',               label: 'San Francisco',           schedule: 'Daily 4am',          description: 'SF Housing violations (DataSF)' },
-  { id: 'boston',           label: 'Boston Inspections',      schedule: 'Daily 4:30am',       description: 'Boston Inspectional Services violations' },
-  { id: 'philadelphia',     label: 'Philadelphia L&I',        schedule: 'Daily 5am',          description: 'Philadelphia Licenses & Inspections violations' },
-  { id: 'baltimore',        label: 'Baltimore Vacant Notices',schedule: 'Daily 5am',          description: 'Baltimore open vacant-building notices' },
-  { id: 'pittsburgh',       label: 'Pittsburgh PLI',          schedule: 'Daily 5am',          description: 'Pittsburgh PLI/DOMI/ES property violations' },
-  { id: 'austin',           label: 'Austin Complaints',       schedule: 'Daily 5:45am',       description: 'Austin code complaints' },
-  { id: 'seattle',          label: 'Seattle Violations',      schedule: 'Daily 6am',          description: 'Seattle rental housing code violations' },
-  { id: 'los-angeles',      label: 'Los Angeles LAHD',        schedule: 'Daily 6:15am',       description: 'LA Housing Dept code violations' },
-  { id: 'houston',          label: 'Houston Code',            schedule: 'Daily 6:30am',       description: 'Houston code enforcement violations' },
-  { id: 'miami',            label: 'Miami-Dade',              schedule: 'Daily 6:45am',       description: 'Miami-Dade code compliance violations' },
-  { id: 'denver',           label: 'Denver Code',             schedule: 'Daily 7am',          description: 'Denver code enforcement cases' },
-  { id: 'dallas',           label: 'Dallas Code',             schedule: 'Daily 7:15am',       description: 'Dallas code violation cases' },
-  { id: 'dc',               label: 'Washington DC',           schedule: 'Daily 7:30am',       description: 'DC DCRA housing & building violations' },
-  { id: 'atlanta',          label: 'Atlanta Permits',         schedule: 'Daily 7:45am',       description: 'Atlanta building permits & code violations' },
-  { id: 'nashville',        label: 'Nashville Code',          schedule: 'Daily 8am',          description: 'Nashville code enforcement violations' },
+  { id: 'chicago',          logKey: 'chicago_buildings',    label: 'Chicago Violations',      schedule: 'Daily 4am',          description: 'Chicago Dept of Buildings violations' },
+  { id: 'sf',               logKey: 'sf_housing',           label: 'San Francisco',           schedule: 'Daily 4am',          description: 'SF Housing violations (DataSF)' },
+  { id: 'boston',           logKey: 'boston_isd',           label: 'Boston Inspections',      schedule: 'Daily 4:30am',       description: 'Boston Inspectional Services violations' },
+  { id: 'philadelphia',     logKey: 'philly_li',            label: 'Philadelphia L&I',        schedule: 'Daily 5am',          description: 'Philadelphia Licenses & Inspections violations' },
+  { id: 'baltimore',        logKey: 'baltimore_vacants',    label: 'Baltimore Vacant Notices',schedule: 'Daily 5am',          description: 'Baltimore open vacant-building notices' },
+  { id: 'pittsburgh',       logKey: 'pittsburgh_pli',       label: 'Pittsburgh PLI',          schedule: 'Daily 5am',          description: 'Pittsburgh PLI/DOMI/ES property violations' },
+  { id: 'austin',           logKey: 'austin_code',          label: 'Austin Complaints',       schedule: 'Daily 5:45am',       description: 'Austin code complaints' },
+  { id: 'seattle',          logKey: 'seattle_sdci',         label: 'Seattle Violations',      schedule: 'Daily 6am',          description: 'Seattle rental housing code violations' },
+  { id: 'los-angeles',      logKey: 'la_lahd',              label: 'Los Angeles LAHD',        schedule: 'Daily 6:15am',       description: 'LA Housing Dept code violations' },
+  { id: 'houston',          logKey: 'houston_code',         label: 'Houston Code',            schedule: 'Daily 6:30am',       description: 'Houston code enforcement violations' },
+  { id: 'miami',            logKey: 'miami_dade',           label: 'Miami-Dade',              schedule: 'Daily 6:45am',       description: 'Miami-Dade code compliance violations' },
+  { id: 'denver',           logKey: 'denver_code',          label: 'Denver Code',             schedule: 'Daily 7am',          description: 'Denver code enforcement cases' },
+  { id: 'dallas',           logKey: 'dallas_code',          label: 'Dallas Code',             schedule: 'Daily 7:15am',       description: 'Dallas code violation cases' },
+  { id: 'dc',               logKey: 'dc_dcra',              label: 'Washington DC',           schedule: 'Daily 7:30am',       description: 'DC DCRA housing & building violations' },
+  { id: 'atlanta',          logKey: 'atlanta_permits',      label: 'Atlanta Permits',         schedule: 'Daily 7:45am',       description: 'Atlanta building permits & code violations' },
+  { id: 'nashville',        logKey: 'nashville_code',       label: 'Nashville Code',          schedule: 'Daily 8am',          description: 'Nashville code enforcement violations' },
   // New cities
-  { id: 'phoenix',          label: 'Phoenix Code',            schedule: 'Daily 8:15am',       description: 'Phoenix code enforcement cases' },
-  { id: 'minneapolis',      label: 'Minneapolis Code',        schedule: 'Daily 8:30am',       description: 'Minneapolis code compliance complaints' },
-  { id: 'portland',         label: 'Portland BDS',            schedule: 'Daily 8:45am',       description: 'Portland Bureau of Development Services violations' },
-  { id: 'san-antonio',      label: 'San Antonio Code',        schedule: 'Daily 9am',          description: 'San Antonio code enforcement cases' },
-  { id: 'detroit',          label: 'Detroit Blight',          schedule: 'Daily 9:15am',       description: 'Detroit blight violations' },
-  { id: 'charlotte',        label: 'Charlotte Code',          schedule: 'Daily 9:30am',       description: 'Charlotte code enforcement cases' },
-  { id: 'columbus',         label: 'Columbus Code',           schedule: 'Daily 9:45am',       description: 'Columbus code violations' },
+  { id: 'phoenix',          logKey: 'phoenix_code',         label: 'Phoenix Code',            schedule: 'Daily 8:15am',       description: 'Phoenix code enforcement cases' },
+  { id: 'minneapolis',      logKey: 'minneapolis_code',     label: 'Minneapolis Code',        schedule: 'Daily 8:30am',       description: 'Minneapolis code compliance complaints' },
+  { id: 'portland',         logKey: 'portland_bds',         label: 'Portland BDS',            schedule: 'Daily 8:45am',       description: 'Portland Bureau of Development Services violations' },
+  { id: 'san-antonio',      logKey: 'san_antonio_code',     label: 'San Antonio Code',        schedule: 'Daily 9am',          description: 'San Antonio code enforcement cases' },
+  { id: 'detroit',          logKey: 'detroit_blight',       label: 'Detroit Blight',          schedule: 'Daily 9:15am',       description: 'Detroit blight violations' },
+  { id: 'charlotte',        logKey: 'charlotte_code',       label: 'Charlotte Code',          schedule: 'Daily 9:30am',       description: 'Charlotte code enforcement cases' },
+  { id: 'columbus',         logKey: 'columbus_code',        label: 'Columbus Code',           schedule: 'Daily 9:45am',       description: 'Columbus code violations' },
   // National / federal
-  { id: 'hud-inspections',  label: 'HUD Inspections',         schedule: 'Weekly Monday',      description: 'HUD REAC physical inspection scores for subsidized housing' },
-  { id: 'court-listener',   label: 'CourtListener Cases',     schedule: 'Weekly Monday',      description: 'Federal court eviction & housing cases (requires COURT_LISTENER_TOKEN)' },
-  { id: 'lsc-evictions',    label: 'LSC Eviction Data',       schedule: 'Monthly 1st',        description: 'County-level eviction filing counts (9 states)' },
+  { id: 'hud-inspections',  logKey: 'hud_reac',             label: 'HUD Inspections',         schedule: 'Weekly Monday',      description: 'HUD REAC physical inspection scores for subsidized housing' },
+  { id: 'court-listener',   logKey: 'court_listener',       label: 'CourtListener Cases',     schedule: 'Weekly Monday',      description: 'Federal court eviction & housing cases (requires COURT_LISTENER_TOKEN)' },
+  { id: 'lsc-evictions',    logKey: 'lsc_evictions',        label: 'LSC Eviction Data',       schedule: 'Monthly 1st',        description: 'County-level eviction filing counts (9 states)' },
 ]
 
 export default function AdminDataSyncPage() {
@@ -123,13 +123,13 @@ export default function AdminDataSyncPage() {
     setRunningAll(false)
   }
 
-  function getLatest(sourceId: string) {
-    return syncLogs[sourceId]?.[0] ?? null
+  function getLatest(logKey: string) {
+    return syncLogs[logKey]?.[0] ?? null
   }
 
-  const neverRun = SYNC_SOURCES.filter(s => !getLatest(s.id)).length
-  const succeeded = SYNC_SOURCES.filter(s => getLatest(s.id)?.status === 'success').length
-  const errored = SYNC_SOURCES.filter(s => getLatest(s.id)?.status === 'error').length
+  const neverRun = SYNC_SOURCES.filter(s => !getLatest(s.logKey)).length
+  const succeeded = SYNC_SOURCES.filter(s => getLatest(s.logKey)?.status === 'success').length
+  const errored = SYNC_SOURCES.filter(s => getLatest(s.logKey)?.status === 'error').length
   const totalAdded = Object.values(syncLogs).flat().reduce((sum, l) => sum + (l.records_added ?? 0), 0)
 
   return (
@@ -173,8 +173,8 @@ export default function AdminDataSyncPage() {
 
       <div className="space-y-2">
         {SYNC_SOURCES.map(source => {
-          const latest = getLatest(source.id)
-          const logs = syncLogs[source.id] ?? []
+          const latest = getLatest(source.logKey)
+          const logs = syncLogs[source.logKey] ?? []
           const isTriggering = triggering.has(source.id)
 
           return (
