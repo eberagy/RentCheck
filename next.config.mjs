@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: [
+    '@sentry/nextjs',
+    '@sentry/opentelemetry',
+    '@opentelemetry/instrumentation',
+    'require-in-the-middle',
+  ],
   eslint: {
     ignoreDuringBuilds: true,
   },
