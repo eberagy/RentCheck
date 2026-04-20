@@ -71,7 +71,7 @@ function DisputeForm() {
           For errors in the original government data, we will refer you to the source agency.
         </p>
         <div className="flex gap-3 justify-center">
-          <Button asChild className="bg-navy-500 hover:bg-navy-600 text-white">
+          <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
             <Link href="/">Back to Home</Link>
           </Button>
           <Button asChild variant="outline">
@@ -163,7 +163,7 @@ function DisputeForm() {
       <Button
         type="submit"
         disabled={submitting || !recordId || !finalReason.trim()}
-        className="w-full bg-navy-500 hover:bg-navy-600 text-white font-semibold"
+        className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold"
       >
         {submitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Submitting…</> : 'Submit Dispute'}
       </Button>

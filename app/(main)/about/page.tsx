@@ -31,14 +31,12 @@ export default function AboutPage() {
       </p>
 
       <h2 className="text-xl font-bold text-gray-900 mb-6">Our Values</h2>
-      <div className="grid grid-cols-2 gap-4 mb-10">
+      <div className="grid grid-cols-2 gap-8 mb-10">
         {values.map(({ icon: Icon, title, desc }) => (
-          <div key={title} className="bg-white border border-gray-200 rounded-xl p-5">
-            <div className="h-10 w-10 bg-navy-50 rounded-lg flex items-center justify-center mb-3">
-              <Icon className="h-5 w-5 text-navy-600" />
-            </div>
+          <div key={title}>
+            <Icon className="h-5 w-5 text-teal-600 mb-3" />
             <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
-            <p className="text-sm text-gray-600">{desc}</p>
+            <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
           </div>
         ))}
       </div>

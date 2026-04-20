@@ -252,7 +252,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               Renter Reviews{reviewList.length > 0 && ` (${reviewList.length})`}
             </h2>
           </div>
-          <Button asChild size="sm" className="bg-navy-600 hover:bg-navy-700 text-white rounded-lg">
+          <Button asChild size="sm" className="bg-teal-600 hover:bg-teal-700 text-white rounded-lg">
             <Link href={`/review/new?property=${property.id}`}>Write a Review</Link>
           </Button>
         </div>
@@ -269,7 +269,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <Button
               asChild
               size="sm"
-              className="mt-5 bg-navy-600 hover:bg-navy-700 text-white rounded-lg"
+              className="mt-5 bg-teal-600 hover:bg-teal-700 text-white rounded-lg"
             >
               <Link href={`/review/new?property=${property.id}`}>Write the first review</Link>
             </Button>

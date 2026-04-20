@@ -19,7 +19,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
           We&apos;ve been notified and are looking into it. Try refreshing or go back to search.
         </p>
         <div className="flex gap-3 justify-center">
-          <Button onClick={reset} className="bg-navy-500 hover:bg-navy-600 text-white">
+          <Button onClick={reset} className="bg-teal-600 hover:bg-teal-700 text-white">
             Try Again
           </Button>
           <Button asChild variant="outline">

@@ -59,7 +59,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
         <div className={cn(
           'flex items-center gap-2 bg-white border-2 rounded-xl px-4 transition-colors',
           sizeClasses[size],
-          open && results.length > 0 ? 'border-navy-500 rounded-b-none' : 'border-gray-200 hover:border-gray-300 focus-within:border-navy-400'
+          open && results.length > 0 ? 'border-teal-500 rounded-b-none' : 'border-gray-200 hover:border-gray-300 focus-within:border-teal-400'
         )}>
           {loading
             ? <Loader2 className="h-4 w-4 text-gray-400 animate-spin flex-shrink-0" />
@@ -84,7 +84,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
           <button
             type="submit"
             className={cn(
-              'bg-navy-500 hover:bg-navy-600 text-white rounded-lg font-semibold transition-colors flex-shrink-0',
+              'bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-semibold transition-colors flex-shrink-0',
               size === 'lg' ? 'px-5 py-2 text-sm' : 'px-4 py-1.5 text-xs'
             )}
           >
@@ -95,13 +95,13 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
 
       {/* Autocomplete dropdown */}
       {open && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 bg-white border-2 border-t-0 border-navy-500 rounded-b-xl shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 bg-white border-2 border-t-0 border-teal-500 rounded-b-xl shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto">
           {results.map(result => (
             <button
               key={result.id}
               type="button"
               onClick={() => handleSelect(result)}
-              className="w-full text-left px-4 py-3 hover:bg-navy-50 transition-colors border-b border-gray-100 last:border-0 flex items-center gap-3"
+              className="w-full text-left px-4 py-3 hover:bg-teal-50 transition-colors border-b border-gray-100 last:border-0 flex items-center gap-3"
             >
               <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-gray-100 flex items-center justify-center">
                 {result.result_type === 'landlord'

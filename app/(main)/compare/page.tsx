@@ -269,7 +269,7 @@ function CompareSearch() {
         <code className="bg-gray-100 px-1 rounded text-xs">/compare?a=landlord-slug-1&b=landlord-slug-2</code>
       </p>
       <div className="mt-6">
-        <Button asChild className="bg-navy-500 hover:bg-navy-600 text-white">
+        <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
           <Link href="/search">Search Landlords</Link>
         </Button>
       </div>

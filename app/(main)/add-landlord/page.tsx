@@ -129,7 +129,7 @@ export default function AddLandlordPage() {
         <h1 className="text-2xl font-bold text-gray-900 mb-2">This landlord already exists!</h1>
         <p className="text-gray-600 mb-6">We found a matching profile. View it or leave your review directly.</p>
         <div className="flex gap-3 justify-center flex-wrap">
-          <Button asChild className="bg-navy-500 hover:bg-navy-600 text-white">
+          <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
             <Link href={`/landlord/${existingSlug}`}>View Profile</Link>
           </Button>
           <Button asChild variant="outline">
@@ -150,7 +150,7 @@ export default function AddLandlordPage() {
         <p className="text-gray-600 mb-2">Our founders will review and add this landlord to Vett within 1–2 business days.</p>
         <p className="text-sm text-gray-500 mb-8">Once approved, you&apos;ll be able to write a review.</p>
         <div className="flex gap-3 justify-center">
-          <Button asChild className="bg-navy-500 hover:bg-navy-600 text-white">
+          <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
             <Link href="/">Back to Home</Link>
           </Button>
           <Button variant="outline" onClick={() => setSubmitted(false)}>Submit Another</Button>
@@ -175,7 +175,7 @@ export default function AddLandlordPage() {
         Can&apos;t find your landlord? Submit their info and we&apos;ll add them to Vett so you and others can leave reviews.
       </p>
 
-      <form onSubmit={handleSubmit} className="space-y-5 bg-white border border-gray-200 rounded-xl p-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <Label htmlFor="display_name" className="text-sm font-medium">
             Landlord / Property Management Name <span className="text-red-500">*</span>
@@ -292,7 +292,7 @@ export default function AddLandlordPage() {
         <div className="pt-1">
           <Button
             type="submit"
-            className="w-full bg-navy-500 hover:bg-navy-600 text-white font-semibold"
+            className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold"
             disabled={loading}
           >
             {loading ? 'Submitting…' : 'Submit Landlord'}

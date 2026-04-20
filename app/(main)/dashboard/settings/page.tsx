@@ -156,7 +156,7 @@ export default function SettingsPage() {
         <div className="p-6">
           <Button
             onClick={saveProfile}
-            className="bg-navy-500 hover:bg-navy-600 text-white"
+            className="bg-teal-600 hover:bg-teal-700 text-white"
             disabled={saving}
           >
             {saving ? (

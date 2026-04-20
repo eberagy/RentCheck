@@ -40,46 +40,6 @@ async function getRecentReviews() {
   }
 }
 
-const FEATURES = [
-  {
-    icon: Shield,
-    title: 'Lease-Verified Reviews',
-    description: 'Every published review is backed by a real lease document, reviewed by our team. No fake reviews — ever.',
-    color: 'text-teal-600',
-    bg: 'bg-teal-50',
-    border: 'border-teal-100',
-  },
-  {
-    icon: FileText,
-    title: 'Public Records Database',
-    description: 'Court cases, HPD violations, eviction filings, and code enforcement — pulled daily from 20+ government sources.',
-    color: 'text-navy-600',
-    bg: 'bg-navy-50',
-    border: 'border-navy-100',
-  },
-  {
-    icon: Globe,
-    title: 'Nationwide Coverage',
-    description: 'NYC, Chicago, LA, Houston, Miami, DC, Boston, and more. One platform covers every major rental market.',
-    color: 'text-indigo-600',
-    bg: 'bg-indigo-50',
-    border: 'border-indigo-100',
-  },
-]
-
-const HOW_IT_WORKS = [
-  { step: '01', title: 'Search your landlord', desc: 'Search by name, management company, or property address.' },
-  { step: '02', title: 'See the full picture', desc: 'Read verified reviews and government violation records side-by-side.' },
-  { step: '03', title: 'Decide with confidence', desc: 'Sign knowing exactly what you\'re getting into — no surprises.' },
-]
-
-const TRUST_STATS = [
-  { icon: Scale, label: 'Section 230 protected' },
-  { icon: CheckCircle, label: 'Not a consumer reporting agency' },
-  { icon: Users, label: 'Free for renters, always' },
-  { icon: TrendingUp, label: 'Updated daily from govt sources' },
-]
-
 function StarDisplay({ rating }: { rating: number }) {
   return (
     <div className="flex items-center gap-0.5">
@@ -95,14 +55,13 @@ function StarDisplay({ rating }: { rating: number }) {
 
 export default async function HomePage() {
   const [stats, recentReviews] = await Promise.all([getStats(), getRecentReviews()])
-
   const quickSearchCities = MAJOR_CITIES.slice(0, 8)
 
   return (
     <div className="min-h-screen">
 
       {/* ── Hero ── */}
-      <section className="hero-gradient relative overflow-hidden py-20 sm:py-28 px-4">
+      <section className="hero-gradient relative overflow-hidden py-24 sm:py-32 px-4">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-navy-400/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -126,10 +85,10 @@ export default async function HomePage() {
 
           <div className="mt-10 max-w-2xl mx-auto">
             <div className="search-glow rounded-2xl">
-              <SearchBar size="lg" autoFocus />
+              <SearchBar size="lg" />
             </div>
             <p className="mt-3 text-sm text-slate-400">
-              Search by landlord name, management company, address, or city
+              Search by landlord name, management company, or address
             </p>
             <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
               {quickSearchCities.map(({ city, state }) => (
@@ -146,91 +105,83 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Stats Bar ── */}
+      {/* ── Live numbers ── */}
       <section className="bg-white border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-4 py-5 flex items-center justify-center gap-8 sm:gap-12 flex-wrap">
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 bg-teal-50 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Star className="h-4 w-4 text-teal-600" />
+        <div className="max-w-4xl mx-auto px-4 py-6 grid grid-cols-2 sm:grid-cols-4 divide-x divide-gray-100">
+          {[
+            { icon: Star, label: 'Verified reviews',    value: stats.reviews > 0   ? stats.reviews.toLocaleString()   : '—', color: 'text-amber-500' },
+            { icon: Building2, label: 'Landlords tracked', value: stats.landlords > 0 ? stats.landlords.toLocaleString() : '—', color: 'text-navy-600' },
+            { icon: AlertTriangle, label: 'Public records',  value: stats.records > 0  ? stats.records.toLocaleString()  : '—', color: 'text-red-500'  },
+            { icon: MapPin, label: 'Cities covered',    value: '20+',                                                          color: 'text-teal-600' },
+          ].map(({ icon: Icon, label, value, color }) => (
+            <div key={label} className="flex flex-col items-center justify-center px-6 py-4 text-center">
+              <Icon className={`h-5 w-5 mb-2 ${color}`} />
+              <div className="text-2xl font-bold text-gray-900 tabular-nums">{value}</div>
+              <div className="text-xs text-gray-500 mt-0.5">{label}</div>
             </div>
-            <div>
-              <div className="text-xl font-bold text-gray-900">
-                {stats.reviews > 0 ? stats.reviews.toLocaleString() : '—'}
-              </div>
-              <div className="text-xs text-gray-500">Verified reviews</div>
-            </div>
-          </div>
-          <div className="h-8 w-px bg-gray-100 hidden sm:block" />
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 bg-navy-50 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Building2 className="h-4 w-4 text-navy-600" />
-            </div>
-            <div>
-              <div className="text-xl font-bold text-gray-900">
-                {stats.landlords > 0 ? stats.landlords.toLocaleString() : '—'}
-              </div>
-              <div className="text-xs text-gray-500">Landlords tracked</div>
-            </div>
-          </div>
-          <div className="h-8 w-px bg-gray-100 hidden sm:block" />
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
-              <AlertTriangle className="h-4 w-4 text-red-500" />
-            </div>
-            <div>
-              <div className="text-xl font-bold text-gray-900">
-                {stats.records > 0 ? stats.records.toLocaleString() : '—'}
-              </div>
-              <div className="text-xs text-gray-500">Public records</div>
-            </div>
-          </div>
-          <div className="h-8 w-px bg-gray-100 hidden sm:block" />
-          <div className="flex items-center gap-3">
-            <div className="h-9 w-9 bg-indigo-50 rounded-xl flex items-center justify-center flex-shrink-0">
-              <MapPin className="h-4 w-4 text-indigo-600" />
-            </div>
-            <div>
-              <div className="text-xl font-bold text-gray-900">20+</div>
-              <div className="text-xs text-gray-500">Cities covered</div>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
       {/* ── How it works ── */}
-      <section className="py-16 px-4 bg-gray-50 border-b border-gray-100">
+      <section className="py-20 px-4 bg-white">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="text-xs uppercase tracking-widest text-teal-600 font-semibold mb-2">Simple process</p>
-            <h2 className="text-2xl font-bold text-gray-900">Research any landlord in minutes</h2>
+          <div className="text-center mb-14">
+            <p className="text-xs uppercase tracking-widest text-teal-600 font-semibold mb-3">Simple process</p>
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight">Research any landlord in minutes</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {HOW_IT_WORKS.map(({ step, title, desc }) => (
-              <div key={step} className="relative bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
-                <div className="text-5xl font-black text-gray-100 mb-3 leading-none select-none">{step}</div>
-                <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+            {[
+              { step: '01', title: 'Search your landlord', desc: 'Search by name, management company, or property address.' },
+              { step: '02', title: 'See the full picture', desc: 'Read verified reviews and government violation records side-by-side.' },
+              { step: '03', title: 'Decide with confidence', desc: "Sign knowing exactly what you're getting into — no surprises." },
+            ].map(({ step, title, desc }) => (
+              <div key={step} className="text-center md:text-left">
+                <div className="text-6xl font-black text-gray-100 leading-none mb-4 select-none">{step}</div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
+                <p className="text-gray-500 leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Features ── */}
-      <section className="py-16 px-4 bg-white">
+      {/* ── Why Vett — 3 pillars ── */}
+      <section className="py-20 px-4 bg-slate-50 border-y border-gray-100">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <p className="text-xs uppercase tracking-widest text-teal-600 font-semibold mb-2">Why Vett</p>
-            <h2 className="text-2xl font-bold text-gray-900">Everything you need to rent with confidence</h2>
+          <div className="text-center mb-14">
+            <p className="text-xs uppercase tracking-widest text-teal-600 font-semibold mb-3">Why Vett</p>
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight">Everything you need to rent with confidence</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {FEATURES.map(({ icon: Icon, title, description, color, bg, border }) => (
-              <div key={title} className={`rounded-2xl border ${border} ${bg} p-6 hover:shadow-md transition-all duration-200 hover:-translate-y-0.5`}>
-                <div className="inline-flex items-center justify-center h-11 w-11 rounded-xl bg-white shadow-sm mb-4">
-                  <Icon className={`h-5 w-5 ${color}`} />
-                </div>
-                <h3 className="font-semibold text-gray-900 mb-2">{title}</h3>
-                <p className="text-sm text-gray-600 leading-relaxed">{description}</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+            {[
+              {
+                icon: Shield,
+                title: 'Lease-Verified Reviews',
+                description: 'Every published review is backed by a real lease document. No fake reviews — ever.',
+                accent: 'text-teal-600',
+                bar: 'bg-teal-500',
+              },
+              {
+                icon: FileText,
+                title: 'Public Records Database',
+                description: 'Court cases, HPD violations, eviction filings, and code enforcement — pulled daily from 20+ government sources.',
+                accent: 'text-indigo-600',
+                bar: 'bg-indigo-500',
+              },
+              {
+                icon: Globe,
+                title: 'Nationwide Coverage',
+                description: 'NYC, Chicago, LA, Houston, Miami, DC, Boston, and more. One platform covers every major rental market.',
+                accent: 'text-navy-600',
+                bar: 'bg-navy-500',
+              },
+            ].map(({ icon: Icon, title, description, accent, bar }) => (
+              <div key={title}>
+                <div className={`h-0.5 w-10 rounded-full ${bar} mb-6`} />
+                <Icon className={`h-6 w-6 ${accent} mb-4`} />
+                <h3 className="text-lg font-bold text-gray-900 mb-2">{title}</h3>
+                <p className="text-gray-500 leading-relaxed text-sm">{description}</p>
               </div>
             ))}
           </div>
@@ -239,33 +190,33 @@ export default async function HomePage() {
 
       {/* ── Recent reviews ── */}
       {recentReviews.length > 0 && (
-        <section className="py-14 px-4 bg-gray-50 border-t border-gray-100">
+        <section className="py-20 px-4 bg-white">
           <div className="max-w-5xl mx-auto">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-end justify-between mb-10">
               <div>
-                <p className="text-xs uppercase tracking-widest text-teal-600 font-semibold mb-1">Community</p>
-                <h2 className="text-xl font-bold text-gray-900">Recent lease-verified reviews</h2>
+                <p className="text-xs uppercase tracking-widest text-teal-600 font-semibold mb-2">Community</p>
+                <h2 className="text-2xl font-black text-gray-900 tracking-tight">Recent lease-verified reviews</h2>
               </div>
-              <Link href="/search" className="text-sm text-navy-600 hover:text-navy-700 font-medium flex items-center gap-1">
+              <Link href="/search" className="text-sm text-gray-500 hover:text-gray-900 font-medium flex items-center gap-1 transition-colors">
                 Browse all <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {recentReviews.map((review: any) => (
-                <div key={review.id} className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5">
-                  <div className="flex items-center justify-between mb-3">
+                <div key={review.id} className="group flex flex-col gap-3 py-5 border-t border-gray-100 hover:border-teal-200 transition-colors">
+                  <div className="flex items-center justify-between">
                     <StarDisplay rating={review.rating_overall} />
                     <span className="text-xs text-gray-400">
                       {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                     </span>
                   </div>
-                  <p className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug mb-2">{review.title}</p>
-                  <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed mb-3">{review.body}</p>
-                  <div className="flex items-center gap-1.5 pt-2 border-t border-gray-100">
-                    <Building2 className="h-3 w-3 text-gray-400 flex-shrink-0" />
-                    <p className="text-xs text-gray-500 truncate">
+                  <p className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug">{review.title}</p>
+                  <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed flex-1">{review.body}</p>
+                  <div className="flex items-center gap-1.5">
+                    <Building2 className="h-3 w-3 text-gray-300 flex-shrink-0" />
+                    <p className="text-xs text-gray-400 truncate">
                       {review.landlord?.display_name ?? 'Unknown'}
-                      {review.landlord?.city && <span className="text-gray-400"> · {review.landlord.city}</span>}
+                      {review.landlord?.city && <span> · {review.landlord.city}</span>}
                     </p>
                   </div>
                 </div>
@@ -276,39 +227,39 @@ export default async function HomePage() {
       )}
 
       {/* ── Dual CTA ── */}
-      <section className="py-16 px-4 bg-white border-t border-gray-100">
-        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div className="relative overflow-hidden bg-gradient-to-br from-navy-900 to-navy-700 rounded-2xl p-8 text-white">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-20 translate-x-20" />
+      <section className="py-20 px-4 bg-slate-50 border-y border-gray-100">
+        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 to-navy-800 rounded-3xl p-8 text-white">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-teal-500/10 rounded-full -translate-y-24 translate-x-24 pointer-events-none" />
             <div className="relative">
-              <div className="h-10 w-10 bg-amber-400/20 rounded-xl flex items-center justify-center mb-4">
+              <div className="h-10 w-10 bg-amber-400/20 rounded-2xl flex items-center justify-center mb-5">
                 <Star className="h-5 w-5 text-amber-400" />
               </div>
-              <h2 className="text-xl font-bold mb-2">Had a landlord experience?</h2>
-              <p className="text-sm text-navy-200 leading-relaxed mb-6">
-                Help the next renter decide. Your review stays anonymous and helps build community accountability.
+              <h2 className="text-xl font-bold mb-2 leading-snug">Had a landlord experience?</h2>
+              <p className="text-sm text-slate-300 leading-relaxed mb-6">
+                Help the next renter decide. Your review stays anonymous and builds community accountability.
               </p>
-              <Button asChild size="sm" className="bg-white text-navy-900 hover:bg-navy-50 font-semibold">
+              <Button asChild size="sm" className="bg-white text-slate-900 hover:bg-slate-100 font-semibold rounded-full px-5">
                 <Link href="/review/new">
-                  Write a Review <ArrowRight className="ml-2 h-4 w-4" />
+                  Write a Review <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                 </Link>
               </Button>
             </div>
           </div>
 
-          <div className="relative overflow-hidden bg-gradient-to-br from-teal-700 to-teal-500 rounded-2xl p-8 text-white">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-white/5 rounded-full -translate-y-20 translate-x-20" />
+          <div className="relative overflow-hidden bg-gradient-to-br from-teal-600 to-teal-500 rounded-3xl p-8 text-white">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -translate-y-24 translate-x-24 pointer-events-none" />
             <div className="relative">
-              <div className="h-10 w-10 bg-white/20 rounded-xl flex items-center justify-center mb-4">
+              <div className="h-10 w-10 bg-white/20 rounded-2xl flex items-center justify-center mb-5">
                 <Building2 className="h-5 w-5 text-white" />
               </div>
-              <h2 className="text-xl font-bold mb-2">Don&apos;t see your landlord?</h2>
+              <h2 className="text-xl font-bold mb-2 leading-snug">Don&apos;t see your landlord?</h2>
               <p className="text-sm text-teal-100 leading-relaxed mb-6">
                 Submit missing landlords so the community can start leaving reviews and holding them accountable.
               </p>
-              <Button asChild size="sm" className="bg-white text-teal-700 hover:bg-teal-50 font-semibold">
+              <Button asChild size="sm" className="bg-white text-teal-700 hover:bg-teal-50 font-semibold rounded-full px-5">
                 <Link href="/add-landlord">
-                  Add a Landlord <ArrowRight className="ml-2 h-4 w-4" />
+                  Add a Landlord <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
                 </Link>
               </Button>
             </div>
@@ -316,59 +267,54 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── Major Cities ── */}
-      <section className="py-14 px-4 bg-gray-50 border-t border-gray-100">
+      {/* ── City coverage ── */}
+      <section className="py-16 px-4 bg-white">
         <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-2 mb-2">
-            <MapPin className="h-4 w-4 text-teal-600" />
-            <h2 className="text-xl font-semibold text-gray-900">Coverage by City</h2>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <p className="text-xs uppercase tracking-widest text-teal-600 font-semibold mb-2">Coverage</p>
+              <h2 className="text-2xl font-black text-gray-900 tracking-tight">Find your city</h2>
+            </div>
+            <p className="text-xs text-gray-400 hidden sm:block flex items-center gap-1.5">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-teal-500 mr-1" />
+              = public records available
+            </p>
           </div>
-          <p className="text-sm text-gray-500 mb-6">Search landlord reviews and public records in your city</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
             {MAJOR_CITIES.map(({ city, state, dataCoverage }) => (
               <Link
                 key={`${city}-${state}`}
                 href={`/city/${state.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`}
-                className="group bg-white rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 hover:border-teal-300 hover:text-teal-700 hover:bg-teal-50 hover:shadow-sm transition-all duration-150"
+                className="group flex items-center justify-between gap-1 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 hover:text-teal-700 hover:bg-teal-50 transition-all duration-150"
               >
-                <span className="flex items-center justify-between gap-1">
-                  <span className="truncate">{city}, {state}</span>
-                  <span className="flex items-center gap-1 flex-shrink-0">
-                    {dataCoverage && (
-                      <span className="h-1.5 w-1.5 rounded-full bg-teal-500" title="Public records available" />
-                    )}
-                    <ArrowRight className="h-3 w-3 text-gray-400 group-hover:text-teal-500 transition-colors" />
-                  </span>
+                <span className="truncate">{city}, {state}</span>
+                <span className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  {dataCoverage && <span className="h-1.5 w-1.5 rounded-full bg-teal-500" />}
+                  <ArrowRight className="h-3 w-3 text-teal-400" />
                 </span>
               </Link>
             ))}
           </div>
-          <p className="mt-4 text-xs text-gray-400 flex items-center gap-1.5">
-            <span className="h-1.5 w-1.5 rounded-full bg-teal-500 inline-block" />
-            Public records available
-          </p>
         </div>
       </section>
 
-      {/* ── College Cities ── */}
-      <section className="py-14 px-4 bg-white border-t border-gray-100">
+      {/* ── College cities ── */}
+      <section className="py-14 px-4 bg-slate-50 border-t border-gray-100">
         <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-2 mb-2">
-            <Search className="h-4 w-4 text-navy-600" />
-            <h2 className="text-xl font-semibold text-gray-900">College Cities</h2>
+          <div className="mb-8">
+            <p className="text-xs uppercase tracking-widest text-navy-600 font-semibold mb-2">For students</p>
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">College cities</h2>
+            <p className="text-gray-500 text-sm mt-1">Search landlord reviews near your university</p>
           </div>
-          <p className="text-sm text-gray-500 mb-6">Search landlord reviews near your university</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
             {COLLEGE_CITIES.slice(0, 8).map(({ city, state }) => (
               <Link
                 key={`${city}-${state}`}
                 href={`/city/${state.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`}
-                className="group bg-gray-50 rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-gray-700 hover:border-navy-300 hover:text-navy-700 hover:bg-navy-50 hover:shadow-sm transition-all duration-150"
+                className="group flex items-center justify-between gap-1 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:text-navy-700 hover:bg-navy-50 transition-all duration-150"
               >
-                <span className="flex items-center justify-between">
-                  <span>{city}, {state}</span>
-                  <ArrowRight className="h-3.5 w-3.5 text-gray-400 group-hover:text-navy-500 transition-colors" />
-                </span>
+                <span>{city}, {state}</span>
+                <ArrowRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-navy-400 transition-colors flex-shrink-0" />
               </Link>
             ))}
           </div>
@@ -376,11 +322,16 @@ export default async function HomePage() {
       </section>
 
       {/* ── Trust strip ── */}
-      <section className="py-10 px-4 bg-gray-50 border-t border-gray-100">
-        <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {TRUST_STATS.map(({ icon: Icon, label }) => (
-            <div key={label} className="flex items-center gap-2 text-sm text-gray-500">
-              <Icon className="h-4 w-4 text-teal-600 flex-shrink-0" />
+      <section className="py-10 px-4 border-t border-gray-100 bg-white">
+        <div className="max-w-3xl mx-auto flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+          {[
+            { icon: Scale, label: 'Section 230 protected' },
+            { icon: CheckCircle, label: 'Not a consumer reporting agency' },
+            { icon: Users, label: 'Free for renters, always' },
+            { icon: TrendingUp, label: 'Updated daily from govt sources' },
+          ].map(({ icon: Icon, label }) => (
+            <div key={label} className="flex items-center gap-2 text-sm text-gray-400">
+              <Icon className="h-3.5 w-3.5 text-teal-500 flex-shrink-0" />
               <span>{label}</span>
             </div>
           ))}

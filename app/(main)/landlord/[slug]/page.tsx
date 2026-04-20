@@ -132,41 +132,41 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
 
       <div className="max-w-5xl mx-auto px-4 py-8">
         {/* Breadcrumb */}
-        <nav className="text-xs text-gray-500 mb-4 flex items-center gap-1">
-          <Link href="/" className="hover:underline">Home</Link>
-          <span>›</span>
+        <nav className="text-xs text-gray-400 mb-6 flex items-center gap-1.5">
+          <Link href="/" className="hover:text-gray-700 transition-colors">Home</Link>
+          <span className="text-gray-300">/</span>
           {landlord.city && (
             <>
-              <Link href={`/city/${(landlord.state_abbr ?? '').toLowerCase()}/${(landlord.city ?? '').toLowerCase().replace(/\s+/g, '-')}`} className="hover:underline">
+              <Link href={`/city/${(landlord.state_abbr ?? '').toLowerCase()}/${(landlord.city ?? '').toLowerCase().replace(/\s+/g, '-')}`} className="hover:text-gray-700 transition-colors">
                 {landlord.city}
               </Link>
-              <span>›</span>
+              <span className="text-gray-300">/</span>
             </>
           )}
-          <span className="text-gray-700">{landlord.display_name}</span>
+          <span className="text-gray-600">{landlord.display_name}</span>
         </nav>
 
-        {/* Header */}
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <div className="flex items-start justify-between gap-4 flex-wrap">
+        {/* Profile header — editorial, no box */}
+        <div className="mb-8 pb-8 border-b border-gray-100">
+          <div className="flex items-start justify-between gap-6 flex-wrap">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-2xl font-bold text-gray-900">{landlord.display_name}</h1>
-                {landlord.is_verified && <VerifiedBadge />}
+              <div className="flex items-center gap-3 flex-wrap mb-1">
                 <LandlordGrade grade={landlord.grade} size="md" />
+                {landlord.is_verified && <VerifiedBadge />}
               </div>
+              <h1 className="text-3xl font-black text-gray-900 tracking-tight mt-2">{landlord.display_name}</h1>
               {landlord.business_name && (
-                <p className="text-gray-500 mt-0.5">{landlord.business_name}</p>
+                <p className="text-gray-500 mt-1 text-sm">{landlord.business_name}</p>
               )}
-              {(landlord.city || landlord.state_abbr) && (
-                <div className="flex items-center gap-1.5 mt-2 text-gray-500">
-                  <MapPin className="h-4 w-4" />
-                  <span>{[landlord.city, landlord.state_abbr, landlord.zip].filter(Boolean).join(', ')}</span>
-                </div>
-              )}
-              <div className="flex flex-wrap gap-3 mt-2 text-sm text-gray-500">
+              <div className="flex items-center flex-wrap gap-4 mt-3 text-sm text-gray-400">
+                {(landlord.city || landlord.state_abbr) && (
+                  <span className="flex items-center gap-1">
+                    <MapPin className="h-3.5 w-3.5" />
+                    {[landlord.city, landlord.state_abbr, landlord.zip].filter(Boolean).join(', ')}
+                  </span>
+                )}
                 {landlord.website && (
-                  <a href={landlord.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-navy-600">
+                  <a href={landlord.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-teal-600 transition-colors">
                     <Globe className="h-3.5 w-3.5" /> Website
                   </a>
                 )}
@@ -176,28 +176,30 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                   </span>
                 )}
               </div>
-              <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <p className="text-sm leading-relaxed text-slate-700">{landlordSummary}</p>
-              </div>
+              {landlordSummary && (
+                <p className="mt-4 text-sm text-gray-500 leading-relaxed max-w-2xl">{landlordSummary}</p>
+              )}
             </div>
-            <div className="flex flex-col items-end gap-2">
+
+            {/* Rating + actions */}
+            <div className="flex flex-col items-end gap-4">
               {landlord.avg_rating > 0 && (
                 <div className="text-right">
-                  <div className="text-3xl font-bold text-gray-900">{landlord.avg_rating.toFixed(1)}</div>
+                  <div className="text-4xl font-black text-gray-900 tabular-nums">{landlord.avg_rating.toFixed(1)}</div>
                   <StarRating value={landlord.avg_rating} readonly size="sm" />
-                  <p className="text-xs text-gray-500 mt-0.5">{landlord.review_count} {landlord.review_count === 1 ? 'review' : 'reviews'}</p>
+                  <p className="text-xs text-gray-400 mt-1">{landlord.review_count} {landlord.review_count === 1 ? 'review' : 'reviews'}</p>
                 </div>
               )}
               <div className="flex gap-2 flex-wrap justify-end">
                 <WatchlistButton landlordId={landlord.id} />
                 <ShareButton name={landlord.display_name} />
-                <Button asChild variant="outline" size="sm" className="text-gray-600 border-gray-200">
+                <Button asChild variant="outline" size="sm" className="text-gray-600 border-gray-200 rounded-full">
                   <Link href={`/compare?a=${landlord.slug}`}>
                     <GitCompare className="h-3.5 w-3.5 mr-1" /> Compare
                   </Link>
                 </Button>
                 {!landlord.is_claimed && (
-                  <Button asChild variant="outline" size="sm" className="text-navy-700 border-navy-200">
+                  <Button asChild size="sm" className="bg-teal-600 hover:bg-teal-700 text-white rounded-full">
                     <Link href={`/landlord-portal/claim?landlord=${landlord.id}`}>
                       Claim Profile
                     </Link>
@@ -207,70 +209,68 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             </div>
           </div>
 
-          {/* Bio (if claimed + verified) */}
+          {/* Bio */}
           {landlord.bio && (
-            <div className="mt-4 pt-4 border-t border-gray-100">
-              <p className="text-sm text-gray-700 leading-relaxed">{landlord.bio}</p>
-            </div>
+            <p className="mt-4 text-sm text-gray-700 leading-relaxed max-w-2xl border-l-2 border-teal-300 pl-4">{landlord.bio}</p>
           )}
 
           {/* Rating breakdown */}
           {(avgResponsiveness || avgMaintenance || avgHonesty || avgLeaseFairness) && (
-            <div className="mt-4 pt-4 border-t border-gray-100">
-              <h3 className="text-sm font-semibold text-gray-700 mb-3">Rating Breakdown</h3>
-              <div className="space-y-2 max-w-sm">
-                <RatingBar label="Responsiveness" value={avgResponsiveness} />
-                <RatingBar label="Maintenance" value={avgMaintenance} />
-                <RatingBar label="Honesty" value={avgHonesty} />
-                <RatingBar label="Lease Fairness" value={avgLeaseFairness} />
-              </div>
+            <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-3 max-w-lg">
+              <RatingBar label="Responsiveness" value={avgResponsiveness} />
+              <RatingBar label="Maintenance" value={avgMaintenance} />
+              <RatingBar label="Honesty" value={avgHonesty} />
+              <RatingBar label="Lease Fairness" value={avgLeaseFairness} />
               {wouldRentAgainPct !== null && approved.length > 0 && (
-                <p className="text-sm text-gray-600 mt-3">
+                <p className="text-xs text-gray-500 col-span-2 sm:col-span-4 mt-1">
                   <span className={`font-semibold ${wouldRentAgainPct >= 60 ? 'text-teal-600' : 'text-red-600'}`}>
                     {wouldRentAgainPct}%
                   </span>{' '}
-                  would rent again ({approved.length} responses)
+                  would rent again
                 </p>
               )}
             </div>
           )}
         </div>
 
-        {/* Violation summary banner */}
+        {/* Violation warning — inline, not a box */}
         {landlord.open_violation_count > 0 && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 flex items-center gap-3">
-            <div className="flex-shrink-0 h-10 w-10 bg-red-100 rounded-lg flex items-center justify-center">
-              <Flag className="h-5 w-5 text-red-600" />
-            </div>
-            <div>
-              <p className="font-semibold text-red-900">
-                {landlord.open_violation_count} open violation{landlord.open_violation_count !== 1 ? 's' : ''}
-              </p>
-              <p className="text-sm text-red-700">
-                This landlord has {landlord.total_violation_count} total public records on file
-                {landlord.eviction_count > 0 && `, including ${landlord.eviction_count} eviction filing${landlord.eviction_count !== 1 ? 's' : ''}`}.
-              </p>
-            </div>
+          <div className="flex items-start gap-3 mb-6 p-4 bg-red-50 rounded-2xl">
+            <Flag className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-red-800">
+              <span className="font-semibold">{landlord.open_violation_count} open violation{landlord.open_violation_count !== 1 ? 's' : ''}</span>
+              {' '}— {landlord.total_violation_count} total public records on file
+              {landlord.eviction_count > 0 && `, including ${landlord.eviction_count} eviction filing${landlord.eviction_count !== 1 ? 's' : ''}`}.
+            </p>
           </div>
         )}
 
+        {/* Tabs — clean underline style */}
         <Tabs defaultValue="reviews">
-          <TabsList className="w-full mb-6 bg-gray-100">
-            <TabsTrigger value="reviews" className="flex-1">
-              <MessageSquare className="h-4 w-4 mr-1.5" />
+          <TabsList className="w-full mb-6 bg-transparent border-b border-gray-200 rounded-none h-auto p-0 gap-0">
+            <TabsTrigger
+              value="reviews"
+              className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-teal-500 data-[state=active]:text-teal-700 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors bg-transparent shadow-none"
+            >
+              <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
               Reviews ({landlord.review_count})
             </TabsTrigger>
-            <TabsTrigger value="records" className="flex-1">
-              <Flag className="h-4 w-4 mr-1.5" />
+            <TabsTrigger
+              value="records"
+              className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-teal-500 data-[state=active]:text-teal-700 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors bg-transparent shadow-none"
+            >
+              <Flag className="h-3.5 w-3.5 mr-1.5" />
               Public Records ({(records ?? []).length})
             </TabsTrigger>
-            <TabsTrigger value="properties" className="flex-1">
-              <Building2 className="h-4 w-4 mr-1.5" />
+            <TabsTrigger
+              value="properties"
+              className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-teal-500 data-[state=active]:text-teal-700 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors bg-transparent shadow-none"
+            >
+              <Building2 className="h-3.5 w-3.5 mr-1.5" />
               Properties ({(properties ?? []).length})
             </TabsTrigger>
           </TabsList>
 
-          {/* Reviews tab */}
           <TabsContent value="reviews">
             <ReviewsList
               reviews={(reviews as Review[]) ?? []}
@@ -279,10 +279,9 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             />
           </TabsContent>
 
-          {/* Public records tab */}
           <TabsContent value="records">
             {(records ?? []).length >= 3 && (
-              <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
+              <div className="mb-6">
                 <ViolationChart records={(records ?? []) as PublicRecord[]} />
               </div>
             )}
@@ -293,26 +292,25 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             />
           </TabsContent>
 
-          {/* Properties tab */}
           <TabsContent value="properties">
             {(properties ?? []).length === 0 ? (
-              <div className="text-center py-10 text-gray-500 text-sm">No properties on record</div>
+              <div className="py-16 text-center text-gray-400 text-sm">No properties on record</div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
                 {(properties as Property[]).map(prop => (
-                  <Link key={prop.id} href={`/property/${prop.id}`} className="block bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <p className="font-medium text-gray-900 text-sm">
-                          {formatAddress(prop.address_line1, prop.city, prop.state_abbr, prop.zip ?? undefined)}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {prop.property_type} {prop.unit_count ? `· ${prop.unit_count} units` : ''}
-                        </p>
-                      </div>
-                      {prop.review_count > 0 && (
-                        <StarRating value={prop.avg_rating} readonly size="sm" />
-                      )}
+                  <Link key={prop.id} href={`/property/${prop.id}`}
+                    className="group flex items-center justify-between py-4 border-b border-gray-100 hover:border-gray-200 transition-colors">
+                    <div>
+                      <p className="font-medium text-gray-900 text-sm group-hover:text-teal-700 transition-colors">
+                        {formatAddress(prop.address_line1, prop.city, prop.state_abbr, prop.zip ?? undefined)}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {prop.property_type}{prop.unit_count ? ` · ${prop.unit_count} units` : ''}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {prop.review_count > 0 && <StarRating value={prop.avg_rating} readonly size="sm" />}
+                      <span className="text-gray-300 group-hover:text-teal-400 transition-colors">→</span>
                     </div>
                   </Link>
                 ))}

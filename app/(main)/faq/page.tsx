@@ -61,17 +61,17 @@ const FAQS = [
 function FAQItem({ id, q, a }: { id: string; q: string; a: string }) {
   const [open, setOpen] = useState(false)
   return (
-    <div id={id} className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+    <div id={id} className="border-b border-gray-100">
       <button
         onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between gap-4 py-4 text-left group"
       >
-        <span className="font-semibold text-gray-900 text-sm">{q}</span>
-        <ChevronDown className={cn('h-4 w-4 text-gray-400 flex-shrink-0 transition-transform', open && 'rotate-180')} />
+        <span className={cn('font-semibold text-sm transition-colors', open ? 'text-teal-700' : 'text-gray-900 group-hover:text-gray-700')}>{q}</span>
+        <ChevronDown className={cn('h-4 w-4 text-gray-300 flex-shrink-0 transition-transform', open && 'rotate-180 text-teal-500')} />
       </button>
       {open && (
-        <div className="px-5 pb-5 border-t border-gray-100">
-          <p className="text-sm text-gray-600 leading-relaxed pt-4">{a}</p>
+        <div className="pb-4">
+          <p className="text-sm text-gray-500 leading-relaxed">{a}</p>
         </div>
       )}
     </div>
@@ -89,21 +89,20 @@ export default function FAQPage() {
         </a>
       </p>
 
-      <div className="space-y-3">
+      <div>
         {FAQS.map(faq => (
           <FAQItem key={faq.id} {...faq} />
         ))}
       </div>
 
-      <div className="mt-10 bg-navy-50 border border-navy-100 rounded-xl p-6 text-sm text-navy-800">
-        <p className="font-semibold mb-1">Legal Notice</p>
+      <div className="mt-10 pt-6 border-t border-gray-100 text-sm text-gray-400">
+        <p className="font-semibold text-gray-600 mb-1">Legal Notice</p>
         <p className="leading-relaxed">
           Vett&apos;s public records data is sourced from official government databases and is provided for
-          informational purposes only. We are not responsible for errors in source data. For official dispute
-          resolution, contact the government agency that issued the record. Read our{' '}
-          <Link href="/fcra-notice" className="underline">FCRA Notice</Link>,{' '}
-          <Link href="/privacy" className="underline">Privacy Policy</Link>, and{' '}
-          <Link href="/terms" className="underline">Terms of Service</Link>.
+          informational purposes only. We are not responsible for errors in source data. Read our{' '}
+          <Link href="/fcra-notice" className="text-teal-600 hover:underline">FCRA Notice</Link>,{' '}
+          <Link href="/privacy" className="text-teal-600 hover:underline">Privacy Policy</Link>, and{' '}
+          <Link href="/terms" className="text-teal-600 hover:underline">Terms of Service</Link>.
         </p>
       </div>
     </div>

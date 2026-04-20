@@ -12,7 +12,7 @@ export default function NotFound() {
           The landlord, property, or page you&apos;re looking for doesn&apos;t exist — or may have been removed.
         </p>
         <div className="flex gap-3 justify-center">
-          <Button asChild className="bg-navy-500 hover:bg-navy-600 text-white">
+          <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
             <Link href="/search">
               <Search className="h-4 w-4 mr-2" /> Search Landlords
             </Link>

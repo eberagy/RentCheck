@@ -90,15 +90,15 @@ export default async function CityPage({ params }: CityPageProps) {
       </div>
 
       {landlords.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
-          <p className="font-medium text-gray-700">No landlords listed yet in {cityName}</p>
-          <p className="text-sm text-gray-500 mt-1">Be the first to add one</p>
-          <Link href="/review/new" className="mt-4 inline-flex items-center text-sm text-navy-600 hover:underline font-medium">
-            Write a Review →
+        <div className="py-16 text-center">
+          <p className="font-semibold text-gray-700">No landlords listed yet in {cityName}</p>
+          <p className="text-sm text-gray-400 mt-1">Be the first to add one</p>
+          <Link href="/add-landlord" className="mt-4 inline-flex items-center gap-1 text-sm text-teal-600 hover:underline font-medium">
+            Add a landlord →
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
           {landlords.map((landlord: Landlord) => (
             <LandlordCard key={landlord.id} landlord={landlord} />
           ))}
@@ -106,12 +106,12 @@ export default async function CityPage({ params }: CityPageProps) {
       )}
 
       {/* CTA */}
-      <div className="mt-10 bg-navy-50 border border-navy-100 rounded-xl p-6 text-center">
-        <h2 className="font-semibold text-navy-900">Know a landlord in {cityName}?</h2>
-        <p className="text-sm text-navy-700 mt-1">Help fellow renters by sharing your experience.</p>
+      <div className="mt-12 pt-8 border-t border-gray-100 text-center">
+        <p className="text-gray-700 font-semibold">Know a landlord in {cityName}?</p>
+        <p className="text-sm text-gray-400 mt-1">Help fellow renters by sharing your experience.</p>
         <Link
           href="/review/new"
-          className="mt-3 inline-flex items-center bg-navy-500 hover:bg-navy-600 text-white text-sm font-semibold rounded-lg px-5 py-2.5 transition-colors"
+          className="mt-4 inline-flex items-center bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold rounded-full px-5 py-2.5 transition-colors"
         >
           Write a Review
         </Link>

@@ -247,7 +247,7 @@ export default function NewReviewPage() {
             <div className="text-center py-8 border border-gray-200 rounded-xl bg-gray-50">
               <p className="text-sm text-gray-600 font-medium">Landlord not found</p>
               <p className="text-xs text-gray-400 mt-1">Submit them so we can add them to our database</p>
-              <Button size="sm" className="mt-3 bg-navy-500 hover:bg-navy-600 text-white" onClick={() => {
+              <Button size="sm" className="mt-3 bg-teal-600 hover:bg-teal-700 text-white" onClick={() => {
                 router.push(`/add-landlord?name=${encodeURIComponent(searchQuery)}`)
               }}>
                 Add &ldquo;{searchQuery}&rdquo; as a new landlord
@@ -439,7 +439,7 @@ export default function NewReviewPage() {
             <Button type="button" variant="outline" onClick={() => setStep(1)} className="flex-1">
               <ArrowLeft className="h-4 w-4 mr-1" /> Back
             </Button>
-            <Button type="submit" className="flex-1 bg-navy-500 hover:bg-navy-600 text-white" disabled={!ratingOverall || leaseStatus !== 'uploaded'}>
+            <Button type="submit" className="flex-1 bg-teal-600 hover:bg-teal-700 text-white" disabled={!ratingOverall || leaseStatus !== 'uploaded'}>
               Continue <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
@@ -481,7 +481,7 @@ export default function NewReviewPage() {
             <Button type="button" variant="outline" onClick={() => setStep(2)} className="flex-1">
               <ArrowLeft className="h-4 w-4 mr-1" /> Back
             </Button>
-            <Button type="submit" className="flex-1 bg-navy-500 hover:bg-navy-600 text-white" disabled={submitting}>
+            <Button type="submit" className="flex-1 bg-teal-600 hover:bg-teal-700 text-white" disabled={submitting}>
               {submitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Submitting…</> : 'Submit Review'}
             </Button>
           </div>
@@ -505,7 +505,7 @@ export default function NewReviewPage() {
                 View Landlord Profile
               </a>
             </Button>
-            <Button className="bg-navy-500 hover:bg-navy-600 text-white" onClick={() => router.push('/')}>
+            <Button className="bg-teal-600 hover:bg-teal-700 text-white" onClick={() => router.push('/')}>
               Back to Home
             </Button>
           </div>

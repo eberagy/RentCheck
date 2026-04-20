@@ -94,7 +94,7 @@ export default async function DashboardPage() {
               <Settings className="h-4 w-4 mr-1.5" /> Settings
             </Link>
           </Button>
-          <Button asChild size="sm" className="bg-navy-500 hover:bg-navy-600 text-white">
+          <Button asChild size="sm" className="bg-teal-600 hover:bg-teal-700 text-white">
             <Link href="/review/new">
               <Plus className="h-4 w-4 mr-1.5" /> Write a Review
             </Link>
@@ -232,7 +232,7 @@ export default async function DashboardPage() {
           <h3 className="font-semibold text-navy-900 mb-1">Get started with Vett</h3>
           <p className="text-sm text-navy-700 mb-4">Share your rental experience to help fellow renters</p>
           <div className="flex gap-3 justify-center flex-wrap">
-            <Button asChild size="sm" className="bg-navy-500 hover:bg-navy-600 text-white">
+            <Button asChild size="sm" className="bg-teal-600 hover:bg-teal-700 text-white">
               <Link href="/review/new">Write a Review</Link>
             </Button>
             <Button asChild size="sm" variant="outline">
