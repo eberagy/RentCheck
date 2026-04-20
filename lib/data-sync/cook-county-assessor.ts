@@ -71,7 +71,7 @@ export async function syncCookCountyAssessor(supabase: SupabaseClient): Promise<
         if (!ownerRaw) { result.skipped++; continue }
         const ownerName = ownerRaw.trim()
           .replace(/\s+/g, ' ')
-          .replace(/^[A-Z\s&.,'-]+$/, s => s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()))
+          .replace(/^[A-Z\s&.,'-]+$/, (s: string) => s.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase()))
 
         if (!ownerName || isGovernmentOwner(ownerName)) { result.skipped++; continue }
 

@@ -151,7 +151,7 @@ function cleanOwnerName(raw: string): string | null {
 }
 
 function toTitleCase(s: string): string {
-  return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase())
+  return s.toLowerCase().replace(/\b\w/g, (c: string) => c.toUpperCase())
 }
 
 const GOV_KEYWORDS = [
