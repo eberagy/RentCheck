@@ -28,7 +28,7 @@ const NAV_LINKS = [
 export function Navbar() {
   const pathname = usePathname()
   const router = useRouter()
-  const { user, profile, loading, signInWithGoogle, signOut } = useAuth()
+  const { user, profile, loading, signOut } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   // Close drawer on route change
@@ -125,10 +125,10 @@ export function Navbar() {
                 </>
               ) : (
                 <>
-                  <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900" onClick={() => signInWithGoogle()}>
+                  <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900" onClick={() => router.push('/login')}>
                     Sign In
                   </Button>
-                  <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white font-medium" onClick={() => signInWithGoogle()}>
+                  <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white font-medium" onClick={() => router.push('/login')}>
                     Get Started
                   </Button>
                 </>
@@ -242,9 +242,9 @@ export function Navbar() {
             <div className="px-1">
               <Button
                 className="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-xl"
-                onClick={() => signInWithGoogle()}
+                onClick={() => { setMobileOpen(false); router.push('/login') }}
               >
-                Sign In with Google
+                Sign In
               </Button>
               <p className="text-xs text-center text-gray-400 mt-2">Free for renters, always</p>
             </div>
