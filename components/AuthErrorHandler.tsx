@@ -19,12 +19,18 @@ export function AuthErrorHandler() {
       toast.error('Magic link expired — please request a new one', { duration: 6000 })
     } else if (error === 'access_denied') {
       toast.error('Sign-in failed. Please try again.')
+    } else if (error === 'auth_failed') {
+      toast.error('Authentication failed. Please try again.')
     } else if (errorDesc) {
       toast.error(decodeURIComponent(errorDesc.replace(/\+/g, ' ')))
     }
 
-    // Clean the error params from the URL
-    router.replace('/', { scroll: false })
+    // Clean the error params from the URL without navigating away
+    const url = new URL(window.location.href)
+    url.searchParams.delete('error')
+    url.searchParams.delete('error_code')
+    url.searchParams.delete('error_description')
+    router.replace(url.pathname + url.search, { scroll: false })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return null

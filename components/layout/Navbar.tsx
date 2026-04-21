@@ -140,7 +140,7 @@ export function Navbar() {
                   variant="ghost"
                   size="sm"
                   className={cn('rounded-full', isHome ? 'text-white hover:bg-white/10 hover:text-white' : '')}
-                  onClick={() => signInWithGoogle()}
+                  onClick={() => router.push('/login')}
                 >
                   Sign In
                 </Button>
@@ -152,7 +152,7 @@ export function Navbar() {
                       ? 'bg-white text-slate-950 hover:bg-slate-100'
                       : 'bg-navy-600 text-white hover:bg-navy-700'
                   )}
-                  onClick={() => signInWithGoogle()}
+                  onClick={() => router.push('/login')}
                 >
                   Get Started
                 </Button>
@@ -213,8 +213,8 @@ export function Navbar() {
                     </button>
                   </>
                 ) : (
-                  <Button className="mt-2 w-full rounded-2xl bg-navy-600 hover:bg-navy-700" onClick={() => { signInWithGoogle(); setMobileOpen(false) }}>
-                    Sign In with Google
+                  <Button className="mt-2 w-full rounded-2xl bg-navy-600 hover:bg-navy-700" onClick={() => { router.push('/login'); setMobileOpen(false) }}>
+                    Sign In
                   </Button>
                 )}
               </nav>

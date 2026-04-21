@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import { SearchBar } from '@/components/search/SearchBar'
 import { LandlordCard } from '@/components/landlord/LandlordCard'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -52,7 +52,7 @@ async function SearchResults({
   verifiedOnly: boolean
   page: number
 }) {
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   const pageSize = 20
   const offset = (page - 1) * pageSize
 
