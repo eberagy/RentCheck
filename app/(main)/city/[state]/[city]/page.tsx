@@ -9,6 +9,14 @@ import { Button } from '@/components/ui/button'
 import { US_STATES, COLLEGE_CITIES } from '@/types'
 import type { Landlord } from '@/types'
 
+/**
+ * Metro areas where the DB stores borough/neighborhood names rather than the
+ * metro name used in URLs. The city page query matches on ANY of these values.
+ */
+const CITY_ALIASES: Record<string, string[]> = {
+  'New York': ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island', 'New York'],
+}
+
 export const revalidate = 3600
 
 interface CityPageProps {
@@ -42,23 +50,38 @@ export default async function CityPage({ params }: CityPageProps) {
 
   const supabase = createServiceClient()
 
-  // Get top landlords in this city
-  const { data: landlords, count } = await supabase
+  // Get top landlords in this city (handle metro aliases like NYC boroughs)
+  const aliases = CITY_ALIASES[cityName]
+  let landlordQuery = supabase
     .from('landlords')
     .select('*', { count: 'exact' })
-    .ilike('city', `%${cityName}%`)
     .eq('state_abbr', stateAbbr)
+
+  if (aliases) {
+    landlordQuery = landlordQuery.or(aliases.map(a => `city.ilike.%${a}%`).join(','))
+  } else {
+    landlordQuery = landlordQuery.ilike('city', `%${cityName}%`)
+  }
+
+  const { data: landlords, count } = await landlordQuery
     .order('review_count', { ascending: false })
     .limit(20)
 
   if (!landlords) notFound()
 
   // Get property IDs for this city, then count public records
-  const { data: cityProps } = await supabase
+  let propsQuery = supabase
     .from('properties')
     .select('id')
-    .ilike('city', `%${cityName}%`)
     .eq('state_abbr', stateAbbr)
+
+  if (aliases) {
+    propsQuery = propsQuery.or(aliases.map(a => `city.ilike.%${a}%`).join(','))
+  } else {
+    propsQuery = propsQuery.ilike('city', `%${cityName}%`)
+  }
+
+  const { data: cityProps } = await propsQuery
   const cityPropIds = (cityProps ?? []).map((p: { id: string }) => p.id)
   const { count: recordCount } = cityPropIds.length > 0
     ? await supabase
