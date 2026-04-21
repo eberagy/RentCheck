@@ -46,6 +46,25 @@ import { syncRaleigh } from '@/lib/data-sync/raleigh'
 import { syncNycPluto } from '@/lib/data-sync/nyc-pluto'
 import { syncHudMultifamily } from '@/lib/data-sync/hud-multifamily'
 import { syncCookCountyAssessor } from '@/lib/data-sync/cook-county-assessor'
+import { syncPhillyOpa } from '@/lib/data-sync/philly-opa'
+import { syncBostonAssessing } from '@/lib/data-sync/boston-assessing'
+import { syncLaRso } from '@/lib/data-sync/la-rso'
+import { syncDcAssessor } from '@/lib/data-sync/dc-assessor'
+import { syncMiamiDadeAssessor } from '@/lib/data-sync/miami-dade-assessor'
+import { syncDenverAssessor } from '@/lib/data-sync/denver-assessor'
+import { syncHarrisCountyAssessor } from '@/lib/data-sync/harris-county-assessor'
+import { syncMaricopaAssessor } from '@/lib/data-sync/maricopa-assessor'
+import { syncKingCountyAssessor } from '@/lib/data-sync/king-county-assessor'
+import { syncSfAssessor } from '@/lib/data-sync/sf-assessor'
+import { syncNycHpdRegistration } from '@/lib/data-sync/nyc-hpd-registration'
+import { syncAlleghenyAssessor } from '@/lib/data-sync/allegheny-assessor'
+import { syncLaCountyAssessor } from '@/lib/data-sync/la-county-assessor'
+import { syncCuyahogaAssessor } from '@/lib/data-sync/cuyahoga-assessor'
+import { syncWakeCountyAssessor } from '@/lib/data-sync/wake-county-assessor'
+import { syncFranklinCountyAssessor } from '@/lib/data-sync/franklin-county-assessor'
+import { syncMecklenburgAssessor } from '@/lib/data-sync/mecklenburg-assessor'
+import { syncTravisCountyAssessor } from '@/lib/data-sync/travis-county-assessor'
+import { syncMineViolationOwners } from '@/lib/data-sync/mine-violation-owners'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 type SyncFn = (supabase: SupabaseClient) => Promise<{ added: number; updated: number; skipped: number; errors: string[] }>
@@ -97,9 +116,28 @@ const SYNC_HANDLERS: Record<string, { fn: SyncFn; logKey: string }> = {
   'lsc-evictions':    { fn: syncLscEvictions, logKey: 'lsc_evictions' },
   'hud-inspections':  { fn: syncHudInspections, logKey: 'hud_reac' },
   // Ownership / landlord databases
-  'nyc-pluto':        { fn: syncNycPluto, logKey: 'nyc_pluto' },
-  'hud-multifamily':  { fn: syncHudMultifamily, logKey: 'hud_multifamily' },
-  'cook-county':      { fn: syncCookCountyAssessor, logKey: 'cook_county_assessor' },
+  'nyc-pluto':          { fn: syncNycPluto, logKey: 'nyc_pluto' },
+  'hud-multifamily':    { fn: syncHudMultifamily, logKey: 'hud_multifamily' },
+  'cook-county':        { fn: syncCookCountyAssessor, logKey: 'cook_county_assessor' },
+  'philly-opa':         { fn: syncPhillyOpa, logKey: 'philly_opa' },
+  'boston-assessing':   { fn: syncBostonAssessing, logKey: 'boston_assessing' },
+  'la-rso':             { fn: syncLaRso, logKey: 'la_rso' },
+  'dc-assessor':        { fn: syncDcAssessor, logKey: 'dc_assessor' },
+  'miami-dade-assessor':{ fn: syncMiamiDadeAssessor, logKey: 'miami_dade_assessor' },
+  'denver-assessor':    { fn: syncDenverAssessor, logKey: 'denver_assessor' },
+  'harris-county':      { fn: syncHarrisCountyAssessor, logKey: 'harris_county_assessor' },
+  'maricopa-assessor':  { fn: syncMaricopaAssessor, logKey: 'maricopa_assessor' },
+  'king-county':          { fn: syncKingCountyAssessor, logKey: 'king_county_assessor' },
+  'sf-assessor':          { fn: syncSfAssessor, logKey: 'sf_assessor' },
+  'nyc-hpd-registration': { fn: syncNycHpdRegistration, logKey: 'nyc_hpd_registration' },
+  'allegheny-assessor':   { fn: syncAlleghenyAssessor, logKey: 'allegheny_assessor' },
+  'la-county-assessor':   { fn: syncLaCountyAssessor, logKey: 'la_county_assessor' },
+  'cuyahoga-assessor':    { fn: syncCuyahogaAssessor, logKey: 'cuyahoga_assessor' },
+  'wake-county':          { fn: syncWakeCountyAssessor, logKey: 'wake_county_assessor' },
+  'franklin-county':      { fn: syncFranklinCountyAssessor, logKey: 'franklin_county_assessor' },
+  'mecklenburg-assessor': { fn: syncMecklenburgAssessor, logKey: 'mecklenburg_assessor' },
+  'travis-county':        { fn: syncTravisCountyAssessor, logKey: 'travis_county_assessor' },
+  'mine-owners':          { fn: syncMineViolationOwners, logKey: 'mine_violation_owners' },
 }
 
 export const maxDuration = 300 // Vercel Pro: 5 min max
