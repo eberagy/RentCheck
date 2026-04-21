@@ -15,7 +15,11 @@ interface ComparePageProps {
 }
 
 export async function generateMetadata({ searchParams }: ComparePageProps): Promise<Metadata> {
-  return { title: 'Compare Landlords | Vett', robots: 'noindex' }
+  return {
+    title: 'Compare Landlords',
+    description: 'Compare two landlord profiles side by side across ratings, violations, and renter feedback.',
+    robots: 'noindex',
+  }
 }
 
 export default async function ComparePage({ searchParams }: ComparePageProps) {
@@ -81,34 +85,39 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   const overallWinner = winner(a.avg_rating, b.avg_rating)
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
-      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6">
+    <div className="mx-auto max-w-5xl px-4 py-8">
+      <Link href="/" className="mb-6 inline-flex items-center gap-1.5 text-sm text-slate-500 transition-colors hover:text-slate-700">
         <ArrowLeft className="h-4 w-4" /> Back
       </Link>
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">Landlord Comparison</h1>
-      <p className="text-sm text-gray-500 mb-8">Side-by-side comparison of public records and renter ratings</p>
+      <div className="mb-8 max-w-3xl">
+        <p className="text-xs font-semibold uppercase tracking-[0.24em] text-teal-600">Side-by-side analysis</p>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">Landlord comparison</h1>
+        <p className="mt-3 text-sm leading-6 text-slate-600 sm:text-base">
+          Review ratings, verification status, violations, and renter sentiment in one clean view before you decide who to rent from.
+        </p>
+      </div>
 
       {/* Header cards */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
         {[a, b].map((landlord, i) => (
           <div
             key={landlord.id}
-            className={`bg-white rounded-xl border p-5 ${overallWinner === (i === 0 ? 'a' : 'b') ? 'border-teal-400 ring-2 ring-teal-100' : 'border-gray-200'}`}
+            className={`rounded-3xl border bg-white p-5 shadow-sm transition-shadow ${overallWinner === (i === 0 ? 'a' : 'b') ? 'border-teal-300 ring-2 ring-teal-100' : 'border-slate-200'}`}
           >
             {overallWinner === (i === 0 ? 'a' : 'b') && (
-              <div className="inline-flex items-center gap-1 text-xs text-teal-700 font-semibold bg-teal-50 rounded-full px-2.5 py-1 mb-2">
+              <div className="mb-3 inline-flex items-center gap-1 rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700">
                 <CheckCircle2 className="h-3 w-3" /> Higher Rated
               </div>
             )}
             <div className="flex items-start justify-between gap-2">
               <div>
-                <Link href={`/landlord/${landlord.slug}`} className="font-bold text-gray-900 hover:text-navy-600 hover:underline text-lg">
+                <Link href={`/landlord/${landlord.slug}`} className="text-lg font-bold text-slate-950 transition-colors hover:text-navy-600 hover:underline">
                   {landlord.display_name}
                 </Link>
                 {landlord.is_verified && <VerifiedBadge />}
                 {(landlord.city || landlord.state_abbr) && (
-                  <p className="text-sm text-gray-500 mt-0.5">{[landlord.city, landlord.state_abbr].filter(Boolean).join(', ')}</p>
+                  <p className="mt-1 text-sm text-slate-500">{[landlord.city, landlord.state_abbr].filter(Boolean).join(', ')}</p>
                 )}
               </div>
               <LandlordGrade grade={landlord.grade} size="md" />
@@ -116,12 +125,12 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
             <div className="mt-3">
               {landlord.avg_rating > 0 ? (
                 <>
-                  <div className="text-3xl font-bold text-gray-900">{landlord.avg_rating.toFixed(1)}</div>
+                  <div className="text-3xl font-bold text-slate-950">{landlord.avg_rating.toFixed(1)}</div>
                   <StarRating value={landlord.avg_rating} readonly size="sm" />
-                  <p className="text-xs text-gray-500 mt-0.5">{landlord.review_count} reviews</p>
+                  <p className="mt-1 text-xs text-slate-500">{landlord.review_count} reviews</p>
                 </>
               ) : (
-                <p className="text-sm text-gray-400">No reviews yet</p>
+                <p className="text-sm text-slate-400">No reviews yet</p>
               )}
             </div>
           </div>
@@ -129,10 +138,10 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
       </div>
 
       {/* Comparison table */}
-      <div className="bg-white rounded-xl border border-gray-200 divide-y overflow-hidden">
+      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
         {/* Column headers */}
-        <div className="grid grid-cols-3 items-center py-2.5 px-5 gap-4 bg-gray-50 border-b border-gray-200">
-          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide text-center">Category</div>
+        <div className="grid grid-cols-3 items-center gap-4 border-b border-slate-200 bg-slate-50 px-5 py-3">
+          <div className="text-center text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Category</div>
           <div className="text-xs font-semibold text-navy-700 text-center truncate">{a.display_name}</div>
           <div className="text-xs font-semibold text-navy-700 text-center truncate">{b.display_name}</div>
         </div>
@@ -209,7 +218,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
       </div>
 
       {/* View profile links */}
-      <div className="grid grid-cols-2 gap-4 mt-6">
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
         <Button asChild variant="outline" className="w-full">
           <Link href={`/landlord/${a.slug}`}>View {a.display_name}</Link>
         </Button>
@@ -239,13 +248,13 @@ function CompareRow({
   const isGoodA = winner === 'a' && !note
   const isGoodB = winner === 'b' && !note
   return (
-    <div className="grid grid-cols-3 items-center py-3 px-5 gap-4 hover:bg-gray-50 transition-colors">
-      <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide text-center">{label}</div>
-      <div className={`text-center text-sm font-semibold rounded-md py-1 ${isGoodA ? 'text-teal-700 bg-teal-50' : 'text-gray-700'}`}>
+    <div className="grid grid-cols-3 items-center gap-4 px-5 py-3 transition-colors hover:bg-slate-50">
+      <div className="text-center text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{label}</div>
+      <div className={`rounded-xl py-1.5 text-center text-sm font-semibold ${isGoodA ? 'bg-teal-50 text-teal-700' : 'text-slate-700'}`}>
         {isGoodA && <span className="mr-1">▲</span>}
         {valA}
       </div>
-      <div className={`text-center text-sm font-semibold rounded-md py-1 ${isGoodB ? 'text-teal-700 bg-teal-50' : 'text-gray-700'}`}>
+      <div className={`rounded-xl py-1.5 text-center text-sm font-semibold ${isGoodB ? 'bg-teal-50 text-teal-700' : 'text-slate-700'}`}>
         {isGoodB && <span className="mr-1">▲</span>}
         {valB}
       </div>
@@ -255,23 +264,25 @@ function CompareRow({
 
 function CompareSearch() {
   return (
-    <div className="max-w-xl mx-auto px-4 py-16 text-center">
-      <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Compare Landlords</h1>
-      <p className="text-gray-500 mb-6">
+    <div className="mx-auto max-w-2xl px-4 py-16">
+      <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-10">
+      <Search className="mx-auto mb-4 h-12 w-12 text-slate-300" />
+      <h1 className="text-3xl font-semibold tracking-tight text-slate-950">Compare landlords</h1>
+      <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-500 sm:text-base">
         Search for two landlords on Vett and we'll compare their ratings, violations, and renter feedback side by side.
       </p>
-      <p className="text-sm text-gray-400 bg-gray-50 rounded-lg p-4">
+      <p className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-500">
         To compare, visit a landlord's profile and use the <strong>Compare</strong> button, or go to any landlord page and add{' '}
-        <code className="bg-gray-100 px-1 rounded">?compare=true</code> to the URL.
+        <code className="rounded bg-white px-1.5 py-0.5 text-slate-700">?compare=true</code> to the URL.
         <br /><br />
         Or use this URL format:<br />
-        <code className="bg-gray-100 px-1 rounded text-xs">/compare?a=landlord-slug-1&b=landlord-slug-2</code>
+        <code className="rounded bg-white px-1.5 py-0.5 text-xs text-slate-700">/compare?a=landlord-slug-1&b=landlord-slug-2</code>
       </p>
       <div className="mt-6">
         <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
           <Link href="/search">Search Landlords</Link>
         </Button>
+      </div>
       </div>
     </div>
   )

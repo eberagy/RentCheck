@@ -84,8 +84,8 @@ export default function FAQPage() {
       <h1 className="text-3xl font-bold text-gray-900 mb-2">Frequently Asked Questions</h1>
       <p className="text-gray-500 mb-10">
         Can&apos;t find your answer? Email{' '}
-        <a href="mailto:support@vettrenters.com" className="text-navy-600 hover:underline font-medium">
-          support@vettrenters.com
+        <a href="mailto:hello@vettrentals.com" className="text-navy-600 hover:underline font-medium">
+          hello@vettrentals.com
         </a>
       </p>
 

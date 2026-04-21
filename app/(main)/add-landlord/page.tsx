@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useDropzone } from 'react-dropzone'
 import { ArrowLeft, CheckCircle2, Upload, FileText, X, Info } from 'lucide-react'
@@ -31,6 +31,7 @@ const MAX_PROOF_SIZE = 10 * 1024 * 1024 // 10MB
 
 export default function AddLandlordPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
   const [submitted, setSubmitted] = useState(false)
   const [existingSlug, setExistingSlug] = useState<string | null>(null)
@@ -38,7 +39,7 @@ export default function AddLandlordPage() {
   const [proofFile, setProofFile] = useState<File | null>(null)
   const [proofError, setProofError] = useState<string | null>(null)
   const [form, setForm] = useState({
-    display_name: '',
+    display_name: searchParams.get('name') ?? '',
     business_name: '',
     city: '',
     state_abbr: '',
@@ -133,7 +134,7 @@ export default function AddLandlordPage() {
             <Link href={`/landlord/${existingSlug}`}>View Profile</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href={`/landlord/${existingSlug}#reviews`}>Write a Review</Link>
+            <Link href={`/landlord/${existingSlug}`}>Open Reviews</Link>
           </Button>
         </div>
       </div>

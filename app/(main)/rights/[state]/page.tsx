@@ -283,9 +283,9 @@ export async function generateMetadata({
 }: TenantRightsPageProps): Promise<Metadata> {
   const p = await params
   const stateInfo = US_STATES.find(s => s.abbr.toLowerCase() === p.state.toLowerCase())
-  if (!stateInfo) return { title: 'Tenant Rights | Vett' }
+  if (!stateInfo) return { title: 'Tenant Rights' }
   return {
-    title: `${stateInfo.name} Tenant Rights | Vett`,
+    title: `${stateInfo.name} Tenant Rights`,
     description: `Know your rights as a renter in ${stateInfo.name}. Security deposits, notice to enter, repairs, eviction protections, and legal resources.`,
   }
 }

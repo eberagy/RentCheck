@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { formatDate } from '@/lib/utils'
 
-export const metadata: Metadata = { title: 'Dashboard | Vett' }
+export const metadata: Metadata = { title: 'Dashboard' }
 
 const STATUS_STYLES: Record<string, string> = {
   approved: 'text-teal-700 border-teal-200 bg-teal-50',

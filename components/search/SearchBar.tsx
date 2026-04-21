@@ -57,7 +57,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
     <div ref={containerRef} className={cn('relative', className)}>
       <form onSubmit={handleSubmit}>
         <div className={cn(
-          'flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 shadow-[0_14px_36px_rgba(15,23,42,0.06)] transition-all',
+          'flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 shadow-[0_14px_36px_rgba(15,23,42,0.06)] transition-all sm:px-4',
           sizeClasses[size],
           open && results.length > 0
             ? 'rounded-b-none border-navy-300 shadow-[0_18px_44px_rgba(15,23,42,0.08)]'
@@ -79,7 +79,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
             autoComplete="off"
           />
           {query && (
-            <button type="button" onClick={() => { clear(); setOpen(false) }} className="text-slate-400 hover:text-slate-600">
+            <button type="button" onClick={() => { clear(); setOpen(false) }} className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600">
               <X className="h-4 w-4" />
             </button>
           )}
@@ -87,7 +87,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
             type="submit"
             className={cn(
               'flex-shrink-0 rounded-xl bg-slate-950 font-semibold text-white transition-colors hover:bg-navy-700',
-              size === 'lg' ? 'px-5 py-2 text-sm' : 'px-4 py-1.5 text-xs'
+              size === 'lg' ? 'px-5 py-2 text-sm' : 'px-3.5 py-1.5 text-xs sm:px-4'
             )}
           >
             Search
@@ -133,7 +133,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
             <button
               type="button"
               onClick={handleSubmit as unknown as React.MouseEventHandler}
-              className="text-xs font-medium text-navy-600 hover:text-navy-800"
+              className="inline-flex items-center gap-1 text-xs font-medium text-navy-600 transition-colors hover:text-navy-800"
             >
               See all results for &ldquo;{query}&rdquo; →
             </button>

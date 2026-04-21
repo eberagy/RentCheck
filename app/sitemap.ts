@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
+import { getSiteUrl } from '@/lib/site'
 import { COLLEGE_CITIES } from '@/types'
 
 export const revalidate = 3600
@@ -9,7 +10,7 @@ function citySlug(city: string) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrenters.com'
+  const baseUrl = getSiteUrl()
   const supabase = await createClient()
 
   const [
@@ -22,13 +23,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily', priority: 1 },
-    { url: `${baseUrl}/search`, changeFrequency: 'daily', priority: 0.9 },
+    { url: `${baseUrl}/search`, changeFrequency: 'weekly', priority: 0.8 },
     { url: `${baseUrl}/about`, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/faq`, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/contact`, changeFrequency: 'monthly', priority: 0.5 },
     { url: `${baseUrl}/rights`, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/add-landlord`, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${baseUrl}/landlord-portal`, changeFrequency: 'monthly', priority: 0.6 },
     { url: `${baseUrl}/terms`, changeFrequency: 'monthly', priority: 0.3 },
     { url: `${baseUrl}/privacy`, changeFrequency: 'monthly', priority: 0.3 },
     { url: `${baseUrl}/fcra-notice`, changeFrequency: 'monthly', priority: 0.3 },

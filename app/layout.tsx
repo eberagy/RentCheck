@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Toaster } from 'sonner'
 import { PostHogProvider } from '@/components/PostHogProvider'
+import { getSiteUrl } from '@/lib/site'
 import './globals.css'
 
 const sans = localFont({
@@ -13,7 +14,7 @@ const sans = localFont({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrenters.com'),
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: 'Vett — Know Before You Rent',
     template: '%s | Vett',

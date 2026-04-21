@@ -166,7 +166,12 @@ export function Navbar() {
               type="button"
               aria-label="Open navigation menu"
               onClick={() => setMobileOpen(true)}
-              className="rounded-full border border-slate-200 bg-white p-2 text-slate-600 shadow-sm transition-colors hover:bg-slate-50 md:hidden"
+              className={cn(
+                'rounded-full p-2 shadow-sm transition-colors md:hidden',
+                isHome
+                  ? 'border border-white/10 bg-white/5 text-white hover:bg-white/10'
+                  : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
+              )}
             >
               <Menu className="h-5 w-5" />
             </button>

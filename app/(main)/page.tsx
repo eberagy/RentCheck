@@ -17,7 +17,7 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { COLLEGE_CITIES } from '@/types'
 
 export const metadata: Metadata = {
-  title: 'Vett — Know Before You Rent',
+  title: { absolute: 'Vett — Know Before You Rent' },
   description:
     'Lease-verified renter reviews and public records on landlords in major cities and growing coverage nationwide. Know before you rent.',
 }

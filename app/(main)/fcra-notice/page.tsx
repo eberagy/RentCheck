@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { AlertTriangle } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'FCRA Notice | Vett',
+  title: 'FCRA Notice',
   description: 'Vett Fair Credit Reporting Act (FCRA) Notice — important information about use of this platform.',
 }
 
@@ -59,7 +59,7 @@ export default function FcraNoticePage() {
 
         <section>
           <h2 className="text-base font-semibold text-gray-900 mb-2">Questions</h2>
-          <p>For questions about this notice, contact <a href="mailto:legal@vettrenters.com" className="text-navy-600 hover:underline">legal@vettrenters.com</a>.</p>
+          <p>For questions about this notice, contact <a href="mailto:legal@vettrentals.com" className="text-navy-600 hover:underline">legal@vettrentals.com</a>.</p>
         </section>
       </div>
     </div>

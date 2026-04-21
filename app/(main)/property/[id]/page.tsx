@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button'
 import { PUBLIC_REVIEW_SELECT } from '@/lib/reviews/public'
 import { formatAddress } from '@/lib/utils'
 import { buildPropertySummary } from '@/lib/summaries'
+import { getSiteUrl } from '@/lib/site'
 import type { Review, PublicRecord } from '@/types'
 
 interface PropertyPageProps {
@@ -35,9 +36,21 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
   const supabase = createServiceClient()
   const { data: prop } = await supabase.from('properties').select('*').eq('id', p.id).single()
   if (!prop) return { title: 'Property Not Found' }
+  const title = `${prop.address_line1}, ${prop.city} Reviews`
+  const description = `Renter reviews and violation history for ${prop.address_line1}, ${prop.city}. ${prop.review_count} reviews.`
   return {
-    title: `${prop.address_line1}, ${prop.city} Reviews | Vett`,
-    description: `Renter reviews and violation history for ${prop.address_line1}, ${prop.city}. ${prop.review_count} reviews.`,
+    title,
+    description,
+    openGraph: {
+      title: `${title} | Vett`,
+      description,
+      url: `${getSiteUrl()}/property/${p.id}`,
+      type: 'website',
+    },
+    twitter: {
+      title: `${title} | Vett`,
+      description,
+    },
   }
 }
 

@@ -53,7 +53,9 @@ export function WatchlistButton({ landlordId }: WatchlistButtonProps) {
       size="sm"
       onClick={toggle}
       disabled={loading}
-      className={watching ? 'border-teal-300 text-teal-700 bg-teal-50 hover:bg-teal-100' : 'border-gray-200 text-gray-600'}
+      className={watching
+        ? 'rounded-full border-teal-300 bg-teal-50 text-teal-700 hover:bg-teal-100'
+        : 'rounded-full border-gray-200 text-gray-600'}
     >
       {watching ? <BellOff className="h-3.5 w-3.5 mr-1.5" /> : <Bell className="h-3.5 w-3.5 mr-1.5" />}
       {watching ? 'Watching' : 'Watch Landlord'}

@@ -51,7 +51,8 @@ const TOP_CITIES = [
 
 export function Footer() {
   return (
-    <footer className="bg-navy-900 text-gray-300">
+    <footer className="relative bg-navy-900 text-gray-300 overflow-hidden">
+      <div className="h-px bg-gradient-to-r from-transparent via-teal-500/30 to-transparent" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
 
         {/* Main grid */}
@@ -102,16 +103,20 @@ export function Footer() {
 
         {/* Top cities */}
         <div className="border-t border-gray-800 pt-8 mb-8">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">Top Cities</h3>
-          <div className="flex flex-wrap gap-2">
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-[0.2em] mb-4">Top Cities</h3>
+          <div className="flex flex-wrap gap-x-1 gap-y-1.5">
             {TOP_CITIES.map(({ city, state }) => (
-              <Link
-                key={`${city}-${state}`}
-                href={`/city/${state.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`}
-                className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
-              >
-                {city}, {state}
-              </Link>
+              <span key={`${city}-${state}`} className="inline-flex items-center">
+                <Link
+                  href={`/city/${state.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="text-xs text-gray-500 hover:text-teal-300 transition-colors"
+                >
+                  {city}, {state}
+                </Link>
+                {city !== TOP_CITIES[TOP_CITIES.length - 1].city || state !== TOP_CITIES[TOP_CITIES.length - 1].state ? (
+                  <span className="mx-1.5 text-gray-700">·</span>
+                ) : null}
+              </span>
             ))}
           </div>
         </div>

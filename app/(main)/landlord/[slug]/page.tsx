@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PUBLIC_REVIEW_SELECT } from '@/lib/reviews/public'
 import { formatAddress } from '@/lib/utils'
 import { buildLandlordSummary } from '@/lib/summaries'
+import { getSiteUrl } from '@/lib/site'
 import type { Review, PublicRecord, Property } from '@/types'
 
 interface LandlordPageProps {
@@ -36,12 +37,22 @@ export async function generateMetadata({ params }: LandlordPageProps): Promise<M
   if (!landlord) return { title: 'Landlord Not Found' }
 
   const location = [landlord.city, landlord.state_abbr].filter(Boolean).join(', ')
+  const reviewSummary = landlord.review_count > 0 && landlord.avg_rating > 0
+    ? `${landlord.review_count} renter reviews · ${landlord.avg_rating.toFixed(1)} avg rating`
+    : 'No lease-verified renter reviews yet'
+  const pageUrl = `${getSiteUrl()}/landlord/${p.slug}`
   return {
     title: `${landlord.display_name} Reviews${location ? ` — ${location}` : ''}`,
     description: `Read ${landlord.review_count} lease-verified renter reviews of ${landlord.display_name}. See public records, court cases, and violation history.`,
     openGraph: {
       title: `${landlord.display_name} Reviews | Vett`,
-      description: `${landlord.review_count} renter reviews · ${landlord.avg_rating.toFixed(1)} avg rating`,
+      description: reviewSummary,
+      url: pageUrl,
+      type: 'website',
+    },
+    twitter: {
+      title: `${landlord.display_name} Reviews | Vett`,
+      description: reviewSummary,
     },
   }
 }

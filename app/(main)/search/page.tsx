@@ -19,6 +19,7 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
   const q = params.q ?? ''
   const city = params.city ?? ''
   const state = params.state ?? ''
+  const hasDynamicQuery = Boolean(q || city || state || params.rating || params.verified || params.page)
   const title = city && state
     ? `Rental Research in ${city}, ${state}`
     : q
@@ -27,7 +28,7 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
   return {
     title,
     description: `Search landlords, properties, lease-verified renter reviews, and linked public records${city ? ` in ${city}` : ''} on Vett.`,
-    robots: { index: !!(q || (city && state)), follow: true },
+    robots: { index: !hasDynamicQuery, follow: true },
   }
 }
 

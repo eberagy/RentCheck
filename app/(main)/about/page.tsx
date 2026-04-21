@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { Shield, Search, BarChart3, Scale } from 'lucide-react'
 
 export const metadata: Metadata = {
-  title: 'About Vett | Glassdoor for Landlords',
+  title: 'About',
   description: 'Vett is a free platform that combines lease-verified renter reviews with public government records to help renters make informed housing decisions.',
 }
 

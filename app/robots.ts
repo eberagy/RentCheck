@@ -1,7 +1,8 @@
 import type { MetadataRoute } from 'next'
+import { getSiteHost, getSiteUrl } from '@/lib/site'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrenters.com'
+  const baseUrl = getSiteUrl()
 
   return {
     rules: [
@@ -17,6 +18,6 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
-    host: baseUrl,
+    host: getSiteHost(),
   }
 }
