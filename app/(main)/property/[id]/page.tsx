@@ -73,7 +73,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       r.status?.toLowerCase() !== 'closed' && r.status?.toLowerCase() !== 'dismissed'
   ).length
 
-  const reviewList = (reviews ?? []) as Review[]
+  const reviewList = (reviews ?? []) as unknown as Review[]
   const recordList = (records ?? []) as PublicRecord[]
   const propertySummary = buildPropertySummary({
     property,

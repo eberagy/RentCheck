@@ -51,15 +51,17 @@ const TOP_CITIES = [
 
 export function Footer() {
   return (
-    <footer className="bg-navy-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
+    <footer className="relative bg-navy-900 text-gray-300 overflow-hidden">
+      {/* Decorative top border */}
+      <div className="h-px bg-gradient-to-r from-transparent via-teal-500/30 to-transparent" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14 pb-8">
 
         {/* Main grid */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-10">
           {/* Brand */}
           <div className="col-span-2">
             <Logo size="md" href="/" inverted />
-            <p className="text-sm text-gray-400 mt-3 max-w-xs leading-relaxed">
+            <p className="text-sm text-gray-400 mt-4 max-w-xs leading-relaxed">
               Lease-verified renter reviews and public records on landlords nationwide.
               Know before you rent.
             </p>
@@ -102,16 +104,18 @@ export function Footer() {
 
         {/* Top cities */}
         <div className="border-t border-gray-800 pt-8 mb-8">
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">Top Cities</h3>
-          <div className="flex flex-wrap gap-2">
-            {TOP_CITIES.map(({ city, state }) => (
-              <Link
-                key={`${city}-${state}`}
-                href={`/city/${state.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`}
-                className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
-              >
-                {city}, {state}
-              </Link>
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-[0.2em] mb-4">Top Cities</h3>
+          <div className="flex flex-wrap gap-x-1 gap-y-1.5">
+            {TOP_CITIES.map(({ city, state }, idx) => (
+              <span key={`${city}-${state}`} className="inline-flex items-center">
+                <Link
+                  href={`/city/${state.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`}
+                  className="text-xs text-gray-500 hover:text-teal-300 transition-colors"
+                >
+                  {city}, {state}
+                </Link>
+                {idx < TOP_CITIES.length - 1 && <span className="mx-1.5 text-gray-700">·</span>}
+              </span>
             ))}
           </div>
         </div>

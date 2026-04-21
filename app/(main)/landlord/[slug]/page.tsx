@@ -317,7 +317,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           {/* Reviews tab */}
           <TabsContent value="reviews">
             <ReviewsList
-              reviews={(reviews as Review[]) ?? []}
+              reviews={(reviews as unknown as Review[]) ?? []}
               landlordId={landlord.id}
               landlordSlug={landlord.slug}
             />

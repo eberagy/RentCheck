@@ -33,11 +33,11 @@ export function LandlordCard({ landlord, className }: LandlordCardProps) {
   return (
     <Link href={`/landlord/${landlord.slug}`} className="block group">
       <Card className={cn(
-        'cursor-pointer overflow-hidden border-l-4 border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] shadow-sm transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-navy-200 group-hover:shadow-[0_24px_70px_rgba(15,23,42,0.10)]',
+        'cursor-pointer overflow-hidden border-l-4 border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:border-navy-200 group-hover:shadow-[0_24px_70px_rgba(15,23,42,0.12)]',
         gradeBorder,
         className
       )}>
-        <div className="h-1 bg-gradient-to-r from-transparent via-sky-100 to-transparent" />
+        <div className="h-1 bg-gradient-to-r from-transparent via-sky-200/80 to-transparent transition-all group-hover:via-teal-300/60" />
         <CardContent className="p-5">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
