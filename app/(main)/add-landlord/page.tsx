@@ -4,13 +4,14 @@ import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useDropzone } from 'react-dropzone'
-import { ArrowLeft, CheckCircle2, Upload, FileText, X, Info } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Upload, FileText, X, Info, Building2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@/hooks/useAuth'
 import { toast } from 'sonner'
 
 const US_STATES = [
@@ -32,6 +33,7 @@ const MAX_PROOF_SIZE = 10 * 1024 * 1024 // 10MB
 export default function AddLandlordPage() {
   const router = useRouter()
   const supabase = createClient()
+  const { user, loading: authLoading } = useAuth()
   const [submitted, setSubmitted] = useState(false)
   const [existingSlug, setExistingSlug] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -89,7 +91,7 @@ export default function AddLandlordPage() {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) { toast.error('Please sign in to submit'); router.push('/login?redirectTo=/add-landlord'); return }
         const ext = proofFile.name.split('.').pop()
-        const path = `submissions/${user.id}/${Date.now()}.${ext}`
+        const path = `${user.id}/${Date.now()}.${ext}`
         const { error: uploadErr } = await supabase.storage
           .from('landlord-verification-docs')
           .upload(path, proofFile, { upsert: false })
@@ -118,6 +120,28 @@ export default function AddLandlordPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (!authLoading && !user) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-20 text-center">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-50">
+          <Building2 className="h-7 w-7 text-navy-600" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900">Sign in to add a landlord</h1>
+        <p className="mt-2 text-sm text-gray-500">
+          You need an account to submit landlord profiles for review.
+        </p>
+        <div className="mt-6 flex justify-center gap-3">
+          <Button asChild className="rounded-full bg-navy-600 hover:bg-navy-700 text-white">
+            <Link href="/login?redirectTo=/add-landlord">Sign In</Link>
+          </Button>
+          <Button asChild variant="outline" className="rounded-full">
+            <Link href="/">Back to Home</Link>
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   if (existingSlug) {
