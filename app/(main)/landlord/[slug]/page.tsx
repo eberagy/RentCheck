@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { MapPin, Globe, Phone, MessageSquare, Flag, Building2, GitCompare } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import { PublicRecordsPanel } from '@/components/landlord/PublicRecordsPanel'
 import { ViolationChart } from '@/components/landlord/ViolationChart'
 import { VerifiedBadge } from '@/components/landlord/VerifiedBadge'
@@ -14,10 +14,9 @@ import { ShareButton } from '@/components/landlord/ShareButton'
 import { StarRating } from '@/components/review/StarRating'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PUBLIC_REVIEW_SELECT } from '@/lib/reviews/public'
 import { formatAddress } from '@/lib/utils'
 import { buildLandlordSummary } from '@/lib/summaries'
-import { searchYelp } from '@/lib/yelp'
-import { ExternalReviewLinks } from '@/components/landlord/ExternalReviewLinks'
 import type { Review, PublicRecord, Property } from '@/types'
 
 interface LandlordPageProps {
@@ -28,7 +27,7 @@ export const revalidate = 3600 // ISR: revalidate every 1 hour
 
 export async function generateMetadata({ params }: LandlordPageProps): Promise<Metadata> {
   const p = await params
-  const supabase = await createClient()
+  const supabase = createServiceClient()
   const { data: landlord } = await supabase
     .from('landlords')
     .select('display_name, city, state_abbr, avg_rating, review_count')
@@ -42,16 +41,14 @@ export async function generateMetadata({ params }: LandlordPageProps): Promise<M
     description: `Read ${landlord.review_count} lease-verified renter reviews of ${landlord.display_name}. See public records, court cases, and violation history.`,
     openGraph: {
       title: `${landlord.display_name} Reviews | Vett`,
-      description: landlord.review_count > 0
-        ? `${landlord.review_count} renter reviews · ${landlord.avg_rating.toFixed(1)} avg rating`
-        : `Public records, violation history, and renter reviews for ${landlord.display_name}.`,
+      description: `${landlord.review_count} renter reviews · ${landlord.avg_rating.toFixed(1)} avg rating`,
     },
   }
 }
 
 export default async function LandlordPage({ params }: LandlordPageProps) {
   const p = await params
-  const supabase = await createClient()
+  const supabase = createServiceClient()
 
   // Fetch landlord
   const { data: landlord } = await supabase
@@ -70,7 +67,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
   ] = await Promise.all([
     supabase
       .from('reviews')
-      .select('*, reviewer:profiles(full_name, avatar_url), property:properties(address_line1, city, state_abbr), evidence:review_evidence(*)')
+      .select(PUBLIC_REVIEW_SELECT)
       .eq('landlord_id', landlord.id)
       .eq('status', 'approved')
       .order('created_at', { ascending: false })
@@ -112,11 +109,6 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
     propertyCount: (properties ?? []).length,
   })
 
-  // Yelp enrichment (only for business accounts, non-blocking)
-  const yelpData = landlord.business_name
-    ? await searchYelp(landlord.business_name, landlord.city ?? '', landlord.state_abbr ?? '').catch(() => null)
-    : null
-
   // JSON-LD structured data
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -124,7 +116,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
     name: landlord.display_name,
     ...(landlord.business_name && { legalName: landlord.business_name }),
     ...(landlord.city && { address: { '@type': 'PostalAddress', addressLocality: landlord.city, addressRegion: landlord.state_abbr, postalCode: landlord.zip ?? undefined } }),
-    ...(landlord.avg_rating > 0 && landlord.review_count > 0 && {
+    ...(landlord.avg_rating > 0 && {
       aggregateRating: {
         '@type': 'AggregateRating',
         ratingValue: landlord.avg_rating,
@@ -139,157 +131,190 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="min-h-screen bg-slate-50">
+        <div className="mx-auto max-w-5xl px-4 py-8">
         {/* Breadcrumb */}
-        <nav className="text-xs text-gray-400 mb-6 flex items-center gap-1.5">
-          <Link href="/" className="hover:text-gray-700 transition-colors">Home</Link>
-          <span className="text-gray-300">/</span>
+        <nav className="mb-4 flex items-center gap-1 text-xs text-slate-500">
+          <Link href="/" className="transition-colors hover:text-navy-700 hover:underline">Home</Link>
+          <span className="text-slate-300">›</span>
           {landlord.city && (
             <>
-              <Link href={`/city/${(landlord.state_abbr ?? '').toLowerCase()}/${(landlord.city ?? '').toLowerCase().replace(/\s+/g, '-')}`} className="hover:text-gray-700 transition-colors">
+              <Link href={`/city/${(landlord.state_abbr ?? '').toLowerCase()}/${(landlord.city ?? '').toLowerCase().replace(/\s+/g, '-')}`} className="transition-colors hover:text-navy-700 hover:underline">
                 {landlord.city}
               </Link>
-              <span className="text-gray-300">/</span>
+              <span className="text-slate-300">›</span>
             </>
           )}
-          <span className="text-gray-600">{landlord.display_name}</span>
+          <span className="font-medium text-slate-700">{landlord.display_name}</span>
         </nav>
 
-        {/* Profile header — editorial, no box */}
-        <div className="mb-8 pb-8 border-b border-gray-100">
-          <div className="flex items-start justify-between gap-6 flex-wrap">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 flex-wrap mb-1">
-                <LandlordGrade grade={landlord.grade} size="md" />
+        {/* Header */}
+        <div className="mb-6 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+          <div className="h-1.5 bg-gradient-to-r from-navy-600 via-sky-500 to-teal-500" />
+          <div className="grid gap-6 px-5 py-6 sm:px-7 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
+            <div className="min-w-0 space-y-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">{landlord.display_name}</h1>
                 {landlord.is_verified && <VerifiedBadge />}
+                <LandlordGrade grade={landlord.grade} size="md" />
               </div>
-              <h1 className="text-3xl font-black text-gray-900 tracking-tight mt-2">{landlord.display_name}</h1>
               {landlord.business_name && (
-                <p className="text-gray-500 mt-1 text-sm">{landlord.business_name}</p>
+                <p className="text-sm text-slate-500">{landlord.business_name}</p>
               )}
-              <div className="flex items-center flex-wrap gap-4 mt-3 text-sm text-gray-400">
-                {(landlord.city || landlord.state_abbr) && (
-                  <span className="flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5" />
-                    {[landlord.city, landlord.state_abbr, landlord.zip].filter(Boolean).join(', ')}
-                  </span>
-                )}
+              {(landlord.city || landlord.state_abbr) && (
+                <div className="flex items-center gap-1.5 text-sm text-slate-500">
+                  <MapPin className="h-4 w-4 flex-shrink-0" />
+                  <span>{[landlord.city, landlord.state_abbr, landlord.zip].filter(Boolean).join(', ')}</span>
+                </div>
+              )}
+              <div className="flex flex-wrap gap-3 text-sm text-slate-500">
                 {landlord.website && (
-                  <a href={landlord.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-teal-600 transition-colors">
+                  <a href={landlord.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 transition-colors hover:border-navy-200 hover:text-navy-700">
                     <Globe className="h-3.5 w-3.5" /> Website
                   </a>
                 )}
                 {landlord.phone && (
-                  <span className="flex items-center gap-1">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5">
                     <Phone className="h-3.5 w-3.5" /> {landlord.phone}
                   </span>
                 )}
               </div>
-              {landlordSummary && (
-                <p className="mt-4 text-sm text-gray-500 leading-relaxed max-w-2xl">{landlordSummary}</p>
-              )}
             </div>
-
-            {/* Rating + actions */}
-            <div className="flex flex-col items-end gap-4">
-              {landlord.avg_rating > 0 && (
-                <div className="text-right">
-                  <div className="text-4xl font-black text-gray-900 tabular-nums">{landlord.avg_rating.toFixed(1)}</div>
-                  <StarRating value={landlord.avg_rating} readonly size="sm" />
-                  <p className="text-xs text-gray-400 mt-1">{landlord.review_count} {landlord.review_count === 1 ? 'review' : 'reviews'}</p>
+            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+              <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between lg:flex-col lg:items-stretch">
+                <div className="flex-1">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">At a glance</p>
+                  {landlord.avg_rating > 0 ? (
+                    <div className="mt-2">
+                      <div className="text-4xl font-semibold tracking-tight text-slate-950">{landlord.avg_rating.toFixed(1)}</div>
+                      <div className="mt-1">
+                        <StarRating value={landlord.avg_rating} readonly size="sm" />
+                      </div>
+                      <p className="mt-1 text-xs text-slate-500">{landlord.review_count} {landlord.review_count === 1 ? 'review' : 'reviews'}</p>
+                    </div>
+                  ) : (
+                    <div className="mt-2">
+                      <div className="text-4xl font-semibold tracking-tight text-slate-950">—</div>
+                      <p className="mt-1 text-xs text-slate-500">No reviews yet</p>
+                    </div>
+                  )}
                 </div>
-              )}
-              <div className="flex gap-2 flex-wrap justify-end">
-                <WatchlistButton landlordId={landlord.id} />
-                <ShareButton name={landlord.display_name} />
-                <Button asChild variant="outline" size="sm" className="text-gray-600 border-gray-200 rounded-full">
-                  <Link href={`/compare?a=${landlord.slug}`}>
-                    <GitCompare className="h-3.5 w-3.5 mr-1" /> Compare
-                  </Link>
-                </Button>
-                {!landlord.is_claimed && (
-                  <Button asChild size="sm" className="bg-teal-600 hover:bg-teal-700 text-white rounded-full">
-                    <Link href={`/landlord-portal/claim?landlord=${landlord.id}`}>
-                      Claim Profile
+                <div className="flex flex-wrap gap-2">
+                  <WatchlistButton landlordId={landlord.id} />
+                  <ShareButton name={landlord.display_name} />
+                  <Button asChild variant="outline" size="sm" className="rounded-full border-slate-200 text-slate-700">
+                    <Link href={`/compare?a=${landlord.slug}`}>
+                      <GitCompare className="mr-1 h-3.5 w-3.5" /> Compare
                     </Link>
                   </Button>
-                )}
+                  {!landlord.is_claimed && (
+                    <Button asChild variant="outline" size="sm" className="rounded-full border-navy-200 text-navy-700">
+                      <Link href={`/landlord-portal/claim?landlord=${landlord.id}`}>
+                        Claim Profile
+                      </Link>
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Bio */}
+          <div className="border-t border-slate-100 px-5 py-5 sm:px-7">
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+              <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Summary</p>
+                <p className="mt-2 text-sm leading-6 text-slate-700">{landlordSummary}</p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Reviews</p>
+                  <p className="mt-1 text-xl font-semibold text-slate-950">{landlord.review_count}</p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Properties</p>
+                  <p className="mt-1 text-xl font-semibold text-slate-950">{(properties ?? []).length}</p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Public records</p>
+                  <p className="mt-1 text-xl font-semibold text-slate-950">{(records ?? []).length}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bio (if claimed + verified) */}
           {landlord.bio && (
-            <p className="mt-4 text-sm text-gray-700 leading-relaxed max-w-2xl border-l-2 border-teal-300 pl-4">{landlord.bio}</p>
+            <div className="border-t border-slate-100 px-5 py-5 sm:px-7">
+              <p className="text-sm leading-6 text-slate-700">{landlord.bio}</p>
+            </div>
           )}
 
           {/* Rating breakdown */}
           {(avgResponsiveness || avgMaintenance || avgHonesty || avgLeaseFairness) && (
-            <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-x-8 gap-y-3 max-w-lg">
-              <RatingBar label="Responsiveness" value={avgResponsiveness} />
-              <RatingBar label="Maintenance" value={avgMaintenance} />
-              <RatingBar label="Honesty" value={avgHonesty} />
-              <RatingBar label="Lease Fairness" value={avgLeaseFairness} />
+            <div className="border-t border-slate-100 px-5 py-5 sm:px-7">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-sm font-semibold text-slate-900">Rating breakdown</h3>
+                {wouldRentAgainPct !== null && approved.length > 0 && (
+                  <p className="text-sm text-slate-500">
+                    <span className={`font-semibold ${wouldRentAgainPct >= 60 ? 'text-teal-600' : 'text-red-600'}`}>
+                      {wouldRentAgainPct}%
+                    </span>{' '}
+                    would rent again
+                  </p>
+                )}
+              </div>
+              <div className="mt-3 grid gap-2.5 sm:max-w-lg">
+                <RatingBar label="Responsiveness" value={avgResponsiveness} />
+                <RatingBar label="Maintenance" value={avgMaintenance} />
+                <RatingBar label="Honesty" value={avgHonesty} />
+                <RatingBar label="Lease Fairness" value={avgLeaseFairness} />
+              </div>
               {wouldRentAgainPct !== null && approved.length > 0 && (
-                <p className="text-xs text-gray-500 col-span-2 sm:col-span-4 mt-1">
-                  <span className={`font-semibold ${wouldRentAgainPct >= 60 ? 'text-teal-600' : 'text-red-600'}`}>
-                    {wouldRentAgainPct}%
-                  </span>{' '}
-                  would rent again
+                <p className="mt-3 text-sm text-slate-500">
+                  Based on {approved.length} verified responses.
                 </p>
               )}
             </div>
           )}
         </div>
 
-        {/* External review links */}
-        <div className="mb-6">
-          <ExternalReviewLinks
-            landlordName={landlord.business_name ?? landlord.display_name}
-            city={landlord.city ?? ''}
-            stateAbbr={landlord.state_abbr ?? ''}
-            yelp={yelpData}
-          />
-        </div>
-
-        {/* Violation warning — inline, not a box */}
+        {/* Violation summary banner */}
         {landlord.open_violation_count > 0 && (
-          <div className="flex items-start gap-3 mb-6 p-4 bg-red-50 rounded-2xl">
-            <Flag className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-            <p className="text-sm text-red-800">
-              <span className="font-semibold">{landlord.open_violation_count} open violation{landlord.open_violation_count !== 1 ? 's' : ''}</span>
-              {' '}— {landlord.total_violation_count} total public records on file
-              {landlord.eviction_count > 0 && `, including ${landlord.eviction_count} eviction filing${landlord.eviction_count !== 1 ? 's' : ''}`}.
-            </p>
+          <div className="mb-6 overflow-hidden rounded-2xl border border-red-200 bg-red-50 shadow-sm">
+            <div className="flex items-start gap-3 px-5 py-4">
+              <div className="flex-shrink-0 rounded-xl bg-red-100 p-2.5">
+                <Flag className="h-5 w-5 text-red-600" />
+              </div>
+              <div className="min-w-0">
+                <p className="font-semibold text-red-900">
+                  {landlord.open_violation_count} open violation{landlord.open_violation_count !== 1 ? 's' : ''}
+                </p>
+                <p className="text-sm leading-6 text-red-700">
+                  This landlord has {landlord.total_violation_count} total public records on file
+                  {landlord.eviction_count > 0 && `, including ${landlord.eviction_count} eviction filing${landlord.eviction_count !== 1 ? 's' : ''}`}.
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Tabs — clean underline style */}
         <Tabs defaultValue="reviews">
-          <TabsList className="w-full mb-6 bg-transparent border-b border-gray-200 rounded-none h-auto p-0 gap-0">
-            <TabsTrigger
-              value="reviews"
-              className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-teal-500 data-[state=active]:text-teal-700 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors bg-transparent shadow-none"
-            >
-              <MessageSquare className="h-3.5 w-3.5 mr-1.5" />
+          <TabsList className="mb-6 grid w-full grid-cols-1 gap-2 rounded-2xl bg-slate-100 p-1 sm:grid-cols-3">
+            <TabsTrigger value="reviews" className="rounded-xl py-2.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <MessageSquare className="mr-1.5 h-4 w-4" />
               Reviews ({landlord.review_count})
             </TabsTrigger>
-            <TabsTrigger
-              value="records"
-              className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-teal-500 data-[state=active]:text-teal-700 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors bg-transparent shadow-none"
-            >
-              <Flag className="h-3.5 w-3.5 mr-1.5" />
+            <TabsTrigger value="records" className="rounded-xl py-2.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Flag className="mr-1.5 h-4 w-4" />
               Public Records ({(records ?? []).length})
             </TabsTrigger>
-            <TabsTrigger
-              value="properties"
-              className="flex-1 rounded-none border-b-2 border-transparent data-[state=active]:border-teal-500 data-[state=active]:text-teal-700 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors bg-transparent shadow-none"
-            >
-              <Building2 className="h-3.5 w-3.5 mr-1.5" />
+            <TabsTrigger value="properties" className="rounded-xl py-2.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Building2 className="mr-1.5 h-4 w-4" />
               Properties ({(properties ?? []).length})
             </TabsTrigger>
           </TabsList>
 
+          {/* Reviews tab */}
           <TabsContent value="reviews">
             <ReviewsList
               reviews={(reviews as Review[]) ?? []}
@@ -298,9 +323,10 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             />
           </TabsContent>
 
+          {/* Public records tab */}
           <TabsContent value="records">
             {(records ?? []).length >= 3 && (
-              <div className="mb-6">
+              <div className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <ViolationChart records={(records ?? []) as PublicRecord[]} />
               </div>
             )}
@@ -311,25 +337,28 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             />
           </TabsContent>
 
+          {/* Properties tab */}
           <TabsContent value="properties">
             {(properties ?? []).length === 0 ? (
-              <div className="py-16 text-center text-gray-400 text-sm">No properties on record</div>
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 py-12 text-center text-sm text-slate-500">
+                No properties on record
+              </div>
             ) : (
-              <div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {(properties as Property[]).map(prop => (
-                  <Link key={prop.id} href={`/property/${prop.id}`}
-                    className="group flex items-center justify-between py-4 border-b border-gray-100 hover:border-gray-200 transition-colors">
-                    <div>
-                      <p className="font-medium text-gray-900 text-sm group-hover:text-teal-700 transition-colors">
-                        {formatAddress(prop.address_line1, prop.city, prop.state_abbr, prop.zip ?? undefined)}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-0.5">
-                        {prop.property_type}{prop.unit_count ? ` · ${prop.unit_count} units` : ''}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {prop.review_count > 0 && <StarRating value={prop.avg_rating} readonly size="sm" />}
-                      <span className="text-gray-300 group-hover:text-teal-400 transition-colors">→</span>
+                  <Link key={prop.id} href={`/property/${prop.id}`} className="group block overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-navy-200 hover:shadow-md">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold leading-6 text-slate-900 group-hover:text-navy-700">
+                          {formatAddress(prop.address_line1, prop.city, prop.state_abbr, prop.zip ?? undefined)}
+                        </p>
+                        <p className="mt-1 text-xs text-slate-500">
+                          {prop.property_type} {prop.unit_count ? `· ${prop.unit_count} units` : ''}
+                        </p>
+                      </div>
+                      {prop.review_count > 0 && (
+                        <StarRating value={prop.avg_rating} readonly size="sm" />
+                      )}
                     </div>
                   </Link>
                 ))}
@@ -337,6 +366,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             )}
           </TabsContent>
         </Tabs>
+        </div>
       </div>
     </>
   )

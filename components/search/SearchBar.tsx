@@ -57,13 +57,15 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
     <div ref={containerRef} className={cn('relative', className)}>
       <form onSubmit={handleSubmit}>
         <div className={cn(
-          'flex items-center gap-2 bg-white border-2 rounded-xl px-4 transition-colors',
+          'flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 shadow-[0_14px_36px_rgba(15,23,42,0.06)] transition-all',
           sizeClasses[size],
-          open && results.length > 0 ? 'border-teal-500 rounded-b-none' : 'border-gray-200 hover:border-gray-300 focus-within:border-teal-400'
+          open && results.length > 0
+            ? 'rounded-b-none border-navy-300 shadow-[0_18px_44px_rgba(15,23,42,0.08)]'
+            : 'hover:border-slate-300 focus-within:border-navy-300 focus-within:shadow-[0_18px_44px_rgba(15,23,42,0.08)]'
         )}>
           {loading
-            ? <Loader2 className="h-4 w-4 text-gray-400 animate-spin flex-shrink-0" />
-            : <Search className="h-4 w-4 text-gray-400 flex-shrink-0" />
+            ? <Loader2 className="h-4 w-4 flex-shrink-0 animate-spin text-slate-400" />
+            : <Search className="h-4 w-4 flex-shrink-0 text-slate-400" />
           }
           <input
             ref={inputRef}
@@ -73,18 +75,18 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
             onFocus={() => query.length >= 2 && setOpen(true)}
             placeholder={placeholder ?? 'Search by landlord name, address, company, or city…'}
             autoFocus={autoFocus}
-            className="flex-1 bg-transparent outline-none text-gray-900 placeholder:text-gray-400"
+            className="flex-1 bg-transparent outline-none text-slate-950 placeholder:text-slate-400"
             autoComplete="off"
           />
           {query && (
-            <button type="button" onClick={() => { clear(); setOpen(false) }} className="text-gray-400 hover:text-gray-600">
+            <button type="button" onClick={() => { clear(); setOpen(false) }} className="text-slate-400 hover:text-slate-600">
               <X className="h-4 w-4" />
             </button>
           )}
           <button
             type="submit"
             className={cn(
-              'bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-semibold transition-colors flex-shrink-0',
+              'flex-shrink-0 rounded-xl bg-slate-950 font-semibold text-white transition-colors hover:bg-navy-700',
               size === 'lg' ? 'px-5 py-2 text-sm' : 'px-4 py-1.5 text-xs'
             )}
           >
@@ -95,43 +97,43 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
 
       {/* Autocomplete dropdown */}
       {open && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 bg-white border-2 border-t-0 border-teal-500 rounded-b-xl shadow-lg overflow-hidden z-50 max-h-80 overflow-y-auto">
+        <div className="absolute left-0 right-0 top-full z-50 max-h-80 overflow-y-auto overflow-hidden rounded-b-2xl border border-t-0 border-navy-300 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]">
           {results.map(result => (
             <button
               key={result.id}
               type="button"
               onClick={() => handleSelect(result)}
-              className="w-full text-left px-4 py-3 hover:bg-teal-50 transition-colors border-b border-gray-100 last:border-0 flex items-center gap-3"
+              className="flex w-full items-center gap-3 border-b border-slate-100 px-4 py-3 text-left transition-colors hover:bg-navy-50 last:border-0"
             >
-              <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-gray-100 flex items-center justify-center">
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100">
                 {result.result_type === 'landlord'
                   ? <Building2 className="h-4 w-4 text-navy-600" />
                   : <MapPin className="h-4 w-4 text-teal-600" />
                 }
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">{result.display_name}</p>
-                <p className="text-xs text-gray-500">
+                <p className="truncate text-sm font-medium text-slate-950">{result.display_name}</p>
+                <p className="text-xs text-slate-500">
                   {result.result_type === 'landlord' ? 'Landlord' : 'Property'} ·{' '}
                   {[result.city, result.state_abbr].filter(Boolean).join(', ')}
                   {result.review_count != null && result.review_count > 0 && ` · ${result.review_count} reviews`}
                 </p>
                 {result.summary && (
-                  <p className="mt-0.5 text-xs text-gray-600 line-clamp-2">{result.summary}</p>
+                  <p className="mt-0.5 line-clamp-2 text-xs text-slate-600">{result.summary}</p>
                 )}
               </div>
               {result.avg_rating != null && result.avg_rating > 0 && (
-                <span className="text-xs font-semibold text-amber-600 flex-shrink-0">
+                <span className="flex-shrink-0 text-xs font-semibold text-amber-600">
                   ★ {result.avg_rating.toFixed(1)}
                 </span>
               )}
             </button>
           ))}
-          <div className="px-4 py-2 bg-gray-50 border-t">
+          <div className="border-t border-slate-100 bg-slate-50 px-4 py-2.5">
             <button
               type="button"
               onClick={handleSubmit as unknown as React.MouseEventHandler}
-              className="text-xs text-navy-600 hover:text-navy-800 font-medium"
+              className="text-xs font-medium text-navy-600 hover:text-navy-800"
             >
               See all results for &ldquo;{query}&rdquo; →
             </button>
