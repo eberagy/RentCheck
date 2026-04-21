@@ -3,7 +3,7 @@
  * API: https://data.cityofnewyork.us/resource/wvxf-dwi5.json (Socrata)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveOrQueueLandlord, normalizeAddress, batchUpsert, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.cityofnewyork.us/resource/wvxf-dwi5.json'
 const PAGE_SIZE = 1000
@@ -42,24 +42,16 @@ export async function syncNycHpd(supabase: SupabaseClient): Promise<SyncResult> 
       for (const p of data ?? []) if (p.address_normalized) propertyMap.set(p.address_normalized, p.id)
     }
 
-    // ── Batch-upsert landlords ───────────────────────────────────────────────
-    const landlordMap = new Map<string, string | null>()
-    const uniqueOwners = Array.from(new Set(rows.map((r: any) => r.ownername).filter(Boolean)))
-    for (const name of uniqueOwners) {
-      landlordMap.set(name, await resolveOrQueueLandlord(supabase, name, 'New York City', 'NY'))
-    }
-
-    // ── Build record rows ────────────────────────────────────────────────────
+    // ── Build record rows (landlord linking done by mine-owners sync) ────────
     const toInsert: Record<string, unknown>[] = []
     for (const row of rows) {
       const sourceId = String(row.violationid ?? '')
       if (!sourceId) { result.skipped++; continue }
       const addr = [row.housenumber, row.streetname].filter(Boolean).join(' ')
       const propertyId = addr ? (propertyMap.get(normalizeAddress(addr)) ?? null) : null
-      const landlordId = row.ownername ? (landlordMap.get(row.ownername) ?? null) : null
       toInsert.push({
         source: 'nyc_hpd', source_id: sourceId, record_type: 'hpd_violation',
-        landlord_id: landlordId, property_id: propertyId,
+        property_id: propertyId,
         title: buildHpdTitle(row.class, row.novdescription),
         description: row.novdescription ?? row.class ?? null,
         severity: mapHpdClass(row.class), status: mapHpdStatus(row.currentstatus),

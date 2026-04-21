@@ -120,10 +120,10 @@ export default function AdminDataSyncPage() {
   async function triggerSync(sourceId: string): Promise<boolean> {
     setTriggering(prev => new Set(prev).add(sourceId))
     try {
-      // 90-second timeout per sync — Vercel functions cap at 60-300s depending on plan
+      // 270-second timeout — Vercel Pro functions cap at 300s
       const res = await fetch(`/api/sync/${sourceId}`, {
         method: 'POST',
-        signal: AbortSignal.timeout(90_000),
+        signal: AbortSignal.timeout(270_000),
       })
       if (res.ok) {
         toast.success(`${sourceId} — done`)
