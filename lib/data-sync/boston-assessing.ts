@@ -22,20 +22,25 @@ export async function syncBostonAssessing(supabase: SupabaseClient): Promise<Syn
 
   while (true) {
     // Filter for residential: LU (land use) starting with R or A (apartments)
-    const url = `${ENDPOINT}?$where=owner IS NOT NULL AND (lu like 'R%' OR lu like 'A%' OR lu like 'CD' OR lu like 'CM')` +
-      `&$select=pid,st_num,st_name,st_name_suf,unit_num,zipcode,owner,lu_desc,r_bldg_styl,yr_built,r_total_rms` +
-      `&$limit=${PAGE_SIZE}&$offset=${offset}&$order=pid`
+    const u = new URL(ENDPOINT)
+    u.searchParams.set('$where', `owner IS NOT NULL AND (lu like 'R%' OR lu like 'A%' OR lu like 'CD' OR lu like 'CM')`)
+    u.searchParams.set('$select', 'pid,st_num,st_name,st_name_suf,unit_num,zipcode,owner,lu_desc,r_bldg_styl,yr_built,r_total_rms')
+    u.searchParams.set('$limit', String(PAGE_SIZE))
+    u.searchParams.set('$offset', String(offset))
+    u.searchParams.set('$order', 'pid')
 
     let rows: any[]
     try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(30000) })
+      const res = await fetch(u.toString(), { signal: AbortSignal.timeout(30000) })
       if (!res.ok) {
         // Try without filter
-        const fallback = await fetch(
-          `${ENDPOINT}?$where=owner IS NOT NULL&$select=pid,st_num,st_name,st_name_suf,zipcode,owner,lu_desc,yr_built` +
-          `&$limit=${PAGE_SIZE}&$offset=${offset}&$order=pid`,
-          { signal: AbortSignal.timeout(30000) }
-        )
+        const fb = new URL(ENDPOINT)
+        fb.searchParams.set('$where', 'owner IS NOT NULL')
+        fb.searchParams.set('$select', 'pid,st_num,st_name,st_name_suf,zipcode,owner,lu_desc,yr_built')
+        fb.searchParams.set('$limit', String(PAGE_SIZE))
+        fb.searchParams.set('$offset', String(offset))
+        fb.searchParams.set('$order', 'pid')
+        const fallback = await fetch(fb.toString(), { signal: AbortSignal.timeout(30000) })
         if (!fallback.ok) { result.errors.push(`HTTP ${fallback.status} from Boston Assessing`); break }
         rows = await fallback.json()
       } else {

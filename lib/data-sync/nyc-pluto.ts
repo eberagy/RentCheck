@@ -35,13 +35,16 @@ export async function syncNycPluto(supabase: SupabaseClient): Promise<SyncResult
   const processedOwners = new Map<string, string>() // normalizedName → landlordId
 
   while (true) {
-    const url = `${ENDPOINT}?$where=(${classFilter}) AND ownername IS NOT NULL AND address IS NOT NULL` +
-      `&$select=bbl,address,zipcode,ownername,bldgclass,unitsres,yearbuilt,borough` +
-      `&$limit=${PAGE_SIZE}&$offset=${offset}&$order=bbl`
+    const u = new URL(ENDPOINT)
+    u.searchParams.set('$where', `(${classFilter}) AND ownername IS NOT NULL AND address IS NOT NULL`)
+    u.searchParams.set('$select', 'bbl,address,zipcode,ownername,bldgclass,unitsres,yearbuilt,borough')
+    u.searchParams.set('$limit', String(PAGE_SIZE))
+    u.searchParams.set('$offset', String(offset))
+    u.searchParams.set('$order', 'bbl')
 
     let rows: any[]
     try {
-      const res = await fetch(url, {
+      const res = await fetch(u.toString(), {
         headers: { 'X-App-Token': process.env.NYC_OPEN_DATA_TOKEN ?? '' },
         signal: AbortSignal.timeout(30000),
       })

@@ -42,12 +42,15 @@ export async function syncCookCountyAssessor(supabase: SupabaseClient): Promise<
   let offset = 0
 
   while (true) {
-    // Filter for residential multifamily (class 2xx buildings = residential)
-    const url = `${workingEndpoint}?$where=class_description like '%APARTMENT%' OR class_description like '%MULTI%' OR class_description like '%RESIDENTIAL%'` +
-      `&$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
+    // Filter for residential multifamily — use URL object to properly encode % wildcards
+    const u = new URL(workingEndpoint)
+    u.searchParams.set('$where', `class_description like '%APARTMENT%' OR class_description like '%MULTI%' OR class_description like '%RESIDENTIAL%'`)
+    u.searchParams.set('$limit', String(PAGE_SIZE))
+    u.searchParams.set('$offset', String(offset))
+    u.searchParams.set('$order', ':id')
     let rows: any[]
     try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(15000) })
+      const res = await fetch(u.toString(), { signal: AbortSignal.timeout(15000) })
       if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }
       rows = await res.json()
       if (!Array.isArray(rows)) break

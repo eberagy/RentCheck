@@ -34,13 +34,16 @@ export async function syncPhillyOpa(supabase: SupabaseClient): Promise<SyncResul
   const processedOwners = new Map<string, string>() // normalizedName → landlordId
 
   while (true) {
-    const url = `${ENDPOINT}?$where=(${catFilter}) AND owner_1 IS NOT NULL` +
-      `&$select=parcel_number,location,zip_code,owner_1,owner_2,category_code_description,number_of_rooms,year_built` +
-      `&$limit=${PAGE_SIZE}&$offset=${offset}&$order=parcel_number`
+    const u = new URL(ENDPOINT)
+    u.searchParams.set('$where', `(${catFilter}) AND owner_1 IS NOT NULL`)
+    u.searchParams.set('$select', 'parcel_number,location,zip_code,owner_1,owner_2,category_code_description,number_of_rooms,year_built')
+    u.searchParams.set('$limit', String(PAGE_SIZE))
+    u.searchParams.set('$offset', String(offset))
+    u.searchParams.set('$order', 'parcel_number')
 
     let rows: any[]
     try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(30000) })
+      const res = await fetch(u.toString(), { signal: AbortSignal.timeout(30000) })
       if (!res.ok) { result.errors.push(`HTTP ${res.status} from Philly OPA`); break }
       rows = await res.json()
       if (!Array.isArray(rows)) break

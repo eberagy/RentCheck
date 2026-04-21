@@ -65,13 +65,16 @@ export async function syncSfAssessor(supabase: SupabaseClient): Promise<SyncResu
   const processedOwners = new Map<string, string>()
 
   while (true) {
-    const url = `${workingEndpoint}?$where=owner_name IS NOT NULL` +
-      `&$select=blklot,from_address_num,street_name,street_type,unit_num,zip_code,owner_name,property_class_code_definition,number_of_units,year_property_built` +
-      `&$limit=${PAGE_SIZE}&$offset=${offset}&$order=blklot`
+    const u = new URL(workingEndpoint)
+    u.searchParams.set('$where', 'owner_name IS NOT NULL')
+    u.searchParams.set('$select', 'blklot,from_address_num,street_name,street_type,unit_num,zip_code,owner_name,property_class_code_definition,number_of_units,year_property_built')
+    u.searchParams.set('$limit', String(PAGE_SIZE))
+    u.searchParams.set('$offset', String(offset))
+    u.searchParams.set('$order', 'blklot')
 
     let rows: any[]
     try {
-      const res = await fetch(url, {
+      const res = await fetch(u.toString(), {
         headers: { 'X-App-Token': process.env.NYC_OPEN_DATA_TOKEN ?? '' },
         signal: AbortSignal.timeout(30000),
       })
