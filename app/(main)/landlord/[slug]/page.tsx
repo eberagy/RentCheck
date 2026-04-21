@@ -13,6 +13,7 @@ import { WatchlistButton } from '@/components/landlord/WatchlistButton'
 import { ShareButton } from '@/components/landlord/ShareButton'
 import { StarRating } from '@/components/review/StarRating'
 import { Button } from '@/components/ui/button'
+import { cityPagePath, getCanonicalCity } from '@/lib/cities'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PUBLIC_REVIEW_SELECT } from '@/lib/reviews/public'
 import { formatAddress } from '@/lib/utils'
@@ -137,10 +138,10 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
         <nav className="mb-4 flex items-center gap-1 text-xs text-slate-500">
           <Link href="/" className="transition-colors hover:text-navy-700 hover:underline">Home</Link>
           <span className="text-slate-300">›</span>
-          {landlord.city && (
+          {landlord.city && landlord.state_abbr && (
             <>
-              <Link href={`/city/${(landlord.state_abbr ?? '').toLowerCase()}/${(landlord.city ?? '').toLowerCase().replace(/\s+/g, '-')}`} className="transition-colors hover:text-navy-700 hover:underline">
-                {landlord.city}
+              <Link href={cityPagePath(landlord.city, landlord.state_abbr)} className="transition-colors hover:text-navy-700 hover:underline">
+                {getCanonicalCity(landlord.city)}, {landlord.state_abbr}
               </Link>
               <span className="text-slate-300">›</span>
             </>

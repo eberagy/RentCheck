@@ -8,14 +8,7 @@ import { SearchBar } from '@/components/search/SearchBar'
 import { Button } from '@/components/ui/button'
 import { US_STATES, COLLEGE_CITIES } from '@/types'
 import type { Landlord } from '@/types'
-
-/**
- * Metro areas where the DB stores borough/neighborhood names rather than the
- * metro name used in URLs. The city page query matches on ANY of these values.
- */
-const CITY_ALIASES: Record<string, string[]> = {
-  'New York': ['Manhattan', 'Brooklyn', 'Queens', 'Bronx', 'Staten Island', 'New York'],
-}
+import { getCityAliases } from '@/lib/cities'
 
 export const revalidate = 3600
 
@@ -51,7 +44,7 @@ export default async function CityPage({ params }: CityPageProps) {
   const supabase = createServiceClient()
 
   // Get top landlords in this city (handle metro aliases like NYC boroughs)
-  const aliases = CITY_ALIASES[cityName]
+  const aliases = getCityAliases(cityName)
   let landlordQuery = supabase
     .from('landlords')
     .select('*', { count: 'exact' })

@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button'
 import { PUBLIC_REVIEW_SELECT } from '@/lib/reviews/public'
 import { formatAddress } from '@/lib/utils'
 import { buildPropertySummary } from '@/lib/summaries'
+import { cityPagePath, getCanonicalCity } from '@/lib/cities'
 import type { Review, PublicRecord } from '@/types'
 
 interface PropertyPageProps {
@@ -89,15 +90,13 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             Home
           </Link>
           <ChevronRight className="h-3 w-3 text-slate-300" />
-          {property.city && (
+          {property.city && property.state_abbr && (
             <>
               <Link
-                href={`/city/${property.state_abbr.toLowerCase()}/${property.city
-                  .toLowerCase()
-                  .replace(/\s+/g, '-')}`}
+                href={cityPagePath(property.city, property.state_abbr)}
                 className="transition-colors hover:text-navy-700 hover:underline"
               >
-                {property.city}, {property.state_abbr}
+                {getCanonicalCity(property.city)}, {property.state_abbr}
               </Link>
               <ChevronRight className="h-3 w-3 text-slate-300" />
             </>
