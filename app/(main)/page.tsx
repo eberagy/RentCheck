@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase/server'
 import { COLLEGE_CITIES, MAJOR_CITIES } from '@/types'
 import type { Metadata } from 'next'
 
+export const revalidate = 60 // re-fetch stats at most every 60s
+
 export const metadata: Metadata = {
   title: 'Vett — Know Before You Rent',
   description: 'Lease-verified renter reviews and public records on landlords nationwide. Know before you rent.',
