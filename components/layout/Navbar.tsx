@@ -167,7 +167,7 @@ export function Navbar() {
               aria-label="Open navigation menu"
               onClick={() => setMobileOpen(true)}
               className={cn(
-                'rounded-full p-2 shadow-sm transition-colors md:hidden',
+                'rounded-full p-2 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-navy-500 md:hidden',
                 isHome
                   ? 'border border-white/10 bg-white/5 text-white hover:bg-white/10'
                   : 'border border-slate-200 bg-white text-slate-600 hover:bg-slate-50'

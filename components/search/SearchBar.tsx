@@ -43,6 +43,12 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
     router.push(`/search?q=${encodeURIComponent(query.trim())}`)
   }
 
+  function handleViewAllResults() {
+    if (!query.trim()) return
+    setOpen(false)
+    router.push(`/search?q=${encodeURIComponent(query.trim())}`)
+  }
+
   function handleSelect(result: (typeof results)[number]) {
     clear()
     setOpen(false)
@@ -79,12 +85,18 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
             autoComplete="off"
           />
           {query && (
-            <button type="button" onClick={() => { clear(); setOpen(false) }} className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600">
+            <button
+              type="button"
+              aria-label="Clear search"
+              onClick={() => { clear(); setOpen(false) }}
+              className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+            >
               <X className="h-4 w-4" />
             </button>
           )}
           <button
             type="submit"
+            aria-label="Search"
             className={cn(
               'flex-shrink-0 rounded-xl bg-slate-950 font-semibold text-white transition-colors hover:bg-navy-700',
               size === 'lg' ? 'px-5 py-2 text-sm' : 'px-3.5 py-1.5 text-xs sm:px-4'
@@ -132,7 +144,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
           <div className="border-t border-slate-100 bg-slate-50 px-4 py-2.5">
             <button
               type="button"
-              onClick={handleSubmit as unknown as React.MouseEventHandler}
+              onClick={handleViewAllResults}
               className="inline-flex items-center gap-1 text-xs font-medium text-navy-600 transition-colors hover:text-navy-800"
             >
               See all results for &ldquo;{query}&rdquo; →
