@@ -71,7 +71,7 @@ cp .env.example .env.local
 | `SUPABASE_SERVICE_ROLE_KEY` | ✅ | Server-only. Never expose client-side |
 | `RESEND_API_KEY` | ✅ | From [resend.com](https://resend.com) |
 | `CRON_SECRET` | ✅ | `openssl rand -hex 32` — secures sync endpoints |
-| `NEXT_PUBLIC_SITE_URL` | ✅ | Your production URL (e.g. `https://vettrenters.com`) |
+| `NEXT_PUBLIC_SITE_URL` | ✅ | Your production URL (e.g. `https://vettrentals.com`) |
 | `NEXT_PUBLIC_POSTHOG_KEY` | ⚡ | PostHog project API key |
 | `NEXT_PUBLIC_POSTHOG_HOST` | ⚡ | Default: `https://app.posthog.com` |
 | `SENTRY_DSN` | ⚡ | From Sentry project settings |

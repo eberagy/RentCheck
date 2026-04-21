@@ -156,7 +156,12 @@ export default function NewReviewPage() {
       const { error: uploadError } = await supabase.storage
         .from('lease-docs')
         .upload(path, leaseFile, { upsert: false })
-      if (uploadError) throw uploadError
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError)
+        setLeaseStatus('idle')
+        setLeaseError('Upload failed — the storage service may be temporarily unavailable. Please try again.')
+        return
+      }
 
       // Call verify endpoint
       const res = await fetch('/api/verify-lease', {
@@ -164,7 +169,11 @@ export default function NewReviewPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filePath: path, fileName: leaseFile.name, fileSize: leaseFile.size }),
       })
-      if (!res.ok) throw new Error('Verification failed')
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        console.error('Lease verification error:', errData)
+        throw new Error(errData.error || 'Verification failed')
+      }
       const payload = await res.json()
       setUploadedLease({
         docPath: payload.docPath,
@@ -214,11 +223,22 @@ export default function NewReviewPage() {
           leaseFileSize: uploadedLease.fileSize,
         }),
       })
-      if (!res.ok) throw new Error('Submission failed')
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}))
+        const msg = errData.error
+        if (res.status === 409) {
+          toast.error('You recently submitted a review for this landlord.')
+        } else if (res.status === 401) {
+          toast.error('Session expired — please sign in again.')
+        } else {
+          toast.error(typeof msg === 'string' ? msg : 'Failed to submit review. Please try again.')
+        }
+        return
+      }
       setStep(4)
     } catch (err) {
       toast.error('Failed to submit review. Please try again.')
-      console.error(err)
+      console.error('Review submit error:', err)
     } finally {
       setSubmitting(false)
     }

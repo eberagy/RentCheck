@@ -140,23 +140,10 @@ export default function LoginPage() {
           </ul>
         </div>
         <div className="space-y-3">
-          <div className="flex items-center gap-3">
-            <div className="flex -space-x-2">
-              {['#4F46E5', '#0891B2', '#059669', '#D97706'].map((color, i) => (
-                <span
-                  key={i}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-full border-2 border-navy-800 text-xs font-semibold text-white"
-                  style={{ backgroundColor: color }}
-                >
-                  {['A', 'J', 'M', 'S'][i]}
-                </span>
-              ))}
-            </div>
-            <p className="text-sm text-navy-200">
-              <span className="font-semibold text-white">10,000+</span> renters researching landlords
-            </p>
-          </div>
-          <p className="text-xs text-navy-300">No spam. No selling data. Cancel anytime.</p>
+          <p className="text-sm text-navy-200">
+            Join renters across <span className="font-semibold text-white">20+ cities</span> researching landlords before signing.
+          </p>
+          <p className="text-xs text-navy-300">No spam. No selling data. Free to use.</p>
         </div>
       </div>
 

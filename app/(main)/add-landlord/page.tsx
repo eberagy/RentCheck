@@ -95,8 +95,12 @@ export default function AddLandlordPage() {
         const { error: uploadErr } = await supabase.storage
           .from('landlord-verification-docs')
           .upload(path, proofFile, { upsert: false })
-        if (uploadErr) throw uploadErr
-        proofDocUrl = path
+        if (uploadErr) {
+          console.error('Proof upload error:', uploadErr)
+          toast.error('Could not upload proof document. Submitting without it.')
+        } else {
+          proofDocUrl = path
+        }
       }
 
       const res = await fetch('/api/landlords/submit', {
@@ -108,14 +112,15 @@ export default function AddLandlordPage() {
 
       if (!res.ok) {
         if (res.status === 401) { toast.error('Please sign in to submit'); router.push('/login?redirectTo=/add-landlord'); return }
-        toast.error(data.error ?? 'Submission failed')
+        toast.error(data.error ?? 'Submission failed. Please try again.')
         return
       }
 
       if (data.exists) { setExistingSlug(data.slug); return }
       if (data.pending) { toast.info('You already submitted this landlord — it\'s pending review'); return }
       setSubmitted(true)
-    } catch {
+    } catch (err) {
+      console.error('Submit landlord error:', err)
       toast.error('Something went wrong. Please try again.')
     } finally {
       setLoading(false)

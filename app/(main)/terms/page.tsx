@@ -60,7 +60,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-lg font-semibold text-gray-900">10. Contact</h2>
-          <p>For questions about these Terms, contact us at <a href="mailto:legal@vettrenters.com" className="text-navy-600 hover:underline">legal@vettrenters.com</a>.</p>
+          <p>For questions about these Terms, contact us at <a href="mailto:legal@vettrentals.com" className="text-navy-600 hover:underline">legal@vettrentals.com</a>.</p>
         </section>
       </div>
     </div>

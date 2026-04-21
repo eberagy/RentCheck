@@ -13,7 +13,7 @@ const sans = localFont({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrenters.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'),
   title: {
     default: 'Vett — Know Before You Rent',
     template: '%s | Vett',

@@ -27,7 +27,7 @@ export default function ReviewApprovedEmail({
   landlordName,
   landlordSlug,
 }: ReviewApprovedEmailProps) {
-  const landlordUrl = `https://vettrenters.com/landlord/${landlordSlug}`
+  const landlordUrl = `https://vettrentals.com/landlord/${landlordSlug}`
 
   return (
     <Html>
@@ -119,11 +119,11 @@ export default function ReviewApprovedEmail({
             <Text style={footer}>
               You received this because you submitted a review on Vett.
               <br />
-              <Link href="https://vettrenters.com/privacy" style={footerLink}>
+              <Link href="https://vettrentals.com/privacy" style={footerLink}>
                 Privacy Policy
               </Link>{' '}
               ·{' '}
-              <Link href="https://vettrenters.com/unsubscribe" style={footerLink}>
+              <Link href="https://vettrentals.com/unsubscribe" style={footerLink}>
                 Unsubscribe
               </Link>
             </Text>

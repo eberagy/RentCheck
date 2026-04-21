@@ -421,11 +421,11 @@ CREATE POLICY "submissions_own" ON public.landlord_submissions FOR SELECT USING 
 CREATE POLICY "submissions_insert" ON public.landlord_submissions FOR INSERT WITH CHECK (submitted_by = auth.uid());
 CREATE POLICY "submissions_admin" ON public.landlord_submissions FOR UPDATE USING (is_admin());
 
--- Storage bucket policies (run separately if needed)
--- INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true);
--- INSERT INTO storage.buckets (id, name, public) VALUES ('lease-docs', 'lease-docs', false);
--- INSERT INTO storage.buckets (id, name, public) VALUES ('landlord-verification-docs', 'landlord-verification-docs', false);
--- INSERT INTO storage.buckets (id, name, public) VALUES ('evidence-photos', 'evidence-photos', false);
+-- Storage buckets
+INSERT INTO storage.buckets (id, name, public) VALUES ('avatars', 'avatars', true) ON CONFLICT (id) DO NOTHING;
+INSERT INTO storage.buckets (id, name, public) VALUES ('lease-docs', 'lease-docs', false) ON CONFLICT (id) DO NOTHING;
+INSERT INTO storage.buckets (id, name, public) VALUES ('landlord-verification-docs', 'landlord-verification-docs', false) ON CONFLICT (id) DO NOTHING;
+INSERT INTO storage.buckets (id, name, public) VALUES ('evidence-photos', 'evidence-photos', false) ON CONFLICT (id) DO NOTHING;
 
 -- ─── 006: FULL TEXT SEARCH ───────────────────────────────────
 

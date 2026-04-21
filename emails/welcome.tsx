@@ -66,7 +66,7 @@ export default function WelcomeEmail({ firstName }: WelcomeEmailProps) {
                     Look up any landlord or address. See reviews, public records, and violation
                     history before you commit to a lease.
                   </Text>
-                  <Link href="https://vettrenters.com/search" style={stepLink}>
+                  <Link href="https://vettrentals.com/search" style={stepLink}>
                     Search landlords →
                   </Link>
                 </Column>
@@ -83,7 +83,7 @@ export default function WelcomeEmail({ firstName }: WelcomeEmailProps) {
                   <Text style={stepDesc}>
                     Upload your lease and share your experience. Every published review is manually verified before it goes live.
                   </Text>
-                  <Link href="https://vettrenters.com/review/new" style={stepLink}>
+                  <Link href="https://vettrentals.com/review/new" style={stepLink}>
                     Write a review →
                   </Link>
                 </Column>
@@ -101,8 +101,8 @@ export default function WelcomeEmail({ firstName }: WelcomeEmailProps) {
                     Watching a specific landlord or property? Add it to your watchlist and get
                     notified when new reviews or violations are filed.
                   </Text>
-                  <Link href="https://vettrenters.com/watchlist" style={stepLink}>
-                    Go to watchlist →
+                  <Link href="https://vettrentals.com/dashboard" style={stepLink}>
+                    Go to dashboard →
                   </Link>
                 </Column>
               </Row>
@@ -110,7 +110,7 @@ export default function WelcomeEmail({ firstName }: WelcomeEmailProps) {
 
             {/* ── CTA ── */}
             <Section style={ctaSection}>
-              <Button style={ctaButton} href="https://vettrenters.com/search">
+              <Button style={ctaButton} href="https://vettrentals.com/search">
                 Start Researching Your Next Landlord
               </Button>
             </Section>
@@ -120,16 +120,16 @@ export default function WelcomeEmail({ firstName }: WelcomeEmailProps) {
               <Text style={footer}>
                 You received this because you created a Vett account.
                 <br />
-              <Link href="https://vettrenters.com/unsubscribe" style={footerLink}>
+              <Link href="https://vettrentals.com/unsubscribe" style={footerLink}>
                 Unsubscribe
               </Link>{' '}
               ·{' '}
-              <Link href="https://vettrenters.com/privacy" style={footerLink}>
+              <Link href="https://vettrentals.com/privacy" style={footerLink}>
                 Privacy Policy
               </Link>{' '}
               ·{' '}
-              <Link href="https://vettrenters.com" style={footerLink}>
-                vettrenters.com
+              <Link href="https://vettrentals.com" style={footerLink}>
+                vettrentals.com
               </Link>
             </Text>
           </Section>

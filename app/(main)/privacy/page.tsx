@@ -45,17 +45,17 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="text-lg font-semibold text-gray-900">Data Retention</h2>
-          <p className="text-gray-600">Account data is retained while your account is active. Reviews remain on the platform after account deletion unless a removal request is submitted. Contact <a href="mailto:privacy@vettrenters.com" className="text-navy-600 hover:underline">privacy@vettrenters.com</a> to request data deletion.</p>
+          <p className="text-gray-600">Account data is retained while your account is active. Reviews remain on the platform after account deletion unless a removal request is submitted. Contact <a href="mailto:privacy@vettrentals.com" className="text-navy-600 hover:underline">privacy@vettrentals.com</a> to request data deletion.</p>
         </section>
 
         <section>
           <h2 className="text-lg font-semibold text-gray-900">Your Rights</h2>
-          <p className="text-gray-600">Depending on your jurisdiction, you may have rights to access, correct, or delete your personal data. Email <a href="mailto:privacy@vettrenters.com" className="text-navy-600 hover:underline">privacy@vettrenters.com</a> with your request. We will respond within 30 days.</p>
+          <p className="text-gray-600">Depending on your jurisdiction, you may have rights to access, correct, or delete your personal data. Email <a href="mailto:privacy@vettrentals.com" className="text-navy-600 hover:underline">privacy@vettrentals.com</a> with your request. We will respond within 30 days.</p>
         </section>
 
         <section>
           <h2 className="text-lg font-semibold text-gray-900">Contact</h2>
-          <p className="text-gray-600">For privacy inquiries: <a href="mailto:privacy@vettrenters.com" className="text-navy-600 hover:underline">privacy@vettrenters.com</a></p>
+          <p className="text-gray-600">For privacy inquiries: <a href="mailto:privacy@vettrentals.com" className="text-navy-600 hover:underline">privacy@vettrentals.com</a></p>
         </section>
       </div>
     </div>

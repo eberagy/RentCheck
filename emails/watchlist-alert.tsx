@@ -41,14 +41,14 @@ export default function WatchlistAlertEmail({ firstName, landlordName, landlordS
               <Text style={alertLandlord}><strong>{landlordName}</strong></Text>
               <Text style={alertSummary}>{summary}</Text>
             </Section>
-            <Button style={button} href={`https://vettrenters.com/landlord/${landlordSlug}`}>
+            <Button style={button} href={`https://vettrentals.com/landlord/${landlordSlug}`}>
               View Profile →
             </Button>
             <Hr style={hr} />
             <Text style={footer}>
               You&apos;re receiving this because you watch {landlordName} on Vett.{' '}
-              <a href={`https://vettrenters.com/dashboard`} style={link}>Manage watchlist</a> ·{' '}
-              <a href="https://vettrenters.com/privacy" style={link}>Privacy</a>
+              <a href={`https://vettrentals.com/dashboard`} style={link}>Manage watchlist</a> ·{' '}
+              <a href="https://vettrentals.com/privacy" style={link}>Privacy</a>
             </Text>
           </Section>
         </Container>

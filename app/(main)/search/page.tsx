@@ -394,6 +394,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   Explore lease-verified renter reviews, public records, and landlord profiles in one place. Search by address, compare properties, and scan the details fast.
                 </p>
               </div>
+              <div className="max-w-xl">
+                <SearchBar />
+              </div>
               <div className="flex flex-wrap gap-2">
                 {priorityCities.map((priorityCity) => {
                   const active = priorityCity.city === city && priorityCity.state === state && !q
