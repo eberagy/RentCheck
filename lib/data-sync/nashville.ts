@@ -1,151 +1,117 @@
 /**
- * Nashville Code Enforcement Violations
- * Portal: https://data.nashville.gov (migrated to ArcGIS Hub)
- * Set NASHVILLE_ARCGIS_SERVICE env var to override.
- * Also tries Nashville's NashvilleNextDoor/Open Data services.
+ * Nashville Code Enforcement
+ * Uses Socrata catalog discovery + known dataset IDs
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, withRetry, type SyncResult } from './utils'
 
-// Nashville has both ArcGIS and Socrata portals — try both
-const ARCGIS_SERVICES = [
-  process.env.NASHVILLE_ARCGIS_SERVICE,
-  'https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Nashville_Code_Enforcement/FeatureServer/0',
-  'https://services2.arcgis.com/HdTo6HJqh92wn4D8/arcgis/rest/services/Nashville_Property_Violations/FeatureServer/0',
-].filter(Boolean) as string[]
-
-// Nashville Socrata portal (data.nashville.gov)
-const SOCRATA_ENDPOINTS = [
-  process.env.NASHVILLE_DATASET ? `https://data.nashville.gov/resource/${process.env.NASHVILLE_DATASET}.json` : null,
-  'https://data.nashville.gov/resource/3h5e-5zk6.json',  // Building permits
-  'https://data.nashville.gov/resource/gyqh-bcsi.json',  // Code complaints
-  'https://data.nashville.gov/resource/p3gd-8c4k.json',  // Code enforcement cases
+const DOMAIN = 'data.nashville.gov'
+const KNOWN_IDS = [
+  process.env.NASHVILLE_DATASET,
+  'pu23-s8ba',  // Metro Nashville Code Enforcement Violations
+  'e9t3-g74k',  // Construction Permits
+  '2u6v-ujjs',  // Building permits
+  '3h5e-5zk6',
+  'gyqh-bcsi',
+  'p3gd-8c4k',
 ].filter(Boolean) as string[]
 
 const PAGE_SIZE = 1000
 
-export async function syncNashville(supabase: SupabaseClient): Promise<SyncResult> {
-  const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
-
-  // Try ArcGIS first, then Socrata
-  let workingService: string | null = null
-  let isSocrata = false
-
-  for (const svc of ARCGIS_SERVICES) {
+async function findWorkingEndpoint(): Promise<string | null> {
+  for (const id of KNOWN_IDS) {
+    const ep = `https://${DOMAIN}/resource/${id}.json`
     try {
-      const probe = await fetch(
-        `${svc}/query?where=1%3D1&outFields=OBJECTID&f=json&resultRecordCount=1`,
-        { signal: AbortSignal.timeout(8000) }
-      )
-      if (probe.ok) {
-        const json = await probe.json()
-        if (json.features !== undefined) { workingService = svc; break }
+      const res = await withRetry(() => fetch(`${ep}?$limit=1`, { signal: AbortSignal.timeout(8000) }))
+      if (res.ok) {
+        const rows = await res.json()
+        if (Array.isArray(rows)) return ep
       }
     } catch { /* try next */ }
   }
-
-  if (!workingService) {
-    for (const ep of SOCRATA_ENDPOINTS) {
-      try {
-        const probe = await fetch(`${ep}?$limit=1`, { signal: AbortSignal.timeout(8000) })
-        if (probe.ok) {
-          const rows = await probe.json()
-          if (Array.isArray(rows)) { workingService = ep; isSocrata = true; break }
-        }
-      } catch { /* try next */ }
+  try {
+    const cat = await fetch(
+      `https://api.us.socrata.com/api/catalog/v1?domains=${DOMAIN}&q=code+enforcement&limit=5&only=datasets`,
+      { signal: AbortSignal.timeout(10000) }
+    )
+    if (cat.ok) {
+      const { results } = await cat.json()
+      for (const r of results ?? []) {
+        const id = r.resource?.id
+        if (!id) continue
+        const ep = `https://${DOMAIN}/resource/${id}.json`
+        try {
+          const probe = await fetch(`${ep}?$limit=1`, { signal: AbortSignal.timeout(6000) })
+          if (probe.ok) { const rows = await probe.json(); if (Array.isArray(rows)) return ep }
+        } catch { /* try next */ }
+      }
     }
-  }
+  } catch { /* catalog unavailable */ }
+  return null
+}
 
-  if (!workingService) {
-    result.errors.push('No working Nashville endpoint. Set NASHVILLE_ARCGIS_SERVICE or NASHVILLE_DATASET env var.')
+export async function syncNashville(supabase: SupabaseClient): Promise<SyncResult> {
+  const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
+
+  const endpoint = await findWorkingEndpoint()
+  if (!endpoint) {
+    result.errors.push('No working Nashville endpoint. Set NASHVILLE_DATASET env var from data.nashville.gov.')
     return result
   }
 
   let offset = 0
   while (true) {
-    let url: string
-    if (isSocrata) {
-      url = `${workingService}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
-    } else {
-      url = `${workingService}/query?where=1%3D1&outFields=*&f=json&resultRecordCount=${PAGE_SIZE}&resultOffset=${offset}&orderByFields=OBJECTID`
-    }
-
-    let features: any[]
+    const url = `${endpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
+    let rows: any[]
     try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(15000) })
-      if (!res.ok) { result.errors.push(`HTTP ${res.status} from Nashville API`); break }
-      const json = await res.json()
-      features = isSocrata ? (Array.isArray(json) ? json : []) : (json.features ?? [])
-    } catch (e) {
-      result.errors.push(e instanceof Error ? e.message : String(e)); break
+      const res = await withRetry(() => fetch(url, { signal: AbortSignal.timeout(15000) }))
+      if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }
+      rows = await res.json()
+      if (!Array.isArray(rows)) break
+    } catch (e) { result.errors.push(e instanceof Error ? e.message : String(e)); break }
+    if (!rows.length) break
+
+    const uniqueAddrs = new Map<string, string>()
+    for (const row of rows) {
+      const addr = row.address ?? row.site_address ?? row.property_address ?? row.parcel_address ?? ''
+      if (addr) uniqueAddrs.set(normalizeAddress(addr), addr)
     }
-    if (features.length === 0) break
-
-    for (const feat of features) {
-      const row = (isSocrata ? feat : feat.attributes) ?? feat
-      try {
-        const sourceId = String(row.OBJECTID ?? row.CASE_NUMBER ?? row.VIOLATION_ID ?? '')
-        if (!sourceId) { result.skipped++; continue }
-
-        const addr = row.ADDRESS ?? row.PROPERTY_ADDRESS ?? row.SITE_ADDRESS ?? ''
-        const addrNorm = normalizeAddress(addr)
-
-        let propertyId = await resolveProperty(supabase, addrNorm, 'Nashville', 'TN')
-        if (!propertyId && addr) {
-          const { data: newProp } = await supabase
-            .from('properties')
-            .insert({
-              address_line1: addr,
-              city: 'Nashville',
-              state: 'Tennessee',
-              state_abbr: 'TN',
-              zip: row.ZIP ?? '',
-              address_normalized: addrNorm,
-            })
-            .select('id').single()
-          propertyId = newProp?.id ?? null
-        }
-
-        const filedTs = row.DATE_OPENED ?? row.VIOLATION_DATE ?? row.OPEN_DATE ?? null
-        const filedDate = filedTs
-          ? (typeof filedTs === 'number'
-              ? new Date(filedTs).toISOString().split('T')[0]
-              : new Date(filedTs).toISOString().split('T')[0])
-          : null
-
-        const { error } = await supabase.from('public_records').upsert({
-          source: 'nashville_code',
-          source_id: sourceId,
-          record_type: 'nashville_violation',
-          property_id: propertyId,
-          title: `Nashville: ${row.CASE_TYPE ?? row.VIOLATION_TYPE ?? 'Code Violation'}`.slice(0, 150),
-          description: row.DESCRIPTION ?? row.CASE_TYPE ?? row.VIOLATION_TYPE ?? null,
-          severity: 'medium',
-          status: mapStatus(row.STATUS ?? row.CASE_STATUS),
-          filed_date: filedDate,
-          source_url: 'https://data.nashville.gov',
-          raw_data: row,
-        }, { onConflict: 'source,source_id', ignoreDuplicates: false })
-
-        if (error) { result.errors.push(error.message); continue }
-        result.added++
-      } catch (e) {
-        result.errors.push(e instanceof Error ? e.message : String(e))
-      }
+    const propRows = Array.from(uniqueAddrs.entries()).map(([norm, addr]) => ({
+      address_line1: addr, city: 'Nashville', state: 'Tennessee', state_abbr: 'TN', zip: '', address_normalized: norm,
+    }))
+    const propIdMap = new Map<string, string>()
+    for (let i = 0; i < propRows.length; i += 200) {
+      const { data } = await supabase.from('properties')
+        .upsert(propRows.slice(i, i + 200), { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
+        .select('id, address_normalized')
+      for (const p of data ?? []) if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
     }
 
+    const toInsert: Record<string, unknown>[] = []
+    for (const row of rows) {
+      const sourceId = String(row.case_number ?? row.permit_number ?? row.violation_id ?? row.id ?? '')
+      if (!sourceId) { result.skipped++; continue }
+      const addr = row.address ?? row.site_address ?? row.property_address ?? ''
+      const propertyId = addr ? (propIdMap.get(normalizeAddress(addr)) ?? null) : null
+      const desc = row.case_type ?? row.violation_type ?? row.permit_type ?? row.description ?? null
+      toInsert.push({
+        source: 'nashville_code', source_id: sourceId, record_type: 'nashville_violation',
+        property_id: propertyId,
+        title: `Nashville: ${desc ?? 'Code Violation'}`.slice(0, 150),
+        description: desc, severity: 'medium',
+        status: (row.status ?? row.case_status ?? '').toLowerCase().includes('close') ? 'closed' : 'open',
+        filed_date: (row.date_filed ?? row.open_date ?? row.permit_date)
+          ? new Date(row.date_filed ?? row.open_date ?? row.permit_date).toISOString().split('T')[0]
+          : null,
+        raw_data: row,
+      })
+    }
+
+    await batchUpsert(supabase, toInsert, result)
     offset += PAGE_SIZE
-    if (features.length < PAGE_SIZE) break
-    if (offset > 100000) break
+    if (rows.length < PAGE_SIZE) break
+    if (offset > 100_000) break
   }
 
   return result
-}
-
-function mapStatus(val: string | null | undefined): string {
-  if (!val) return 'open'
-  const v = val.toLowerCase()
-  if (v.includes('close') || v.includes('complet') || v.includes('resolv')) return 'closed'
-  if (v.includes('pend')) return 'pending'
-  return 'open'
 }

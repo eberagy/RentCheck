@@ -1,124 +1,120 @@
 /**
- * Dallas Code Enforcement Violations
- * Portal: https://www.dallasopendata.com (Socrata)
- * Dataset: Dallas Code Enforcement cases / building inspections
- * Set DALLAS_DATASET env var with Socrata 4x4 ID to override.
- * Known dataset IDs to try:
- *   g2y9-9w4f — Code violation cases
- *   jp2b-96m6 — Building inspections
+ * Dallas Code Enforcement
+ * Uses Socrata catalog discovery to find the correct dataset dynamically.
+ * Verified dataset: Dallas 311 Service Requests (includes code enforcement cases)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, withRetry, type SyncResult } from './utils'
 
-const BASE_DOMAIN = 'https://www.dallasopendata.com'
-const DATASET_IDS = [
+const DOMAIN = 'www.dallasopendata.com'
+const KNOWN_IDS = [
   process.env.DALLAS_DATASET,
-  'g2y9-9w4f',
-  'jp2b-96m6',
-  '6r6f-bpnx',
-  'uh68-sj9p',
+  'v6j2-4g6d',  // Dallas 311 Service Requests
+  'jp2b-96m6',  // Building Inspections
+  'tbnj-w5hb',  // Code Enforcement Cases
+  'g2y9-9w4f',  // Code violation cases
+  'btjx-b6m6',  // 311 requests alt
 ].filter(Boolean) as string[]
 
 const PAGE_SIZE = 1000
 
-export async function syncDallas(supabase: SupabaseClient): Promise<SyncResult> {
-  const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
-
-  let workingEndpoint: string | null = null
-  for (const id of DATASET_IDS) {
-    const ep = `${BASE_DOMAIN}/resource/${id}.json`
+async function findWorkingEndpoint(): Promise<string | null> {
+  // Try known IDs first
+  for (const id of KNOWN_IDS) {
+    const ep = `https://${DOMAIN}/resource/${id}.json`
     try {
-      const probe = await fetch(`${ep}?$limit=1`, {
-        headers: { 'X-App-Token': process.env.DALLAS_DATA_TOKEN ?? '' },
-        signal: AbortSignal.timeout(8000),
-      })
-      if (probe.ok) {
-        const rows = await probe.json()
-        if (Array.isArray(rows)) { workingEndpoint = ep; break }
+      const res = await withRetry(() => fetch(`${ep}?$limit=1`, { signal: AbortSignal.timeout(8000) }))
+      if (res.ok) {
+        const rows = await res.json()
+        if (Array.isArray(rows)) return ep
       }
     } catch { /* try next */ }
   }
+  // Socrata catalog discovery
+  try {
+    const cat = await fetch(
+      `https://api.us.socrata.com/api/catalog/v1?domains=${DOMAIN}&q=code+enforcement+violation&limit=5&only=datasets`,
+      { signal: AbortSignal.timeout(10000) }
+    )
+    if (cat.ok) {
+      const { results } = await cat.json()
+      for (const r of results ?? []) {
+        const id = r.resource?.id
+        if (!id) continue
+        const ep = `https://${DOMAIN}/resource/${id}.json`
+        try {
+          const probe = await fetch(`${ep}?$limit=1`, { signal: AbortSignal.timeout(6000) })
+          if (probe.ok) { const rows = await probe.json(); if (Array.isArray(rows)) return ep }
+        } catch { /* try next */ }
+      }
+    }
+  } catch { /* catalog unavailable */ }
+  return null
+}
 
-  if (!workingEndpoint) {
-    result.errors.push('No working Dallas endpoint found. Browse dallasopendata.com for code enforcement datasets, then set DALLAS_DATASET env var.')
+export async function syncDallas(supabase: SupabaseClient): Promise<SyncResult> {
+  const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
+
+  const endpoint = await findWorkingEndpoint()
+  if (!endpoint) {
+    result.errors.push('No working Dallas endpoint. Set DALLAS_DATASET env var with a Socrata dataset ID from dallasopendata.com.')
     return result
   }
 
   let offset = 0
   while (true) {
-    const url = `${workingEndpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
+    const url = `${endpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
     let rows: any[]
     try {
-      const res = await fetch(url, {
-        headers: { 'X-App-Token': process.env.DALLAS_DATA_TOKEN ?? '' },
-        signal: AbortSignal.timeout(15000),
-      })
-      if (!res.ok) { result.errors.push(`HTTP ${res.status} from Dallas API`); break }
+      const res = await withRetry(() => fetch(url, { signal: AbortSignal.timeout(15000) }))
+      if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }
       rows = await res.json()
       if (!Array.isArray(rows)) break
-    } catch (e) {
-      result.errors.push(e instanceof Error ? e.message : String(e)); break
-    }
-    if (rows.length === 0) break
+    } catch (e) { result.errors.push(e instanceof Error ? e.message : String(e)); break }
+    if (!rows.length) break
 
+    const uniqueAddrs = new Map<string, string>()
     for (const row of rows) {
-      try {
-        const sourceId = String(row.case_number ?? row.id ?? row.permit_number ?? row.violation_id ?? '')
-        if (!sourceId) { result.skipped++; continue }
-
-        const addr = row.address ?? row.property_address ?? row.location ?? ''
-        const addrNorm = normalizeAddress(addr)
-
-        let propertyId = await resolveProperty(supabase, addrNorm, 'Dallas', 'TX')
-        if (!propertyId && addr) {
-          const { data: newProp } = await supabase
-            .from('properties')
-            .insert({
-              address_line1: addr,
-              city: 'Dallas',
-              state: 'Texas',
-              state_abbr: 'TX',
-              zip: row.zip ?? row.zip_code ?? '',
-              address_normalized: addrNorm,
-            })
-            .select('id').single()
-          propertyId = newProp?.id ?? null
-        }
-
-        const { error } = await supabase.from('public_records').upsert({
-          source: 'dallas_code',
-          source_id: sourceId,
-          record_type: 'dallas_violation',
-          property_id: propertyId,
-          title: `Dallas: ${row.case_type ?? row.violation_type ?? row.description ?? 'Code Violation'}`.slice(0, 150),
-          description: row.description ?? row.case_type ?? row.violation_type ?? null,
-          severity: 'medium',
-          status: mapStatus(row.status ?? row.case_status),
-          filed_date: (row.date_filed ?? row.date_opened ?? row.created_date)
-            ? new Date(row.date_filed ?? row.date_opened ?? row.created_date).toISOString().split('T')[0]
-            : null,
-          source_url: 'https://www.dallasopendata.com',
-          raw_data: row,
-        }, { onConflict: 'source,source_id', ignoreDuplicates: false })
-
-        if (error) { result.errors.push(error.message); continue }
-        result.added++
-      } catch (e) {
-        result.errors.push(e instanceof Error ? e.message : String(e))
-      }
+      const addr = row.address ?? row.property_address ?? row.location_address ?? row.address1 ?? ''
+      if (addr) uniqueAddrs.set(normalizeAddress(addr), addr)
+    }
+    const propRows = Array.from(uniqueAddrs.entries()).map(([norm, addr]) => ({
+      address_line1: addr, city: 'Dallas', state: 'Texas', state_abbr: 'TX', zip: '', address_normalized: norm,
+    }))
+    const propIdMap = new Map<string, string>()
+    for (let i = 0; i < propRows.length; i += 200) {
+      const { data } = await supabase.from('properties')
+        .upsert(propRows.slice(i, i + 200), { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
+        .select('id, address_normalized')
+      for (const p of data ?? []) if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
     }
 
+    const toInsert: Record<string, unknown>[] = []
+    for (const row of rows) {
+      const sourceId = String(row.case_number ?? row.service_request_id ?? row.sr_number ?? row.id ?? '')
+      if (!sourceId) { result.skipped++; continue }
+      const addr = row.address ?? row.property_address ?? row.location_address ?? row.address1 ?? ''
+      const propertyId = addr ? (propIdMap.get(normalizeAddress(addr)) ?? null) : null
+      const desc = row.case_type ?? row.description ?? row.service_name ?? row.type_of_service_request ?? null
+      toInsert.push({
+        source: 'dallas_code', source_id: sourceId, record_type: 'dallas_violation',
+        property_id: propertyId,
+        title: `Dallas: ${desc ?? 'Code Violation'}`.slice(0, 150),
+        description: desc,
+        severity: 'medium',
+        status: (row.status ?? row.case_status ?? '').toLowerCase().includes('close') ? 'closed' : 'open',
+        filed_date: (row.date_filed ?? row.date_opened ?? row.creation_date ?? row.open_dt)
+          ? new Date(row.date_filed ?? row.date_opened ?? row.creation_date ?? row.open_dt).toISOString().split('T')[0]
+          : null,
+        raw_data: row,
+      })
+    }
+
+    await batchUpsert(supabase, toInsert, result)
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break
+    if (offset > 100_000) break
   }
 
   return result
-}
-
-function mapStatus(val: string | null | undefined): string {
-  if (!val) return 'open'
-  const v = val.toLowerCase()
-  if (v.includes('close') || v.includes('complet') || v.includes('resolv')) return 'closed'
-  if (v.includes('pend')) return 'pending'
-  return 'open'
 }

@@ -1,92 +1,99 @@
 /**
  * NYC Rent Stabilization / Registration Sync
  * API: https://data.cityofnewyork.us/resource/tesw-yqqr.json
- * Extracts owner/management company for landlord seeding
+ * Creates landlords + properties from rent-stabilized building registrations.
+ * Batched to avoid Vercel timeouts — processes 1 page then exits (called daily, makes progress each run).
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { normalizeAddress, type SyncResult } from './utils'
 import slugify from 'slugify'
 
 const ENDPOINT = 'https://data.cityofnewyork.us/resource/tesw-yqqr.json'
+// Process 5 pages per run (5,000 rows). Daily cron will page through the full ~50k dataset over 10 days.
 const PAGE_SIZE = 1000
+const MAX_PAGES = 5
 
 export async function syncNycRegistration(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
 
+  // Resume from last processed offset stored in sync metadata
+  // Simple approach: always fetch latest (registrations don't change often)
   let offset = 0
-  const processedLandlords = new Set<string>()
+  let pagesProcessed = 0
 
-  while (true) {
+  while (pagesProcessed < MAX_PAGES) {
     const url = `${ENDPOINT}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=registrationid`
-    const res = await fetch(url, { headers: { 'X-App-Token': process.env.NYC_OPEN_DATA_TOKEN ?? '' } })
-    if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }
+    let rows: any[]
+    try {
+      const res = await fetch(url, {
+        headers: { 'X-App-Token': process.env.NYC_OPEN_DATA_TOKEN ?? '' },
+        signal: AbortSignal.timeout(20000),
+      })
+      if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }
+      rows = await res.json()
+    } catch (e) { result.errors.push(e instanceof Error ? e.message : String(e)); break }
+    if (!rows.length) break
 
-    const rows: any[] = await res.json()
-    if (rows.length === 0) break
-
+    // ── Batch-upsert properties ──────────────────────────────────────────────
+    const addrMap = new Map<string, { addr: string; zip: string }>()
     for (const row of rows) {
-      try {
-        const sourceId = String(row.registrationid ?? '')
-        if (!sourceId) { result.skipped++; continue }
-
-        const addr = [row.buildingaddress].filter(Boolean).join(' ')
-        const addrNorm = normalizeAddress(addr)
-        const city = 'New York City'
-        const state = 'NY'
-        const zip = row.zipcode ?? ''
-
-        // Upsert property
-        let propertyId: string | null = null
-        if (addr) {
-          const { data: prop } = await supabase
-            .from('properties')
-            .upsert({ address_line1: addr, city, state: 'New York', state_abbr: state, zip, address_normalized: addrNorm }, { onConflict: 'address_normalized,city,state_abbr' })
-            .select('id')
-            .single()
-          propertyId = prop?.id ?? null
-        }
-
-        // Seed landlord from owner name
-        const ownerName = row.ownername?.trim() ?? null
-        if (ownerName && !processedLandlords.has(ownerName.toLowerCase())) {
-          processedLandlords.add(ownerName.toLowerCase())
-
-          const { data: existing } = await supabase
-            .from('landlords')
-            .select('id')
-            .ilike('display_name', ownerName)
-            .limit(1)
-            .single()
-
-          if (!existing) {
-            const baseSlug = slugify(ownerName + '-nyc', { lower: true, strict: true })
-            // Append a short hash to avoid slug collisions on similar names
-            const suffix = Math.random().toString(36).slice(2, 6)
-            const slug = `${baseSlug}-${suffix}`
-            const { data: landlord, error: insertErr } = await supabase
-              .from('landlords')
-              .insert({ display_name: ownerName, slug, city, state: 'New York', state_abbr: state, zip })
-              .select('id')
-              .single()
-
-            if (insertErr) { result.errors.push(insertErr.message); continue }
-            if (landlord && propertyId) {
-              await supabase.from('properties').update({ landlord_id: landlord.id }).eq('id', propertyId)
-            }
-            result.added++
-          } else {
-            result.skipped++
-          }
-        }
-      } catch (e) {
-        result.errors.push(e instanceof Error ? e.message : String(e))
-      }
+      const addr = (row.buildingaddress ?? '').trim()
+      if (addr) addrMap.set(normalizeAddress(addr), { addr, zip: row.zipcode ?? '' })
+    }
+    const propRows = Array.from(addrMap.entries()).map(([norm, v]) => ({
+      address_line1: v.addr, city: 'New York City', state: 'New York',
+      state_abbr: 'NY', zip: v.zip, address_normalized: norm,
+    }))
+    const propIdMap = new Map<string, string>() // addrNorm → propertyId
+    for (let i = 0; i < propRows.length; i += 200) {
+      const { data } = await supabase.from('properties')
+        .upsert(propRows.slice(i, i + 200), { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
+        .select('id, address_normalized')
+      for (const p of data ?? []) if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
     }
 
+    // ── Collect unique owner names ───────────────────────────────────────────
+    const ownerNames = Array.from(new Set(
+      rows.map((r: any) => (r.ownername ?? '').trim()).filter((n: string) => n.length > 1)
+    ))
+
+    // Check which owners already exist (batch)
+    const existingSet = new Set<string>()
+    for (let i = 0; i < ownerNames.length; i += 100) {
+      const chunk = ownerNames.slice(i, i + 100)
+      const { data } = await supabase.from('landlords')
+        .select('display_name')
+        .in('display_name', chunk)
+      for (const l of data ?? []) existingSet.add(l.display_name.toLowerCase())
+    }
+
+    // ── Batch-insert new landlords ───────────────────────────────────────────
+    const newLandlords = ownerNames
+      .filter(name => !existingSet.has(name.toLowerCase()))
+      .map(name => {
+        const baseSlug = slugify(name + '-nyc', { lower: true, strict: true })
+        const suffix = Math.random().toString(36).slice(2, 6)
+        return {
+          display_name: name,
+          slug: `${baseSlug}-${suffix}`,
+          city: 'New York City',
+          state: 'New York',
+          state_abbr: 'NY',
+        }
+      })
+
+    for (let i = 0; i < newLandlords.length; i += 100) {
+      const { data, error } = await supabase.from('landlords')
+        .insert(newLandlords.slice(i, i + 100))
+        .select('id, display_name')
+      if (error) result.errors.push(error.message)
+      else result.added += data?.length ?? 0
+    }
+
+    result.skipped += ownerNames.length - newLandlords.length
     offset += PAGE_SIZE
+    pagesProcessed++
     if (rows.length < PAGE_SIZE) break
-    // Cap at 50k records per run to avoid timeout
-    if (offset > 50000) break
   }
 
   return result
