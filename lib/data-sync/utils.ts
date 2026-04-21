@@ -53,79 +53,124 @@ const STATE_ABBR_TO_FULL: Record<string, string> = {
  * Handles property creation/lookup from address fields.
  * All new-city syncs should use this instead of writing their own upsert logic.
  */
+const BATCH_SIZE = 200
+
+/**
+ * Batch upsert pre-built public_record rows (for syncs that build their own record objects).
+ * Sends 200 rows per DB call instead of 1 — ~200x fewer round-trips.
+ */
+export async function batchUpsert(
+  supabase: SupabaseClient,
+  rows: Record<string, unknown>[],
+  result: SyncResult
+): Promise<void> {
+  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+    const batch = rows.slice(i, i + BATCH_SIZE)
+    const { error, data } = await supabase
+      .from('public_records')
+      .upsert(batch, { onConflict: 'source,source_id', ignoreDuplicates: true })
+      .select('id')
+    if (error) {
+      result.errors.push(error.message)
+    } else {
+      result.added += data?.length ?? batch.length
+    }
+  }
+}
+
+/**
+ * Upsert raw city records — resolves/creates properties, then batch-inserts.
+ * Used by the new-city syncs (memphis, louisville, etc.).
+ */
 export async function upsertRecords(
   supabase: SupabaseClient,
   records: RawRecord[]
 ): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
 
-  for (const rec of records) {
-    try {
-      if (!rec.source_id) { result.skipped++; continue }
+  // Dedupe by source_id within the batch before hitting DB
+  const seen = new Set<string>()
+  const valid = records.filter(r => {
+    if (!r.source_id) { result.skipped++; return false }
+    if (seen.has(r.source_id)) { result.skipped++; return false }
+    seen.add(r.source_id)
+    return true
+  })
 
-      const stateAbbr = rec.state.length === 2 ? rec.state.toUpperCase() : rec.state
-      const stateFull = STATE_ABBR_TO_FULL[stateAbbr] ?? rec.state
+  // Batch-upsert properties first (skip per-row DB lookups — properties created lazily)
+  const propertyMap = new Map<string, string>() // addrNorm -> id
 
-      // Get or create property from address
-      let propertyId: string | null = null
-      if (rec.address?.trim()) {
-        const addrNorm = normalizeAddress(rec.address)
-        // Try to find existing
-        const { data: existing } = await supabase
-          .from('properties')
-          .select('id')
-          .eq('address_normalized', addrNorm)
-          .eq('city', rec.city)
-          .eq('state_abbr', stateAbbr)
-          .limit(1)
-          .maybeSingle()
-
-        if (existing) {
-          propertyId = existing.id
-        } else {
-          const { data: created } = await supabase
-            .from('properties')
-            .insert({
-              address_line1: rec.address.trim(),
-              city: rec.city,
-              state: stateFull,
-              state_abbr: stateAbbr,
-              zip: '',
-              address_normalized: addrNorm,
-            })
-            .select('id')
-            .single()
-          propertyId = created?.id ?? null
-        }
-      }
-
-      // Build title (required, 10–150 chars)
-      const rawTitle = rec.description
-        ? `${rec.city} Code Violation: ${rec.description}`
-        : `${rec.city} Code Enforcement Case`
-      const title = rawTitle.slice(0, 150).padEnd(10, ' ')
-
-      const { error } = await supabase.from('public_records').upsert({
-        source: rec.source,
-        source_id: rec.source_id,
-        record_type: 'code_enforcement',
-        property_id: propertyId,
-        title,
-        description: rec.description,
-        severity: 'medium',
-        status: rec.status,
-        filed_date: rec.filed_date ? rec.filed_date.slice(0, 10) : null,
-        closed_date: rec.closed_date ? rec.closed_date.slice(0, 10) : null,
-        raw_data: rec.raw,
-      }, { onConflict: 'source,source_id', ignoreDuplicates: false })
-
-      if (error) { result.errors.push(error.message); continue }
-      result.added++
-    } catch (e) {
-      result.errors.push(e instanceof Error ? e.message : String(e))
+  // Build property inserts (unique addresses only)
+  const uniqueAddrs = new Map<string, { address: string; city: string; stateAbbr: string; stateFull: string; zip: string }>()
+  for (const rec of valid) {
+    if (!rec.address?.trim()) continue
+    const stateAbbr = rec.state.length <= 3 ? rec.state.toUpperCase() : rec.state
+    const addrNorm = normalizeAddress(rec.address)
+    const key = `${addrNorm}|${rec.city}|${stateAbbr}`
+    if (!uniqueAddrs.has(key)) {
+      uniqueAddrs.set(key, {
+        address: rec.address.trim(),
+        city: rec.city,
+        stateAbbr,
+        stateFull: STATE_ABBR_TO_FULL[stateAbbr] ?? rec.state,
+        zip: '',
+      })
     }
   }
 
+  // Batch-insert properties (ignore duplicates via ON CONFLICT)
+  const propRows = Array.from(uniqueAddrs.entries()).map(([key, v]) => ({
+    address_line1: v.address,
+    city: v.city,
+    state: v.stateFull,
+    state_abbr: v.stateAbbr,
+    zip: v.zip,
+    address_normalized: key.split('|')[0],
+  }))
+
+  if (propRows.length > 0) {
+    for (let i = 0; i < propRows.length; i += BATCH_SIZE) {
+      const { data: created } = await supabase
+        .from('properties')
+        .upsert(propRows.slice(i, i + BATCH_SIZE), {
+          onConflict: 'address_normalized,city,state_abbr',
+          ignoreDuplicates: true,
+        })
+        .select('id, address_normalized, city, state_abbr')
+      for (const p of created ?? []) {
+        if (p.address_normalized) propertyMap.set(`${p.address_normalized}|${p.city}|${p.state_abbr}`, p.id)
+      }
+    }
+  }
+
+  // Build public_record rows
+  const toInsert: Record<string, unknown>[] = []
+  for (const rec of valid) {
+    const stateAbbr = rec.state.length <= 3 ? rec.state.toUpperCase() : rec.state
+    const addrNorm = rec.address ? normalizeAddress(rec.address) : null
+    const propertyId = addrNorm ? (propertyMap.get(`${addrNorm}|${rec.city}|${stateAbbr}`) ?? null) : null
+
+    const rawTitle = rec.description
+      ? `${rec.city} Code Violation: ${rec.description}`
+      : `${rec.city} Code Enforcement Case`
+    const title = rawTitle.slice(0, 150).padEnd(10, ' ')
+
+    toInsert.push({
+      source: rec.source,
+      source_id: rec.source_id,
+      record_type: 'code_enforcement',
+      property_id: propertyId,
+      title,
+      description: rec.description,
+      severity: 'medium',
+      status: rec.status,
+      filed_date: rec.filed_date ? rec.filed_date.slice(0, 10) : null,
+      closed_date: rec.closed_date ? rec.closed_date.slice(0, 10) : null,
+      raw_data: rec.raw,
+    })
+  }
+
+  await batchUpsert(supabase, toInsert, result)
   return result
 }
 
