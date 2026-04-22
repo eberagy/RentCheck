@@ -188,7 +188,7 @@ export default async function HomePage() {
 
             <ScrollReveal delay={400} direction="up">
               <div className="mt-9 max-w-2xl">
-                <div className="rounded-[1.5rem] border border-white/[0.12] bg-white p-2 shadow-[0_30px_90px_rgba(0,0,0,0.35)] transition-shadow hover:shadow-[0_40px_100px_rgba(0,0,0,0.45)]">
+                <div className="rounded-2xl border border-white/[0.15] bg-white/[0.08] p-1.5 shadow-[0_30px_90px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-shadow hover:shadow-[0_40px_100px_rgba(0,0,0,0.45)]">
                   <SearchBar size="lg" autoFocus />
                 </div>
                 <p className="mt-3 text-sm text-slate-400">
