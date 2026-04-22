@@ -95,7 +95,7 @@ export default function NewReviewPage() {
     )
   }
 
-  const { register, handleSubmit, watch, setValue, trigger, formState: { errors } } = useForm<ReviewFormData>({
+  const { register, handleSubmit, watch, setValue, trigger, getValues, formState: { errors } } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
     defaultValues: { ratingOverall: 0, ratingResponsiveness: 0, ratingMaintenance: 0, ratingHonesty: 0, ratingLeaseFairness: 0, isCurrentTenant: false, propertyAddress: '' },
   })
@@ -574,7 +574,13 @@ export default function NewReviewPage() {
 
       {/* Step 3: Confirm */}
       {step === 3 && (
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={async (e) => {
+          e.preventDefault()
+          const valid = await trigger(['confirmedGenuine', 'confirmedLiability'])
+          if (valid) {
+            await onSubmit(getValues() as ReviewFormData)
+          }
+        }}>
           <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
             <Eyebrow tone="teal">Step 4 of 5 &middot; Confirm & submit</Eyebrow>
             <h1 className="mt-3.5 text-[clamp(28px,5.5vw,36px)] font-extrabold tracking-tight text-slate-900">Almost there.</h1>
