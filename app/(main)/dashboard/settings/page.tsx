@@ -83,8 +83,8 @@ export default function SettingsPage() {
         <ArrowLeft className="h-4 w-4" /> Back to Dashboard
       </Link>
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">Account Settings</h1>
-      <p className="text-gray-500 text-sm mb-8">Manage your profile and notification preferences</p>
+      <h1 className="font-display text-[clamp(1.9rem,4vw,2.75rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Account Settings</h1>
+      <p className="text-slate-500 text-[14.5px] mb-8">Manage your profile and notification preferences</p>
 
       <div className="bg-white border border-gray-200 rounded-xl divide-y">
         {/* Profile section */}
