@@ -1,9 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 
-export function PostHogProvider({ children }: { children: React.ReactNode }) {
+function PostHogPageview() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -16,7 +16,7 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
       if (!posthog.__loaded) {
         posthog.init(key, {
           api_host: host,
-          capture_pageview: false, // Manual below
+          capture_pageview: false,
           capture_pageleave: true,
           autocapture: false,
           persistence: 'localStorage',
@@ -26,5 +26,16 @@ export function PostHogProvider({ children }: { children: React.ReactNode }) {
     }).catch(() => {})
   }, [pathname, searchParams])
 
-  return <>{children}</>
+  return null
+}
+
+export function PostHogProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <Suspense fallback={null}>
+        <PostHogPageview />
+      </Suspense>
+      {children}
+    </>
+  )
 }

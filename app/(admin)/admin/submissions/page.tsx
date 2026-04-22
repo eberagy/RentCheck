@@ -190,7 +190,7 @@ export default function AdminSubmissionsPage() {
                 {sub.status === 'pending' && (
                   <div className="space-y-3">
                     <Textarea
-                      placeholder="Admin notes (optional)..."
+                      placeholder="Optional reason — included in email to submitter when rejected or marked duplicate"
                       value={adminNotes[sub.id] ?? ''}
                       onChange={e => setAdminNotes(prev => ({ ...prev, [sub.id]: e.target.value }))}
                       rows={2}

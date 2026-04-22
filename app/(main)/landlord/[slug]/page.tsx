@@ -40,12 +40,20 @@ export async function generateMetadata({ params }: LandlordPageProps): Promise<M
   if (!landlord) return { title: 'Landlord Not Found' }
 
   const location = [landlord.city, landlord.state_abbr].filter(Boolean).join(', ')
+  const reviewCount = landlord.review_count ?? 0
+  const hasReviews = reviewCount > 0
+  const description = hasReviews
+    ? `Read ${reviewCount} lease-verified renter review${reviewCount === 1 ? '' : 's'} of ${landlord.display_name}. See public records, court cases, and violation history.`
+    : `Public records and renter research for ${landlord.display_name}${location ? ` in ${location}` : ''}. Be the first to write a lease-verified review.`
+  const ogDescription = hasReviews
+    ? `${reviewCount} renter review${reviewCount === 1 ? '' : 's'} · ${(landlord.avg_rating ?? 0).toFixed(1)} avg rating`
+    : `Research ${landlord.display_name}${location ? ` in ${location}` : ''} on Vett. Lease-verified reviews + public records.`
   return {
     title: `${landlord.display_name} Reviews${location ? ` — ${location}` : ''}`,
-    description: `Read ${landlord.review_count} lease-verified renter reviews of ${landlord.display_name}. See public records, court cases, and violation history.`,
+    description,
     openGraph: {
       title: `${landlord.display_name} Reviews | Vett`,
-      description: `${landlord.review_count} renter reviews · ${(landlord.avg_rating ?? 0).toFixed(1)} avg rating`,
+      description: ogDescription,
     },
   }
 }
@@ -140,17 +148,26 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
     propertyCount: (properties ?? []).length,
   })
 
-  // JSON-LD structured data
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
+  const hasRatings = (landlord.avg_rating ?? 0) > 0 && (landlord.review_count ?? 0) > 0
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     name: landlord.display_name,
+    url: `${siteUrl}/landlord/${landlord.slug}`,
     ...(landlord.business_name && { legalName: landlord.business_name }),
-    ...(landlord.city && { address: { '@type': 'PostalAddress', addressLocality: landlord.city, addressRegion: landlord.state_abbr, postalCode: landlord.zip ?? undefined } }),
-    ...(landlord.avg_rating > 0 && {
+    ...(landlord.city && {
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: landlord.city,
+        ...(landlord.state_abbr && { addressRegion: landlord.state_abbr }),
+        ...(landlord.zip && { postalCode: landlord.zip }),
+      },
+    }),
+    ...(hasRatings && {
       aggregateRating: {
         '@type': 'AggregateRating',
-        ratingValue: landlord.avg_rating,
+        ratingValue: Number(landlord.avg_rating).toFixed(1),
         reviewCount: landlord.review_count,
         bestRating: 5,
         worstRating: 1,

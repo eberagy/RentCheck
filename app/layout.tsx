@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import { Instrument_Serif } from 'next/font/google'
-import { Suspense } from 'react'
+import Script from 'next/script'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Toaster } from 'sonner'
 import { PostHogProvider } from '@/components/PostHogProvider'
@@ -51,16 +51,45 @@ export const metadata: Metadata = {
   },
 }
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
+
+const siteJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}/#organization`,
+      name: 'Vett',
+      url: siteUrl,
+      slogan: 'Know before you rent',
+      description: 'Lease-verified renter reviews and public records on landlords nationwide.',
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      url: siteUrl,
+      name: 'Vett',
+      publisher: { '@id': `${siteUrl}/#organization` },
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: { '@type': 'EntryPoint', urlTemplate: `${siteUrl}/search?q={search_term_string}` },
+        'query-input': 'required name=search_term_string',
+      },
+    },
+  ],
+})
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${sans.variable} ${display.variable}`}>
       <body className="font-sans bg-background text-foreground antialiased min-h-screen flex flex-col">
+        <Script id="vett-site-jsonld" type="application/ld+json" strategy="beforeInteractive">
+          {siteJsonLd}
+        </Script>
         <TooltipProvider>
-          <Suspense fallback={null}>
-            <PostHogProvider>
-              {children}
-            </PostHogProvider>
-          </Suspense>
+          <PostHogProvider>
+            {children}
+          </PostHogProvider>
           <Toaster position="top-right" richColors />
         </TooltipProvider>
       </body>

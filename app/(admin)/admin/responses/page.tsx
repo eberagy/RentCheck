@@ -24,6 +24,8 @@ export default function AdminResponsesPage() {
   const [items, setItems] = useState<ResponseItem[]>([])
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState<string | null>(null)
+  const [rejectingId, setRejectingId] = useState<string | null>(null)
+  const [reason, setReason] = useState('')
   const supabase = createClient()
 
   useEffect(() => { loadItems() }, []) // eslint-disable-line
@@ -41,12 +43,12 @@ export default function AdminResponsesPage() {
     setLoading(false)
   }
 
-  async function moderate(reviewId: string, action: 'approved' | 'rejected') {
+  async function moderate(reviewId: string, action: 'approved' | 'rejected', rejectionReason?: string) {
     setProcessing(reviewId)
     const res = await fetch('/api/admin/moderate-response', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reviewId, action }),
+      body: JSON.stringify({ reviewId, action, adminNotes: rejectionReason?.trim() || undefined }),
     })
     if (!res.ok) {
       toast.error('Failed to update')
@@ -56,6 +58,8 @@ export default function AdminResponsesPage() {
     toast.success(action === 'approved' ? 'Response approved — now visible on review' : 'Response rejected and removed')
     setItems(prev => prev.filter(r => r.id !== reviewId))
     setProcessing(null)
+    setRejectingId(null)
+    setReason('')
   }
 
   return (
@@ -97,27 +101,58 @@ export default function AdminResponsesPage() {
                       <p className="text-sm text-navy-800 whitespace-pre-wrap">{item.landlord_response}</p>
                     </div>
 
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        className="bg-teal-600 hover:bg-teal-700 text-white"
-                        onClick={() => moderate(item.id, 'approved')}
-                        disabled={processing === item.id}
-                      >
-                        {processing === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
-                        Approve Response
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-red-300 text-red-700 hover:bg-red-50"
-                        onClick={() => moderate(item.id, 'rejected')}
-                        disabled={processing === item.id}
-                      >
-                        <XCircle className="h-3.5 w-3.5 mr-1" />
-                        Reject
-                      </Button>
-                    </div>
+                    {rejectingId === item.id ? (
+                      <div className="space-y-2">
+                        <textarea
+                          value={reason}
+                          onChange={e => setReason(e.target.value)}
+                          placeholder="Optional reason (will be included in rejection email to the landlord)"
+                          rows={2}
+                          className="w-full rounded-lg border border-red-200 bg-red-50/50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-red-400 focus:outline-none"
+                        />
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                            onClick={() => moderate(item.id, 'rejected', reason)}
+                            disabled={processing === item.id}
+                          >
+                            {processing === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <XCircle className="h-3.5 w-3.5 mr-1" />}
+                            Confirm Reject
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => { setRejectingId(null); setReason('') }}
+                            disabled={processing === item.id}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          className="bg-teal-600 hover:bg-teal-700 text-white"
+                          onClick={() => moderate(item.id, 'approved')}
+                          disabled={processing === item.id}
+                        >
+                          {processing === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
+                          Approve Response
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-red-300 text-red-700 hover:bg-red-50"
+                          onClick={() => setRejectingId(item.id)}
+                          disabled={processing === item.id}
+                        >
+                          <XCircle className="h-3.5 w-3.5 mr-1" />
+                          Reject
+                        </Button>
+                      </div>
+                    )}
                   </div>
 
                   <Badge variant="outline" className="text-amber-700 border-amber-300 flex-shrink-0">

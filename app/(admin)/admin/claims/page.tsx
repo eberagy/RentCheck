@@ -80,7 +80,7 @@ export default function AdminClaimsPage() {
         body: JSON.stringify({ claimId, action, adminNotes: notes[claimId] }),
       })
       if (!res.ok) throw new Error('Failed')
-      toast.success(`Claim ${action}${action === 'approved' ? ' — email sent to landlord' : ''}`)
+      toast.success(`Claim ${action} — email sent to landlord`)
       setClaims(prev => prev.filter(c => c.id !== claimId))
     } catch {
       toast.error('Failed to process claim')
@@ -171,7 +171,7 @@ export default function AdminClaimsPage() {
                   <>
                     <div className="mb-3">
                       <Textarea
-                        placeholder="Admin notes (shown to claimant if rejected)..."
+                        placeholder="Optional reason — included in rejection email to claimant"
                         value={notes[claim.id] ?? ''}
                         onChange={e => setNotes(prev => ({ ...prev, [claim.id]: e.target.value }))}
                         rows={2}
