@@ -36,7 +36,7 @@ export function Navbar() {
       className={cn(
         'sticky top-0 z-50 transition-colors',
         isDark
-          ? 'border-b border-white/[0.08] bg-transparent'
+          ? 'border-b border-white/[0.08] bg-[#07111f]/90 backdrop-blur-xl'
           : 'border-b border-slate-200 bg-white/85 backdrop-blur-xl'
       )}
     >

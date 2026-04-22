@@ -84,13 +84,13 @@ export default async function HomePage() {
 
         <div className="relative mx-auto max-w-[1100px] px-6 pb-20 pt-16 lg:pb-28 lg:pt-24">
           <ScrollReveal delay={0} direction="up">
-            <p className="text-[13px] font-medium tracking-wide text-teal-400/90">
+            <p className="text-[13px] font-medium uppercase tracking-[0.14em] text-teal-300">
               Lease-verified renter intelligence
             </p>
           </ScrollReveal>
 
           <ScrollReveal delay={80} direction="up">
-            <h1 className="mt-5 max-w-[680px] font-display text-[clamp(2.8rem,6vw,5rem)] leading-[1.05] tracking-tight">
+            <h1 className="mt-5 max-w-[680px] font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1.04] tracking-tight">
               Know before
               <br />
               you rent.
@@ -129,19 +129,19 @@ export default async function HomePage() {
                   <span className="text-2xl font-bold text-white tabular-nums">
                     <AnimatedCounter target={stats.reviews} duration={2000} />
                   </span>
-                  <span className="ml-2 text-[13px] text-slate-500">verified reviews</span>
+                  <span className="ml-2 text-[13px] text-slate-400">verified reviews</span>
                 </div>
                 <div>
                   <span className="text-2xl font-bold text-white tabular-nums">
                     <AnimatedCounter target={stats.landlords} duration={2000} />
                   </span>
-                  <span className="ml-2 text-[13px] text-slate-500">landlords tracked</span>
+                  <span className="ml-2 text-[13px] text-slate-400">landlords tracked</span>
                 </div>
                 <div>
                   <span className="text-2xl font-bold text-white tabular-nums">
                     <AnimatedCounter target={stats.records} duration={2000} />
                   </span>
-                  <span className="ml-2 text-[13px] text-slate-500">public records</span>
+                  <span className="ml-2 text-[13px] text-slate-400">public records</span>
                 </div>
               </div>
             </ScrollReveal>

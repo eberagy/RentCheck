@@ -71,7 +71,7 @@ function FAQItem({ id, q, a }: { id: string; q: string; a: string }) {
       </button>
       {open && (
         <div className="pb-4">
-          <p className="text-sm text-gray-500 leading-relaxed">{a}</p>
+          <p className="text-sm text-gray-700 leading-relaxed">{a}</p>
         </div>
       )}
     </div>
@@ -81,7 +81,7 @@ function FAQItem({ id, q, a }: { id: string; q: string; a: string }) {
 export default function FAQPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Frequently Asked Questions</h1>
+      <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900 mb-3">Frequently Asked Questions</h1>
       <p className="text-gray-500 mb-10">
         Can&apos;t find your answer? Email{' '}
         <a href="mailto:support@vettrentals.com" className="text-navy-600 hover:underline font-medium">

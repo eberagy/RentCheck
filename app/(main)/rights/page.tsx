@@ -124,7 +124,7 @@ export default function TenantRightsIndexPage() {
         {/* All other states */}
         <section>
           <h2 className="text-[16px] font-bold text-slate-700 mb-1">All Other States</h2>
-          <p className="text-[13px] text-slate-400 mb-4">General tenant rights information — detailed guides coming soon.</p>
+          <p className="text-[13px] text-slate-500 mb-4">General tenant rights information — detailed guides coming soon.</p>
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4">
             {otherStates.map(state => (
               <Link

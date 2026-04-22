@@ -362,7 +362,7 @@ export default function LoginPage() {
           )}
 
           <div className="mt-6 text-center">
-            <Link href="/" className="text-sm text-gray-400 hover:text-navy-600 transition-colors underline underline-offset-2">
+            <Link href="/" className="text-sm text-gray-500 hover:text-navy-600 transition-colors underline underline-offset-2">
               Continue as guest
             </Link>
           </div>
