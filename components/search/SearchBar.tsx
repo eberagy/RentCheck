@@ -55,16 +55,15 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
     <div ref={containerRef} className={cn('relative', className)}>
       <form onSubmit={handleSubmit}>
         <div className={cn(
-          'flex items-center gap-2.5',
+          'flex items-center',
           inline
             ? 'h-full'
             : cn(
-                // Clean, open feel — bottom border emphasis instead of full pill
-                size === 'lg' ? 'px-1 pb-3 pt-1' : size === 'md' ? 'px-1 pb-2.5 pt-0.5' : 'px-0.5 pb-2 pt-0.5',
+                'rounded-full transition-all duration-200',
+                size === 'lg' ? 'h-14 px-5 gap-3' : size === 'md' ? 'h-11 px-4 gap-2.5' : 'h-9 px-3 gap-2',
                 variant === 'dark'
-                  ? 'border-b border-white/20 focus-within:border-teal-400/60'
-                  : 'border-b-2 border-slate-200 focus-within:border-navy-400',
-                'transition-[border-color] duration-200'
+                  ? 'bg-white/[0.08] backdrop-blur-md ring-1 ring-white/[0.12] focus-within:bg-white/[0.12] focus-within:ring-white/25 focus-within:shadow-[0_0_30px_rgba(20,184,166,0.08)]'
+                  : 'bg-white ring-1 ring-slate-200 shadow-sm focus-within:ring-2 focus-within:ring-navy-400 focus-within:shadow-md',
               )
         )}>
           {!inline && (
@@ -72,7 +71,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
               type="submit"
               className={cn(
                 'flex-shrink-0 transition-colors',
-                variant === 'dark' ? 'text-slate-500 hover:text-white' : 'text-slate-300 hover:text-slate-500'
+                variant === 'dark' ? 'text-slate-400 hover:text-white' : 'text-slate-300 hover:text-slate-500'
               )}
             >
               {loading
@@ -92,23 +91,30 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
             aria-label="Search landlords, properties, and cities"
             className={cn(
               'flex-1 min-w-0 bg-transparent outline-none',
-              size === 'lg' ? 'text-xl font-light' : size === 'md' ? 'text-base' : 'text-sm',
+              size === 'lg' ? 'text-[17px]' : size === 'md' ? 'text-[15px]' : 'text-sm',
               variant === 'dark'
-                ? 'text-white placeholder:text-slate-300'
+                ? 'text-white placeholder:text-slate-400'
                 : 'text-slate-900 placeholder:text-slate-400'
             )}
             autoComplete="off"
           />
-          {query && (
+          {query ? (
             <button
               type="button"
               onClick={() => { clear(); setOpen(false) }}
               aria-label="Clear search"
-              className={cn('flex-shrink-0 p-1 -m-1 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400', variant === 'dark' ? 'text-slate-300 hover:text-white' : 'text-slate-400 hover:text-slate-600')}
+              className={cn('flex-shrink-0 p-1 -m-1 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400', variant === 'dark' ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-600')}
             >
               <X className="h-4 w-4" />
             </button>
-          )}
+          ) : size === 'lg' && !inline ? (
+            <kbd className={cn(
+              'hidden sm:inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium',
+              variant === 'dark' ? 'bg-white/[0.06] text-slate-500' : 'bg-slate-100 text-slate-400'
+            )}>
+              ↵
+            </kbd>
+          ) : null}
         </div>
       </form>
 
@@ -118,10 +124,8 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
           role="listbox"
           className={cn(
             'absolute left-0 right-0 top-full z-50 max-h-[min(24rem,70vh)] max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain',
-            inline
-              ? 'mt-1 rounded-xl border border-slate-200 bg-white shadow-xl'
-              : 'mt-0 rounded-b-xl border border-t-0 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]',
-            inline ? '' : variant === 'dark' ? 'border-white/10' : 'border-slate-200'
+            'mt-2 rounded-2xl border bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]',
+            variant === 'dark' ? 'border-white/10' : 'border-slate-200'
           )}
         >
           {results.map(result => (
@@ -158,7 +162,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
               )}
             </button>
           ))}
-          <div className="border-t border-slate-100 bg-slate-50/50 px-4 py-2.5">
+          <div className="border-t border-slate-100 bg-slate-50/50 px-4 py-2.5 rounded-b-2xl">
             <button
               type="button"
               onClick={handleSubmit as unknown as React.MouseEventHandler}

@@ -107,12 +107,12 @@ export default async function HomePage() {
           <ScrollReveal delay={240} direction="up">
             <div className="mt-10 max-w-[560px]">
               <SearchBar size="lg" autoFocus variant="dark" />
-              <div className="mt-5 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-1.5">
                 {priorityCities.map((city) => (
                   <Link
                     key={`${city.city}-${city.state}`}
                     href={`/search?city=${encodeURIComponent(city.city)}&state=${city.state}`}
-                    className="rounded-md border border-white/[0.08] px-3 py-1.5 text-[12px] text-slate-500 transition-colors hover:border-white/15 hover:text-slate-300"
+                    className="rounded-full bg-white/[0.06] px-3 py-1 text-[12px] text-slate-400 transition-colors hover:bg-white/[0.12] hover:text-slate-200"
                   >
                     {city.city}, {city.state}
                   </Link>
