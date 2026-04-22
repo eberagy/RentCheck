@@ -9,17 +9,17 @@ const FOOTER_COLS = [
     links: [
       { href: '/search', label: 'Search landlords' },
       { href: '/review/new', label: 'Write a review' },
-      { href: '/search', label: 'City coverage' },
-      { href: '/search', label: 'Compare landlords' },
+      { href: '/compare', label: 'Compare landlords' },
+      { href: '/add-landlord', label: 'Add a landlord' },
     ],
   },
   {
     title: 'Resources',
     links: [
       { href: '/rights', label: 'Tenant rights guide' },
+      { href: '/faq', label: 'FAQ' },
       { href: '/about', label: 'How verification works' },
-      { href: '/fcra-notice', label: 'FCRA notice' },
-      { href: '/contact', label: 'Report data issue' },
+      { href: '/contact', label: 'Report a data issue' },
     ],
   },
   {
@@ -27,7 +27,7 @@ const FOOTER_COLS = [
     links: [
       { href: '/landlord-portal/claim', label: 'Claim your profile' },
       { href: '/landlord-portal', label: 'Respond to reviews' },
-      { href: '/landlord-portal', label: 'Dispute a record' },
+      { href: '/dispute', label: 'Dispute a record' },
       { href: '/landlord-portal', label: 'Landlord portal' },
     ],
   },
@@ -35,8 +35,8 @@ const FOOTER_COLS = [
     title: 'Company',
     links: [
       { href: '/about', label: 'About Vett' },
-      { href: '/about', label: 'Press & media' },
       { href: '/contact', label: 'Contact' },
+      { href: '/fcra-notice', label: 'FCRA notice' },
     ],
   },
 ]

@@ -15,8 +15,39 @@ import { VerifiedBadge } from '@/components/vett/VerifiedBadge'
 import { Chip } from '@/components/vett/Chip'
 import { getGradeLetter } from '@/lib/grade'
 
+type SortKey = 'reviewed' | 'highest' | 'lowest' | 'violations'
+
 interface SearchPageProps {
-  searchParams: { q?: string; city?: string; state?: string; rating?: string; verified?: string; page?: string }
+  searchParams: { q?: string; city?: string; state?: string; rating?: string; verified?: string; page?: string; sort?: string }
+}
+
+const SORT_OPTIONS: { key: SortKey; label: string }[] = [
+  { key: 'reviewed', label: 'Most reviewed' },
+  { key: 'highest', label: 'Highest rated' },
+  { key: 'lowest', label: 'Lowest rated' },
+  { key: 'violations', label: 'Most violations' },
+]
+
+function applySort<T extends { avg_rating?: number | null; review_count?: number | null; open_violation_count?: number | null }>(items: T[], sort: SortKey): T[] {
+  const sorted = [...items]
+  switch (sort) {
+    case 'highest':
+      return sorted.sort((a, b) => (b.avg_rating ?? 0) - (a.avg_rating ?? 0))
+    case 'lowest':
+      return sorted.sort((a, b) => {
+        const ar = a.avg_rating ?? 0
+        const br = b.avg_rating ?? 0
+        if (ar === 0 && br === 0) return 0
+        if (ar === 0) return 1
+        if (br === 0) return -1
+        return ar - br
+      })
+    case 'violations':
+      return sorted.sort((a, b) => (b.open_violation_count ?? 0) - (a.open_violation_count ?? 0))
+    case 'reviewed':
+    default:
+      return sorted.sort((a, b) => (b.review_count ?? 0) - (a.review_count ?? 0))
+  }
 }
 
 export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
@@ -49,6 +80,7 @@ async function SearchResults({
   minRating,
   verifiedOnly,
   page,
+  sort,
 }: {
   q: string
   city: string
@@ -56,6 +88,7 @@ async function SearchResults({
   minRating: number
   verifiedOnly: boolean
   page: number
+  sort: SortKey
 }) {
   const supabase = createServiceClient()
   const pageSize = 20
@@ -85,7 +118,7 @@ async function SearchResults({
       landlordIds.length
         ? supabase
             .from('landlords')
-            .select('id, display_name, avg_rating, review_count, open_violation_count, total_violation_count, eviction_count, city, state_abbr, is_verified')
+            .select('id, display_name, avg_rating, review_count, open_violation_count, total_violation_count, eviction_count, city, state_abbr, is_verified, grade, slug')
             .in('id', landlordIds)
         : Promise.resolve({ data: [] as any[], error: null }),
       propertyIds.length
@@ -152,10 +185,11 @@ async function SearchResults({
         return true
       })
 
-    const total = results.length
-    const pageResults = results.slice(offset, offset + pageSize)
-    const landlordCount = results.filter((result) => result.result_type === 'landlord').length
-    const propertyCount = results.filter((result) => result.result_type === 'property').length
+    const sortedResults = applySort(results as any, sort) as typeof results
+    const total = sortedResults.length
+    const pageResults = sortedResults.slice(offset, offset + pageSize)
+    const landlordCount = sortedResults.filter((result) => result.result_type === 'landlord').length
+    const propertyCount = sortedResults.filter((result) => result.result_type === 'property').length
 
     if (pageResults.length === 0) {
       return (
@@ -190,18 +224,30 @@ async function SearchResults({
         {/* Sort toolbar */}
         <div className="flex flex-wrap items-center justify-between gap-3 px-1">
           <div className="flex flex-wrap gap-1.5">
-            {['Most reviewed', 'Highest rated', 'Lowest rated', 'Most violations'].map((label, i) => (
-              <span
-                key={label}
-                className={`rounded-full px-3.5 py-2 text-[12.5px] font-medium ${
-                  i === 0
-                    ? 'bg-slate-900 text-white'
-                    : 'border border-slate-200 bg-white text-slate-600'
-                }`}
-              >
-                {label}
-              </span>
-            ))}
+            {SORT_OPTIONS.map((opt) => {
+              const isActive = sort === opt.key
+              const qs = new URLSearchParams()
+              if (q) qs.set('q', q)
+              if (city) qs.set('city', city)
+              if (state) qs.set('state', state)
+              if (minRating > 0) qs.set('rating', String(minRating))
+              if (verifiedOnly) qs.set('verified', 'true')
+              if (opt.key !== 'reviewed') qs.set('sort', opt.key)
+              return (
+                <Link
+                  key={opt.key}
+                  href={`/search${qs.toString() ? `?${qs.toString()}` : ''}`}
+                  aria-pressed={isActive}
+                  className={`rounded-full px-3.5 py-2 text-[12.5px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 ${
+                    isActive
+                      ? 'bg-slate-900 text-white shadow-sm'
+                      : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900'
+                  }`}
+                >
+                  {opt.label}
+                </Link>
+              )
+            })}
           </div>
           <span className="text-[12.5px] text-slate-500">
             {landlordCount} landlord{landlordCount !== 1 ? 's' : ''} · {propertyCount} propert{propertyCount !== 1 ? 'ies' : 'y'}
@@ -244,8 +290,22 @@ async function SearchResults({
     .from('landlords')
     .select('*', { count: 'exact' })
     .range(offset, offset + pageSize - 1)
-    .order('total_violation_count', { ascending: false, nullsFirst: false })
-    .order('review_count', { ascending: false })
+
+  switch (sort) {
+    case 'highest':
+      query = query.order('avg_rating', { ascending: false, nullsFirst: false }).order('review_count', { ascending: false })
+      break
+    case 'lowest':
+      query = query.order('avg_rating', { ascending: true, nullsFirst: false }).order('review_count', { ascending: false })
+      break
+    case 'violations':
+      query = query.order('open_violation_count', { ascending: false, nullsFirst: false }).order('total_violation_count', { ascending: false, nullsFirst: false })
+      break
+    case 'reviewed':
+    default:
+      query = query.order('review_count', { ascending: false, nullsFirst: false }).order('total_violation_count', { ascending: false, nullsFirst: false })
+      break
+  }
 
   if (city) query = query.ilike('city', `%${city}%`)
   if (state) query = query.eq('state_abbr', state.toUpperCase())
@@ -279,7 +339,32 @@ async function SearchResults({
 
   return (
       <div className="space-y-3">
-        <div className="flex items-center justify-between px-1">
+        <div className="flex flex-wrap items-center justify-between gap-3 px-1">
+          <div className="flex flex-wrap gap-1.5">
+            {SORT_OPTIONS.map((opt) => {
+              const isActive = sort === opt.key
+              const qs = new URLSearchParams()
+              if (city) qs.set('city', city)
+              if (state) qs.set('state', state)
+              if (minRating > 0) qs.set('rating', String(minRating))
+              if (verifiedOnly) qs.set('verified', 'true')
+              if (opt.key !== 'reviewed') qs.set('sort', opt.key)
+              return (
+                <Link
+                  key={opt.key}
+                  href={`/search${qs.toString() ? `?${qs.toString()}` : ''}`}
+                  aria-pressed={isActive}
+                  className={`rounded-full px-3.5 py-2 text-[12.5px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 ${
+                    isActive
+                      ? 'bg-slate-900 text-white shadow-sm'
+                      : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900'
+                  }`}
+                >
+                  {opt.label}
+                </Link>
+              )
+            })}
+          </div>
           <span className="text-[12.5px] text-slate-500">
             <b className="text-slate-900">{total.toLocaleString()}</b> {total === 1 ? 'landlord' : 'landlords'} found
           </span>
@@ -315,17 +400,19 @@ function SearchResultCard({ result }: { result: SearchPageResult }) {
   const href = result.result_type === 'landlord'
     ? (result.slug ? `/landlord/${result.slug}` : '/search')
     : `/property/${result.id}`
-  const grade = getGradeLetter(result.avg_rating ?? null)
+  const dbGrade = (result as any).grade as string | undefined
+  const isValidGrade = dbGrade === 'A' || dbGrade === 'B' || dbGrade === 'C' || dbGrade === 'D' || dbGrade === 'F'
+  const grade: 'A' | 'B' | 'C' | 'D' | 'F' = isValidGrade ? dbGrade : getGradeLetter(result.avg_rating ?? null)
   const violationCount = (result as any).open_violation_count ?? 0
 
   return (
-    <Link href={href} className="group block">
-      <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-5 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 group-hover:border-navy-200 group-hover:shadow-md">
+    <Link href={href} className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 rounded-xl">
+      <div className="grid grid-cols-[auto_1fr_auto] sm:grid-cols-[auto_1fr_auto_auto] items-center gap-4 sm:gap-5 rounded-xl border border-slate-200 bg-white p-4 sm:p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 group-hover:border-navy-200 group-hover:shadow-md group-hover:-translate-y-0.5">
         {/* Grade badge */}
         <Grade letter={grade} size="md" />
 
         {/* Info */}
-        <div className="min-w-0">
+        <div className="min-w-0 col-span-1">
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="truncate text-[16.5px] font-bold text-slate-900">{result.display_name}</span>
             {result.is_verified && result.result_type === 'landlord' && <VerifiedBadge small />}
@@ -372,8 +459,8 @@ function SearchResultCard({ result }: { result: SearchPageResult }) {
         <div className="text-right">
           {result.avg_rating != null && result.avg_rating > 0 ? (
             <>
-              <div className="text-[22px] font-extrabold tracking-tight">{result.avg_rating.toFixed(1)}</div>
-              <div className="mt-1"><Stars value={result.avg_rating} size={12} /></div>
+              <div className="text-[20px] sm:text-[22px] font-extrabold tracking-tight">{result.avg_rating.toFixed(1)}</div>
+              <div className="mt-1 hidden sm:block"><Stars value={result.avg_rating} size={12} /></div>
             </>
           ) : (
             <span className="text-xs text-slate-400">No rating</span>
@@ -381,7 +468,7 @@ function SearchResultCard({ result }: { result: SearchPageResult }) {
         </div>
 
         {/* Chevron */}
-        <ChevronRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-slate-500" />
+        <ChevronRight className="hidden sm:block h-4 w-4 text-slate-300 transition-colors group-hover:text-slate-500" aria-hidden="true" />
       </div>
     </Link>
   )
@@ -395,6 +482,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const minRating = parseFloat(params.rating ?? '0')
   const verifiedOnly = params.verified === 'true'
   const page = parseInt(params.page ?? '1', 10)
+  const sortParam = (params.sort ?? 'reviewed') as SortKey
+  const sort: SortKey = ['reviewed', 'highest', 'lowest', 'violations'].includes(sortParam) ? sortParam : 'reviewed'
   const priorityCities = COLLEGE_CITIES.filter((city) =>
     ['Baltimore', 'Pittsburgh', 'State College', 'Philadelphia', 'New York', 'Chicago'].includes(city.city)
   )
@@ -523,7 +612,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
             </div>
           }>
-            <SearchResults q={q} city={city} state={state} minRating={minRating} verifiedOnly={verifiedOnly} page={page} />
+            <SearchResults q={q} city={city} state={state} minRating={minRating} verifiedOnly={verifiedOnly} page={page} sort={sort} />
           </Suspense>
         </div>
       </div>

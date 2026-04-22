@@ -11,41 +11,27 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { normalizeAddress, type SyncResult } from './utils'
 import slugify from 'slugify'
 
-const ENDPOINT = 'https://data.phila.gov/resource/xt3q-t474.json'
+// Primary: CARTO SQL API (reliable). Fallback: Socrata.
+const CARTO_BASE = 'https://phl.carto.com/api/v2/sql'
+const SOCRATA_ENDPOINT = 'https://data.phila.gov/resource/xt3q-t474.json'
 const PAGE_SIZE = 2000
-
-// Residential category codes in Philadelphia OPA
-const RESIDENTIAL_CATEGORIES = [
-  'RESIDENTIAL',
-  'MULTI FAMILY',
-  'APARTMENT',
-  'CONDO',
-  'MIXED',
-]
 
 export async function syncPhillyOpa(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
-
-  const catFilter = RESIDENTIAL_CATEGORIES
-    .map(c => `category_code_description like '%${c}%'`)
-    .join(' OR ')
 
   let offset = 0
   const processedOwners = new Map<string, string>() // normalizedName → landlordId
 
   while (true) {
-    const u = new URL(ENDPOINT)
-    u.searchParams.set('$where', `(${catFilter}) AND owner_1 IS NOT NULL`)
-    u.searchParams.set('$select', 'parcel_number,location,zip_code,owner_1,owner_2,category_code_description,number_of_rooms,year_built')
-    u.searchParams.set('$limit', String(PAGE_SIZE))
-    u.searchParams.set('$offset', String(offset))
-    u.searchParams.set('$order', 'parcel_number')
+    // Use CARTO SQL API — filter to multifamily/apartment/mixed-use with owner names
+    const sql = `SELECT parcel_number, location, zip_code, owner_1, owner_2, category_code_description, number_of_rooms, year_built FROM opa_properties_public WHERE owner_1 IS NOT NULL AND (category_code_description LIKE '%MULTI%' OR category_code_description LIKE '%APARTMENT%' OR category_code_description LIKE '%MIXED%' OR category_code_description LIKE '%CONDO%') ORDER BY parcel_number LIMIT ${PAGE_SIZE} OFFSET ${offset}`
 
     let rows: any[]
     try {
-      const res = await fetch(u.toString(), { signal: AbortSignal.timeout(30000) })
-      if (!res.ok) { result.errors.push(`HTTP ${res.status} from Philly OPA`); break }
-      rows = await res.json()
+      const res = await fetch(`${CARTO_BASE}?q=${encodeURIComponent(sql)}`, { signal: AbortSignal.timeout(30000) })
+      if (!res.ok) { result.errors.push(`HTTP ${res.status} from Philly CARTO`); break }
+      const json = await res.json()
+      rows = json.rows ?? []
       if (!Array.isArray(rows)) break
     } catch (e) {
       result.errors.push(e instanceof Error ? e.message : String(e)); break

@@ -183,7 +183,7 @@ export default function NewReviewPage() {
         fileSize: payload.fileSize,
       })
       setLeaseStatus('uploaded')
-      toast.success('Lease uploaded — pending founder verification')
+      toast.success('Lease received. Keep writing — verification happens in the background (usually 24–48h).')
       setStep(2)
     } catch (err) {
       setLeaseStatus('idle')
@@ -339,14 +339,26 @@ export default function NewReviewPage() {
       {step === 1 && selectedLandlord && (
         <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
           <Eyebrow tone="teal">Step 2 of 5 &middot; Lease verification</Eyebrow>
-          <h1 className="mt-3.5 text-[36px] font-extrabold tracking-tight text-slate-900">Verify your lease.</h1>
-          <p className="mt-1.5 max-w-[600px] text-[14.5px] text-slate-500">Upload your lease document to verify your tenancy. This is required before your review can be published.</p>
+          <h1 className="mt-3.5 text-[clamp(28px,5.5vw,36px)] font-extrabold tracking-tight text-slate-900 font-display">Verify your lease.</h1>
+          <p className="mt-1.5 max-w-[600px] text-[14.5px] text-slate-500">
+            Upload your lease to confirm tenancy. You can write your review right after — it won&rsquo;t go live until a founder manually verifies the document (typically 24–48 hours).
+          </p>
 
-          {/* Privacy box */}
-          <div className="mt-6 mb-6 flex gap-3.5 rounded-[18px] border border-slate-200 bg-slate-50 p-[18px]">
-            <Lock className="h-[18px] w-[18px] flex-shrink-0 text-teal" />
-            <div className="text-[13px] leading-relaxed text-slate-700">
-              <b>Your privacy is protected.</b> Your lease is stored privately, reviewed only by the Vett founders, never shown publicly, and used only to confirm tenancy before approval.
+          {/* Privacy + timeline box */}
+          <div className="mt-6 mb-6 grid gap-3 rounded-[18px] border border-slate-200 bg-slate-50 p-[18px] sm:grid-cols-2">
+            <div className="flex gap-3">
+              <Lock className="h-[18px] w-[18px] flex-shrink-0 text-teal mt-0.5" aria-hidden="true" />
+              <div className="text-[13px] leading-relaxed text-slate-700">
+                <b className="block text-slate-900">Privacy protected</b>
+                Stored privately, reviewed only by the Vett founders, never shown publicly.
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <CheckCircle2 className="h-[18px] w-[18px] flex-shrink-0 text-teal mt-0.5" aria-hidden="true" />
+              <div className="text-[13px] leading-relaxed text-slate-700">
+                <b className="block text-slate-900">Verified in 24–48 hours</b>
+                You&rsquo;ll get an email once your lease is approved and your review is live.
+              </div>
             </div>
           </div>
 

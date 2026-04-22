@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { AlertCircle, CheckCircle2, ArrowLeft, Loader2 } from 'lucide-react'
@@ -171,12 +171,26 @@ function DisputeForm() {
   )
 }
 
+function BackButton() {
+  const router = useRouter()
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        if (typeof window !== 'undefined' && window.history.length > 1) router.back()
+        else router.push('/')
+      }}
+      className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 rounded"
+    >
+      <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back
+    </button>
+  )
+}
+
 export default function DisputePage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
-      <Link href="javascript:history.back()" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6">
-        <ArrowLeft className="h-4 w-4" /> Back
-      </Link>
+      <BackButton />
 
       <div className="flex items-center gap-3 mb-2">
         <div className="h-10 w-10 bg-amber-50 rounded-xl flex items-center justify-center">

@@ -213,16 +213,16 @@ export default function LandlordPortalPage() {
         {landlord && claim?.status === 'approved' && (
           <div className="grid gap-5">
             {/* KPI row */}
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
               {[
                 { l: 'Average rating', v: avgRating.toFixed(1), sub: `${landlord.review_count ?? 0} total reviews`, tone: 'teal' },
                 { l: 'Total reviews', v: String(reviews.length), sub: `${verifiedReviews} lease-verified`, tone: 'navy' },
                 { l: 'Response rate', v: reviews.length > 0 ? `${Math.round((respondedReviews / reviews.length) * 100)}%` : '—', sub: `${respondedReviews} responded`, tone: 'teal' },
                 { l: 'Open disputes', v: '0', sub: 'No open disputes', tone: 'amber' },
               ].map(s => (
-                <div key={s.l} className="rounded-xl border border-slate-200 bg-white p-5">
+                <div key={s.l} className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
                   <div className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-slate-400">{s.l}</div>
-                  <div className={`mt-2 text-[32px] font-extrabold tracking-tight ${s.tone === 'amber' ? 'text-amber-700' : 'text-slate-900'}`}>{s.v}</div>
+                  <div className={`mt-2 text-[26px] sm:text-[32px] font-extrabold tracking-tight ${s.tone === 'amber' ? 'text-amber-700' : 'text-slate-900'}`}>{s.v}</div>
                   <div className={`mt-1 text-[12px] ${s.tone === 'amber' ? 'text-amber-600' : 'text-teal'}`}>{s.sub}</div>
                 </div>
               ))}

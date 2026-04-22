@@ -89,17 +89,23 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
             onFocus={() => query.length >= 2 && setOpen(true)}
             placeholder={placeholder ?? (size === 'lg' ? 'Search landlord, address, or city...' : 'Search landlords, addresses, cities...')}
             autoFocus={autoFocus}
+            aria-label="Search landlords, properties, and cities"
             className={cn(
-              'flex-1 bg-transparent outline-none',
+              'flex-1 min-w-0 bg-transparent outline-none',
               size === 'lg' ? 'text-xl font-light' : size === 'md' ? 'text-base' : 'text-sm',
               variant === 'dark'
-                ? 'text-white placeholder:text-slate-500'
+                ? 'text-white placeholder:text-slate-300'
                 : 'text-slate-900 placeholder:text-slate-400'
             )}
             autoComplete="off"
           />
           {query && (
-            <button type="button" onClick={() => { clear(); setOpen(false) }} className={cn(variant === 'dark' ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-600')}>
+            <button
+              type="button"
+              onClick={() => { clear(); setOpen(false) }}
+              aria-label="Clear search"
+              className={cn('flex-shrink-0 p-1 -m-1 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400', variant === 'dark' ? 'text-slate-300 hover:text-white' : 'text-slate-400 hover:text-slate-600')}
+            >
               <X className="h-4 w-4" />
             </button>
           )}
@@ -108,13 +114,16 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
 
       {/* Autocomplete dropdown */}
       {open && results.length > 0 && (
-        <div className={cn(
-          'absolute left-0 right-0 top-full z-50 max-h-80 overflow-y-auto',
-          inline
-            ? 'mt-1 rounded-xl border border-slate-200 bg-white shadow-xl'
-            : 'mt-0 rounded-b-xl border border-t-0 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]',
-          inline ? '' : variant === 'dark' ? 'border-white/10' : 'border-slate-200'
-        )}>
+        <div
+          role="listbox"
+          className={cn(
+            'absolute left-0 right-0 top-full z-50 max-h-[min(24rem,70vh)] max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain',
+            inline
+              ? 'mt-1 rounded-xl border border-slate-200 bg-white shadow-xl'
+              : 'mt-0 rounded-b-xl border border-t-0 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]',
+            inline ? '' : variant === 'dark' ? 'border-white/10' : 'border-slate-200'
+          )}
+        >
           {results.map(result => (
             <button
               key={result.id}

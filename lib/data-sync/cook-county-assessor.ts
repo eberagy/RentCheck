@@ -42,9 +42,11 @@ export async function syncCookCountyAssessor(supabase: SupabaseClient): Promise<
   let offset = 0
 
   while (true) {
-    // Filter for residential multifamily — use URL object to properly encode % wildcards
+    // Filter for multifamily residential: class 211 (2-6 units), 212 (7+ units), 318 (mixed use)
+    // Use most recent year only; field names: mail_address_name (owner), prop_address_full (address)
     const u = new URL(workingEndpoint)
-    u.searchParams.set('$where', `class_description like '%APARTMENT%' OR class_description like '%MULTI%' OR class_description like '%RESIDENTIAL%'`)
+    u.searchParams.set('$where', `mail_address_name IS NOT NULL AND year = '2023' AND (class = '211' OR class = '212' OR class = '318' OR class = '313')`)
+    u.searchParams.set('$select', 'mail_address_name,prop_address_full,class,prop_address_city_name,prop_address_zipcode_1')
     u.searchParams.set('$limit', String(PAGE_SIZE))
     u.searchParams.set('$offset', String(offset))
     u.searchParams.set('$order', ':id')
@@ -70,7 +72,7 @@ export async function syncCookCountyAssessor(supabase: SupabaseClient): Promise<
 
     for (const row of rows) {
       try {
-        const ownerRaw = row.owner_name ?? row.taxpayer_name ?? row.grantor ?? null
+        const ownerRaw = row.mail_address_name ?? null
         if (!ownerRaw) { result.skipped++; continue }
         const ownerName = ownerRaw.trim()
           .replace(/\s+/g, ' ')
@@ -78,9 +80,9 @@ export async function syncCookCountyAssessor(supabase: SupabaseClient): Promise<
 
         if (!ownerName || isGovernmentOwner(ownerName)) { result.skipped++; continue }
 
-        const streetNum = row.mail_address ?? row.property_address ?? row.address ?? ''
-        const municipality = row.municipality ?? row.township ?? 'Chicago'
-        const zip = row.mail_zip ?? row.zip ?? ''
+        const streetNum = row.prop_address_full ?? ''
+        const municipality = row.prop_address_city_name ?? 'Chicago'
+        const zip = row.prop_address_zipcode_1 ?? ''
 
         if (!streetNum) { result.skipped++; continue }
 
@@ -129,8 +131,8 @@ export async function syncCookCountyAssessor(supabase: SupabaseClient): Promise<
             zip,
             address_normalized: addrNorm,
             landlord_id: landlordId,
-            year_built: row.age ? (new Date().getFullYear() - parseInt(row.age)) : null,
-            unit_count: row.num_apartments ?? row.apartments ?? null,
+            year_built: null,
+            unit_count: row.class === '212' ? 7 : (row.class === '211' ? 3 : null),
           }, { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: false })
         }
       } catch (e) {
