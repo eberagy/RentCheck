@@ -95,7 +95,7 @@ export default function NewReviewPage() {
     )
   }
 
-  const { register, handleSubmit, watch, setValue, trigger, getValues, formState: { errors } } = useForm<ReviewFormData>({
+  const { register, handleSubmit, watch, setValue, trigger, getValues, setError, clearErrors, formState: { errors } } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
     defaultValues: { ratingOverall: 0, ratingResponsiveness: 0, ratingMaintenance: 0, ratingHonesty: 0, ratingLeaseFairness: 0, isCurrentTenant: false, propertyAddress: '' },
   })
@@ -576,9 +576,19 @@ export default function NewReviewPage() {
       {step === 3 && (
         <form onSubmit={async (e) => {
           e.preventDefault()
-          const valid = await trigger(['confirmedGenuine', 'confirmedLiability'])
-          if (valid) {
-            await onSubmit(getValues() as ReviewFormData)
+          const values = getValues()
+          let ok = true
+          clearErrors(['confirmedGenuine', 'confirmedLiability'])
+          if (!values.confirmedGenuine) {
+            setError('confirmedGenuine', { message: 'You must confirm this is your genuine experience' })
+            ok = false
+          }
+          if (!values.confirmedLiability) {
+            setError('confirmedLiability', { message: 'You must agree to the terms' })
+            ok = false
+          }
+          if (ok) {
+            await onSubmit(values as ReviewFormData)
           }
         }}>
           <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">

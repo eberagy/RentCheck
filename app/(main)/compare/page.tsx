@@ -86,8 +86,8 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
         <ArrowLeft className="h-4 w-4" /> Back
       </Link>
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">Landlord Comparison</h1>
-      <p className="text-sm text-gray-500 mb-8">Side-by-side comparison of public records and renter ratings</p>
+      <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Landlord Comparison</h1>
+      <p className="text-[15px] text-slate-500 mb-8">Side-by-side comparison of public records and renter ratings</p>
 
       {/* Header cards */}
       <div className="grid grid-cols-2 gap-4 mb-6">
@@ -255,20 +255,23 @@ function CompareRow({
 
 function CompareSearch() {
   return (
-    <div className="max-w-xl mx-auto px-4 py-16 text-center">
-      <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Compare Landlords</h1>
-      <p className="text-gray-500 mb-6">
-        Search for two landlords on Vett and we'll compare their ratings, violations, and renter feedback side by side.
+    <div className="max-w-xl mx-auto px-4 py-20 text-center">
+      <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-50 ring-1 ring-navy-100">
+        <Search className="h-7 w-7 text-navy-600" aria-hidden="true" />
+      </div>
+      <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900 mb-3">Compare Landlords</h1>
+      <p className="text-[15px] text-slate-500 mb-8 leading-relaxed">
+        Put two landlords side by side — ratings, violations, renter feedback, all in one view.
       </p>
-      <p className="text-sm text-gray-400 bg-gray-50 rounded-lg p-4">
-        To compare, visit a landlord's profile and use the <strong>Compare</strong> button, or go to any landlord page and add{' '}
-        <code className="bg-gray-100 px-1 rounded">?compare=true</code> to the URL.
-        <br /><br />
-        Or use this URL format:<br />
-        <code className="bg-gray-100 px-1 rounded text-xs">/compare?a=landlord-slug-1&b=landlord-slug-2</code>
-      </p>
-      <div className="mt-6">
+      <div className="rounded-xl border border-slate-200 bg-slate-50 p-5 text-left text-sm text-slate-600 leading-relaxed">
+        <p className="font-semibold text-slate-900 mb-2">How to start a comparison</p>
+        <ol className="list-decimal list-inside space-y-1.5">
+          <li>Search for a landlord below.</li>
+          <li>On their profile, tap the <strong>Compare</strong> button.</li>
+          <li>Pick a second landlord to put them head-to-head.</li>
+        </ol>
+      </div>
+      <div className="mt-8">
         <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
           <Link href="/search">Search Landlords</Link>
         </Button>

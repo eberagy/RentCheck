@@ -194,8 +194,8 @@ export default function AddLandlordPage() {
         <ArrowLeft className="h-4 w-4" /> Back
       </Link>
 
-      <h1 className="text-2xl font-black text-gray-900 tracking-tight mb-2">Add a Missing Landlord</h1>
-      <p className="text-gray-500 mb-8">
+      <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900 mb-3">Add a Missing Landlord</h1>
+      <p className="text-slate-500 mb-8 text-[15px] leading-relaxed">
         Can&apos;t find your landlord? Submit their info and we&apos;ll add them to Vett so you and others can leave reviews.
       </p>
 

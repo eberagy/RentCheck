@@ -323,19 +323,19 @@ async function SearchResults({
 
   if (!landlords || landlords.length === 0) {
     return (
-      <div className="text-center py-20 bg-white rounded-xl border border-gray-200">
-        <div className="h-14 w-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="h-7 w-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="text-center py-20 bg-white rounded-2xl border border-slate-200">
+        <div className="h-14 w-14 bg-navy-50 ring-1 ring-navy-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
+          <svg className="h-7 w-7 text-navy-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
           </svg>
         </div>
-        <p className="text-base font-semibold text-gray-800">No landlords found</p>
-        <p className="text-sm text-gray-500 mt-1">Try a different search term, city, or state</p>
-        <div className="flex gap-3 justify-center mt-5 flex-wrap">
-          <a href="/search" className="px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium hover:bg-gray-50 text-gray-600">
+        <p className="text-lg font-semibold text-slate-900">No landlords found</p>
+        <p className="text-[14.5px] text-slate-500 mt-1.5 max-w-sm mx-auto">Try a different search term, city, or state — or help the community by adding a missing landlord.</p>
+        <div className="flex gap-3 justify-center mt-6 flex-wrap">
+          <a href="/search" className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium hover:bg-slate-50 text-slate-700">
             Clear filters
           </a>
-          <a href="/add-landlord" className="px-4 py-2 rounded-lg bg-navy-500 hover:bg-navy-600 text-white text-sm font-medium">
+          <a href="/add-landlord" className="px-4 py-2 rounded-lg bg-navy-600 hover:bg-navy-700 text-white text-sm font-semibold">
             Add a landlord
           </a>
         </div>

@@ -162,7 +162,7 @@ export default function LoginPage() {
 
         <div className="w-full max-w-sm">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-navy-900 tracking-tight">
+            <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-[1.08] tracking-tight text-slate-900">
               Sign in to Vett
             </h1>
             {contextMessage ? (

@@ -89,6 +89,7 @@ export function Navbar() {
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger
+                  aria-label="Account menu"
                   className={cn(
                     'flex items-center gap-2 rounded-full px-1.5 py-1 pr-3 focus:outline-none focus:ring-2 focus:ring-teal-500',
                     isDark
