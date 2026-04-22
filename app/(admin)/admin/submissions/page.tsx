@@ -65,13 +65,24 @@ export default function AdminSubmissionsPage() {
 
   async function load() {
     setLoading(true)
-    const q = supabase
-      .from('landlord_submissions')
-      .select('id, display_name, business_name, city, state_abbr, zip, website, phone, notes, proof_doc_url, status, admin_notes, created_at, submitter:profiles(full_name, email)')
-      .order('created_at', { ascending: true })
-    if (filter !== 'all') q.eq('status', filter)
-    const { data } = await q.limit(50)
-    setSubmissions((data ?? []) as unknown as Submission[])
+    try {
+      const res = await fetch(`/api/admin/submissions?status=${filter}`)
+      if (res.ok) {
+        const json = await res.json()
+        setSubmissions((json.submissions ?? []) as Submission[])
+      } else {
+        // Fallback to direct query
+        const q = supabase
+          .from('landlord_submissions')
+          .select('id, display_name, business_name, city, state_abbr, zip, website, phone, notes, proof_doc_url, status, admin_notes, created_at, submitter:profiles!landlord_submissions_submitted_by_fkey(full_name, email)')
+          .order('created_at', { ascending: true })
+        if (filter !== 'all') q.eq('status', filter)
+        const { data } = await q.limit(50)
+        setSubmissions((data ?? []) as unknown as Submission[])
+      }
+    } catch {
+      setSubmissions([])
+    }
     setLoading(false)
   }
 

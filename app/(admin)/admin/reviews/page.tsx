@@ -42,7 +42,7 @@ export default function AdminReviewsPage() {
     setLoading(true)
     const q = supabase
       .from('reviews')
-      .select('id, title, body, rating_overall, status, created_at, lease_verified, lease_doc_path, lease_filename, admin_notes, reviewer:profiles(full_name, email), landlord:landlords(display_name, slug), property:properties(address_line1, city)')
+      .select('id, title, body, rating_overall, status, created_at, lease_verified, lease_doc_path, lease_filename, admin_notes, reviewer:profiles!reviews_reviewer_id_fkey(full_name, email), landlord:landlords(display_name, slug), property:properties(address_line1, city)')
       .order('created_at', { ascending: true })
     if (filter !== 'all') q.eq('status', filter)
     const { data } = await q.limit(50)

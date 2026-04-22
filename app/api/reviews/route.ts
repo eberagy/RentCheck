@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
 
   let q = supabase
     .from('reviews')
-    .select('*, reviewer:profiles(full_name, avatar_url), property:properties(address_line1, city, state_abbr), evidence:review_evidence(*)', { count: 'exact' })
+    .select('*, reviewer:profiles!reviews_reviewer_id_fkey(full_name, avatar_url), property:properties(address_line1, city, state_abbr), evidence:review_evidence(*)', { count: 'exact' })
     .eq('status', 'approved')
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1)

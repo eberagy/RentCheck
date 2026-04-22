@@ -83,7 +83,7 @@ export default function LandlordPortalPage() {
       setClaim(claimData as unknown as LandlordClaim)
       const { data: r } = await supabase
         .from('reviews')
-        .select('*, reviewer:profiles(full_name, avatar_url)')
+        .select('*, reviewer:profiles!reviews_reviewer_id_fkey(full_name, avatar_url)')
         .eq('landlord_id', l.id)
         .eq('status', 'approved')
         .order('created_at', { ascending: false })

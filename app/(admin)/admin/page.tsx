@@ -45,13 +45,13 @@ export default async function AdminDashboardPage() {
     supabase.from('sync_log').select('*').order('started_at', { ascending: false }).limit(6),
     supabase
       .from('reviews')
-      .select('id, title, body, rating_overall, status, created_at, reviewer:profiles(full_name, email)')
+      .select('id, title, body, rating_overall, status, created_at, reviewer:profiles!reviews_reviewer_id_fkey(full_name, email)')
       .eq('status', 'pending')
       .order('created_at', { ascending: true })
       .limit(5),
     supabase
       .from('landlord_submissions')
-      .select('id, display_name, city, state_abbr, created_at, submitter:profiles(full_name, email)')
+      .select('id, display_name, city, state_abbr, created_at, submitter:profiles!landlord_submissions_submitted_by_fkey(full_name, email)')
       .eq('status', 'pending')
       .order('created_at', { ascending: true })
       .limit(5),

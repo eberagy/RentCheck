@@ -7,7 +7,7 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 
   const { data, error } = await supabase
     .from('reviews')
-    .select('*, reviewer:profiles(full_name, avatar_url), landlord:landlords(display_name, slug), property:properties(address_line1, city, state_abbr), evidence:review_evidence(*)')
+    .select('*, reviewer:profiles!reviews_reviewer_id_fkey(full_name, avatar_url), landlord:landlords(display_name, slug), property:properties(address_line1, city, state_abbr), evidence:review_evidence(*)')
     .eq('id', id)
     .eq('status', 'approved')
     .single()

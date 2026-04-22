@@ -37,7 +37,7 @@ export default function AdminLeasesPage() {
     setLoading(true)
     const { data } = await supabase
       .from('reviews')
-      .select('id, title, lease_doc_path, lease_filename, lease_verified, lease_file_size, created_at, reviewer:profiles(full_name, email), landlord:landlords(display_name), property:properties(address_line1, city, state_abbr)')
+      .select('id, title, lease_doc_path, lease_filename, lease_verified, lease_file_size, created_at, reviewer:profiles!reviews_reviewer_id_fkey(full_name, email), landlord:landlords(display_name), property:properties(address_line1, city, state_abbr)')
       .not('lease_doc_path', 'is', null)
       .eq('lease_verified', false)
       .order('created_at', { ascending: true })

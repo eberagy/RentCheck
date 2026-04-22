@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   const serviceClient = createServiceClient()
   const { data: review } = await serviceClient
     .from('reviews')
-    .select('id, title, reviewer_id, landlord_id, lease_verified, reviewer:profiles(full_name, email), landlord:landlords(display_name, slug)')
+    .select('id, title, reviewer_id, landlord_id, lease_verified, reviewer:profiles!reviews_reviewer_id_fkey(full_name, email), landlord:landlords(display_name, slug)')
     .eq('id', reviewId)
     .single()
 

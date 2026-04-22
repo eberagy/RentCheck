@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   // Fetch claim with relations
   const { data: claim } = await serviceClient
     .from('landlord_claims')
-    .select('id, claimed_by, landlord_id, landlord:landlords(id, display_name, slug), claimer:profiles(full_name, email)')
+    .select('id, claimed_by, landlord_id, landlord:landlords(id, display_name, slug), claimer:profiles!landlord_claims_claimed_by_fkey(full_name, email)')
     .eq('id', claimId)
     .single()
 

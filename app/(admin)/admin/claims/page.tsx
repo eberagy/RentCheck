@@ -52,7 +52,7 @@ export default function AdminClaimsPage() {
     setLoading(true)
     const q = supabase
       .from('landlord_claims')
-      .select('id, status, created_at, doc_url, doc_filename, verification_type, admin_notes, claimed_by, landlord:landlords(id, display_name, city, state_abbr, review_count), claimer:profiles(full_name, email)')
+      .select('id, status, created_at, doc_url, doc_filename, verification_type, admin_notes, claimed_by, landlord:landlords(id, display_name, city, state_abbr, review_count), claimer:profiles!landlord_claims_claimed_by_fkey(full_name, email)')
       .order('created_at', { ascending: true })
     if (filter !== 'all') q.eq('status', filter)
     const { data } = await q.limit(50)

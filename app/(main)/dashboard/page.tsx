@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
-import { FileText, Eye, Star, Plus, ArrowRight, Settings, CheckCircle2, AlertTriangle, Edit, Sparkles } from 'lucide-react'
+import { FileText, Eye, Star, Plus, ArrowRight, Settings, CheckCircle2, AlertTriangle, Edit, Sparkles, Building2, Clock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Stars } from '@/components/vett/Stars'
@@ -29,6 +29,7 @@ export default async function DashboardPage() {
     { data: profile },
     { data: reviews },
     { data: watchlist },
+    { data: submissions },
   ] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase
@@ -43,10 +44,17 @@ export default async function DashboardPage() {
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
       .limit(10),
+    supabase
+      .from('landlord_submissions')
+      .select('id, display_name, city, state_abbr, status, created_at, landlord_id')
+      .eq('submitted_by', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10),
   ])
 
   const reviewList = reviews ?? []
   const watchList = watchlist ?? []
+  const submissionList = submissions ?? []
   const verifiedCount = reviewList.filter((r: any) => r.lease_verified).length
   const firstName = profile?.full_name?.split(' ')[0] ?? null
 
@@ -164,6 +172,44 @@ export default async function DashboardPage() {
               </div>
             )}
           </div>
+          {/* Landlord Submissions panel */}
+          {submissionList.length > 0 && (
+            <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-[16px] font-bold text-slate-900">
+                  Submitted landlords <span className="font-normal text-slate-400">&middot; {submissionList.length}</span>
+                </h3>
+                <Link href="/add-landlord" className="text-[12.5px] text-slate-500 hover:text-slate-700">Submit new &rarr;</Link>
+              </div>
+              <div className="grid gap-1">
+                {submissionList.map((s: any, i: number) => (
+                  <div
+                    key={s.id}
+                    className={`grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 px-1 ${i < submissionList.length - 1 ? 'border-b border-slate-100' : ''}`}
+                  >
+                    <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
+                      {s.status === 'approved' ? (
+                        <CheckCircle2 className="h-3 w-3 text-teal-500" />
+                      ) : s.status === 'rejected' ? (
+                        <AlertTriangle className="h-3 w-3 text-red-400" />
+                      ) : (
+                        <Clock className="h-3 w-3 text-amber-500" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="truncate text-[13px] font-bold text-slate-900">{s.display_name}</p>
+                      <p className="mt-0.5 text-[12px] text-slate-500 truncate">
+                        {[s.city, s.state_abbr].filter(Boolean).join(', ')} &middot; {formatDate(s.created_at)}
+                      </p>
+                    </div>
+                    <Badge className={`text-[11px] border capitalize ${STATUS_STYLES[s.status] ?? 'text-slate-500 border-slate-200'}`}>
+                      {s.status}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Sidebar */}
