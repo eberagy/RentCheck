@@ -34,7 +34,7 @@ export function Navbar() {
       className={cn(
         'sticky top-0 z-50 backdrop-blur-xl transition-colors',
         isHome
-          ? 'border-b border-white/10 bg-[#07111f]/72'
+          ? 'border-b border-white/10 bg-[#07111f]/85'
           : 'border-b border-slate-200/80 bg-white/90'
       )}
     >
@@ -48,7 +48,7 @@ export function Navbar() {
             className={cn(
               'hidden items-center gap-1 rounded-full px-2 py-1 md:flex',
               isHome
-                ? 'border border-white/[0.14] bg-white/[0.10] shadow-[0_2px_12px_rgba(0,0,0,0.25)] backdrop-blur-md'
+                ? 'border border-white/20 bg-white/[0.12] shadow-[0_2px_12px_rgba(0,0,0,0.25)] backdrop-blur-md'
                 : 'border border-slate-200 bg-white shadow-sm'
             )}
           >
@@ -63,7 +63,7 @@ export function Navbar() {
                       ? 'bg-white text-slate-950'
                       : 'bg-slate-950 text-white'
                     : isHome
-                      ? 'text-white/80 hover:bg-white/[0.12] hover:text-white'
+                      ? 'text-white hover:bg-white/[0.15] hover:text-white'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-navy-600'
                 )}
               >

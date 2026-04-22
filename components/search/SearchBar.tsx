@@ -59,23 +59,32 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
     <div ref={containerRef} className={cn('relative', className)}>
       <form onSubmit={handleSubmit}>
         <div className={cn(
-          'flex items-center gap-2 rounded-2xl px-4 transition-all',
+          'flex items-center gap-2 transition-all',
+          size === 'lg' ? 'rounded-full px-5' : 'rounded-full px-4',
           sizeClasses[size],
           variant === 'dark'
-            ? 'border border-white/[0.14] bg-white/[0.10] backdrop-blur-md shadow-[0_14px_36px_rgba(0,0,0,0.3)]'
-            : 'border border-slate-200 bg-white shadow-[0_14px_36px_rgba(15,23,42,0.06)]',
+            ? 'bg-white/[0.08] ring-1 ring-white/[0.12] backdrop-blur-md'
+            : 'bg-white ring-1 ring-slate-200 shadow-sm',
           open && results.length > 0
             ? variant === 'dark'
-              ? 'rounded-b-none border-teal-400/40'
-              : 'rounded-b-none border-navy-300 shadow-[0_18px_44px_rgba(15,23,42,0.08)]'
+              ? 'rounded-b-none ring-teal-400/40'
+              : 'rounded-b-none ring-navy-300 shadow-md'
             : variant === 'dark'
-              ? 'hover:border-white/25 focus-within:border-teal-400/50'
-              : 'hover:border-slate-300 focus-within:border-navy-300 focus-within:shadow-[0_18px_44px_rgba(15,23,42,0.08)]'
+              ? 'hover:ring-white/20 focus-within:ring-white/25 focus-within:bg-white/[0.10]'
+              : 'hover:ring-slate-300 focus-within:ring-navy-300 focus-within:shadow-md'
         )}>
-          {loading
-            ? <Loader2 className={cn('h-4 w-4 flex-shrink-0 animate-spin', variant === 'dark' ? 'text-slate-400' : 'text-slate-400')} />
-            : <Search className={cn('h-4 w-4 flex-shrink-0', variant === 'dark' ? 'text-slate-400' : 'text-slate-400')} />
-          }
+          <button
+            type="submit"
+            className={cn(
+              'flex-shrink-0 transition-colors',
+              variant === 'dark' ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-600'
+            )}
+          >
+            {loading
+              ? <Loader2 className="h-4 w-4 animate-spin" />
+              : <Search className="h-4 w-4" />
+            }
+          </button>
           <input
             ref={inputRef}
             type="text"
@@ -97,24 +106,12 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
               <X className="h-4 w-4" />
             </button>
           )}
-          <button
-            type="submit"
-            className={cn(
-              'flex-shrink-0 rounded-xl font-semibold transition-colors',
-              variant === 'dark'
-                ? 'bg-teal-500 text-white hover:bg-teal-400'
-                : 'bg-slate-950 text-white hover:bg-navy-700',
-              size === 'lg' ? 'px-5 py-2 text-sm' : 'px-4 py-1.5 text-xs'
-            )}
-          >
-            Search
-          </button>
         </div>
       </form>
 
       {/* Autocomplete dropdown */}
       {open && results.length > 0 && (
-        <div className="absolute left-0 right-0 top-full z-50 max-h-80 overflow-y-auto overflow-hidden rounded-b-2xl border border-t-0 border-navy-300 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]">
+        <div className="absolute left-0 right-0 top-full z-50 max-h-80 overflow-y-auto overflow-hidden rounded-b-3xl border border-t-0 border-navy-300 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]">
           {results.map(result => (
             <button
               key={result.id}

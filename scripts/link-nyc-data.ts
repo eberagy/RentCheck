@@ -44,7 +44,7 @@ async function main() {
       .not('raw_data->registrationid', 'is', null)
       .limit(50000)
 
-    regIds = [...new Set((data ?? []).map((r: any) => r.raw_data?.registrationid).filter(Boolean))]
+    regIds = Array.from(new Set((data ?? []).map((r: any) => r.raw_data?.registrationid).filter(Boolean)))
   } else {
     regIds = (regRows ?? []).map((r: any) => r.registrationid)
   }
@@ -113,7 +113,7 @@ async function main() {
   // 4. Link public_records → landlord_id for matched registrations
   console.log('4. Linking public records to landlords...')
   let recordsLinked = 0
-  const entries = [...regToLandlord.entries()]
+  const entries = Array.from(regToLandlord.entries())
 
   for (let i = 0; i < entries.length; i += 50) {
     const batch = entries.slice(i, i + 50)
