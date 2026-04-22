@@ -67,38 +67,11 @@ export default async function CityPage({ params }: CityPageProps) {
 
   if (!landlords) notFound()
 
-  // Get property IDs for this city, then count public records
-  let propsQuery = supabase
-    .from('properties')
-    .select('id')
-    .eq('state_abbr', stateAbbr)
-
-  if (aliases) {
-    propsQuery = propsQuery.or(aliases.map(a => `city.ilike.%${a}%`).join(','))
-  } else {
-    propsQuery = propsQuery.ilike('city', `%${cityName}%`)
-  }
-
-  const { data: cityProps } = await propsQuery
-  const cityPropIds = (cityProps ?? []).map((p: { id: string }) => p.id)
-  const landlordIds = (landlords ?? []).map((l: Landlord) => l.id)
-
-  // Count records linked to properties OR directly to landlords in this city
-  const [{ count: propRecordCount }, { count: landlordRecordCount }] = await Promise.all([
-    cityPropIds.length > 0
-      ? supabase
-          .from('public_records')
-          .select('*', { count: 'exact', head: true })
-          .in('property_id', cityPropIds)
-      : Promise.resolve({ count: 0 }),
-    landlordIds.length > 0
-      ? supabase
-          .from('public_records')
-          .select('*', { count: 'exact', head: true })
-          .in('landlord_id', landlordIds)
-      : Promise.resolve({ count: 0 }),
-  ])
-  const recordCount = (propRecordCount ?? 0) + (landlordRecordCount ?? 0)
+  // Count public records for this city using server-side RPC (avoids URL length limits)
+  const { data: recordCountResult } = aliases
+    ? await supabase.rpc('count_city_records_multi', { city_names: aliases, state_code: stateAbbr })
+    : await supabase.rpc('count_city_records', { city_name: cityName, state_code: stateAbbr })
+  const recordCount = Number(recordCountResult ?? 0)
 
   // Get college info
   const collegeInfo = COLLEGE_CITIES.find(
