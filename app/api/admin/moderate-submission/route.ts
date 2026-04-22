@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import slugify from 'slugify'
+import { US_STATES } from '@/types'
 
 const schema = z.object({
   submissionId: z.string().uuid(),
@@ -47,25 +48,38 @@ export async function POST(req: NextRequest) {
   if (action === 'approved') {
     // Create the landlord entry
     const baseSlug = slugify(submission.display_name, { lower: true, strict: true })
-    const suffix = Math.random().toString(36).slice(2, 6)
+    const stateName = submission.state_abbr
+      ? US_STATES.find(s => s.abbr === submission.state_abbr.toUpperCase())?.name ?? null
+      : null
 
-    const { data: newLandlord, error: insertErr } = await service
-      .from('landlords')
-      .insert({
-        display_name: submission.display_name,
-        slug: `${baseSlug}-${suffix}`,
-        business_name: submission.business_name,
-        city: submission.city,
-        state_abbr: submission.state_abbr,
-        zip: submission.zip,
-        website: submission.website,
-        phone: submission.phone,
-        bio: submission.notes,
-      })
-      .select('id, slug')
-      .single()
+    // Retry with different suffix on slug collision
+    let newLandlord: { id: string; slug: string } | null = null
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const suffix = Math.random().toString(36).slice(2, 6)
+      const { data, error: insertErr } = await service
+        .from('landlords')
+        .insert({
+          display_name: submission.display_name,
+          slug: `${baseSlug}-${suffix}`,
+          business_name: submission.business_name,
+          city: submission.city,
+          state: stateName,
+          state_abbr: submission.state_abbr,
+          zip: submission.zip,
+          website: submission.website,
+          phone: submission.phone,
+          bio: submission.notes,
+        })
+        .select('id, slug')
+        .single()
 
-    if (insertErr) return NextResponse.json({ error: insertErr.message }, { status: 500 })
+      if (!insertErr && data) { newLandlord = data; break }
+      if (insertErr && !insertErr.message.includes('duplicate') && !insertErr.message.includes('unique')) {
+        return NextResponse.json({ error: insertErr.message }, { status: 500 })
+      }
+    }
+
+    if (!newLandlord) return NextResponse.json({ error: 'Could not generate unique slug' }, { status: 500 })
 
     // Update submission with the created landlord reference
     await service

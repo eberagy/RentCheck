@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: LandlordPageProps): Promise<M
     description: `Read ${landlord.review_count} lease-verified renter reviews of ${landlord.display_name}. See public records, court cases, and violation history.`,
     openGraph: {
       title: `${landlord.display_name} Reviews | Vett`,
-      description: `${landlord.review_count} renter reviews · ${landlord.avg_rating.toFixed(1)} avg rating`,
+      description: `${landlord.review_count} renter reviews · ${(landlord.avg_rating ?? 0).toFixed(1)} avg rating`,
     },
   }
 }

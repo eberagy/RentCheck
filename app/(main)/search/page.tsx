@@ -153,6 +153,12 @@ async function SearchResults({
           if (!landlord) return result
           return {
             ...result,
+            open_violation_count: landlord.open_violation_count ?? 0,
+            total_violation_count: landlord.total_violation_count ?? 0,
+            review_count: landlord.review_count ?? result.review_count,
+            avg_rating: landlord.avg_rating ?? result.avg_rating,
+            grade: landlord.grade ?? (result as any).grade,
+            is_verified: landlord.is_verified ?? result.is_verified,
             summary: truncateSummary(buildLandlordSummary({ landlord }), 140),
           }
         }
