@@ -11,9 +11,11 @@ interface SearchBarProps {
   size?: 'sm' | 'md' | 'lg'
   placeholder?: string
   autoFocus?: boolean
+  /** Use "dark" on dark backgrounds (e.g. the homepage hero) */
+  variant?: 'light' | 'dark'
 }
 
-export function SearchBar({ className, size = 'md', placeholder, autoFocus }: SearchBarProps) {
+export function SearchBar({ className, size = 'md', placeholder, autoFocus, variant = 'light' }: SearchBarProps) {
   const router = useRouter()
   const { query, results, loading, handleQueryChange, clear } = useSearch()
   const [open, setOpen] = useState(false)
@@ -57,15 +59,22 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
     <div ref={containerRef} className={cn('relative', className)}>
       <form onSubmit={handleSubmit}>
         <div className={cn(
-          'flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 shadow-[0_14px_36px_rgba(15,23,42,0.06)] transition-all',
+          'flex items-center gap-2 rounded-2xl px-4 transition-all',
           sizeClasses[size],
+          variant === 'dark'
+            ? 'border border-white/[0.14] bg-white/[0.10] backdrop-blur-md shadow-[0_14px_36px_rgba(0,0,0,0.3)]'
+            : 'border border-slate-200 bg-white shadow-[0_14px_36px_rgba(15,23,42,0.06)]',
           open && results.length > 0
-            ? 'rounded-b-none border-navy-300 shadow-[0_18px_44px_rgba(15,23,42,0.08)]'
-            : 'hover:border-slate-300 focus-within:border-navy-300 focus-within:shadow-[0_18px_44px_rgba(15,23,42,0.08)]'
+            ? variant === 'dark'
+              ? 'rounded-b-none border-teal-400/40'
+              : 'rounded-b-none border-navy-300 shadow-[0_18px_44px_rgba(15,23,42,0.08)]'
+            : variant === 'dark'
+              ? 'hover:border-white/25 focus-within:border-teal-400/50'
+              : 'hover:border-slate-300 focus-within:border-navy-300 focus-within:shadow-[0_18px_44px_rgba(15,23,42,0.08)]'
         )}>
           {loading
-            ? <Loader2 className="h-4 w-4 flex-shrink-0 animate-spin text-slate-400" />
-            : <Search className="h-4 w-4 flex-shrink-0 text-slate-400" />
+            ? <Loader2 className={cn('h-4 w-4 flex-shrink-0 animate-spin', variant === 'dark' ? 'text-slate-400' : 'text-slate-400')} />
+            : <Search className={cn('h-4 w-4 flex-shrink-0', variant === 'dark' ? 'text-slate-400' : 'text-slate-400')} />
           }
           <input
             ref={inputRef}
@@ -75,18 +84,26 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus }: Se
             onFocus={() => query.length >= 2 && setOpen(true)}
             placeholder={placeholder ?? 'Search by landlord name, address, company, or city…'}
             autoFocus={autoFocus}
-            className="flex-1 bg-transparent outline-none text-slate-950 placeholder:text-slate-400"
+            className={cn(
+              'flex-1 bg-transparent outline-none',
+              variant === 'dark'
+                ? 'text-white placeholder:text-slate-400'
+                : 'text-slate-950 placeholder:text-slate-400'
+            )}
             autoComplete="off"
           />
           {query && (
-            <button type="button" onClick={() => { clear(); setOpen(false) }} className="text-slate-400 hover:text-slate-600">
+            <button type="button" onClick={() => { clear(); setOpen(false) }} className={cn(variant === 'dark' ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-600')}>
               <X className="h-4 w-4" />
             </button>
           )}
           <button
             type="submit"
             className={cn(
-              'flex-shrink-0 rounded-xl bg-slate-950 font-semibold text-white transition-colors hover:bg-navy-700',
+              'flex-shrink-0 rounded-xl font-semibold transition-colors',
+              variant === 'dark'
+                ? 'bg-teal-500 text-white hover:bg-teal-400'
+                : 'bg-slate-950 text-white hover:bg-navy-700',
               size === 'lg' ? 'px-5 py-2 text-sm' : 'px-4 py-1.5 text-xs'
             )}
           >

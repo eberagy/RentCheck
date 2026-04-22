@@ -46,10 +46,10 @@ export function Navbar() {
           {/* Desktop nav */}
           <nav
             className={cn(
-              'hidden items-center gap-1 rounded-full px-2 py-1 shadow-sm md:flex',
+              'hidden items-center gap-1 rounded-full px-2 py-1 md:flex',
               isHome
-                ? 'border border-white/10 bg-white/5'
-                : 'border border-slate-200 bg-white'
+                ? 'border border-white/[0.14] bg-white/[0.10] shadow-[0_2px_12px_rgba(0,0,0,0.25)] backdrop-blur-md'
+                : 'border border-slate-200 bg-white shadow-sm'
             )}
           >
             {NAV_LINKS.map(link => (
@@ -63,7 +63,7 @@ export function Navbar() {
                       ? 'bg-white text-slate-950'
                       : 'bg-slate-950 text-white'
                     : isHome
-                      ? 'text-slate-300 hover:bg-white/10 hover:text-white'
+                      ? 'text-white/80 hover:bg-white/[0.12] hover:text-white'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-navy-600'
                 )}
               >
