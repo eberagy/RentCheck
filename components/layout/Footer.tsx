@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { Logo } from '@/components/Logo'
-import { VerifiedBadge } from '@/components/vett/VerifiedBadge'
 import { Chip } from '@/components/vett/Chip'
 
 const FOOTER_COLS = [
@@ -54,8 +53,7 @@ export function Footer() {
               Lease-verified renter reviews and public records on landlords in major cities and growing coverage nationwide.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
-              <VerifiedBadge label="SOC 2 Type I" small />
-              <Chip dark tone="teal">FCRA compliant</Chip>
+              <Chip dark tone="neutral">Not a CRA — <Link href="/fcra-notice" className="underline hover:text-white">FCRA notice</Link></Chip>
             </div>
           </div>
 
