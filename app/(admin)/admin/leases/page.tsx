@@ -48,11 +48,16 @@ export default function AdminLeasesPage() {
 
   async function getDocUrl(reviewId: string, path: string) {
     if (docUrls[reviewId]) { window.open(docUrls[reviewId], '_blank'); return }
-    const { data } = await supabase.storage.from('lease-docs').createSignedUrl(path, 3600)
-    if (data?.signedUrl) {
-      setDocUrls(prev => ({ ...prev, [reviewId]: data.signedUrl }))
-      window.open(data.signedUrl, '_blank')
-    } else {
+    try {
+      const res = await fetch(`/api/admin/lease-url?path=${encodeURIComponent(path)}`)
+      const json = await res.json()
+      if (res.ok && json.signedUrl) {
+        setDocUrls(prev => ({ ...prev, [reviewId]: json.signedUrl }))
+        window.open(json.signedUrl, '_blank')
+      } else {
+        toast.error(json.error ?? 'Could not generate document URL')
+      }
+    } catch {
       toast.error('Could not generate document URL')
     }
   }

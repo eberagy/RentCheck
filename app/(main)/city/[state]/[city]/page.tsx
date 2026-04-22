@@ -259,7 +259,7 @@ export default async function CityPage({ params }: CityPageProps) {
             <Button asChild className="rounded-full bg-white text-navy-700 font-semibold hover:bg-slate-100">
               <Link href="/review/new">Write a Review <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
-            <Button asChild variant="outline" className="rounded-full border-white/30 text-white hover:bg-white/10">
+            <Button asChild variant="outline" className="rounded-full border-white bg-white/20 text-black font-semibold hover:bg-white/30">
               <Link href="/add-landlord">Add Missing Landlord</Link>
             </Button>
           </div>

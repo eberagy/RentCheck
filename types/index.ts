@@ -126,7 +126,7 @@ export interface Review {
   created_at: string
   updated_at: string
   // Joined fields
-  reviewer?: Pick<Profile, 'full_name' | 'avatar_url'>
+  reviewer?: Pick<Profile, 'full_name' | 'email' | 'avatar_url'>
   property?: Pick<Property, 'address_line1' | 'city' | 'state_abbr'>
   evidence?: ReviewEvidence[]
 }

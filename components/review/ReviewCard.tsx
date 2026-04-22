@@ -73,7 +73,7 @@ export function ReviewCard({ review, onMarkHelpful, onFlag, isOwn }: ReviewCardP
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-sm font-semibold text-slate-950">
-              {formatReviewerName(review.reviewer?.full_name)}
+              {formatReviewerName(review.reviewer?.full_name, review.reviewer?.email)}
             </span>
             {review.lease_verified ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-teal-200 bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">

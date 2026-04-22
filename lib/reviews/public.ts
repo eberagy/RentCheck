@@ -22,6 +22,6 @@ export const PUBLIC_REVIEW_SELECT = `
   flag_count,
   created_at,
   updated_at,
-  reviewer:profiles!reviews_reviewer_id_fkey(full_name, avatar_url),
+  reviewer:profiles!reviews_reviewer_id_fkey(full_name, email, avatar_url),
   property:properties(address_line1, city, state_abbr)
 `

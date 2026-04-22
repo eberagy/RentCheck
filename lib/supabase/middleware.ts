@@ -48,11 +48,20 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Dashboard + portal: require auth
+  // Dashboard + portal: require auth + not banned
   if (pathname.startsWith('/dashboard') || pathname.startsWith('/landlord-portal')) {
     if (!user) {
       url.pathname = '/login'
       url.searchParams.set('redirectTo', pathname)
+      return NextResponse.redirect(url)
+    }
+    const { data: prof } = await supabase
+      .from('profiles')
+      .select('is_banned')
+      .eq('id', user.id)
+      .single()
+    if (prof?.is_banned) {
+      url.pathname = '/'
       return NextResponse.redirect(url)
     }
   }

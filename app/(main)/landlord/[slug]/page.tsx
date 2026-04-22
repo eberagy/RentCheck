@@ -129,6 +129,12 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       landlordRecords.push(r)
     }
   }
+  // Compute actual open violation count from merged records (includes property-linked ones)
+  const EXCLUDED_TYPES = ['court_case', 'lsc_eviction', 'court_listener']
+  const openViolationCount = landlordRecords.filter(
+    r => !['closed', 'dismissed'].includes(r.status ?? '') && !EXCLUDED_TYPES.includes(r.record_type ?? '')
+  ).length
+
   const landlordSummary = buildLandlordSummary({
     landlord,
     propertyCount: (properties ?? []).length,
@@ -243,7 +249,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
               { label: 'Reviews', value: landlord.review_count, color: '' },
               { label: 'Properties', value: (properties ?? []).length, color: '' },
               { label: 'Public records', value: landlordRecords.length, color: 'text-amber-700' },
-              { label: 'Open violations', value: landlord.open_violation_count ?? 0, color: 'text-red-600' },
+              { label: 'Open violations', value: openViolationCount, color: 'text-red-600' },
             ].map(s => (
               <div key={s.label} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
                 <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">{s.label}</p>
@@ -284,14 +290,14 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
         </div>
 
         {/* Violation banner */}
-        {landlord.open_violation_count > 0 && (
+        {openViolationCount > 0 && (
           <div className="mb-5 flex items-start gap-3.5 rounded-xl border border-red-200 bg-gradient-to-r from-red-50 to-orange-50 px-5 py-4">
             <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-red-200 bg-red-100">
               <Flag className="h-[18px] w-[18px] text-red-600" />
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-[14.5px] font-bold text-red-900">
-                {landlord.open_violation_count} open violation{landlord.open_violation_count !== 1 ? 's' : ''}
+                {openViolationCount} open violation{openViolationCount !== 1 ? 's' : ''}
                 {landlord.eviction_count > 0 && ` \u00b7 ${landlord.eviction_count} eviction filing${landlord.eviction_count !== 1 ? 's' : ''} on file`}
               </p>
               <p className="mt-1 text-[13px] leading-relaxed text-orange-800">

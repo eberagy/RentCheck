@@ -98,14 +98,22 @@ export function truncate(str: string, maxLen: number): string {
   return str.slice(0, maxLen).trim() + '…'
 }
 
-export function formatReviewerName(fullName?: string | null): string {
-  if (!fullName) return 'Anonymous Renter'
-  const parts = fullName.trim().split(/\s+/).filter(Boolean)
-  if (parts.length === 0) return 'Anonymous Renter'
-  const first = parts[0] ?? 'Anonymous Renter'
-  if (parts.length === 1) return first
-  const lastInitial = parts.at(-1)?.charAt(0)?.toUpperCase()
-  return lastInitial ? `${first} ${lastInitial}.` : first
+export function formatReviewerName(fullName?: string | null, email?: string | null): string {
+  if (fullName) {
+    const parts = fullName.trim().split(/\s+/).filter(Boolean)
+    if (parts.length > 0) {
+      const first = parts[0]!
+      if (parts.length === 1) return first
+      const lastInitial = parts.at(-1)?.charAt(0)?.toUpperCase()
+      return lastInitial ? `${first} ${lastInitial}.` : first
+    }
+  }
+  // Fallback: show email username (part before @)
+  if (email) {
+    const username = email.split('@')[0]
+    if (username) return username
+  }
+  return 'Anonymous Renter'
 }
 
 export function slugify(str: string): string {
