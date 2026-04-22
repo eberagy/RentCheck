@@ -41,7 +41,7 @@ export function ReviewsList({ reviews, landlordId, landlordSlug }: ReviewsListPr
 
   if (reviews.length === 0) {
     return (
-      <div className="rounded-[1.5rem] border border-slate-200 bg-white py-16 text-center shadow-sm">
+      <div className="rounded-xl border border-slate-200 bg-white py-16 text-center shadow-sm">
         <MessageSquare className="mx-auto mb-3 h-10 w-10 text-slate-200" />
         <p className="font-medium text-slate-700">No reviews yet</p>
         <p className="mt-1 text-sm text-slate-500">Be the first to review this landlord</p>
@@ -55,7 +55,7 @@ export function ReviewsList({ reviews, landlordId, landlordSlug }: ReviewsListPr
   return (
     <div>
       {/* Toolbar */}
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-[1.5rem] border border-slate-200 bg-white px-4 py-3 shadow-sm">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
         <p className="text-xs text-slate-500">
           {reviews.length} verified review{reviews.length !== 1 ? 's' : ''} · showing all
         </p>

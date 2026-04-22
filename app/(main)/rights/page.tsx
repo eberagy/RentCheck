@@ -61,9 +61,9 @@ export default function TenantRightsIndexPage() {
       <section className="border-b border-slate-200 bg-white px-7 py-16">
         <div className="mx-auto max-w-[1180px]">
           <Eyebrow tone="teal"><Shield className="inline h-3 w-3" /> Tenant rights guide</Eyebrow>
-          <h1 className="mt-[18px] text-[64px] font-extrabold leading-none tracking-[-0.04em] text-slate-900">
+          <h1 className="mt-[18px] font-display text-[clamp(2.4rem,5vw,4rem)] leading-[1.08] tracking-tight text-slate-900">
             Your rights as a renter,{' '}
-            <span className="bg-gradient-to-r from-teal to-teal-300 bg-clip-text text-transparent">
+            <span className="text-teal-600">
               in plain English.
             </span>
           </h1>
@@ -84,7 +84,7 @@ export default function TenantRightsIndexPage() {
           <p className="text-[13px] text-slate-500 mb-5">These protections apply in all 50 states, regardless of local law.</p>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {UNIVERSAL_RIGHTS.map(({ icon: Icon, title, description, color, bg, border }) => (
-              <div key={title} className={`flex items-start gap-4 rounded-[20px] border bg-white p-5 ${border}`}>
+              <div key={title} className={`flex items-start gap-4 rounded-xl border bg-white p-5 ${border}`}>
                 <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${bg}`}>
                   <Icon className={`h-5 w-5 ${color}`} />
                 </div>
@@ -106,7 +106,7 @@ export default function TenantRightsIndexPage() {
               <Link
                 key={state.abbr}
                 href={`/rights/${state.abbr.toLowerCase()}`}
-                className="group flex items-center justify-between rounded-[20px] border border-navy-200 bg-white p-4 transition-[border-color,box-shadow] duration-200 hover:border-navy-400 hover:shadow-md"
+                className="group flex items-center justify-between rounded-xl border border-navy-200 bg-white p-4 transition-[border-color,box-shadow] duration-200 hover:border-navy-400 hover:shadow-md"
               >
                 <div>
                   <div className="flex items-center gap-2 mb-0.5">

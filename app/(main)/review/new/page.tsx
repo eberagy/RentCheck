@@ -251,7 +251,7 @@ export default function NewReviewPage() {
   return (
     <div className="mx-auto max-w-[980px] px-7 py-8">
       {/* Progress bar */}
-      <div className="mb-6 rounded-[20px] border border-slate-200 bg-white px-6 py-[18px]">
+      <div className="mb-6 rounded-xl border border-slate-200 bg-white px-6 py-[18px]">
         <div className="grid gap-[6px]" style={{ gridTemplateColumns: `repeat(${STEPS.length}, 1fr)` }}>
           {STEPS.map((s, i) => (
             <div key={s} className="flex flex-col gap-2">
@@ -272,7 +272,7 @@ export default function NewReviewPage() {
 
       {/* Context card (show when landlord selected) */}
       {selectedLandlord && step >= 1 && step < 4 && (
-        <div className="mb-5 flex items-center gap-4 rounded-[20px] border border-navy-200 bg-gradient-to-br from-navy-50 to-slate-50 p-[18px]">
+        <div className="mb-5 flex items-center gap-4 rounded-xl border border-navy-200 bg-gradient-to-br from-navy-50 to-slate-50 p-[18px]">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-navy-200 bg-white">
             <Building2 className="h-5 w-5 text-navy-700" />
           </div>

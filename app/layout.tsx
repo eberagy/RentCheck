@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import localFont from 'next/font/local'
+import { Instrument_Serif } from 'next/font/google'
 import { Suspense } from 'react'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Toaster } from 'sonner'
@@ -9,6 +10,13 @@ import './globals.css'
 const sans = localFont({
   src: './fonts/GeistVF.woff',
   variable: '--font-sans',
+  display: 'swap',
+})
+
+const display = Instrument_Serif({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-display',
   display: 'swap',
 })
 
@@ -45,7 +53,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={sans.variable}>
+    <html lang="en" className={`${sans.variable} ${display.variable}`}>
       <body className="font-sans bg-background text-foreground antialiased min-h-screen flex flex-col">
         <TooltipProvider>
           <Suspense fallback={null}>

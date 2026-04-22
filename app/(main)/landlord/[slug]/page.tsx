@@ -65,7 +65,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
   // Fetch all data in parallel
   const [
     { data: reviews },
-    { data: records },
+    { data: directRecords },
     { data: properties },
     { data: ratingAggregates },
   ] = await Promise.all([
@@ -93,6 +93,19 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       .eq('status', 'approved'),
   ])
 
+  // Also fetch records linked through this landlord's properties
+  const propertyIds = (properties ?? []).map((p: Property) => p.id)
+  let propertyRecords: PublicRecord[] = []
+  if (propertyIds.length > 0) {
+    const { data: propRecs } = await supabase
+      .from('public_records')
+      .select('*')
+      .in('property_id', propertyIds)
+      .is('landlord_id', null)
+      .order('filed_date', { ascending: false })
+    propertyRecords = (propRecs ?? []) as PublicRecord[]
+  }
+
   // Compute avg sub-ratings
   const approved = ratingAggregates ?? []
   const avg = (key: keyof typeof approved[0]) => {
@@ -107,7 +120,15 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
     ? Math.round((approved.filter(r => r.would_rent_again === true).length / approved.length) * 100)
     : null
 
-  const landlordRecords = (records ?? []).filter((r: PublicRecord) => r.landlord_id === landlord.id)
+  // Merge direct records + property-linked records (deduplicate by id)
+  const seenRecordIds = new Set<string>()
+  const landlordRecords: PublicRecord[] = []
+  for (const r of [...(directRecords ?? []) as PublicRecord[], ...propertyRecords]) {
+    if (!seenRecordIds.has(r.id)) {
+      seenRecordIds.add(r.id)
+      landlordRecords.push(r)
+    }
+  }
   const landlordSummary = buildLandlordSummary({
     landlord,
     propertyCount: (properties ?? []).length,
@@ -153,15 +174,15 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
         </nav>
 
         {/* Header Card */}
-        <div className="mb-5 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-          {/* Gradient rule */}
-          <div className="h-1.5 bg-gradient-to-r from-navy-500 via-sky-500 to-teal-400" />
+        <div className="mb-5 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+          {/* Top accent rule */}
+          <div className="h-[3px] bg-navy-500" />
 
           {/* Top row: identity + at-a-glance */}
           <div className="grid gap-6 px-6 py-7 sm:px-8 lg:grid-cols-[1fr_320px] lg:items-start">
             <div className="min-w-0 space-y-4">
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-[38px] font-extrabold leading-tight tracking-[-0.03em] text-slate-900">
+                <h1 className="font-display text-[clamp(1.8rem,4vw,2.4rem)] leading-tight tracking-tight text-slate-900">
                   {landlord.display_name}
                 </h1>
                 {landlord.is_verified && <VerifiedBadge label="Verified landlord" />}
@@ -221,7 +242,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             {[
               { label: 'Reviews', value: landlord.review_count, color: '' },
               { label: 'Properties', value: (properties ?? []).length, color: '' },
-              { label: 'Public records', value: (records ?? []).length, color: 'text-amber-700' },
+              { label: 'Public records', value: landlordRecords.length, color: 'text-amber-700' },
               { label: 'Open violations', value: landlord.open_violation_count ?? 0, color: 'text-red-600' },
             ].map(s => (
               <div key={s.label} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
@@ -264,7 +285,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
 
         {/* Violation banner */}
         {landlord.open_violation_count > 0 && (
-          <div className="mb-5 flex items-start gap-3.5 rounded-[20px] border border-red-200 bg-gradient-to-r from-red-50 to-orange-50 px-5 py-4">
+          <div className="mb-5 flex items-start gap-3.5 rounded-xl border border-red-200 bg-gradient-to-r from-red-50 to-orange-50 px-5 py-4">
             <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-red-200 bg-red-100">
               <Flag className="h-[18px] w-[18px] text-red-600" />
             </div>
@@ -288,7 +309,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             </TabsTrigger>
             <TabsTrigger value="records" className="rounded-xl py-3 text-[14px] font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
               <Flag className="mr-2 h-3.5 w-3.5" />
-              Public records <span className="ml-1 text-slate-400">({(records ?? []).length})</span>
+              Public records <span className="ml-1 text-slate-400">({landlordRecords.length})</span>
             </TabsTrigger>
             <TabsTrigger value="properties" className="rounded-xl py-3 text-[14px] font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
               <Building2 className="mr-2 h-3.5 w-3.5" />
@@ -307,9 +328,9 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
 
           {/* Public records tab */}
           <TabsContent value="records">
-            {(records ?? []).length >= 3 && (
+            {landlordRecords.length >= 3 && (
               <div className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                <ViolationChart records={(records ?? []) as PublicRecord[]} />
+                <ViolationChart records={landlordRecords} />
               </div>
             )}
             <PublicRecordsPanel
@@ -322,7 +343,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           {/* Properties tab */}
           <TabsContent value="properties">
             {(properties ?? []).length === 0 ? (
-              <div className="rounded-[20px] border border-dashed border-slate-300 bg-slate-50 py-12 text-center">
+              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-12 text-center">
                 <Building2 className="mx-auto mb-3 h-8 w-8 text-slate-300" />
                 <p className="text-sm font-medium text-slate-600">No properties linked yet</p>
                 <p className="mt-1 text-xs text-slate-400">Properties get linked automatically as public records are synced from government databases.</p>
@@ -330,7 +351,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             ) : (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {(properties as Property[]).map(prop => (
-                  <Link key={prop.id} href={`/property/${prop.id}`} className="group block rounded-[20px] border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md">
+                  <Link key={prop.id} href={`/property/${prop.id}`} className="group block rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <p className="text-[15px] font-bold text-slate-900 group-hover:text-navy-700">

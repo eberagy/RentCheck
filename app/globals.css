@@ -5,7 +5,7 @@
 :root {
   --background: #F8FAFC;
   --foreground: #0F172A;
-  --font-sans: system-ui, sans-serif;
+  --font-display: Georgia, serif;
 }
 
 body {

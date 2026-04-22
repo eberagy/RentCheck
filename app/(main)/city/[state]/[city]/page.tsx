@@ -61,6 +61,7 @@ export default async function CityPage({ params }: CityPageProps) {
   }
 
   const { data: landlords, count } = await landlordQuery
+    .order('total_violation_count', { ascending: false, nullsFirst: false })
     .order('review_count', { ascending: false })
     .limit(20)
 
@@ -80,12 +81,24 @@ export default async function CityPage({ params }: CityPageProps) {
 
   const { data: cityProps } = await propsQuery
   const cityPropIds = (cityProps ?? []).map((p: { id: string }) => p.id)
-  const { count: recordCount } = cityPropIds.length > 0
-    ? await supabase
-        .from('public_records')
-        .select('*', { count: 'exact', head: true })
-        .in('property_id', cityPropIds)
-    : { count: 0 }
+  const landlordIds = (landlords ?? []).map((l: Landlord) => l.id)
+
+  // Count records linked to properties OR directly to landlords in this city
+  const [{ count: propRecordCount }, { count: landlordRecordCount }] = await Promise.all([
+    cityPropIds.length > 0
+      ? supabase
+          .from('public_records')
+          .select('*', { count: 'exact', head: true })
+          .in('property_id', cityPropIds)
+      : Promise.resolve({ count: 0 }),
+    landlordIds.length > 0
+      ? supabase
+          .from('public_records')
+          .select('*', { count: 'exact', head: true })
+          .in('landlord_id', landlordIds)
+      : Promise.resolve({ count: 0 }),
+  ])
+  const recordCount = (propRecordCount ?? 0) + (landlordRecordCount ?? 0)
 
   // Get college info
   const collegeInfo = COLLEGE_CITIES.find(
@@ -119,11 +132,9 @@ export default async function CityPage({ params }: CityPageProps) {
       >
         <div className="relative mx-auto max-w-[1180px]">
           <Eyebrow dark dot>{stateAbbr} &middot; {cityName} &middot; {stateName}</Eyebrow>
-          <h1 className="mt-[18px] text-[72px] font-extrabold leading-none tracking-[-0.04em]">
-            {cityName} landlords.<br />
-            <span className="bg-gradient-to-r from-white to-teal-300 bg-clip-text text-transparent">
-              Verified. Unvarnished.
-            </span>
+          <h1 className="mt-[18px] font-display text-[clamp(2.4rem,5vw,4.5rem)] leading-[1.05] tracking-tight">
+            {cityName} landlords.{' '}
+            <span className="text-teal-300">Verified.</span>
           </h1>
           <p className="mt-[18px] max-w-[560px] text-[16px] leading-relaxed text-slate-400">
             {count ?? 0} landlords tracked across {cityName} — every review lease-verified

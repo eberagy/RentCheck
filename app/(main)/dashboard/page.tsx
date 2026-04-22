@@ -169,7 +169,7 @@ export default async function DashboardPage() {
         {/* Sidebar */}
         <aside className="grid gap-4 self-start">
           {/* Rights tip */}
-          <div className="rounded-[20px] border border-teal-200 bg-gradient-to-br from-teal-50 to-slate-50 p-5">
+          <div className="rounded-xl border border-teal-200 bg-gradient-to-br from-teal-50 to-slate-50 p-5">
             <Sparkles className="h-[18px] w-[18px] text-teal" />
             <div className="mt-3 text-[15px] font-bold text-slate-900">Know your rights.</div>
             <p className="mt-1.5 text-[12.5px] leading-relaxed text-teal-900">
@@ -181,7 +181,7 @@ export default async function DashboardPage() {
           </div>
 
           {/* Account settings */}
-          <div className="rounded-[20px] border border-slate-200 bg-white p-[18px]">
+          <div className="rounded-xl border border-slate-200 bg-white p-[18px]">
             <div className="mb-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Account</div>
             <div className="grid gap-2">
               <Link href="/dashboard/settings" className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2.5 text-[13px] text-slate-700 hover:bg-slate-100 transition-colors">

@@ -78,14 +78,14 @@ export function Navbar() {
               <Button
                 size="sm"
                 className={cn(
-                  'h-9 rounded-full px-4 text-[13px] font-semibold',
+                  'h-9 rounded-md px-4 text-[13px] font-semibold',
                   isDark
-                    ? 'bg-white text-slate-900 shadow-lg shadow-white/10 hover:bg-slate-100'
+                    ? 'bg-white text-slate-900 hover:bg-slate-100'
                     : 'bg-slate-900 text-white hover:bg-slate-800'
                 )}
                 onClick={() => router.push('/review/new')}
               >
-                Write a review <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                Write a review
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger
@@ -144,14 +144,14 @@ export function Navbar() {
               <Button
                 size="sm"
                 className={cn(
-                  'h-9 rounded-full px-4 text-[13px] font-semibold',
+                  'h-9 rounded-md px-4 text-[13px] font-semibold',
                   isDark
-                    ? 'bg-white text-slate-900 shadow-lg shadow-white/10 hover:bg-slate-100'
+                    ? 'bg-white text-slate-900 hover:bg-slate-100'
                     : 'bg-slate-900 text-white hover:bg-slate-800'
                 )}
                 onClick={() => router.push('/review/new')}
               >
-                Write a review <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                Write a review
               </Button>
             </>
           )}

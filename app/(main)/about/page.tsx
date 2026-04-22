@@ -21,7 +21,7 @@ export default function AboutPage() {
       <div className="bg-slate-50 border-b border-gray-100 py-16 px-4">
         <div className="max-w-3xl mx-auto">
           <p className="text-xs uppercase tracking-widest text-teal-600 font-semibold mb-3">About Vett</p>
-          <h1 className="text-4xl font-black text-gray-900 tracking-tight mb-4">
+          <h1 className="font-display text-[clamp(2rem,4vw,3rem)] text-gray-900 tracking-tight mb-4 leading-[1.1]">
             The transparency platform<br className="hidden sm:block" /> for renters.
           </h1>
           <p className="text-lg text-gray-500 leading-relaxed max-w-2xl">

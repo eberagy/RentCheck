@@ -104,7 +104,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           <span className="font-medium text-slate-700">{property.address_line1}</span>
         </nav>
 
-        <div className="mb-6 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+        <div className="mb-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <div className="h-1.5 bg-gradient-to-r from-navy-600 via-sky-500 to-teal-500" />
           <div className="grid gap-6 px-5 py-6 sm:px-7 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
             <div className="min-w-0 space-y-4">

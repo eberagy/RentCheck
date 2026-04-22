@@ -182,7 +182,7 @@ export default function LandlordPortalPage() {
 
         {/* ── Pending claim ── */}
         {claim && claim.status === 'pending' && (
-          <div className="rounded-[20px] border border-amber-200 bg-amber-50 p-6">
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-6">
             <div className="flex items-start gap-4">
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-amber-100">
                 <Clock className="h-5 w-5 text-amber-600" />
@@ -200,7 +200,7 @@ export default function LandlordPortalPage() {
 
         {/* ── Rejected claim ── */}
         {claim && claim.status === 'rejected' && (
-          <div className="rounded-[20px] border border-red-200 bg-red-50 p-6">
+          <div className="rounded-xl border border-red-200 bg-red-50 p-6">
             <h2 className="font-bold text-red-900">Claim Rejected</h2>
             <p className="mt-1 text-sm text-red-800">{claim.admin_notes ?? 'Your verification documents could not be confirmed. Please try again with different documents.'}</p>
             <Button asChild size="sm" variant="outline" className="mt-4 rounded-full border-red-300 text-red-700 hover:bg-red-100">
@@ -220,7 +220,7 @@ export default function LandlordPortalPage() {
                 { l: 'Response rate', v: reviews.length > 0 ? `${Math.round((respondedReviews / reviews.length) * 100)}%` : '—', sub: `${respondedReviews} responded`, tone: 'teal' },
                 { l: 'Open disputes', v: '0', sub: 'No open disputes', tone: 'amber' },
               ].map(s => (
-                <div key={s.l} className="rounded-[20px] border border-slate-200 bg-white p-5">
+                <div key={s.l} className="rounded-xl border border-slate-200 bg-white p-5">
                   <div className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-slate-400">{s.l}</div>
                   <div className={`mt-2 text-[32px] font-extrabold tracking-tight ${s.tone === 'amber' ? 'text-amber-700' : 'text-slate-900'}`}>{s.v}</div>
                   <div className={`mt-1 text-[12px] ${s.tone === 'amber' ? 'text-amber-600' : 'text-teal'}`}>{s.sub}</div>

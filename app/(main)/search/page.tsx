@@ -244,6 +244,7 @@ async function SearchResults({
     .from('landlords')
     .select('*', { count: 'exact' })
     .range(offset, offset + pageSize - 1)
+    .order('total_violation_count', { ascending: false, nullsFirst: false })
     .order('review_count', { ascending: false })
 
   if (city) query = query.ilike('city', `%${city}%`)
@@ -319,7 +320,7 @@ function SearchResultCard({ result }: { result: SearchPageResult }) {
 
   return (
     <Link href={href} className="group block">
-      <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-5 rounded-[20px] border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 group-hover:border-navy-200 group-hover:shadow-md">
+      <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-5 rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 group-hover:border-navy-200 group-hover:shadow-md">
         {/* Grade badge */}
         <Grade letter={grade} size="md" />
 
@@ -403,8 +404,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       {/* Search bar band */}
       <section className="border-b border-slate-200 bg-white px-7 py-5">
         <div className="mx-auto max-w-[1180px]">
-          <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-white px-5 py-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)]" style={{ maxWidth: 760, height: 54 }}>
-            <Search className="h-[17px] w-[17px] text-slate-400 flex-shrink-0" />
+          <div className="flex items-center gap-3 border-b-2 border-slate-200 pb-3 focus-within:border-navy-400 transition-[border-color] duration-200" style={{ maxWidth: 760 }}>
+            <Search className="h-[17px] w-[17px] text-slate-300 flex-shrink-0" />
             <div className="flex-1">
               <SearchBar inline />
             </div>
@@ -455,7 +456,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             {city && <input type="hidden" name="city" value={city} />}
 
             {/* Rating filter */}
-            <div className="rounded-[20px] border border-slate-200 bg-white p-[18px]">
+            <div className="rounded-lg border border-slate-200 bg-white p-[18px]">
               <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Overall rating</div>
               <div className="grid gap-2">
                 {[
@@ -479,7 +480,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
 
             {/* Verification filter */}
-            <div className="rounded-[20px] border border-slate-200 bg-white p-[18px]">
+            <div className="rounded-lg border border-slate-200 bg-white p-[18px]">
               <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Verification</div>
               <div className="grid gap-2">
                 <label className="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
@@ -490,7 +491,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </div>
 
             {/* State filter */}
-            <div className="rounded-[20px] border border-slate-200 bg-white p-[18px]">
+            <div className="rounded-lg border border-slate-200 bg-white p-[18px]">
               <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">State</div>
               <select name="state" defaultValue={state} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-700 focus:border-teal focus:outline-none">
                 <option value="">All states</option>
@@ -519,7 +520,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         <div className="min-w-0">
           <Suspense fallback={
             <div className="grid gap-3">
-              {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-[20px]" />)}
+              {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
             </div>
           }>
             <SearchResults q={q} city={city} state={state} minRating={minRating} verifiedOnly={verifiedOnly} page={page} />
