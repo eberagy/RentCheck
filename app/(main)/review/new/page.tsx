@@ -25,6 +25,9 @@ import { detectFileType, ALLOWED_LEASE_TYPES, MAX_LEASE_SIZE } from '@/lib/utils
 import { toast } from 'sonner'
 import type { Landlord } from '@/types'
 
+// Plain z.object — NO .refine(). Refine wraps the schema in ZodEffects which
+// breaks react-hook-form trigger() / field-level validation. All cross-field
+// checks are done manually in the step submit handlers instead.
 const reviewSchema = z.object({
   title: z.string().min(10, 'Title must be at least 10 characters').max(150),
   body: z.string().min(50, 'Review must be at least 50 characters').max(2000),
@@ -38,12 +41,9 @@ const reviewSchema = z.object({
   rentalPeriodStart: z.string().min(1, 'Required'),
   rentalPeriodEnd: z.string().optional(),
   isCurrentTenant: z.boolean().default(false),
-  confirmedGenuine: z.literal(true, { errorMap: () => ({ message: 'You must confirm this is your genuine experience' }) }),
-  confirmedLiability: z.literal(true, { errorMap: () => ({ message: 'You must agree to the terms' }) }),
-}).refine(
-  (data) => data.isCurrentTenant || (data.rentalPeriodEnd && data.rentalPeriodEnd.length > 0),
-  { message: 'Move-out date is required unless you still rent here', path: ['rentalPeriodEnd'] }
-)
+  confirmedGenuine: z.boolean().default(false),
+  confirmedLiability: z.boolean().default(false),
+})
 
 type ReviewFormData = z.infer<typeof reviewSchema>
 type UploadedLease = {
@@ -432,8 +432,21 @@ export default function NewReviewPage() {
             toast.error('Upload your lease before continuing')
             return
           }
-          // Validate review fields — not the confirmation checkboxes on step 3
-          const valid = await trigger(['title', 'body', 'propertyAddress', 'ratingOverall', 'ratingResponsiveness', 'ratingMaintenance', 'ratingHonesty', 'ratingLeaseFairness', 'wouldRentAgain', 'rentalPeriodStart', 'rentalPeriodEnd'])
+          // Manual validation — trigger() fails silently with ZodEffects (.refine) schemas
+          const v = getValues()
+          let valid = true
+          clearErrors(['title', 'body', 'propertyAddress', 'ratingOverall', 'ratingResponsiveness', 'ratingMaintenance', 'ratingHonesty', 'ratingLeaseFairness', 'wouldRentAgain', 'rentalPeriodStart', 'rentalPeriodEnd'])
+          if (!v.title || v.title.length < 10) { setError('title', { message: 'Title must be at least 10 characters' }); valid = false }
+          if (!v.body || v.body.length < 50) { setError('body', { message: 'Review must be at least 50 characters' }); valid = false }
+          if (!v.propertyAddress || v.propertyAddress.length < 3) { setError('propertyAddress', { message: 'Please enter the property address' }); valid = false }
+          if (!v.ratingOverall || v.ratingOverall < 1) { setError('ratingOverall', { message: 'Required' }); valid = false }
+          if (!v.ratingResponsiveness || v.ratingResponsiveness < 1) { setError('ratingResponsiveness', { message: 'Required' }); valid = false }
+          if (!v.ratingMaintenance || v.ratingMaintenance < 1) { setError('ratingMaintenance', { message: 'Required' }); valid = false }
+          if (!v.ratingHonesty || v.ratingHonesty < 1) { setError('ratingHonesty', { message: 'Required' }); valid = false }
+          if (!v.ratingLeaseFairness || v.ratingLeaseFairness < 1) { setError('ratingLeaseFairness', { message: 'Required' }); valid = false }
+          if (!v.wouldRentAgain) { setError('wouldRentAgain', { message: 'Please select one' }); valid = false }
+          if (!v.rentalPeriodStart) { setError('rentalPeriodStart', { message: 'Required' }); valid = false }
+          if (!v.isCurrentTenant && (!v.rentalPeriodEnd || v.rentalPeriodEnd.length === 0)) { setError('rentalPeriodEnd', { message: 'Move-out date is required unless you still rent here' }); valid = false }
           if (valid) setStep(3)
         }}>
           <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">

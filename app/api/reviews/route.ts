@@ -72,6 +72,14 @@ export async function POST(req: NextRequest) {
   d.body = sanitizeText(d.body)
   if (d.propertyAddress) d.propertyAddress = sanitizeText(d.propertyAddress)
 
+  // Convert month strings ("2024-01") to valid DATE ("2024-01-01")
+  if (d.rentalPeriodStart && !d.rentalPeriodStart.includes('-', 5)) {
+    d.rentalPeriodStart = d.rentalPeriodStart + '-01'
+  }
+  if (d.rentalPeriodEnd && !d.rentalPeriodEnd.includes('-', 5)) {
+    d.rentalPeriodEnd = d.rentalPeriodEnd + '-01'
+  }
+
   if (!d.leaseDocPath.startsWith(`${user.id}/`)) {
     return NextResponse.json({ error: 'Lease upload must belong to the signed-in renter' }, { status: 403 })
   }
@@ -115,6 +123,9 @@ export async function POST(req: NextRequest) {
     .select('id')
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) {
+    console.error('Review insert failed:', error.message, error.details, error.hint)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
   return NextResponse.json({ reviewId: review.id }, { status: 201 })
 }
