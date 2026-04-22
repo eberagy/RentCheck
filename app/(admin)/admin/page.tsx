@@ -21,18 +21,21 @@ export default async function AdminDashboardPage() {
     { count: rejectedReviews },
     { count: pendingClaims },
     { count: openDisputes },
+    { count: pendingSubmissions },
     { count: totalUsers },
     { count: totalLandlords },
     { count: totalWatchlists },
     { count: totalPublicRecords },
     { data: recentSyncs },
     { data: recentPendingReviews },
+    { data: recentPendingSubmissions },
   ] = await Promise.all([
     supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
     supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'rejected'),
     supabase.from('landlord_claims').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('record_disputes').select('*', { count: 'exact', head: true }).eq('status', 'open'),
+    supabase.from('landlord_submissions').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('landlords').select('*', { count: 'exact', head: true }),
     supabase.from('watchlist').select('*', { count: 'exact', head: true }),
@@ -41,6 +44,12 @@ export default async function AdminDashboardPage() {
     supabase
       .from('reviews')
       .select('id, title, body, rating_overall, status, created_at, reviewer:profiles(full_name, email)')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: true })
+      .limit(5),
+    supabase
+      .from('landlord_submissions')
+      .select('id, display_name, city, state_abbr, created_at, submitter:profiles(full_name, email)')
       .eq('status', 'pending')
       .order('created_at', { ascending: true })
       .limit(5),
@@ -78,6 +87,16 @@ export default async function AdminDashboardPage() {
       bg: 'bg-amber-50',
       border: 'border-amber-200',
       urgent: (openDisputes ?? 0) > 5,
+    },
+    {
+      href: '/admin/submissions',
+      label: 'Landlord Submissions',
+      count: pendingSubmissions ?? 0,
+      icon: TrendingUp,
+      color: 'text-orange-600',
+      bg: 'bg-orange-50',
+      border: 'border-orange-200',
+      urgent: (pendingSubmissions ?? 0) > 5,
     },
     {
       href: '/admin/leases',
@@ -201,7 +220,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Action Queues */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         {queues.map(({ href, label, count, icon: Icon, color, bg, border, urgent }) => (
           <Link key={href} href={href}>
             <Card className={`border ${border} ${bg} hover:shadow-md transition-all cursor-pointer hover:-translate-y-0.5`}>
@@ -225,6 +244,50 @@ export default async function AdminDashboardPage() {
           </Link>
         ))}
       </div>
+
+      {/* Pending Landlord Submissions */}
+      {(recentPendingSubmissions ?? []).length > 0 && (
+        <Card className="mb-6 border-orange-200 bg-orange-50/30">
+          <CardHeader className="pb-3 border-b border-orange-100">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-orange-500" />
+                Pending Landlord Submissions
+                <Badge className="bg-orange-100 text-orange-800 border-orange-200 text-xs ml-1">
+                  {pendingSubmissions} pending
+                </Badge>
+              </CardTitle>
+              <Link href="/admin/submissions" className="text-xs text-navy-600 hover:underline">
+                Review all →
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y divide-orange-100">
+              {(recentPendingSubmissions ?? []).map((s: any) => (
+                <div key={s.id} className="p-4 hover:bg-orange-50/50 transition-colors">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-gray-900">{s.display_name}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {[s.city, s.state_abbr].filter(Boolean).join(', ')}
+                        {' · Submitted by '}
+                        {(s.submitter as any)?.full_name ?? (s.submitter as any)?.email ?? 'Unknown'}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">{formatDateRelative(s.created_at)}</p>
+                    </div>
+                    <Link href="/admin/submissions">
+                      <Button size="sm" variant="outline" className="h-7 text-xs border-orange-300 text-orange-700 hover:bg-orange-100">
+                        <Eye className="h-3 w-3 mr-1" /> Review
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Bottom two-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

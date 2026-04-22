@@ -11,13 +11,30 @@ export async function GET(req: NextRequest) {
     const { data: { user }, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error && user) {
-      // Upsert profile on first login
-      await supabase.from('profiles').upsert({
-        id: user.id,
-        email: user.email ?? '',
-        full_name: user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
-        avatar_url: user.user_metadata?.avatar_url ?? null,
-      }, { onConflict: 'id', ignoreDuplicates: true })
+      const fullName = user.user_metadata?.full_name ?? user.user_metadata?.name ?? null
+      const avatarUrl = user.user_metadata?.avatar_url ?? null
+
+      // Check if profile exists
+      const { data: existing } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .eq('id', user.id)
+        .single()
+
+      if (!existing) {
+        // New user — create profile
+        await supabase.from('profiles').insert({
+          id: user.id,
+          email: user.email ?? '',
+          full_name: fullName,
+          avatar_url: avatarUrl,
+        })
+      } else if (!existing.full_name && fullName) {
+        // Existing user without a name — update it
+        await supabase.from('profiles')
+          .update({ full_name: fullName, avatar_url: avatarUrl })
+          .eq('id', user.id)
+      }
 
       return NextResponse.redirect(`${origin}${next}`)
     }

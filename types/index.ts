@@ -115,6 +115,7 @@ export interface Review {
   lease_file_size: number | null
   status: ReviewStatus
   moderation_note: string | null
+  admin_notes: string | null
   moderated_by: string | null
   moderated_at: string | null
   landlord_response: string | null

@@ -27,6 +27,7 @@ type PasswordTab = 'signin' | 'signup'
 
 export default function LoginPage() {
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -77,10 +78,16 @@ export default function LoginPage() {
         router.push(redirectTo)
       }
     } else {
+      if (!fullName.trim()) {
+        toast.error('Please enter your full name.')
+        setLoading(false)
+        return
+      }
       const { error } = await supabase.auth.signUp({
         email: email.trim(),
         password,
         options: {
+          data: { full_name: fullName.trim() },
           emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
         },
       })
@@ -247,6 +254,16 @@ export default function LoginPage() {
                   </div>
 
                   <form onSubmit={handlePasswordAuth} className="space-y-3">
+                    {passwordTab === 'signup' && (
+                      <input
+                        type="text"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="Full name"
+                        required
+                        className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+                      />
+                    )}
                     <input
                       type="email"
                       value={email}
