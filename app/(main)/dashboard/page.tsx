@@ -61,20 +61,30 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Hero strip */}
-      <section className="relative overflow-hidden bg-[linear-gradient(135deg,#0d1728,#07111f)] px-7 py-10 text-white">
-        <div className="absolute right-[-40px] top-[-20px] h-[200px] w-[200px] rounded-full bg-teal/30 blur-[80px]" />
-        <div className="relative mx-auto flex max-w-[1180px] items-center justify-between">
+      <section className="relative overflow-hidden bg-[#07111f] px-7 py-14 text-white">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_15%_-10%,rgba(15,123,108,0.22),transparent_55%),radial-gradient(ellipse_at_85%_110%,rgba(30,58,95,0.25),transparent_55%)]" />
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: 'linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)',
+            backgroundSize: '64px 64px',
+            maskImage: 'radial-gradient(ellipse 60% 50% at 50% 40%, black 40%, transparent 80%)',
+          }}
+        />
+        <div className="relative mx-auto flex max-w-[1180px] flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-teal-300">Your dashboard</div>
-            <h1 className="mt-2 text-[36px] font-extrabold tracking-tight">
-              {firstName ? `Welcome back, ${firstName}.` : 'Your Dashboard'}
+            <p className="text-[11px] font-mono uppercase tracking-widest text-teal-300/80">§ Your dashboard</p>
+            <h1 className="mt-3 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.02] tracking-tight">
+              {firstName ? <>Welcome back, <span className="italic text-slate-400">{firstName}.</span></> : <>Your <span className="italic text-slate-400">dashboard.</span></>}
             </h1>
-            <p className="mt-1.5 text-[14px] text-slate-400">
-              {watchList.length} watchlist items &middot; {reviewList.length} reviews &middot; {verifiedCount} verified
+            <p className="mt-3 text-[13.5px] text-slate-400">
+              <span className="tabular-nums text-slate-200">{watchList.length}</span> watchlist items &middot;{' '}
+              <span className="tabular-nums text-slate-200">{reviewList.length}</span> reviews &middot;{' '}
+              <span className="tabular-nums text-slate-200">{verifiedCount}</span> verified
             </p>
           </div>
-          <Button asChild className="rounded-full bg-teal px-5 hover:bg-teal-500 text-white">
-            <Link href="/review/new"><Edit className="mr-1.5 h-3.5 w-3.5" /> Write a review</Link>
+          <Button asChild className="rounded-md bg-white px-5 hover:bg-slate-100 text-slate-900 font-semibold">
+            <Link href="/review/new"><Edit className="mr-2 h-3.5 w-3.5" /> Write a review</Link>
           </Button>
         </div>
       </section>
