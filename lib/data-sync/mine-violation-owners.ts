@@ -183,7 +183,7 @@ function extractOwnerName(raw: Record<string, any>, source: string): string | nu
 
 function cleanOwnerName(raw: string): string | null {
   if (!raw) return null
-  let name = raw.trim()
+  const name = raw.trim()
     .replace(/\s+/g, ' ')
     .replace(/^[A-Z\s&.,'-]+$/, (s: string) => toTitleCase(s))
   // Skip clearly non-name values (phone numbers, dates, codes)
