@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { sendResponseApprovedEmail, sendResponseRejectedEmail } from '@/lib/email'
 import { z } from 'zod'
 
 const schema = z.object({
   reviewId: z.string().uuid(),
   action: z.enum(['approved', 'rejected']),
+  adminNotes: z.string().max(1000).optional(),
 })
 
 async function requireAdmin(supabase: Awaited<ReturnType<typeof createClient>>) {
@@ -23,7 +25,14 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: 'Invalid' }, { status: 422 })
 
-  const { reviewId, action } = parsed.data
+  const { reviewId, action, adminNotes } = parsed.data
+
+  const serviceClient = createServiceClient()
+  const { data: review } = await serviceClient
+    .from('reviews')
+    .select('id, title, landlord:landlords(display_name, slug, claimed_by)')
+    .eq('id', reviewId)
+    .single()
 
   const updates: Record<string, unknown> = {
     landlord_response_status: action,
@@ -41,5 +50,36 @@ export async function POST(req: NextRequest) {
     .eq('id', reviewId)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  if (review) {
+    const landlord = (review.landlord as unknown) as
+      { display_name: string; slug: string; claimed_by: string | null } | null
+
+    if (landlord?.claimed_by) {
+      const { data: owner } = await serviceClient
+        .from('profiles')
+        .select('email, full_name')
+        .eq('id', landlord.claimed_by)
+        .single()
+
+      if (owner?.email) {
+        if (action === 'approved') {
+          sendResponseApprovedEmail(owner.email, {
+            firstName: owner.full_name?.split(' ')[0],
+            landlordName: landlord.display_name,
+            landlordSlug: landlord.slug,
+            reviewTitle: review.title ?? undefined,
+          }).catch(err => console.error('[email] response-approved error:', err))
+        } else {
+          sendResponseRejectedEmail(owner.email, {
+            firstName: owner.full_name?.split(' ')[0],
+            landlordName: landlord.display_name,
+            reason: adminNotes,
+          }).catch(err => console.error('[email] response-rejected error:', err))
+        }
+      }
+    }
+  }
+
   return NextResponse.json({ ok: true })
 }
