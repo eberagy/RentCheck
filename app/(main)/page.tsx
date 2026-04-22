@@ -78,27 +78,42 @@ export default async function HomePage() {
     <div className="min-h-screen">
       {/* ── HERO ── */}
       <section className="relative isolate overflow-hidden bg-[#07111f] text-white">
-        {/* Subtle static gradient — no animated blobs */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(15,123,108,0.15),transparent_50%),radial-gradient(ellipse_at_80%_100%,rgba(30,58,95,0.12),transparent_50%)]" />
+        {/* Layered gradient mesh for depth */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_15%_-10%,rgba(15,123,108,0.22),transparent_55%),radial-gradient(ellipse_at_85%_110%,rgba(30,58,95,0.28),transparent_55%),radial-gradient(ellipse_at_50%_50%,rgba(20,184,166,0.06),transparent_70%)]" />
+        {/* Grid pattern overlay */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage: 'linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)',
+            backgroundSize: '64px 64px',
+            maskImage: 'radial-gradient(ellipse 60% 50% at 50% 40%, black 40%, transparent 80%)',
+          }}
+        />
         <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
 
         <div className="relative mx-auto max-w-[1100px] px-6 pb-20 pt-16 lg:pb-28 lg:pt-24">
           <ScrollReveal delay={0} direction="up">
-            <p className="text-[13px] font-medium uppercase tracking-[0.14em] text-teal-300">
-              Lease-verified renter intelligence
-            </p>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 backdrop-blur-sm">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-400 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-teal-400" />
+              </span>
+              <p className="text-[11.5px] font-semibold uppercase tracking-[0.14em] text-teal-200">
+                Lease-verified renter intelligence
+              </p>
+            </div>
           </ScrollReveal>
 
           <ScrollReveal delay={80} direction="up">
-            <h1 className="mt-5 max-w-[680px] font-display text-[clamp(2.25rem,6vw,5rem)] leading-[1.04] tracking-tight">
+            <h1 className="mt-6 max-w-[740px] font-display text-[clamp(2.25rem,6.5vw,5.25rem)] leading-[1.02] tracking-tight">
               Know before
               <br />
-              you rent.
+              <span className="bg-gradient-to-r from-white via-teal-100 to-teal-300 bg-clip-text text-transparent">you rent.</span>
             </h1>
           </ScrollReveal>
 
           <ScrollReveal delay={160} direction="up">
-            <p className="mt-6 max-w-[520px] text-[17px] leading-relaxed text-slate-400">
+            <p className="mt-6 max-w-[540px] text-[17px] leading-relaxed text-slate-300/90">
               Verified reviews and government records in one place,
               so you can sign with confidence.
             </p>
@@ -121,27 +136,27 @@ export default async function HomePage() {
             </div>
           </ScrollReveal>
 
-          {/* Stats row — inline, not cards */}
+          {/* Stats row — editorial magazine style */}
           {(stats.reviews > 0 || stats.landlords > 0) && (
             <ScrollReveal delay={320} direction="up">
-              <div className="mt-14 flex flex-wrap items-center gap-x-10 gap-y-3 border-t border-white/[0.06] pt-7">
-                <div>
-                  <span className="text-2xl font-bold text-white tabular-nums">
+              <div className="mt-16 grid grid-cols-3 gap-0 border-t border-white/[0.08] pt-8 divide-x divide-white/[0.06]">
+                <div className="pr-6">
+                  <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
                     <AnimatedCounter target={stats.reviews} duration={2000} />
-                  </span>
-                  <span className="ml-2 text-[13px] text-slate-400">verified reviews</span>
+                  </p>
+                  <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Verified reviews</p>
                 </div>
-                <div>
-                  <span className="text-2xl font-bold text-white tabular-nums">
+                <div className="px-6">
+                  <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
                     <AnimatedCounter target={stats.landlords} duration={2000} />
-                  </span>
-                  <span className="ml-2 text-[13px] text-slate-400">landlords tracked</span>
+                  </p>
+                  <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Landlords tracked</p>
                 </div>
-                <div>
-                  <span className="text-2xl font-bold text-white tabular-nums">
+                <div className="pl-6">
+                  <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
                     <AnimatedCounter target={stats.records} duration={2000} />
-                  </span>
-                  <span className="ml-2 text-[13px] text-slate-400">public records</span>
+                  </p>
+                  <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Public records</p>
                 </div>
               </div>
             </ScrollReveal>
@@ -153,92 +168,128 @@ export default async function HomePage() {
       <section className="bg-white">
         <div className="mx-auto max-w-[1100px] px-6 py-20 lg:py-28">
           <ScrollReveal>
-            <h2 className="font-display text-[clamp(1.8rem,3.5vw,2.8rem)] leading-[1.15] tracking-tight text-slate-900">
-              Research a landlord in minutes.
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-600">The process</p>
+            <h2 className="mt-3 font-display text-[clamp(1.8rem,3.5vw,2.8rem)] leading-[1.05] tracking-tight text-slate-900">
+              Research a landlord
+              <br />
+              <span className="italic text-slate-400">in minutes.</span>
             </h2>
-            <p className="mt-3 max-w-[480px] text-[15px] leading-relaxed text-slate-500">
+            <p className="mt-4 max-w-[480px] text-[15px] leading-relaxed text-slate-500">
               Search, scan the signal, and move forward with clarity.
             </p>
           </ScrollReveal>
 
-          <div className="mt-12 grid gap-px overflow-hidden rounded-xl border border-slate-200 bg-slate-200 md:grid-cols-3">
+          <div className="mt-14 grid gap-6 md:grid-cols-3">
             {[
-              { num: '1', title: 'Search your landlord', desc: 'By name, management company, or property address.' },
-              { num: '2', title: 'See the full picture', desc: 'Lease-verified reviews and government records side by side.' },
-              { num: '3', title: 'Decide with confidence', desc: 'Sign knowing exactly what you\'re getting into.' },
-            ].map(({ num, title, desc }) => (
-              <div key={num} className="bg-white p-7 lg:p-9">
-                <span className="text-[13px] font-semibold text-teal-600">{num}</span>
-                <h3 className="mt-3 text-[16px] font-semibold text-slate-900">{title}</h3>
-                <p className="mt-2 text-[14px] leading-relaxed text-slate-500">{desc}</p>
-              </div>
+              { num: '01', title: 'Search your landlord', desc: 'By name, management company, or property address.' },
+              { num: '02', title: 'See the full picture', desc: 'Lease-verified reviews and government records side by side.' },
+              { num: '03', title: 'Decide with confidence', desc: 'Sign knowing exactly what you\'re getting into.' },
+            ].map(({ num, title, desc }, idx) => (
+              <ScrollReveal key={num} delay={idx * 100} direction="up">
+                <div className="group relative h-full rounded-2xl border border-slate-200 bg-white p-7 transition-all duration-300 hover:border-teal-300 hover:shadow-[0_8px_32px_-12px_rgba(15,123,108,0.25)]">
+                  <span className="absolute -top-5 left-7 rounded-full border border-slate-200 bg-white px-3 py-1 font-display text-[13px] tracking-wider text-teal-600">
+                    {num}
+                  </span>
+                  <h3 className="mt-3 font-display text-[22px] leading-tight tracking-tight text-slate-900">{title}</h3>
+                  <p className="mt-3 text-[14px] leading-relaxed text-slate-500">{desc}</p>
+                  <div className="mt-6 h-px w-full bg-gradient-to-r from-teal-200 via-slate-100 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
       {/* ── WHAT MAKES VETT DIFFERENT ── */}
-      <section className="border-t border-slate-100 bg-slate-50">
-        <div className="mx-auto max-w-[1100px] px-6 py-20 lg:py-28">
+      <section className="relative border-t border-slate-100 bg-slate-50 overflow-hidden">
+        {/* Editorial rule marks */}
+        <div className="absolute inset-x-0 top-0 mx-auto max-w-[1100px] px-6">
+          <div className="flex h-8 items-center justify-between text-[10px] font-mono uppercase tracking-widest text-slate-300">
+            <span>§ 02</span>
+            <span>What makes Vett different</span>
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-[1100px] px-6 py-24 lg:py-32">
           <div className="grid gap-16 lg:grid-cols-[1fr_1.1fr] lg:items-start">
             <ScrollReveal direction="left">
               <div className="lg:sticky lg:top-28">
-                <h2 className="font-display text-[clamp(1.8rem,3.5vw,2.8rem)] leading-[1.15] tracking-tight text-slate-900">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-600">The signal</p>
+                <h2 className="mt-3 font-display text-[clamp(1.8rem,3.5vw,3rem)] leading-[1.02] tracking-tight text-slate-900">
                   The signal renters
                   <br />
-                  actually need.
+                  <span className="italic text-slate-400">actually need.</span>
                 </h2>
-                <p className="mt-4 max-w-[420px] text-[15px] leading-relaxed text-slate-500">
+                <p className="mt-5 max-w-[420px] text-[15px] leading-relaxed text-slate-600">
                   Public surface stays calm and readable. The data underneath stays dense, trustworthy, and current.
                 </p>
 
-                <div className="mt-8 flex gap-5">
-                  <div>
-                    <p className="text-3xl font-bold text-slate-900 tabular-nums">
+                <div className="mt-10 grid grid-cols-2 gap-0 divide-x divide-slate-200">
+                  <div className="pr-6">
+                    <p className="font-display text-[clamp(2.25rem,3vw,3rem)] leading-none tracking-tight text-slate-900 tabular-nums">
                       <AnimatedCounter target={21} suffix="+" />
                     </p>
-                    <p className="mt-0.5 text-[13px] text-slate-500">Cities covered</p>
+                    <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Cities covered</p>
                   </div>
-                  <div className="border-l border-slate-200 pl-5">
-                    <p className="text-3xl font-bold text-slate-900">100%</p>
-                    <p className="mt-0.5 text-[13px] text-slate-500">Lease-verified</p>
+                  <div className="pl-6">
+                    <p className="font-display text-[clamp(2.25rem,3vw,3rem)] leading-none tracking-tight text-slate-900">100%</p>
+                    <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Lease-verified</p>
                   </div>
                 </div>
               </div>
             </ScrollReveal>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-5">
               {[
                 {
                   icon: Shield,
+                  number: '01',
                   title: 'Lease-verified reviews',
                   description: 'Every published review is backed by a real lease document and founder review. No fake reviews, just real tenant experiences.',
-                  accent: 'border-l-teal-500',
+                  accent: 'bg-teal-500',
+                  glow: 'from-teal-500/10 via-transparent',
+                  iconBg: 'bg-teal-50 ring-teal-100',
                   iconColor: 'text-teal-600',
                 },
                 {
                   icon: FileText,
+                  number: '02',
                   title: 'Public records database',
                   description: 'Court cases, HPD violations, eviction filings, and code enforcement pulled daily from government databases.',
-                  accent: 'border-l-navy-400',
+                  accent: 'bg-navy-500',
+                  glow: 'from-navy-500/10 via-transparent',
+                  iconBg: 'bg-navy-50 ring-navy-100',
                   iconColor: 'text-navy-600',
                 },
                 {
                   icon: Globe,
+                  number: '03',
                   title: 'Growing city coverage',
                   description: 'Strongest where we have verified reviews and live public-data feeds — NYC, Chicago, Philadelphia, Baltimore, Pittsburgh, Boston, and more.',
-                  accent: 'border-l-slate-400',
-                  iconColor: 'text-slate-600',
+                  accent: 'bg-slate-500',
+                  glow: 'from-slate-500/10 via-transparent',
+                  iconBg: 'bg-slate-100 ring-slate-200',
+                  iconColor: 'text-slate-700',
                 },
-              ].map(({ icon: Icon, title, description, accent, iconColor }, idx) => (
+              ].map(({ icon: Icon, number, title, description, accent, glow, iconBg, iconColor }, idx) => (
                 <ScrollReveal key={title} delay={idx * 100} direction="right">
-                  <div className={`border-l-[3px] ${accent} bg-white py-5 pl-6 pr-5 rounded-r-lg`}>
-                    <div className="flex items-start gap-3">
-                      <Icon className={`mt-0.5 h-[18px] w-[18px] flex-shrink-0 ${iconColor}`} />
-                      <div>
-                        <h3 className="text-[15px] font-semibold text-slate-900">{title}</h3>
-                        <p className="mt-1.5 text-[14px] leading-relaxed text-slate-500">{description}</p>
+                  <div className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-7 transition-all duration-300 hover:border-slate-300 hover:shadow-[0_16px_40px_-16px_rgba(15,23,42,0.15)]">
+                    {/* Hover glow */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${glow} opacity-0 transition-opacity duration-500 group-hover:opacity-100`} />
+                    <div className="relative">
+                      <div className="flex items-start gap-5">
+                        <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl ${iconBg} ring-1`}>
+                          <Icon className={`h-5 w-5 ${iconColor}`} aria-hidden="true" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-baseline gap-3">
+                            <span className="font-mono text-[11px] font-semibold tracking-widest text-slate-300">{number}</span>
+                            <h3 className="font-display text-[20px] leading-tight tracking-tight text-slate-900">{title}</h3>
+                          </div>
+                          <p className="mt-2.5 text-[14.5px] leading-relaxed text-slate-600">{description}</p>
+                        </div>
                       </div>
+                      <div className={`absolute top-0 right-0 h-full w-1 ${accent} scale-y-0 origin-top transition-transform duration-500 group-hover:scale-y-100`} />
                     </div>
                   </div>
                 </ScrollReveal>
