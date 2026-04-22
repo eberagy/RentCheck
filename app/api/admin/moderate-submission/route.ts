@@ -3,7 +3,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import slugify from 'slugify'
 import { US_STATES } from '@/types'
-import { sendSubmissionApprovedEmail } from '@/lib/email'
+import { sendSubmissionApprovedEmail, sendSubmissionRejectedEmail } from '@/lib/email'
 
 const schema = z.object({
   submissionId: z.string().uuid(),
@@ -123,6 +123,22 @@ export async function POST(req: NextRequest) {
       admin_notes: adminNotes ?? null,
     })
     .eq('id', submissionId)
+
+  if (submission.submitted_by) {
+    const { data: submitter } = await service
+      .from('profiles')
+      .select('email, full_name')
+      .eq('id', submission.submitted_by)
+      .single()
+    if (submitter?.email) {
+      sendSubmissionRejectedEmail(submitter.email, {
+        firstName: submitter.full_name?.split(' ')[0],
+        landlordName: submission.display_name,
+        reason: adminNotes,
+        isDuplicate: action === 'duplicate',
+      }).catch(err => console.error('[email] submission-rejected error:', err))
+    }
+  }
 
   return NextResponse.json({ ok: true })
 }

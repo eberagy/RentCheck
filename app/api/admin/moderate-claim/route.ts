@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/server'
-import { sendClaimApprovedEmail } from '@/lib/email'
+import { sendClaimApprovedEmail, sendClaimRejectedEmail } from '@/lib/email'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -51,8 +51,10 @@ export async function POST(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
+  const landlord = (claim.landlord as unknown) as { id: string; display_name: string; slug: string } | null
+  const claimer = (claim.claimer as unknown) as { full_name: string | null; email: string | null } | null
+
   if (action === 'approved') {
-    const landlord = (claim.landlord as unknown) as { id: string; display_name: string; slug: string } | null
     if (landlord) {
       // Mark landlord as claimed and verified
       await serviceClient
@@ -60,15 +62,21 @@ export async function POST(req: NextRequest) {
         .update({ is_claimed: true, is_verified: true, claimed_by: claim.claimed_by, claimed_at: new Date().toISOString() })
         .eq('id', landlord.id)
 
-      // Send approval email
-      const claimer = (claim.claimer as unknown) as { full_name: string | null; email: string | null } | null
       if (claimer?.email) {
         sendClaimApprovedEmail(claimer.email, {
           firstName: claimer.full_name?.split(' ')[0],
           landlordName: landlord.display_name,
           landlordSlug: landlord.slug,
-        }).catch(console.error)
+        }).catch(err => console.error('[email] claim-approved error:', err))
       }
+    }
+  } else if (action === 'rejected') {
+    if (landlord && claimer?.email) {
+      sendClaimRejectedEmail(claimer.email, {
+        firstName: claimer.full_name?.split(' ')[0],
+        landlordName: landlord.display_name,
+        reason: adminNotes,
+      }).catch(err => console.error('[email] claim-rejected error:', err))
     }
   }
 
