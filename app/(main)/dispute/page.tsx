@@ -192,11 +192,11 @@ export default function DisputePage() {
     <div className="max-w-2xl mx-auto px-4 py-10">
       <BackButton />
 
-      <div className="flex items-center gap-3 mb-2">
-        <div className="h-10 w-10 bg-amber-50 rounded-xl flex items-center justify-center">
+      <div className="mb-3">
+        <div className="h-11 w-11 bg-amber-50 rounded-xl flex items-center justify-center mb-4">
           <AlertCircle className="h-5 w-5 text-amber-600" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Dispute a Public Record</h1>
+        <h1 className="font-display text-[clamp(1.9rem,4vw,2.75rem)] leading-[1.08] tracking-tight text-slate-900">Dispute a Public Record</h1>
       </div>
       <p className="text-gray-500 mb-8 leading-relaxed">
         If you believe a public record on Vett is inaccurate, out of date, or misattributed,

@@ -27,7 +27,7 @@ const CONTACTS = [
 export default function ContactPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-16">
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">Contact Us</h1>
+      <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Contact Us</h1>
       <p className="text-gray-600 mb-10">
         We read every message. Expect a response within 2–3 business days.
       </p>

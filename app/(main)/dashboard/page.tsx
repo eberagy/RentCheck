@@ -100,14 +100,16 @@ export default async function DashboardPage() {
                 {watchList.map((w: any) => {
                   const landlord = w.landlord as any
                   if (!landlord) return null
-                  const grade = getGradeLetter(landlord.avg_rating)
+                  const grade = getGradeLetter(landlord.avg_rating, landlord.review_count ?? 0)
                   return (
                     <Link
                       key={w.id}
                       href={`/landlord/${landlord.slug}`}
                       className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 rounded-[16px] border border-slate-200 bg-white p-4 transition-colors hover:border-slate-300"
                     >
-                      <Grade letter={grade} size="sm" />
+                      {grade ? <Grade letter={grade} size="sm" /> : (
+                        <div className="h-8 w-8 rounded-lg inline-flex items-center justify-center bg-slate-100 border border-slate-200 text-[10px] font-semibold text-slate-400">—</div>
+                      )}
                       <div className="min-w-0">
                         <div className="truncate text-[14px] font-bold text-slate-900">{landlord.display_name}</div>
                         <div className="mt-0.5 text-[12px] text-slate-500">{landlord.review_count} reviews</div>

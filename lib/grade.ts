@@ -8,8 +8,8 @@ export const GRADE_STYLES = {
 
 export type GradeLetter = keyof typeof GRADE_STYLES
 
-export function getGradeLetter(avg: number | null): GradeLetter {
-  if (avg == null) return 'C'
+export function getGradeLetter(avg: number | null, reviewCount?: number | null): GradeLetter | null {
+  if (avg == null || reviewCount === 0) return null
   if (avg >= 4.0) return 'A'
   if (avg >= 3.0) return 'B'
   if (avg >= 2.0) return 'C'

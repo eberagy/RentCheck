@@ -186,7 +186,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                   {landlord.display_name}
                 </h1>
                 {landlord.is_verified && <VerifiedBadge label="Verified landlord" />}
-                <Grade letter={getGradeLetter(landlord.avg_rating)} size="md" />
+                <Grade letter={getGradeLetter(landlord.avg_rating, landlord.review_count ?? 0)} size="md" />
               </div>
               {landlord.business_name && (
                 <p className="text-[13px] text-slate-500">{landlord.business_name}</p>

@@ -408,14 +408,16 @@ function SearchResultCard({ result }: { result: SearchPageResult }) {
     : `/property/${result.id}`
   const dbGrade = (result as any).grade as string | undefined
   const isValidGrade = dbGrade === 'A' || dbGrade === 'B' || dbGrade === 'C' || dbGrade === 'D' || dbGrade === 'F'
-  const grade: 'A' | 'B' | 'C' | 'D' | 'F' = isValidGrade ? dbGrade : getGradeLetter(result.avg_rating ?? null)
+  const grade = isValidGrade ? dbGrade : getGradeLetter(result.avg_rating ?? null, result.review_count ?? 0)
   const violationCount = (result as any).open_violation_count ?? 0
 
   return (
     <Link href={href} className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 rounded-xl">
       <div className="grid grid-cols-[auto_1fr_auto] sm:grid-cols-[auto_1fr_auto_auto] items-center gap-4 sm:gap-5 rounded-xl border border-slate-200 bg-white p-4 sm:p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 group-hover:border-navy-200 group-hover:shadow-md group-hover:-translate-y-0.5">
         {/* Grade badge */}
-        <Grade letter={grade} size="md" />
+        {grade ? <Grade letter={grade} size="md" /> : (
+          <div className="h-11 w-11 rounded-xl inline-flex items-center justify-center bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-400">N/A</div>
+        )}
 
         {/* Info */}
         <div className="min-w-0 col-span-1">

@@ -5,6 +5,7 @@ import ReviewApprovedEmail from '@/emails/review-approved'
 import ReviewRejectedEmail from '@/emails/review-rejected'
 import ClaimApprovedEmail from '@/emails/claim-approved'
 import WatchlistAlertEmail from '@/emails/watchlist-alert'
+import SubmissionApprovedEmail from '@/emails/submission-approved'
 
 const FROM = process.env.RESEND_FROM_EMAIL ?? 'Vett <noreply@vettrentals.com>'
 
@@ -60,4 +61,12 @@ export async function sendWatchlistAlertEmail(to: string, props: {
 }) {
   const labels = { new_review: 'New review', new_violation: 'New violation', new_court_case: 'New court case' }
   await sendEmail(to, `${labels[props.alertType]}: ${props.landlordName}`, WatchlistAlertEmail(props) as any)
+}
+
+export async function sendSubmissionApprovedEmail(to: string, props: {
+  firstName?: string
+  landlordName: string
+  landlordSlug: string
+}) {
+  await sendEmail(to, `${props.landlordName} is now on Vett — write your review!`, SubmissionApprovedEmail(props) as any)
 }

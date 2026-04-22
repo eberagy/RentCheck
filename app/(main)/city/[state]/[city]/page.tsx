@@ -162,7 +162,11 @@ export default async function CityPage({ params }: CityPageProps) {
                   style={{ gridTemplateColumns: '24px auto 1fr auto' }}
                 >
                   <div className="text-[14px] font-extrabold text-slate-400">{i + 1}</div>
-                  <Grade letter={getGradeLetter(l.avg_rating ?? null)} size="sm" />
+                  {getGradeLetter(l.avg_rating ?? null, l.review_count ?? 0) ? (
+                    <Grade letter={getGradeLetter(l.avg_rating ?? null, l.review_count ?? 0)} size="sm" />
+                  ) : (
+                    <div className="h-8 w-8 rounded-lg inline-flex items-center justify-center bg-slate-100 border border-slate-200 text-[10px] font-semibold text-slate-400">—</div>
+                  )}
                   <div className="min-w-0">
                     <div className="truncate text-[13.5px] font-bold text-slate-900">{l.display_name}</div>
                     <div className="mt-0.5 text-[11.5px] text-slate-500">
@@ -197,7 +201,11 @@ export default async function CityPage({ params }: CityPageProps) {
                   style={{ gridTemplateColumns: '24px auto 1fr auto' }}
                 >
                   <div className="text-[14px] font-extrabold text-slate-400">{i + 1}</div>
-                  <Grade letter={getGradeLetter(l.avg_rating ?? null)} size="sm" />
+                  {getGradeLetter(l.avg_rating ?? null, l.review_count ?? 0) ? (
+                    <Grade letter={getGradeLetter(l.avg_rating ?? null, l.review_count ?? 0)} size="sm" />
+                  ) : (
+                    <div className="h-8 w-8 rounded-lg inline-flex items-center justify-center bg-slate-100 border border-slate-200 text-[10px] font-semibold text-slate-400">—</div>
+                  )}
                   <div className="min-w-0">
                     <div className="truncate text-[13.5px] font-bold text-slate-900">{l.display_name}</div>
                     <div className="mt-0.5 text-[11.5px] text-slate-500">

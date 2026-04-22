@@ -10,11 +10,11 @@ export const metadata: Metadata = {
 export default function FcraNoticePage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="h-10 w-10 bg-amber-100 rounded-lg flex items-center justify-center">
+      <div className="mb-6">
+        <div className="h-11 w-11 bg-amber-100 rounded-xl flex items-center justify-center mb-4">
           <AlertTriangle className="h-5 w-5 text-amber-600" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">FCRA Notice</h1>
+        <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900">FCRA Notice</h1>
       </div>
 
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-8 text-sm text-amber-900">

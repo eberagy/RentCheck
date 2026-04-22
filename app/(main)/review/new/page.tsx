@@ -291,7 +291,7 @@ export default function NewReviewPage() {
       {step === 0 && (
         <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
           <Eyebrow tone="teal">Step 1 of 5 &middot; Find your landlord</Eyebrow>
-          <h1 className="mt-3.5 text-[36px] font-extrabold tracking-tight text-slate-900">Who was your landlord?</h1>
+          <h1 className="mt-3.5 text-[clamp(28px,5.5vw,36px)] font-extrabold tracking-tight text-slate-900">Who was your landlord?</h1>
           <p className="mt-1.5 text-[14.5px] text-slate-500">Search by name, management company, or address</p>
 
           <div className="relative mt-8 mb-4">
@@ -331,6 +331,14 @@ export default function NewReviewPage() {
                 Add &ldquo;{searchQuery}&rdquo; as a new landlord
               </Button>
             </div>
+          )}
+          {searchQuery.length >= 2 && !searching && searchResults.length > 0 && (
+            <p className="text-center text-[12.5px] text-slate-400 mt-3">
+              Don&apos;t see your landlord?{' '}
+              <button type="button" className="text-teal-600 font-medium hover:underline" onClick={() => router.push(`/add-landlord?name=${encodeURIComponent(searchQuery)}`)}>
+                Add them to Vett
+              </button>
+            </p>
           )}
         </div>
       )}
@@ -422,7 +430,7 @@ export default function NewReviewPage() {
         })}>
           <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
             <Eyebrow tone="teal">Step 3 of 5 &middot; Rate & review</Eyebrow>
-            <h1 className="mt-3.5 text-[36px] font-extrabold tracking-tight text-slate-900">Share your experience.</h1>
+            <h1 className="mt-3.5 text-[clamp(28px,5.5vw,36px)] font-extrabold tracking-tight text-slate-900">Share your experience.</h1>
             <p className="mt-1.5 max-w-[600px] text-[14.5px] text-slate-500 mb-8">
               Your review is anonymous by default. Be specific — vague reviews get less trust. Mention dates, addresses, and documents where you can.
             </p>
@@ -547,7 +555,7 @@ export default function NewReviewPage() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
             <Eyebrow tone="teal">Step 4 of 5 &middot; Confirm & submit</Eyebrow>
-            <h1 className="mt-3.5 text-[36px] font-extrabold tracking-tight text-slate-900">Almost there.</h1>
+            <h1 className="mt-3.5 text-[clamp(28px,5.5vw,36px)] font-extrabold tracking-tight text-slate-900">Almost there.</h1>
             <p className="mt-1.5 text-[14.5px] text-slate-500 mb-8">Review your submission below and confirm.</p>
 
             <div className="rounded-[16px] border border-slate-200 bg-slate-50 p-5 text-[14px] text-slate-700 space-y-2 mb-6">
@@ -594,7 +602,7 @@ export default function NewReviewPage() {
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-teal-50">
             <CheckCircle2 className="h-8 w-8 text-teal" />
           </div>
-          <h1 className="text-[36px] font-extrabold tracking-tight text-slate-900">Review Submitted!</h1>
+          <h1 className="text-[clamp(28px,5.5vw,36px)] font-extrabold tracking-tight text-slate-900">Review Submitted!</h1>
           <p className="mt-2 max-w-md mx-auto text-[14.5px] text-slate-500 leading-relaxed">
             Your review is under founder moderation. We typically approve reviews within 24–48 hours.
             You&apos;ll receive an email confirmation shortly.

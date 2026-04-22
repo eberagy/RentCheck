@@ -9,12 +9,13 @@ const sizes = {
 } as const
 
 interface GradeProps {
-  letter: GradeLetter
+  letter: GradeLetter | null | undefined
   size?: keyof typeof sizes
   className?: string
 }
 
 export function Grade({ letter, size = 'md', className }: GradeProps) {
+  if (!letter) return null
   const style = GRADE_STYLES[letter] ?? GRADE_STYLES.C
 
   return (
