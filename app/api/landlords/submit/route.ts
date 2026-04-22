@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { sanitizeStrings } from '@/lib/sanitize'
+import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 const schema = z.object({
   display_name: z.string().min(2).max(200),
@@ -23,7 +25,12 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Invalid' }, { status: 422 })
 
-  const { display_name, business_name, city, state_abbr, zip, website, phone, notes, proof_doc_url } = parsed.data
+  // Rate limit: 5 submissions per hour per user
+  const rl = rateLimit(`submissions:${user.id}`, 5, 3600_000)
+  if (!rl.success) return rateLimitResponse()
+
+  const sanitized = sanitizeStrings(parsed.data)
+  const { display_name, business_name, city, state_abbr, zip, website, phone, notes, proof_doc_url } = sanitized
 
   // Check if landlord already exists (fuzzy — just check ilike)
   const { data: existing } = await supabase

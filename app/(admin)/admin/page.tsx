@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import {
   FileText, ShieldCheck, Flag, AlertTriangle,
   Users, TrendingUp, CheckCircle2, Clock, XCircle,
-  Database, Activity, RefreshCw, BarChart3, Eye
+  Database, Activity, RefreshCw, BarChart3, Eye, MessageSquare
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -27,6 +27,7 @@ export default async function AdminDashboardPage() {
     { count: totalWatchlists },
     { count: totalPublicRecords },
     { count: pendingLeases },
+    { count: pendingResponses },
     { data: recentSyncs },
     { data: recentPendingReviews },
     { data: recentPendingSubmissions },
@@ -42,6 +43,7 @@ export default async function AdminDashboardPage() {
     supabase.from('watchlist').select('*', { count: 'exact', head: true }),
     supabase.from('public_records').select('*', { count: 'exact', head: true }),
     supabase.from('reviews').select('*', { count: 'exact', head: true }).not('lease_doc_path', 'is', null).eq('lease_verified', false),
+    supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('landlord_response_status', 'pending').not('landlord_response', 'is', null),
     supabase.from('sync_log').select('*').order('started_at', { ascending: false }).limit(6),
     supabase
       .from('reviews')
@@ -108,6 +110,16 @@ export default async function AdminDashboardPage() {
       color: 'text-teal-600',
       bg: 'bg-teal-50',
       border: 'border-teal-200',
+      urgent: false,
+    },
+    {
+      href: '/admin/responses',
+      label: 'Landlord Responses',
+      count: pendingResponses ?? 0,
+      icon: MessageSquare,
+      color: 'text-indigo-600',
+      bg: 'bg-indigo-50',
+      border: 'border-indigo-200',
       urgent: false,
     },
   ]

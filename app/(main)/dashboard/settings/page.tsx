@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Save, Loader2, User, Bell } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, User, Bell, Lock } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -27,6 +27,8 @@ export default function SettingsPage() {
   const [name, setName] = useState('')
   const [emailReviews, setEmailReviews] = useState(true)
   const [emailWatchlist, setEmailWatchlist] = useState(true)
+  const [newPassword, setNewPassword] = useState('')
+  const [savingPassword, setSavingPassword] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -164,6 +166,43 @@ export default function SettingsPage() {
             ) : (
               <><Save className="h-4 w-4 mr-2" /> Save Changes</>
             )}
+          </Button>
+        </div>
+      </div>
+
+      {/* Password section */}
+      <div className="mt-6 bg-white border border-gray-200 rounded-xl p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Lock className="h-4 w-4 text-gray-500" />
+          <h2 className="font-semibold text-gray-900">Change Password</h2>
+        </div>
+        <div className="space-y-3">
+          <div>
+            <Label htmlFor="new-password" className="text-sm font-medium">New Password</Label>
+            <Input
+              id="new-password"
+              type="password"
+              value={newPassword}
+              onChange={e => setNewPassword(e.target.value)}
+              placeholder="Enter new password (min 8 characters)"
+              className="mt-1.5"
+              minLength={8}
+            />
+          </div>
+          <Button
+            onClick={async () => {
+              if (newPassword.length < 8) { toast.error('Password must be at least 8 characters'); return }
+              setSavingPassword(true)
+              const { error } = await supabase.auth.updateUser({ password: newPassword })
+              setSavingPassword(false)
+              if (error) toast.error(error.message)
+              else { toast.success('Password updated'); setNewPassword('') }
+            }}
+            variant="outline"
+            disabled={savingPassword || newPassword.length < 8}
+            className="text-sm"
+          >
+            {savingPassword ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Updating...</> : 'Update Password'}
           </Button>
         </div>
       </div>

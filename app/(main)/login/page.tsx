@@ -310,10 +310,18 @@ export default function LoginPage() {
                         Forgot your password?{' '}
                         <button
                           type="button"
-                          onClick={() => { setMode('magic'); toast.info('Enter your email and we\'ll send a magic link to reset access.') }}
+                          onClick={async () => {
+                            if (!email.trim()) { toast.error('Enter your email first.'); return }
+                            const supabase = createClient()
+                            const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+                              redirectTo: `${window.location.origin}/auth/callback?next=/dashboard/settings`,
+                            })
+                            if (error) toast.error(error.message)
+                            else toast.success('Password reset link sent — check your email.')
+                          }}
                           className="underline hover:text-gray-600"
                         >
-                          Use magic link
+                          Reset password
                         </button>
                       </p>
                     )}

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { sanitizeText } from '@/lib/sanitize'
+import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 const createSchema = z.object({
   landlordId: z.string().uuid(),
@@ -55,11 +57,20 @@ export async function POST(req: NextRequest) {
   const { data: profile } = await supabase.from('profiles').select('is_banned').eq('id', user.id).single()
   if (profile?.is_banned) return NextResponse.json({ error: 'Account suspended' }, { status: 403 })
 
+  // Rate limit: 5 review submissions per hour per user
+  const rl = rateLimit(`reviews:${user.id}`, 5, 3600_000)
+  if (!rl.success) return rateLimitResponse()
+
   const body = await req.json()
   const parsed = createSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
 
   const d = parsed.data
+
+  // Sanitize user-submitted text
+  d.title = sanitizeText(d.title)
+  d.body = sanitizeText(d.body)
+  if (d.propertyAddress) d.propertyAddress = sanitizeText(d.propertyAddress)
 
   if (!d.leaseDocPath.startsWith(`${user.id}/`)) {
     return NextResponse.json({ error: 'Lease upload must belong to the signed-in renter' }, { status: 403 })

@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 export async function PATCH(_req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Sign in to mark reviews helpful' }, { status: 401 })
+
+  // Rate limit: 30 votes per minute per user
+  const rl = rateLimit(`helpful:${user.id}`, 30, 60_000)
+  if (!rl.success) return rateLimitResponse()
 
   const { data: voted, error } = await supabase.rpc('toggle_helpful_vote', {
     p_review_id: id,

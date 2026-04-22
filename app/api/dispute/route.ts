@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { sanitizeText } from '@/lib/sanitize'
+import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 const schema = z.object({
   recordId: z.string().uuid(),
@@ -18,7 +20,13 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
 
-  const { recordId, reason, detail, evidenceUrl } = parsed.data
+  // Rate limit: 5 disputes per hour per user
+  const rl = rateLimit(`disputes:${user.id}`, 5, 3600_000)
+  if (!rl.success) return rateLimitResponse()
+
+  const { recordId, reason: rawReason, detail: rawDetail, evidenceUrl } = parsed.data
+  const reason = sanitizeText(rawReason)
+  const detail = rawDetail ? sanitizeText(rawDetail) : undefined
 
   // Verify record exists
   const { data: record } = await supabase

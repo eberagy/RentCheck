@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 const schema = z.object({
   landlordId: z.string().uuid(),
@@ -17,6 +18,10 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 422 })
+
+  // Rate limit: 3 claims per hour per user
+  const rl = rateLimit(`claims:${user.id}`, 3, 3600_000)
+  if (!rl.success) return rateLimitResponse()
 
   const { landlordId, docUrl, docFilename, verificationType } = parsed.data
 

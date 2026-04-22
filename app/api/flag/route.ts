@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { sanitizeText } from '@/lib/sanitize'
+import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 const schema = z.object({
   reviewId: z.string().uuid(),
@@ -17,7 +19,12 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: 'Invalid' }, { status: 422 })
 
-  const { reviewId, reason, note } = parsed.data
+  // Rate limit: 10 flags per hour per user
+  const rl = rateLimit(`flags:${user.id}`, 10, 3600_000)
+  if (!rl.success) return rateLimitResponse()
+
+  const { reviewId, reason, note: rawNote } = parsed.data
+  const note = rawNote ? sanitizeText(rawNote) : undefined
 
   // Check review exists and is approved
   const { data: review } = await supabase
