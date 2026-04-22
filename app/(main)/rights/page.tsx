@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Shield, ChevronRight, Home, DollarSign, BellRing, ShieldAlert } from 'lucide-react'
+import { Shield, ChevronRight, Home, DollarSign, BellRing, ShieldAlert, Sparkles, ArrowRight } from 'lucide-react'
+import { Eyebrow } from '@/components/vett/Eyebrow'
 import { US_STATES } from '@/types'
 
 export const metadata: Metadata = {
@@ -55,113 +56,96 @@ export default function TenantRightsIndexPage() {
   const otherStates = US_STATES.filter(s => !STATES_WITH_GUIDES.includes(s.abbr))
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
-      {/* ── Hero ── */}
-      <div className="text-center mb-12">
-        <div className="h-16 w-16 bg-navy-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
-          <Shield className="h-8 w-8 text-navy-600" />
-        </div>
-        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
-          Know Your Rights as a Renter
-        </h1>
-        <p className="text-gray-500 mt-3 max-w-lg mx-auto text-base leading-relaxed">
-          Access plain-language guides to landlord-tenant law in every US state — security
-          deposits, eviction protections, repair timelines, and free legal resources.
-        </p>
-        <div className="mt-5 inline-flex items-center gap-1.5 text-xs bg-amber-50 border border-amber-200 text-amber-800 rounded-full px-4 py-1.5 font-medium">
-          <ShieldAlert className="h-3.5 w-3.5" />
-          For educational purposes only — not legal advice. Consult a licensed attorney for your
-          situation.
-        </div>
-      </div>
-
-      {/* ── 4 Universal Rights ── */}
-      <section className="mb-12">
-        <h2 className="text-lg font-bold text-gray-900 mb-1">
-          4 Rights Every Renter Has — Nationwide
-        </h2>
-        <p className="text-sm text-gray-500 mb-5">
-          These protections apply in all 50 states, regardless of local law.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {UNIVERSAL_RIGHTS.map(({ icon: Icon, title, description, color, bg, border }) => (
-            <div
-              key={title}
-              className={`bg-white rounded-2xl border ${border} p-5 flex items-start gap-4`}
-            >
-              <div
-                className={`h-10 w-10 rounded-xl ${bg} flex items-center justify-center flex-shrink-0`}
-              >
-                <Icon className={`h-5 w-5 ${color}`} />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-900">{title}</p>
-                <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">{description}</p>
-              </div>
-            </div>
-          ))}
+    <div className="min-h-screen bg-slate-50">
+      {/* Hero */}
+      <section className="border-b border-slate-200 bg-white px-7 py-16">
+        <div className="mx-auto max-w-[1180px]">
+          <Eyebrow tone="teal"><Shield className="inline h-3 w-3" /> Tenant rights guide</Eyebrow>
+          <h1 className="mt-[18px] text-[64px] font-extrabold leading-none tracking-[-0.04em] text-slate-900">
+            Your rights as a renter,{' '}
+            <span className="bg-gradient-to-r from-teal to-teal-300 bg-clip-text text-transparent">
+              in plain English.
+            </span>
+          </h1>
+          <p className="mt-3.5 max-w-[640px] text-[17px] leading-relaxed text-slate-600">
+            State-specific guides covering deposits, repairs, eviction, and retaliation. Updated regularly with legal citations.
+          </p>
+          <div className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-4 py-1.5 text-xs font-medium text-amber-800">
+            <ShieldAlert className="h-3.5 w-3.5" />
+            For educational purposes only — not legal advice.
+          </div>
         </div>
       </section>
 
-      {/* ── States with full guides ── */}
-      <section className="mb-10">
-        <h2 className="text-lg font-bold text-gray-900 mb-1">Full State Guides</h2>
-        <p className="text-sm text-gray-500 mb-5">
-          Detailed, state-specific breakdowns with local resources and legal citations.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-          {featuredStates.map(state => (
-            <Link
-              key={state.abbr}
-              href={`/rights/${state.abbr.toLowerCase()}`}
-              className="group flex items-center justify-between p-4 bg-white border border-navy-200 rounded-2xl hover:border-navy-400 hover:shadow-md transition-all"
-            >
-              <div>
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-base font-bold text-navy-800 group-hover:text-navy-900">
-                    {state.abbr}
-                  </span>
-                  <span className="text-xs bg-teal-100 text-teal-700 border border-teal-200 rounded-full px-2 py-0.5 font-semibold">
-                    Full Guide
-                  </span>
+      <div className="mx-auto max-w-[1180px] px-7 py-12">
+        {/* 4 Universal Rights */}
+        <section className="mb-12">
+          <h2 className="text-[18px] font-bold text-slate-900 mb-1">4 Rights Every Renter Has — Nationwide</h2>
+          <p className="text-[13px] text-slate-500 mb-5">These protections apply in all 50 states, regardless of local law.</p>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {UNIVERSAL_RIGHTS.map(({ icon: Icon, title, description, color, bg, border }) => (
+              <div key={title} className={`flex items-start gap-4 rounded-[20px] border bg-white p-5 ${border}`}>
+                <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl ${bg}`}>
+                  <Icon className={`h-5 w-5 ${color}`} />
                 </div>
-                <p className="text-xs text-gray-500">{state.name}</p>
+                <div>
+                  <p className="text-[14px] font-bold text-slate-900">{title}</p>
+                  <p className="mt-1.5 text-[12.5px] leading-relaxed text-slate-600">{description}</p>
+                </div>
               </div>
-              <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-navy-600 transition-colors flex-shrink-0" />
-            </Link>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
 
-      {/* ── Coming-soon states ── */}
-      <section>
-        <h2 className="text-base font-semibold text-gray-700 mb-1">All Other States</h2>
-        <p className="text-sm text-gray-400 mb-4">
-          General tenant rights information — detailed guides coming soon.
+        {/* Full state guides */}
+        <section className="mb-10">
+          <h2 className="text-[18px] font-bold text-slate-900 mb-1">Full State Guides</h2>
+          <p className="text-[13px] text-slate-500 mb-5">Detailed, state-specific breakdowns with local resources and legal citations.</p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+            {featuredStates.map(state => (
+              <Link
+                key={state.abbr}
+                href={`/rights/${state.abbr.toLowerCase()}`}
+                className="group flex items-center justify-between rounded-[20px] border border-navy-200 bg-white p-4 transition-[border-color,box-shadow] duration-200 hover:border-navy-400 hover:shadow-md"
+              >
+                <div>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <span className="text-base font-extrabold text-navy-800 group-hover:text-navy-900">{state.abbr}</span>
+                    <span className="rounded-full border border-teal-200 bg-teal-50 px-2 py-0.5 text-[10.5px] font-bold text-teal-700">Full Guide</span>
+                  </div>
+                  <p className="text-[12px] text-slate-500">{state.name}</p>
+                </div>
+                <ChevronRight className="h-4 w-4 flex-shrink-0 text-slate-400 transition-colors group-hover:text-navy-600" />
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* All other states */}
+        <section>
+          <h2 className="text-[16px] font-bold text-slate-700 mb-1">All Other States</h2>
+          <p className="text-[13px] text-slate-400 mb-4">General tenant rights information — detailed guides coming soon.</p>
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-4">
+            {otherStates.map(state => (
+              <Link
+                key={state.abbr}
+                href={`/rights/${state.abbr.toLowerCase()}`}
+                className="group flex items-center justify-between rounded-[14px] border border-slate-200 bg-slate-50 p-3 transition-[border-color,background-color] duration-200 hover:border-slate-300 hover:bg-white"
+              >
+                <div>
+                  <p className="text-sm font-bold text-slate-600 group-hover:text-slate-800">{state.abbr}</p>
+                  <p className="max-w-[90px] truncate text-[11.5px] text-slate-400">{state.name}</p>
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 text-slate-300 transition-colors group-hover:text-slate-500" />
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <p className="mt-10 border-t border-slate-100 pt-6 text-center text-[12px] text-slate-400">
+          This information is for educational purposes only and does not constitute legal advice. Laws vary by locality — consult a licensed attorney in your area.
         </p>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
-          {otherStates.map(state => (
-            <Link
-              key={state.abbr}
-              href={`/rights/${state.abbr.toLowerCase()}`}
-              className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-xl hover:border-gray-300 hover:bg-white transition-all group"
-            >
-              <div>
-                <p className="font-semibold text-gray-600 text-sm group-hover:text-gray-800">
-                  {state.abbr}
-                </p>
-                <p className="text-xs text-gray-400 truncate max-w-[90px]">{state.name}</p>
-              </div>
-              <ChevronRight className="h-3.5 w-3.5 text-gray-300 group-hover:text-gray-500 transition-colors" />
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <p className="text-center text-xs text-gray-400 mt-10 border-t border-gray-100 pt-6">
-        This information is for educational purposes only and does not constitute legal advice. Laws
-        vary by locality — consult a licensed attorney in your area.
-      </p>
+      </div>
     </div>
   )
 }

@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
   CheckCircle2, Upload, FileText, X, AlertTriangle,
-  ArrowRight, ArrowLeft, Lock, Loader2, Search
+  ArrowRight, ArrowLeft, Lock, Loader2, Search, Building2, Check
 } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -17,6 +17,8 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { StarRating } from '@/components/review/StarRating'
 import { Progress } from '@/components/ui/progress'
+import { Eyebrow } from '@/components/vett/Eyebrow'
+import { VerifiedBadge } from '@/components/vett/VerifiedBadge'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import { detectFileType, ALLOWED_LEASE_TYPES, MAX_LEASE_SIZE } from '@/lib/utils'
@@ -247,53 +249,83 @@ export default function NewReviewPage() {
   const ratingOverall = watch('ratingOverall')
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
-      {/* Progress */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-          <span>Step {step + 1} of {STEPS.length}</span>
-          <span className="font-medium text-navy-600">{STEPS[step]}</span>
+    <div className="mx-auto max-w-[980px] px-7 py-8">
+      {/* Progress bar */}
+      <div className="mb-6 rounded-[20px] border border-slate-200 bg-white px-6 py-[18px]">
+        <div className="grid gap-[6px]" style={{ gridTemplateColumns: `repeat(${STEPS.length}, 1fr)` }}>
+          {STEPS.map((s, i) => (
+            <div key={s} className="flex flex-col gap-2">
+              <div
+                className="h-1 rounded-full"
+                style={{
+                  background: i <= step ? 'linear-gradient(90deg, #0F7B6C, #1AAB97)' : '#E2E8F0',
+                }}
+              />
+              <div className={`text-[11px] font-semibold ${i <= step ? 'text-slate-900' : 'text-slate-400'}`}>
+                {i < step ? <Check className="inline h-[11px] w-[11px] text-teal" /> : `0${i + 1}`}
+                <span className="ml-1">{s}</span>
+              </div>
+            </div>
+          ))}
         </div>
-        <Progress value={((step + 1) / STEPS.length) * 100} className="h-1.5" />
       </div>
+
+      {/* Context card (show when landlord selected) */}
+      {selectedLandlord && step >= 1 && step < 4 && (
+        <div className="mb-5 flex items-center gap-4 rounded-[20px] border border-navy-200 bg-gradient-to-br from-navy-50 to-slate-50 p-[18px]">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-navy-200 bg-white">
+            <Building2 className="h-5 w-5 text-navy-700" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-navy-400">Writing about</div>
+            <div className="mt-0.5 truncate text-[15.5px] font-bold text-slate-900">
+              {selectedLandlord.display_name}
+              {selectedLandlord.city && <span className="font-normal text-slate-500"> &middot; {selectedLandlord.city}, {selectedLandlord.state_abbr}</span>}
+            </div>
+          </div>
+          {leaseStatus === 'uploaded' && <VerifiedBadge label="Lease uploaded" />}
+        </div>
+      )}
 
       {/* Step 0: Find landlord */}
       {step === 0 && (
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Who was your landlord?</h1>
-          <p className="text-gray-500 text-sm mb-6">Search by name, management company, or address</p>
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <Eyebrow tone="teal">Step 1 of 5 &middot; Find your landlord</Eyebrow>
+          <h1 className="mt-3.5 text-[36px] font-extrabold tracking-tight text-slate-900">Who was your landlord?</h1>
+          <p className="mt-1.5 text-[14.5px] text-slate-500">Search by name, management company, or address</p>
+
+          <div className="relative mt-8 mb-4">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
-              className="pl-9"
+              className="h-11 rounded-xl border-slate-200 pl-10 text-[14px]"
               placeholder="Search landlords..."
               value={searchQuery}
               onChange={e => { setSearchQuery(e.target.value); searchLandlords(e.target.value) }}
             />
           </div>
-          {searching && <div className="text-center py-4"><Loader2 className="h-5 w-5 animate-spin mx-auto text-gray-400" /></div>}
+          {searching && <div className="text-center py-4"><Loader2 className="h-5 w-5 animate-spin mx-auto text-slate-400" /></div>}
           {searchResults.length > 0 && (
-            <div className="border border-gray-200 rounded-xl overflow-hidden">
+            <div className="rounded-[16px] border border-slate-200 overflow-hidden">
               {searchResults.map((l: Landlord) => (
                 <button
                   key={l.id}
-                  className="w-full text-left px-4 py-3 hover:bg-navy-50 border-b last:border-0 flex items-center justify-between"
+                  className="w-full text-left px-4 py-3 hover:bg-navy-50 border-b border-slate-100 last:border-0 flex items-center justify-between transition-colors"
                   onClick={() => { setSelectedLandlord(l); setStep(1) }}
                 >
                   <div>
-                    <p className="font-medium text-gray-900 text-sm">{l.display_name}</p>
-                    {l.city && <p className="text-xs text-gray-500">{l.city}, {l.state_abbr}</p>}
+                    <p className="font-bold text-[14px] text-slate-900">{l.display_name}</p>
+                    {l.city && <p className="text-[12.5px] text-slate-500 mt-0.5">{l.city}, {l.state_abbr}</p>}
                   </div>
-                  <ArrowRight className="h-4 w-4 text-gray-400" />
+                  <ArrowRight className="h-4 w-4 text-slate-400" />
                 </button>
               ))}
             </div>
           )}
           {searchQuery.length >= 2 && !searching && searchResults.length === 0 && (
-            <div className="text-center py-8 border border-gray-200 rounded-xl bg-gray-50">
-              <p className="text-sm text-gray-600 font-medium">Landlord not found</p>
-              <p className="text-xs text-gray-400 mt-1">Submit them so we can add them to our database</p>
-              <Button size="sm" className="mt-3 bg-teal-600 hover:bg-teal-700 text-white" onClick={() => {
+            <div className="text-center py-8 rounded-[16px] border border-slate-200 bg-slate-50">
+              <p className="text-sm font-semibold text-slate-700">Landlord not found</p>
+              <p className="text-[12.5px] text-slate-400 mt-1">Submit them so we can add them to our database</p>
+              <Button size="sm" className="mt-3 rounded-full bg-teal hover:bg-teal-500 text-white" onClick={() => {
                 router.push(`/add-landlord?name=${encodeURIComponent(searchQuery)}`)
               }}>
                 Add &ldquo;{searchQuery}&rdquo; as a new landlord
@@ -305,62 +337,64 @@ export default function NewReviewPage() {
 
       {/* Step 1: Lease verification */}
       {step === 1 && selectedLandlord && (
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Lock className="h-5 w-5 text-teal-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Verify your lease</h1>
-          </div>
-          <p className="text-sm text-gray-600 mb-1">
-            Reviewing: <strong>{selectedLandlord.display_name}</strong>
-          </p>
-          <div className="bg-teal-50 border border-teal-200 rounded-lg p-3 mb-6 text-sm text-teal-800">
-            <strong>Your privacy is protected.</strong> A lease is required for publication. It is stored privately, reviewed only by the Vett founders, never shown publicly, and used only to confirm tenancy before approval.
+        <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <Eyebrow tone="teal">Step 2 of 5 &middot; Lease verification</Eyebrow>
+          <h1 className="mt-3.5 text-[36px] font-extrabold tracking-tight text-slate-900">Verify your lease.</h1>
+          <p className="mt-1.5 max-w-[600px] text-[14.5px] text-slate-500">Upload your lease document to verify your tenancy. This is required before your review can be published.</p>
+
+          {/* Privacy box */}
+          <div className="mt-6 mb-6 flex gap-3.5 rounded-[18px] border border-slate-200 bg-slate-50 p-[18px]">
+            <Lock className="h-[18px] w-[18px] flex-shrink-0 text-teal" />
+            <div className="text-[13px] leading-relaxed text-slate-700">
+              <b>Your privacy is protected.</b> Your lease is stored privately, reviewed only by the Vett founders, never shown publicly, and used only to confirm tenancy before approval.
+            </div>
           </div>
 
           {/* Drop zone */}
           <div
             {...getRootProps()}
-            className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
-              isDragActive ? 'border-navy-400 bg-navy-50' :
-              leaseFile ? 'border-teal-400 bg-teal-50' :
-              'border-gray-300 hover:border-gray-400'
+            className={`rounded-[16px] border-2 border-dashed p-8 text-center cursor-pointer transition-colors ${
+              isDragActive ? 'border-teal bg-teal-50' :
+              leaseFile ? 'border-teal bg-teal-50' :
+              'border-slate-300 hover:border-slate-400'
             }`}
           >
             <input {...getInputProps()} />
             {leaseFile ? (
               <div className="flex items-center justify-center gap-3">
-                <FileText className="h-6 w-6 text-teal-600" />
+                <FileText className="h-6 w-6 text-teal" />
                 <div className="text-left">
-                  <p className="font-medium text-gray-900 text-sm">{leaseFile.name}</p>
-                  <p className="text-xs text-gray-500">{(leaseFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                  <p className="font-bold text-[14px] text-slate-900">{leaseFile.name}</p>
+                  <p className="text-[12.5px] text-slate-500">{(leaseFile.size / 1024 / 1024).toFixed(2)} MB</p>
                 </div>
-                <button type="button" onClick={e => { e.stopPropagation(); setLeaseFile(null) }} className="ml-2 text-gray-400 hover:text-red-500">
+                <button type="button" onClick={e => { e.stopPropagation(); setLeaseFile(null) }} className="ml-2 text-slate-400 hover:text-red-500">
                   <X className="h-4 w-4" />
                 </button>
               </div>
             ) : (
               <>
-                <Upload className="h-8 w-8 text-gray-400 mx-auto mb-3" />
-                <p className="font-medium text-gray-700">Drag & drop your lease here</p>
-                <p className="text-xs text-gray-500 mt-1">or click to browse · PDF, JPG, PNG, DOCX · Max 10MB</p>
+                <Upload className="h-8 w-8 text-slate-400 mx-auto mb-3" />
+                <p className="font-semibold text-slate-700">Drag & drop your lease here</p>
+                <p className="text-[12.5px] text-slate-500 mt-1">or click to browse &middot; PDF, JPG, PNG, DOCX &middot; Max 10MB</p>
               </>
             )}
           </div>
           {leaseError && <p className="mt-2 text-sm text-red-600 flex items-center gap-1"><AlertTriangle className="h-3.5 w-3.5" />{leaseError}</p>}
 
-          <div className="mt-4 flex flex-col gap-3">
-            {leaseFile && (
-              <Button
-                className="w-full bg-teal-600 hover:bg-teal-700 text-white"
-                onClick={handleLeaseUpload}
-                disabled={leaseStatus === 'uploading'}
-              >
-                {leaseStatus === 'uploading' ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Uploading…</> : <><Upload className="h-4 w-4 mr-2" /> Upload & Continue</>}
-              </Button>
-            )}
-            <p className="text-xs text-gray-400 text-center">
-              Lease verification is required before a review can be published.
-            </p>
+          {/* Actions */}
+          <div className="mt-6 flex items-center justify-between">
+            <button type="button" onClick={() => setStep(0)} className="text-[13px] font-medium text-slate-500 hover:text-slate-700">&larr; Back</button>
+            <div className="flex gap-2.5">
+              {leaseFile && (
+                <Button
+                  className="rounded-full bg-teal px-6 hover:bg-teal-500 text-white"
+                  onClick={handleLeaseUpload}
+                  disabled={leaseStatus === 'uploading'}
+                >
+                  {leaseStatus === 'uploading' ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Uploading…</> : <><Upload className="h-4 w-4 mr-2" /> Upload & Continue</>}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       )}
@@ -374,120 +408,124 @@ export default function NewReviewPage() {
           }
           setStep(3)
         })}>
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">Write your review</h1>
-          {leaseStatus === 'uploaded' && (
-            <div className="flex items-center gap-1.5 text-teal-700 text-xs mb-4 bg-teal-50 border border-teal-200 rounded-lg px-3 py-2">
-              <CheckCircle2 className="h-3.5 w-3.5" /> Lease uploaded — pending verification
-            </div>
-          )}
-          <div className="space-y-5">
-            {/* Rental period */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label className="text-xs">Move-in date</Label>
-                <Input type="month" {...register('rentalPeriodStart')} className="mt-1" />
-              </div>
-              <div>
-                <Label className="text-xs">Move-out date</Label>
-                <Input type="month" {...register('rentalPeriodEnd')} className="mt-1" disabled={watch('isCurrentTenant')} />
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <input type="checkbox" id="current" {...register('isCurrentTenant')} className="rounded" />
-              <label htmlFor="current" className="text-sm text-gray-700">I currently rent from this landlord</label>
-            </div>
+          <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+            <Eyebrow tone="teal">Step 3 of 5 &middot; Rate & review</Eyebrow>
+            <h1 className="mt-3.5 text-[36px] font-extrabold tracking-tight text-slate-900">Share your experience.</h1>
+            <p className="mt-1.5 max-w-[600px] text-[14.5px] text-slate-500 mb-8">
+              Your review is anonymous by default. Be specific — vague reviews get less trust. Mention dates, addresses, and documents where you can.
+            </p>
 
-            {/* Overall rating */}
-            <div>
-              <Label className="text-sm font-semibold">Overall Rating *</Label>
-              <div className="mt-2">
-                <StarRating
-                  value={ratingOverall}
-                  onChange={v => setValue('ratingOverall', v)}
-                  size="lg"
-                  showLabel
+            <div className="space-y-6">
+              {/* Overall rating */}
+              <div>
+                <div className="flex items-baseline justify-between mb-2">
+                  <span className="text-[13px] font-semibold text-slate-900">Overall rating <span className="text-red-600">*</span></span>
+                </div>
+                <StarRating value={ratingOverall} onChange={v => setValue('ratingOverall', v)} size="lg" showLabel />
+                {errors.ratingOverall && <p className="text-xs text-red-600 mt-1">Please select a rating</p>}
+              </div>
+
+              {/* Title */}
+              <div>
+                <div className="flex items-baseline justify-between mb-2">
+                  <span className="text-[13px] font-semibold text-slate-900">Headline</span>
+                  <span className="text-[11.5px] text-slate-400">A short, specific summary — like a subject line.</span>
+                </div>
+                <Input {...register('title')} placeholder="Summarize your experience" className="h-11 rounded-xl border-slate-200 text-[14px]" />
+                <div className="mt-1.5 text-[11.5px] text-slate-400">{watch('title')?.length ?? 0} / 150 characters</div>
+                {errors.title && <p className="text-xs text-red-600 mt-1">{errors.title.message}</p>}
+              </div>
+
+              {/* Body */}
+              <div>
+                <div className="flex items-baseline justify-between mb-2">
+                  <span className="text-[13px] font-semibold text-slate-900">Your full review</span>
+                  <span className="text-[11.5px] text-slate-400 max-w-[400px] text-right">Dates, documents, and specific interactions help other renters more than feelings.</span>
+                </div>
+                <Textarea
+                  {...register('body')}
+                  placeholder="Share your experience. What went well? What could have been better? Be specific."
+                  rows={6}
+                  className="rounded-xl border-slate-200 text-[14px] leading-relaxed resize-y"
                 />
+                <div className="mt-1.5 text-[11.5px] text-slate-400">{watch('body')?.length ?? 0} / 2000 characters</div>
+                {errors.body && <p className="text-xs text-red-600 mt-1">{errors.body.message}</p>}
               </div>
-              {errors.ratingOverall && <p className="text-xs text-red-600 mt-1">Please select a rating</p>}
-            </div>
 
-            {/* Sub-ratings */}
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { key: 'ratingResponsiveness', label: 'Responsiveness' },
-                { key: 'ratingMaintenance', label: 'Maintenance' },
-                { key: 'ratingHonesty', label: 'Honesty' },
-                { key: 'ratingLeaseFairness', label: 'Lease Fairness' },
-              ].map(({ key, label }) => (
-                <div key={key}>
-                  <Label className="text-xs text-gray-600">{label}</Label>
-                  <div className="mt-1">
+              {/* Tenancy dates */}
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <span className="text-[13px] font-semibold text-slate-900 mb-2 block">Move-in</span>
+                  <Input type="month" {...register('rentalPeriodStart')} className="h-11 rounded-xl border-slate-200 text-[14px]" />
+                </div>
+                <div>
+                  <span className="text-[13px] font-semibold text-slate-900 mb-2 block">Move-out</span>
+                  <Input type="month" {...register('rentalPeriodEnd')} className="h-11 rounded-xl border-slate-200 text-[14px]" disabled={watch('isCurrentTenant')} />
+                </div>
+                <div className="flex items-end pb-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" {...register('isCurrentTenant')} className="rounded accent-teal" />
+                    <span className="text-[13px] text-slate-700">I still rent here</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Would rent again */}
+              <div>
+                <span className="text-[13px] font-semibold text-slate-900 mb-2 block">Would you rent from them again?</span>
+                <div className="flex gap-2.5">
+                  {(['yes', 'no', 'unsure'] as const).map(v => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => setValue('wouldRentAgain', v)}
+                      className={`rounded-full px-5 py-2.5 text-[13px] font-semibold border transition-colors capitalize ${
+                        watch('wouldRentAgain') === v
+                          ? 'bg-slate-900 text-white border-slate-900'
+                          : 'border-slate-200 text-slate-600 bg-white hover:border-slate-300'
+                      }`}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sub-ratings */}
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { key: 'ratingResponsiveness', label: 'Responsiveness' },
+                  { key: 'ratingMaintenance', label: 'Maintenance' },
+                  { key: 'ratingHonesty', label: 'Honesty' },
+                  { key: 'ratingLeaseFairness', label: 'Lease Fairness' },
+                ].map(({ key, label }) => (
+                  <div key={key}>
+                    <span className="text-[13px] font-semibold text-slate-900 mb-1 block">{label}</span>
                     <StarRating
                       value={watch(key as keyof ReviewFormData) as number ?? 0}
                       onChange={v => setValue(key as keyof ReviewFormData, v as never)}
                       size="sm"
                     />
                   </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Would rent again */}
-            <div>
-              <Label className="text-sm font-semibold">Would you rent from this landlord again?</Label>
-              <div className="flex gap-3 mt-2">
-                {(['yes', 'no', 'unsure'] as const).map(v => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => setValue('wouldRentAgain', v)}
-                    className={`px-4 py-1.5 rounded-lg text-sm font-medium border transition-colors capitalize ${
-                      watch('wouldRentAgain') === v
-                        ? v === 'yes' ? 'bg-teal-600 text-white border-teal-600'
-                        : v === 'no' ? 'bg-red-600 text-white border-red-600'
-                        : 'bg-gray-600 text-white border-gray-600'
-                        : 'border-gray-200 text-gray-600 hover:border-gray-300'
-                    }`}
-                  >
-                    {v}
-                  </button>
                 ))}
               </div>
-            </div>
 
-            {/* Title */}
-            <div>
-              <Label htmlFor="title" className="text-sm font-semibold">Review Title *</Label>
-              <Input id="title" {...register('title')} placeholder="Summarize your experience" className="mt-1" />
-              {errors.title && <p className="text-xs text-red-600 mt-1">{errors.title.message}</p>}
-            </div>
-
-            {/* Body */}
-            <div>
-              <Label htmlFor="body" className="text-sm font-semibold">Your Review *</Label>
-              <Textarea
-                id="body"
-                {...register('body')}
-                placeholder="Share your experience. What went well? What could have been better? Be specific."
-                rows={6}
-                className="mt-1 resize-none"
-              />
-              <div className="flex justify-between mt-1">
-                {errors.body && <p className="text-xs text-red-600">{errors.body.message}</p>}
-                <p className="text-xs text-gray-400 ml-auto">{watch('body')?.length ?? 0}/2000</p>
+              {/* Privacy box */}
+              <div className="flex gap-3.5 rounded-[18px] border border-slate-200 bg-slate-50 p-[18px]">
+                <Lock className="h-[18px] w-[18px] flex-shrink-0 text-teal" />
+                <div className="text-[13px] leading-relaxed text-slate-700">
+                  <b>Your review is anonymous.</b> We show &ldquo;Verified tenant&rdquo; — never your name, email, or lease details. Moderation review takes 24–48 hours.
+                </div>
               </div>
-              <p className="text-xs text-gray-400 mt-1">
-                Do not include other tenants&apos; names, personal information, or anything that could identify you.
-              </p>
             </div>
-          </div>
-          <div className="flex gap-3 mt-6">
-            <Button type="button" variant="outline" onClick={() => setStep(1)} className="flex-1">
-              <ArrowLeft className="h-4 w-4 mr-1" /> Back
-            </Button>
-            <Button type="submit" className="flex-1 bg-teal-600 hover:bg-teal-700 text-white" disabled={!ratingOverall || leaseStatus !== 'uploaded'}>
-              Continue <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
+
+            {/* Actions */}
+            <div className="mt-7 flex items-center justify-between">
+              <button type="button" onClick={() => setStep(1)} className="text-[13px] font-medium text-slate-500 hover:text-slate-700">&larr; Back</button>
+              <Button type="submit" className="rounded-full bg-teal px-6 hover:bg-teal-500 text-white" disabled={!ratingOverall || leaseStatus !== 'uploaded'}>
+                Continue to confirm <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+              </Button>
+            </div>
           </div>
         </form>
       )}
@@ -495,63 +533,67 @@ export default function NewReviewPage() {
       {/* Step 3: Confirm */}
       {step === 3 && (
         <form onSubmit={handleSubmit(onSubmit)}>
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Confirm & Submit</h1>
-          <div className="space-y-4">
-            <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 text-sm space-y-2">
-              <p><span className="font-medium">Landlord:</span> {selectedLandlord?.display_name}</p>
-              <p><span className="font-medium">Overall rating:</span> {watch('ratingOverall')}/5 stars</p>
-              <p className="line-clamp-2"><span className="font-medium">Review:</span> &ldquo;{watch('title')}&rdquo;</p>
-              <p><span className="font-medium">Lease verification:</span> {leaseStatus === 'uploaded' ? '✓ Uploaded (pending founder review)' : 'Not provided'}</p>
+          <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+            <Eyebrow tone="teal">Step 4 of 5 &middot; Confirm & submit</Eyebrow>
+            <h1 className="mt-3.5 text-[36px] font-extrabold tracking-tight text-slate-900">Almost there.</h1>
+            <p className="mt-1.5 text-[14.5px] text-slate-500 mb-8">Review your submission below and confirm.</p>
+
+            <div className="rounded-[16px] border border-slate-200 bg-slate-50 p-5 text-[14px] text-slate-700 space-y-2 mb-6">
+              <p><span className="font-semibold text-slate-900">Landlord:</span> {selectedLandlord?.display_name}</p>
+              <p><span className="font-semibold text-slate-900">Overall rating:</span> {watch('ratingOverall')}/5 stars</p>
+              <p className="line-clamp-2"><span className="font-semibold text-slate-900">Headline:</span> &ldquo;{watch('title')}&rdquo;</p>
+              <p><span className="font-semibold text-slate-900">Lease verification:</span> {leaseStatus === 'uploaded' ? '✓ Uploaded (pending founder review)' : 'Not provided'}</p>
             </div>
-            <div className="space-y-3">
+
+            <div className="space-y-4 mb-6">
               <label className="flex items-start gap-3 cursor-pointer">
-                <input type="checkbox" {...register('confirmedGenuine')} className="mt-0.5 rounded" />
-                <span className="text-sm text-gray-700">
+                <input type="checkbox" {...register('confirmedGenuine')} className="mt-0.5 rounded accent-teal" />
+                <span className="text-[13px] text-slate-700 leading-relaxed">
                   I confirm this review is based on my genuine experience as a tenant or former tenant of this landlord.
                 </span>
               </label>
-              {errors.confirmedGenuine && <p className="text-xs text-red-600">{errors.confirmedGenuine.message}</p>}
+              {errors.confirmedGenuine && <p className="text-xs text-red-600 ml-6">{errors.confirmedGenuine.message}</p>}
               <label className="flex items-start gap-3 cursor-pointer">
-                <input type="checkbox" {...register('confirmedLiability')} className="mt-0.5 rounded" />
-                <span className="text-sm text-gray-700">
+                <input type="checkbox" {...register('confirmedLiability')} className="mt-0.5 rounded accent-teal" />
+                <span className="text-[13px] text-slate-700 leading-relaxed">
                   I understand that submitting a false or defamatory review may result in removal of my account and potential legal liability.
                 </span>
               </label>
-              {errors.confirmedLiability && <p className="text-xs text-red-600">{errors.confirmedLiability.message}</p>}
+              {errors.confirmedLiability && <p className="text-xs text-red-600 ml-6">{errors.confirmedLiability.message}</p>}
             </div>
-            <p className="text-xs text-gray-400">
+
+            <p className="text-[12px] text-slate-400 mb-7">
               This review is for informational purposes only and does not constitute a consumer report under the FCRA.
             </p>
-          </div>
-          <div className="flex gap-3 mt-6">
-            <Button type="button" variant="outline" onClick={() => setStep(2)} className="flex-1">
-              <ArrowLeft className="h-4 w-4 mr-1" /> Back
-            </Button>
-            <Button type="submit" className="flex-1 bg-teal-600 hover:bg-teal-700 text-white" disabled={submitting}>
-              {submitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Submitting…</> : 'Submit Review'}
-            </Button>
+
+            <div className="flex items-center justify-between">
+              <button type="button" onClick={() => setStep(2)} className="text-[13px] font-medium text-slate-500 hover:text-slate-700">&larr; Back</button>
+              <Button type="submit" className="rounded-full bg-teal px-6 hover:bg-teal-500 text-white" disabled={submitting}>
+                {submitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Submitting…</> : <>Submit Review <ArrowRight className="ml-1.5 h-3.5 w-3.5" /></>}
+              </Button>
+            </div>
           </div>
         </form>
       )}
 
       {/* Step 4: Done */}
       {step === 4 && (
-        <div className="text-center py-8">
-          <div className="h-16 w-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle2 className="h-8 w-8 text-teal-600" />
+        <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)] text-center">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-teal-50">
+            <CheckCircle2 className="h-8 w-8 text-teal" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Review Submitted!</h1>
-          <p className="text-gray-600 mt-2 max-w-md mx-auto">
+          <h1 className="text-[36px] font-extrabold tracking-tight text-slate-900">Review Submitted!</h1>
+          <p className="mt-2 max-w-md mx-auto text-[14.5px] text-slate-500 leading-relaxed">
             Your review is under founder moderation. We typically approve reviews within 24–48 hours.
             You&apos;ll receive an email confirmation shortly.
           </p>
-          <div className="flex gap-3 justify-center mt-6">
-            <Button variant="outline" asChild>
+          <div className="flex gap-3 justify-center mt-8">
+            <Button variant="outline" asChild className="rounded-full border-slate-200">
               <a href={selectedLandlord ? `/landlord/${selectedLandlord.slug}` : '/'}>
                 View Landlord Profile
               </a>
             </Button>
-            <Button className="bg-teal-600 hover:bg-teal-700 text-white" onClick={() => router.push('/')}>
+            <Button className="rounded-full bg-teal hover:bg-teal-500 text-white" onClick={() => router.push('/')}>
               Back to Home
             </Button>
           </div>

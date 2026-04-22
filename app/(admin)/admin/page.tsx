@@ -26,6 +26,7 @@ export default async function AdminDashboardPage() {
     { count: totalLandlords },
     { count: totalWatchlists },
     { count: totalPublicRecords },
+    { count: pendingLeases },
     { data: recentSyncs },
     { data: recentPendingReviews },
     { data: recentPendingSubmissions },
@@ -40,6 +41,7 @@ export default async function AdminDashboardPage() {
     supabase.from('landlords').select('*', { count: 'exact', head: true }),
     supabase.from('watchlist').select('*', { count: 'exact', head: true }),
     supabase.from('public_records').select('*', { count: 'exact', head: true }),
+    supabase.from('reviews').select('*', { count: 'exact', head: true }).not('lease_doc_path', 'is', null).eq('lease_verified', false),
     supabase.from('sync_log').select('*').order('started_at', { ascending: false }).limit(6),
     supabase
       .from('reviews')
@@ -101,7 +103,7 @@ export default async function AdminDashboardPage() {
     {
       href: '/admin/leases',
       label: 'Lease Verifications',
-      count: 0,
+      count: pendingLeases ?? 0,
       icon: ShieldCheck,
       color: 'text-teal-600',
       bg: 'bg-teal-50',
@@ -223,7 +225,7 @@ export default async function AdminDashboardPage() {
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
         {queues.map(({ href, label, count, icon: Icon, color, bg, border, urgent }) => (
           <Link key={href} href={href}>
-            <Card className={`border ${border} ${bg} hover:shadow-md transition-all cursor-pointer hover:-translate-y-0.5`}>
+            <Card className={`border ${border} ${bg} hover:shadow-md transition-[transform,box-shadow] duration-200 cursor-pointer hover:-translate-y-0.5`}>
               <CardContent className="p-5">
                 <div className="flex items-center justify-between mb-3">
                   <Icon className={`h-5 w-5 ${color}`} />
@@ -340,7 +342,6 @@ export default async function AdminDashboardPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <form action={`/api/admin/moderate`} method="POST" className="contents">
                         <Link href={`/admin/reviews`}>
                           <Button
                             size="sm"
@@ -351,7 +352,6 @@ export default async function AdminDashboardPage() {
                             Review
                           </Button>
                         </Link>
-                      </form>
                       <InlineModerateButton reviewId={r.id} action="approved" />
                       <InlineModerateButton reviewId={r.id} action="rejected" />
                     </div>
@@ -430,27 +430,23 @@ export default async function AdminDashboardPage() {
   )
 }
 
-// Inline approve/reject buttons that POST to the moderation API via a small form
-function InlineModerateButton({ reviewId, action }: { reviewId: string; action: 'approved' | 'rejected' }) {
+// Inline approve/reject — links to the full review queue where moderation works via fetch
+function InlineModerateButton({ action }: { reviewId: string; action: 'approved' | 'rejected' }) {
   const isApprove = action === 'approved'
   return (
-    <form action="/api/admin/moderate" method="POST" className="contents">
-      <input type="hidden" name="reviewId" value={reviewId} />
-      <input type="hidden" name="action" value={action} />
-      <button
-        type="submit"
-        className={`inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-xs font-medium border transition-colors ${
-          isApprove
-            ? 'border-teal-300 text-teal-700 hover:bg-teal-50'
-            : 'border-red-300 text-red-700 hover:bg-red-50'
-        }`}
-      >
-        {isApprove ? (
-          <><CheckCircle2 className="h-3 w-3" /> Approve</>
-        ) : (
-          <><XCircle className="h-3 w-3" /> Reject</>
-        )}
-      </button>
-    </form>
+    <Link
+      href="/admin/reviews"
+      className={`inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-xs font-medium border transition-colors ${
+        isApprove
+          ? 'border-teal-300 text-teal-700 hover:bg-teal-50'
+          : 'border-red-300 text-red-700 hover:bg-red-50'
+      }`}
+    >
+      {isApprove ? (
+        <><CheckCircle2 className="h-3 w-3" /> Approve</>
+      ) : (
+        <><XCircle className="h-3 w-3" /> Reject</>
+      )}
+    </Link>
   )
 }

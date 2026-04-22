@@ -75,6 +75,7 @@ export async function POST(req: NextRequest) {
         reviewed_by: admin.id,
         reviewed_at: new Date().toISOString(),
         landlord_id: newLandlord.id,
+        admin_notes: adminNotes ?? null,
       })
       .eq('id', submissionId)
 
@@ -88,6 +89,7 @@ export async function POST(req: NextRequest) {
       status: action,
       reviewed_by: admin.id,
       reviewed_at: new Date().toISOString(),
+      admin_notes: adminNotes ?? null,
     })
     .eq('id', submissionId)
 

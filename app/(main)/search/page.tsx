@@ -8,7 +8,12 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { COLLEGE_CITIES, US_STATES } from '@/types'
 import type { Landlord, SearchResult } from '@/types'
 import { buildLandlordSummary, buildPropertySummary, truncateSummary } from '@/lib/summaries'
-import { Building2, MapPin, Search, Sparkles, Star } from 'lucide-react'
+import { MapPin, Search, ChevronRight, Flag } from 'lucide-react'
+import { Grade } from '@/components/vett/Grade'
+import { Stars } from '@/components/vett/Stars'
+import { VerifiedBadge } from '@/components/vett/VerifiedBadge'
+import { Chip } from '@/components/vett/Chip'
+import { getGradeLetter } from '@/lib/grade'
 
 interface SearchPageProps {
   searchParams: { q?: string; city?: string; state?: string; rating?: string; verified?: string; page?: string }
@@ -181,25 +186,29 @@ async function SearchResults({
     }
 
     return (
-      <div className="space-y-5">
-        <div className="rounded-3xl border border-slate-200 bg-white px-5 py-4 shadow-sm sm:px-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Search results</p>
-              <h2 className="mt-1 text-lg font-semibold text-slate-900">
-                {total.toLocaleString()} matches
-              </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                {landlordCount} landlords · {propertyCount} properties · public records where available
-              </p>
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-medium text-slate-600">
-              <Sparkles className="h-3.5 w-3.5 text-navy-500" />
-              Lease-verified reviews and verified public records
-            </div>
+      <div className="space-y-3">
+        {/* Sort toolbar */}
+        <div className="flex flex-wrap items-center justify-between gap-3 px-1">
+          <div className="flex flex-wrap gap-1.5">
+            {['Most reviewed', 'Highest rated', 'Lowest rated', 'Most violations'].map((label, i) => (
+              <span
+                key={label}
+                className={`rounded-full px-3.5 py-2 text-[12.5px] font-medium ${
+                  i === 0
+                    ? 'bg-slate-900 text-white'
+                    : 'border border-slate-200 bg-white text-slate-600'
+                }`}
+              >
+                {label}
+              </span>
+            ))}
           </div>
+          <span className="text-[12.5px] text-slate-500">
+            {landlordCount} landlord{landlordCount !== 1 ? 's' : ''} · {propertyCount} propert{propertyCount !== 1 ? 'ies' : 'y'}
+          </span>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {/* Result list */}
+        <div className="grid gap-3">
           {pageResults.map((result) => (
             <SearchResultCard key={`${result.result_type}-${result.id}`} result={result} />
           ))}
@@ -268,15 +277,13 @@ async function SearchResults({
   }
 
   return (
-      <div className="space-y-4">
-        <div className="rounded-3xl border border-slate-200 bg-white px-5 py-4 shadow-sm sm:px-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Featured landlords</p>
-          <p className="mt-1 text-sm text-slate-500">
-            <span className="font-semibold text-slate-900">{total.toLocaleString()}</span>{' '}
-            {total === 1 ? 'landlord' : 'landlords'} found
-          </p>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <span className="text-[12.5px] text-slate-500">
+            <b className="text-slate-900">{total.toLocaleString()}</b> {total === 1 ? 'landlord' : 'landlords'} found
+          </span>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="grid gap-3">
           {landlords.map((landlord: Landlord) => (
             <LandlordCard key={landlord.id} landlord={landlord} />
           ))}
@@ -307,57 +314,73 @@ function SearchResultCard({ result }: { result: SearchPageResult }) {
   const href = result.result_type === 'landlord'
     ? (result.slug ? `/landlord/${result.slug}` : '/search')
     : `/property/${result.id}`
-  const icon = result.result_type === 'landlord' ? <Building2 className="h-4 w-4 text-navy-600" /> : <MapPin className="h-4 w-4 text-teal-600" />
-  const typeLabel = result.result_type === 'landlord' ? 'Landlord' : 'Property'
+  const grade = getGradeLetter(result.avg_rating ?? null)
+  const violationCount = (result as any).open_violation_count ?? 0
 
   return (
     <Link href={href} className="group block">
-      <div className="h-full rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 group-hover:-translate-y-0.5 group-hover:border-navy-200 group-hover:shadow-lg">
-        <div className="flex items-start gap-4">
-          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl bg-slate-100 ring-1 ring-slate-200 transition-colors group-hover:bg-navy-50 group-hover:ring-navy-100">
-            {icon}
+      <div className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-5 rounded-[20px] border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 group-hover:border-navy-200 group-hover:shadow-md">
+        {/* Grade badge */}
+        <Grade letter={grade} size="md" />
+
+        {/* Info */}
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="truncate text-[16.5px] font-bold text-slate-900">{result.display_name}</span>
+            {result.is_verified && result.result_type === 'landlord' && <VerifiedBadge small />}
+            {result.result_type === 'landlord' && (
+              <Chip tone="sky" className="h-5 text-[10px]">Claimed</Chip>
+            )}
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="truncate text-base font-semibold text-slate-900 transition-colors group-hover:text-navy-700">
-                {result.display_name}
-              </h3>
-              <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600">
-                {typeLabel}
-              </span>
-              {result.is_verified && result.result_type === 'landlord' && (
-                <span className="inline-flex items-center rounded-full bg-teal-50 px-2.5 py-1 text-[11px] font-medium text-teal-700">
-                  Verified
-                </span>
-              )}
-            </div>
+          {result.summary && (
+            <p className="mt-1 text-[12.5px] text-slate-500 line-clamp-1">{result.summary}</p>
+          )}
+          <div className="mt-2.5 flex flex-wrap items-center gap-3 text-[12.5px] text-slate-600">
             {(result.city || result.state_abbr) && (
-              <p className="mt-1.5 text-xs text-slate-500">
+              <span className="inline-flex items-center gap-1">
+                <MapPin className="h-3 w-3 text-slate-400" />
                 {[result.city, result.state_abbr].filter(Boolean).join(', ')}
-                {result.result_type === 'property' && result.landlordName ? ` · Managed by ${result.landlordName}` : ''}
-              </p>
-            )}
-            {result.summary && (
-              <p className="mt-2 text-sm leading-relaxed text-slate-600 line-clamp-2">
-                {result.summary}
-              </p>
-            )}
-          </div>
-        </div>
-        <div className="mt-4 flex items-center justify-between gap-3 text-xs text-slate-500">
-          <div className="flex flex-wrap items-center gap-3">
-            {result.avg_rating != null && result.avg_rating > 0 ? (
-              <span className="inline-flex items-center gap-1.5 font-semibold text-amber-700">
-                <Star className="h-3.5 w-3.5 fill-current" />
-                {result.avg_rating.toFixed(1)}
               </span>
-            ) : (
-              <span className="text-slate-400">No rating yet</span>
             )}
-            {result.review_count != null ? <span>{result.review_count} review{result.review_count === 1 ? '' : 's'}</span> : null}
+            {result.result_type === 'landlord' && (
+              <>
+                <span className="text-slate-300">&middot;</span>
+                <span>{(result as any).property_count ?? 0} properties</span>
+                <span className="text-slate-300">&middot;</span>
+                <span>{result.review_count ?? 0} reviews</span>
+              </>
+            )}
+            {result.result_type === 'property' && result.landlordName && (
+              <>
+                <span className="text-slate-300">&middot;</span>
+                <span>Managed by {result.landlordName}</span>
+              </>
+            )}
+            {violationCount > 0 && (
+              <>
+                <span className="text-slate-300">&middot;</span>
+                <span className="inline-flex items-center gap-1 font-semibold text-red-900">
+                  <Flag className="h-[11px] w-[11px] text-red-600" /> {violationCount} open
+                </span>
+              </>
+            )}
           </div>
-          <span className="font-medium text-navy-600">View</span>
         </div>
+
+        {/* Rating */}
+        <div className="text-right">
+          {result.avg_rating != null && result.avg_rating > 0 ? (
+            <>
+              <div className="text-[22px] font-extrabold tracking-tight">{result.avg_rating.toFixed(1)}</div>
+              <div className="mt-1"><Stars value={result.avg_rating} size={12} /></div>
+            </>
+          ) : (
+            <span className="text-xs text-slate-400">No rating</span>
+          )}
+        </div>
+
+        {/* Chevron */}
+        <ChevronRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-slate-500" />
       </div>
     </Link>
   )
@@ -377,135 +400,131 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-        <div className="bg-[radial-gradient(circle_at_top_left,_rgba(37,99,235,0.12),_transparent_34%),linear-gradient(180deg,_#ffffff_0%,_#f8fafc_100%)] px-5 py-6 sm:px-8 sm:py-8">
-          <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
-            <div className="space-y-5">
-              <div className="inline-flex items-center gap-2 rounded-full border border-navy-200 bg-navy-50 px-3 py-1 text-xs font-medium text-navy-700">
-                <Sparkles className="h-3.5 w-3.5" />
-                Search by address, landlord, or building
-              </div>
-              <div className="max-w-2xl space-y-3">
-                <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-                  Know before you rent.
-                </h1>
-                <p className="max-w-xl text-sm leading-6 text-slate-600 sm:text-base">
-                  Explore lease-verified renter reviews, public records, and landlord profiles in one place. Search by address, compare properties, and scan the details fast.
-                </p>
-              </div>
-              <div className="max-w-xl">
-                <SearchBar />
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {priorityCities.map((priorityCity) => {
-                  const active = priorityCity.city === city && priorityCity.state === state && !q
-                  return (
-                    <a
-                      key={`${priorityCity.city}-${priorityCity.state}`}
-                      href={`/search?city=${encodeURIComponent(priorityCity.city)}&state=${priorityCity.state}`}
-                      className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
-                        active
-                          ? 'bg-slate-950 text-white shadow-sm'
-                          : 'bg-white text-slate-600 border border-slate-200 hover:border-navy-300 hover:text-navy-700'
-                      }`}
-                    >
-                      {priorityCity.city}, {priorityCity.state}
-                    </a>
-                  )
-                })}
-              </div>
+      {/* Search bar band */}
+      <section className="border-b border-slate-200 bg-white px-7 py-5">
+        <div className="mx-auto max-w-[1180px]">
+          <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-white px-5 py-0 shadow-[0_1px_2px_rgba(15,23,42,0.04)]" style={{ maxWidth: 760, height: 54 }}>
+            <Search className="h-[17px] w-[17px] text-slate-400 flex-shrink-0" />
+            <div className="flex-1">
+              <SearchBar inline />
             </div>
-            <div className="rounded-3xl border border-slate-200 bg-white/80 p-4 shadow-sm backdrop-blur">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">What to expect</p>
-              <div className="mt-3 grid gap-3">
-                {[
-                  ['Addresses', 'Property pages with linked reviews and records'],
-                  ['Landlords', 'Grades, summary context, and response signals'],
-                  ['Records', 'Open violations and filings where available'],
-                ].map(([title, description]) => (
-                  <div key={title} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                    <p className="text-sm font-semibold text-slate-900">{title}</p>
-                    <p className="mt-0.5 text-xs leading-relaxed text-slate-500">{description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {city && (
+              <Chip tone="neutral">{city}{state ? `, ${state}` : ''}</Chip>
+            )}
+          </div>
+          <div className="mt-3 text-[13px] text-slate-500">
+            {q ? (
+              <>
+                Results matching &ldquo;<b className="text-slate-900">{q}</b>&rdquo;
+                {city && <span> in {city}{state ? `, ${state}` : ''}</span>}
+              </>
+            ) : city ? (
+              <>Browsing landlords in <b className="text-slate-900">{city}{state ? `, ${state}` : ''}</b></>
+            ) : (
+              <>Browse landlords by city or search above</>
+            )}
+          </div>
+          {/* City quick-links */}
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {priorityCities.map((priorityCity) => {
+              const active = priorityCity.city === city && priorityCity.state === state && !q
+              return (
+                <a
+                  key={`${priorityCity.city}-${priorityCity.state}`}
+                  href={`/search?city=${encodeURIComponent(priorityCity.city)}&state=${priorityCity.state}`}
+                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                    active
+                      ? 'bg-slate-900 text-white'
+                      : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-800'
+                  }`}
+                >
+                  {priorityCity.city}, {priorityCity.state}
+                </a>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      <div className="mt-8 flex flex-col gap-8 lg:flex-row">
-        {/* Filters sidebar */}
-        <aside className="lg:w-60 flex-shrink-0">
-          <div className="sticky top-4 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-slate-900">Filters</h3>
-              {(state || minRating > 0 || verifiedOnly) && (
-                <a href={q ? `?q=${q}` : '/search'} className="text-xs font-medium text-navy-600 hover:underline">
-                  Clear
-                </a>
-              )}
-            </div>
-            <form method="get">
-              {q && <input type="hidden" name="q" value={q} />}
-              {city && <input type="hidden" name="city" value={city} />}
-              <div className="space-y-4">
-                <div>
-                  <label className="mb-1.5 block text-xs font-medium text-slate-600">State</label>
-                  <select name="state" defaultValue={state} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm transition-colors focus:border-navy-400 focus:outline-none">
-                    <option value="">All states</option>
-                    {US_STATES.map(s => (
-                      <option key={s.abbr} value={s.abbr}>{s.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-xs font-medium text-slate-600">Min Rating</label>
-                  <select name="rating" defaultValue={String(minRating)} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm transition-colors focus:border-navy-400 focus:outline-none">
-                    <option value="0">Any rating</option>
-                    <option value="2">2+ stars</option>
-                    <option value="3">3+ stars</option>
-                    <option value="4">4+ stars</option>
-                  </select>
-                </div>
-                <label className="flex cursor-pointer items-center gap-2.5">
-                  <input type="checkbox" name="verified" value="true" id="verified" defaultChecked={verifiedOnly} className="rounded border-slate-300 text-navy-500 focus:ring-navy-400" />
-                  <span className="text-xs text-slate-600">Verified landlords only</span>
-                </label>
-                <button type="submit" className="w-full rounded-xl bg-navy-600 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-navy-700 active:bg-navy-800">
-                  Apply Filters
-                </button>
+      {/* Main grid: filters + results */}
+      <div className="mx-auto grid max-w-[1180px] gap-7 px-7 py-7 lg:grid-cols-[240px_1fr]">
+        {/* Filter sidebar */}
+        <aside className="flex flex-col gap-5">
+          <form method="get" className="contents">
+            {q && <input type="hidden" name="q" value={q} />}
+            {city && <input type="hidden" name="city" value={city} />}
+
+            {/* Rating filter */}
+            <div className="rounded-[20px] border border-slate-200 bg-white p-[18px]">
+              <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Overall rating</div>
+              <div className="grid gap-2">
+                {[
+                  { label: '4.0+', value: '4' },
+                  { label: '3.0+', value: '3' },
+                  { label: '2.0+', value: '2' },
+                  { label: 'Any', value: '0' },
+                ].map((opt) => (
+                  <label key={opt.value} className="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
+                    <input
+                      type="radio"
+                      name="rating"
+                      value={opt.value}
+                      defaultChecked={String(minRating) === opt.value || (opt.value === '0' && minRating === 0)}
+                      className="accent-teal"
+                    />
+                    {opt.label}
+                  </label>
+                ))}
               </div>
-            </form>
-          </div>
+            </div>
+
+            {/* Verification filter */}
+            <div className="rounded-[20px] border border-slate-200 bg-white p-[18px]">
+              <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Verification</div>
+              <div className="grid gap-2">
+                <label className="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
+                  <input type="checkbox" name="verified" value="true" defaultChecked={verifiedOnly} className="accent-teal" />
+                  Verified landlords only
+                </label>
+              </div>
+            </div>
+
+            {/* State filter */}
+            <div className="rounded-[20px] border border-slate-200 bg-white p-[18px]">
+              <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">State</div>
+              <select name="state" defaultValue={state} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-700 focus:border-teal focus:outline-none">
+                <option value="">All states</option>
+                {US_STATES.map(s => (
+                  <option key={s.abbr} value={s.abbr}>{s.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <button type="submit" className="rounded-full bg-teal px-4 py-2.5 text-[12.5px] font-semibold text-white transition-colors hover:bg-teal-500">
+              Apply Filters
+            </button>
+          </form>
+
+          {(state || minRating > 0 || verifiedOnly) && (
+            <a
+              href={q ? `?q=${q}` : '/search'}
+              className="self-start rounded-full border border-slate-200 bg-white px-3.5 py-2 text-[12.5px] text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
+            >
+              Clear filters
+            </a>
+          )}
         </aside>
 
         {/* Results */}
-        <div className="min-w-0 flex-1">
-          {q && (
-            <div className="mb-5 rounded-[1.5rem] border border-slate-200 bg-white px-5 py-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
-                Search results
-              </p>
-              <h1 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
-                &ldquo;{q}&rdquo;
-                {city && <span className="font-normal text-slate-500"> in {city}{state ? `, ${state}` : ''}</span>}
-              </h1>
-              <p className="mt-2 text-sm text-slate-500">
-                Compare landlords and property pages side by side, then open the page with the strongest verified signal.
-              </p>
-            </div>
-          )}
+        <div className="min-w-0">
           <Suspense fallback={
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-xl" />)}
+            <div className="grid gap-3">
+              {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-[20px]" />)}
             </div>
           }>
             <SearchResults q={q} city={city} state={state} minRating={minRating} verifiedOnly={verifiedOnly} page={page} />
           </Suspense>
         </div>
-      </div>
       </div>
     </div>
   )

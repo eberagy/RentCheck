@@ -28,8 +28,26 @@ body {
     scroll-behavior: smooth;
   }
 
+  /* Respect reduced motion preference (ui-ux-pro-max: accessibility rule #11) */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Focus states: visible 2-4px ring (ui-ux-pro-max: accessibility rule #2) */
   :focus-visible {
     @apply outline-none ring-2 ring-navy-400 ring-offset-2;
+  }
+
+  /* Button active state: must feel responsive to press (emil-design-eng) */
+  button:active:not(:disabled),
+  [role="button"]:active:not(:disabled),
+  a[class*="rounded-full"]:active {
+    transform: scale(0.97);
   }
 }
 
@@ -64,9 +82,9 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.8);
   }
 
-  /* Card hover */
+  /* Card hover — specify exact properties (emil-design-eng: avoid transition-all) */
   .card-hover {
-    @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
+    @apply transition-[transform,box-shadow] duration-200 hover:shadow-lg hover:-translate-y-0.5;
   }
 
   /* Gradient text */

@@ -75,53 +75,32 @@ export default function AdminSubmissionsPage() {
     setLoading(false)
   }
 
-  async function approve(sub: Submission) {
+  async function moderate(sub: Submission, action: 'approved' | 'rejected' | 'duplicate') {
     setProcessing(sub.id)
     try {
-      // Generate slug from display_name
-      const slug = sub.display_name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '')
-        + '-' + Math.random().toString(36).slice(2, 6)
-
-      // Insert into landlords
-      const { error: insertErr } = await supabase.from('landlords').insert({
-        display_name: sub.display_name,
-        business_name: sub.business_name,
-        slug,
-        city: sub.city,
-        state_abbr: sub.state_abbr,
-        zip: sub.zip,
-        website: sub.website,
-        phone: sub.phone,
+      const res = await fetch('/api/admin/moderate-submission', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          submissionId: sub.id,
+          action,
+          adminNotes: adminNotes[sub.id] || undefined,
+        }),
       })
-      if (insertErr) throw new Error(insertErr.message)
+      const json = await res.json()
+      if (!res.ok) throw new Error(json.error ?? 'Failed')
 
-      // Update submission status
-      await supabase
-        .from('landlord_submissions')
-        .update({ status: 'approved', admin_notes: adminNotes[sub.id] ?? null, reviewed_at: new Date().toISOString() })
-        .eq('id', sub.id)
-
-      toast.success(`Landlord "${sub.display_name}" added to Vett`)
+      if (action === 'approved') {
+        toast.success(`Landlord "${sub.display_name}" added to Vett`)
+      } else {
+        toast.success(`Submission marked as ${action}`)
+      }
       setSubmissions(prev => prev.filter(s => s.id !== sub.id))
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Failed to approve')
+      toast.error(err instanceof Error ? err.message : 'Failed to process')
     } finally {
       setProcessing(null)
     }
-  }
-
-  async function reject(id: string, status: 'rejected' | 'duplicate') {
-    setProcessing(id)
-    await supabase
-      .from('landlord_submissions')
-      .update({ status, admin_notes: adminNotes[id] ?? null, reviewed_at: new Date().toISOString() })
-      .eq('id', id)
-    toast.success(`Submission marked as ${status}`)
-    setSubmissions(prev => prev.filter(s => s.id !== id))
-    setProcessing(null)
   }
 
   return (
@@ -210,7 +189,7 @@ export default function AdminSubmissionsPage() {
                       <Button
                         size="sm"
                         className="bg-teal-600 hover:bg-teal-700 text-white"
-                        onClick={() => approve(sub)}
+                        onClick={() => moderate(sub, 'approved')}
                         disabled={processing === sub.id}
                       >
                         {processing === sub.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
@@ -220,7 +199,7 @@ export default function AdminSubmissionsPage() {
                         size="sm"
                         variant="outline"
                         className="border-orange-300 text-orange-700 hover:bg-orange-50"
-                        onClick={() => reject(sub.id, 'duplicate')}
+                        onClick={() => moderate(sub, 'duplicate')}
                         disabled={processing === sub.id}
                       >
                         <Copy className="h-3.5 w-3.5 mr-1" />
@@ -230,7 +209,7 @@ export default function AdminSubmissionsPage() {
                         size="sm"
                         variant="outline"
                         className="border-red-300 text-red-700 hover:bg-red-50"
-                        onClick={() => reject(sub.id, 'rejected')}
+                        onClick={() => moderate(sub, 'rejected')}
                         disabled={processing === sub.id}
                       >
                         <XCircle className="h-3.5 w-3.5 mr-1" />

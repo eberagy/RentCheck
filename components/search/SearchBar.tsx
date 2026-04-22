@@ -13,9 +13,11 @@ interface SearchBarProps {
   autoFocus?: boolean
   /** Use "dark" on dark backgrounds (e.g. the homepage hero) */
   variant?: 'light' | 'dark'
+  /** Render as a bare input (no ring/shadow/padding) for embedding inside a custom container */
+  inline?: boolean
 }
 
-export function SearchBar({ className, size = 'md', placeholder, autoFocus, variant = 'light' }: SearchBarProps) {
+export function SearchBar({ className, size = 'md', placeholder, autoFocus, variant = 'light', inline }: SearchBarProps) {
   const router = useRouter()
   const { query, results, loading, handleQueryChange, clear } = useSearch()
   const [open, setOpen] = useState(false)
@@ -60,31 +62,37 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
       <form onSubmit={handleSubmit}>
         <div className={cn(
           'flex items-center gap-2 transition-all',
-          size === 'lg' ? 'rounded-full px-5' : 'rounded-full px-4',
-          sizeClasses[size],
-          variant === 'dark'
-            ? 'bg-white/[0.08] ring-1 ring-white/[0.12] backdrop-blur-md'
-            : 'bg-white ring-1 ring-slate-200 shadow-sm',
-          open && results.length > 0
-            ? variant === 'dark'
-              ? 'rounded-b-none ring-teal-400/40'
-              : 'rounded-b-none ring-navy-300 shadow-md'
-            : variant === 'dark'
-              ? 'hover:ring-white/20 focus-within:ring-white/25 focus-within:bg-white/[0.10]'
-              : 'hover:ring-slate-300 focus-within:ring-navy-300 focus-within:shadow-md'
+          inline
+            ? 'h-full'
+            : cn(
+                size === 'lg' ? 'rounded-full px-5' : 'rounded-full px-4',
+                sizeClasses[size],
+                variant === 'dark'
+                  ? 'bg-white/[0.08] ring-1 ring-white/[0.12] backdrop-blur-md'
+                  : 'bg-white ring-1 ring-slate-200 shadow-sm',
+                open && results.length > 0
+                  ? variant === 'dark'
+                    ? 'rounded-b-none ring-teal-400/40'
+                    : 'rounded-b-none ring-navy-300 shadow-md'
+                  : variant === 'dark'
+                    ? 'hover:ring-white/20 focus-within:ring-white/25 focus-within:bg-white/[0.10]'
+                    : 'hover:ring-slate-300 focus-within:ring-navy-300 focus-within:shadow-md'
+              )
         )}>
-          <button
-            type="submit"
-            className={cn(
-              'flex-shrink-0 transition-colors',
-              variant === 'dark' ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-600'
-            )}
-          >
-            {loading
-              ? <Loader2 className="h-4 w-4 animate-spin" />
-              : <Search className="h-4 w-4" />
-            }
-          </button>
+          {!inline && (
+            <button
+              type="submit"
+              className={cn(
+                'flex-shrink-0 transition-colors',
+                variant === 'dark' ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-600'
+              )}
+            >
+              {loading
+                ? <Loader2 className="h-4 w-4 animate-spin" />
+                : <Search className="h-4 w-4" />
+              }
+            </button>
+          )}
           <input
             ref={inputRef}
             type="text"

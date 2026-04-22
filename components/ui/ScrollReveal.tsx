@@ -23,9 +23,15 @@ export function ScrollReveal({
   once = true,
 }: ScrollRevealProps) {
   const [isVisible, setIsVisible] = useState(false)
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  }, [])
+
+  useEffect(() => {
+    if (prefersReducedMotion) { setIsVisible(true); return }
     const el = ref.current
     if (!el) return
 
@@ -44,7 +50,7 @@ export function ScrollReveal({
 
     observer.observe(el)
     return () => observer.disconnect()
-  }, [once])
+  }, [once, prefersReducedMotion])
 
   const translateMap = {
     up: `translateY(${distance}px)`,
@@ -58,11 +64,11 @@ export function ScrollReveal({
     <div
       ref={ref}
       className={cn(className)}
-      style={{
+      style={prefersReducedMotion ? undefined : {
         opacity: isVisible ? 1 : 0,
         transform: isVisible ? 'none' : translateMap[direction],
         transition: `opacity ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms, transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`,
-        willChange: 'opacity, transform',
+        willChange: isVisible ? 'auto' : 'opacity, transform',
       }}
     >
       {children}

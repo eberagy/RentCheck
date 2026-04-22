@@ -43,6 +43,10 @@ const config: Config = {
           DEFAULT: '#F59E0B',
         },
         danger: '#DC2626',
+        ink: {
+          DEFAULT: '#07111f',
+          950: '#030A13',
+        },
         background: '#F9FAFB',
         foreground: '#111827',
         muted: '#6B7280',

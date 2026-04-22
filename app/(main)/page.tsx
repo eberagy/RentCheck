@@ -169,7 +169,7 @@ export default async function HomePage() {
                 <Button
                   asChild
                   size="sm"
-                  className="group h-11 rounded-full bg-white px-6 text-sm font-semibold text-slate-900 shadow-lg shadow-white/10 transition-all hover:bg-slate-100 hover:shadow-xl hover:shadow-white/20"
+                  className="group h-11 rounded-full bg-white px-6 text-sm font-semibold text-slate-900 shadow-lg shadow-white/10 transition-[background-color,box-shadow] duration-200 hover:bg-slate-100 hover:shadow-xl hover:shadow-white/20"
                 >
                   <Link href="/search">
                     Explore landlords <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -179,7 +179,7 @@ export default async function HomePage() {
                   asChild
                   size="sm"
                   variant="outline"
-                  className="h-11 rounded-full border-white/15 bg-white/5 px-6 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/10 hover:border-white/25"
+                  className="h-11 rounded-full border-white/15 bg-white/5 px-6 text-sm font-semibold text-white backdrop-blur-sm transition-[background-color,border-color] duration-200 hover:bg-white/10 hover:border-white/25"
                 >
                   <Link href="/review/new">Write a review</Link>
                 </Button>
@@ -197,7 +197,7 @@ export default async function HomePage() {
                     <Link
                       key={`${city.city}-${city.state}`}
                       href={`/search?city=${encodeURIComponent(city.city)}&state=${city.state}`}
-                      className="rounded-full border border-white/[0.12] bg-white/[0.06] px-3.5 py-1.5 text-xs font-medium text-slate-200 backdrop-blur-sm transition-all hover:border-teal-300/40 hover:bg-white/[0.12] hover:text-white hover:scale-[1.03]"
+                      className="rounded-full border border-white/[0.12] bg-white/[0.06] px-3.5 py-1.5 text-xs font-medium text-slate-200 backdrop-blur-sm transition-[border-color,background-color,color,transform] duration-200 hover:border-teal-300/40 hover:bg-white/[0.12] hover:text-white hover:scale-[1.03]"
                     >
                       {city.city}, {city.state}
                     </Link>
@@ -234,7 +234,7 @@ export default async function HomePage() {
                     { icon: Building2, label: 'Landlords tracked', value: stats.landlords, color: 'text-sky-300' },
                     { icon: AlertTriangle, label: 'Public records', value: stats.records, color: 'text-rose-300' },
                   ].map(({ icon: Icon, label, value, color }) => (
-                    <div key={label} className="group rounded-2xl border border-white/10 bg-white/[0.05] p-4 transition-all hover:bg-white/[0.08] hover:border-white/20">
+                    <div key={label} className="group rounded-2xl border border-white/10 bg-white/[0.05] p-4 transition-[background-color,border-color] duration-200 hover:bg-white/[0.08] hover:border-white/20">
                       <Icon className={`h-4 w-4 ${color} transition-transform group-hover:scale-110`} />
                       <div className="mt-3 text-2xl font-bold">
                         <AnimatedCounter target={value} duration={2200} />
@@ -248,7 +248,7 @@ export default async function HomePage() {
                   {recentReviews.slice(0, 3).map((review: any, idx: number) => (
                     <div
                       key={review.id}
-                      className="rounded-2xl border border-white/10 bg-[#0a1524]/90 p-4 transition-all hover:border-white/20 hover:bg-[#0c1a2e]/90"
+                      className="rounded-2xl border border-white/10 bg-[#0a1524]/90 p-4 transition-[background-color,border-color] duration-200 hover:border-white/20 hover:bg-[#0c1a2e]/90"
                       style={{ animationDelay: `${idx * 100}ms` }}
                     >
                       <div className="flex items-start justify-between gap-3">
@@ -344,7 +344,7 @@ export default async function HomePage() {
             <div className="grid gap-5 md:grid-cols-3">
               {HOW_IT_WORKS.map(({ step, title, desc, icon: StepIcon }, idx) => (
                 <ScrollReveal key={step} delay={idx * 120} direction="up">
-                  <div className="group relative rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:border-slate-300 hover:shadow-[0_20px_50px_rgba(15,23,42,0.10)]">
+                  <div className="group relative rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-2 hover:border-slate-300 hover:shadow-[0_20px_50px_rgba(15,23,42,0.10)]">
                     {/* Connector line on desktop */}
                     {idx < 2 && (
                       <div className="absolute -right-3 top-1/2 hidden h-px w-6 bg-slate-200 md:block" />
@@ -353,7 +353,7 @@ export default async function HomePage() {
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 text-sm font-bold text-slate-400 shadow-inner">
                         {step}
                       </div>
-                      <StepIcon className="h-5 w-5 text-teal-500 opacity-60 transition-all group-hover:opacity-100 group-hover:scale-110" />
+                      <StepIcon className="h-5 w-5 text-teal-500 opacity-60 transition-[opacity,transform] duration-200 group-hover:opacity-100 group-hover:scale-110" />
                     </div>
                     <h3 className="mt-5 text-lg font-semibold text-slate-950">{title}</h3>
                     <p className="mt-2 text-sm leading-relaxed text-slate-600">{desc}</p>
@@ -407,7 +407,7 @@ export default async function HomePage() {
               {FEATURES.map(({ icon: Icon, title, description, color, bg, iconBg, border, glow }, idx) => (
                 <ScrollReveal key={title} delay={idx * 120} direction="right">
                   <div
-                    className={`group rounded-[1.5rem] border ${border} ${bg} p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] ${glow}`}
+                    className={`group rounded-[1.5rem] border ${border} ${bg} p-6 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] ${glow}`}
                   >
                     <div className="flex items-start gap-4">
                       <div className={`inline-flex h-12 w-12 items-center justify-center rounded-2xl ${iconBg} shadow-sm transition-transform duration-300 group-hover:scale-110`}>
@@ -453,7 +453,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
               {recentReviews.slice(0, 6).map((review: any, idx: number) => (
                 <ScrollReveal key={review.id} delay={idx * 80} direction="up">
-                  <div className="group h-full rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-slate-300 hover:shadow-[0_20px_60px_rgba(15,23,42,0.10)]">
+                  <div className="group h-full rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1.5 hover:border-slate-300 hover:shadow-[0_20px_60px_rgba(15,23,42,0.10)]">
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-slate-950 line-clamp-1 group-hover:text-navy-700 transition-colors">
@@ -495,8 +495,8 @@ export default async function HomePage() {
         <GradientBlob color="teal" size="lg" className="left-1/4 top-0 opacity-15" />
         <div className="relative mx-auto grid max-w-7xl gap-6 lg:grid-cols-2 lg:px-2">
           <ScrollReveal delay={0} direction="left">
-            <div className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-[#10203b] via-[#0d1930] to-[#09131f] p-8 transition-all duration-300 hover:border-white/20 hover:shadow-[0_30px_80px_rgba(0,0,0,0.4)]">
-              <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/[0.04] blur-3xl transition-all group-hover:bg-white/[0.07]" />
+            <div className="group relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-[#10203b] via-[#0d1930] to-[#09131f] p-8 transition-[border-color,box-shadow] duration-300 hover:border-white/20 hover:shadow-[0_30px_80px_rgba(0,0,0,0.4)]">
+              <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/[0.04] blur-3xl transition-[background-color] duration-300 group-hover:bg-white/[0.07]" />
               <div className="absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-teal-300">For renters</p>
               <h2 className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">Had a landlord experience worth sharing?</h2>
@@ -512,8 +512,8 @@ export default async function HomePage() {
           </ScrollReveal>
 
           <ScrollReveal delay={150} direction="right">
-            <div className="group relative overflow-hidden rounded-[2rem] border border-teal-300/[0.20] bg-gradient-to-br from-teal-600 to-teal-500 p-8 text-white transition-all duration-300 hover:shadow-[0_30px_80px_rgba(15,123,108,0.3)]">
-              <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/[0.08] blur-3xl transition-all group-hover:bg-white/[0.12]" />
+            <div className="group relative overflow-hidden rounded-[2rem] border border-teal-300/[0.20] bg-gradient-to-br from-teal-600 to-teal-500 p-8 text-white transition-[box-shadow] duration-300 hover:shadow-[0_30px_80px_rgba(15,123,108,0.3)]">
+              <div className="absolute -right-12 -top-12 h-48 w-48 rounded-full bg-white/[0.08] blur-3xl transition-[background-color] duration-300 group-hover:bg-white/[0.12]" />
               <div className="absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-teal-100">For missing profiles</p>
               <h2 className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">Don&apos;t see your landlord yet?</h2>
@@ -554,13 +554,13 @@ export default async function HomePage() {
               <ScrollReveal key={`${city}-${state}`} delay={idx * 60} direction="up">
                 <Link
                   href={`/city/${state.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`}
-                  className="group flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-medium text-slate-700 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-teal-300 hover:text-teal-700 hover:shadow-[0_14px_35px_rgba(15,23,42,0.08)]"
+                  className="group flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-medium text-slate-700 shadow-sm transition-[transform,box-shadow,border-color,color] duration-300 hover:-translate-y-1 hover:border-teal-300 hover:text-teal-700 hover:shadow-[0_14px_35px_rgba(15,23,42,0.08)]"
                 >
                   <span className="flex items-center gap-2">
                     <MapPin className="h-3.5 w-3.5 text-slate-400 transition-colors group-hover:text-teal-500" />
                     {city}, {state}
                   </span>
-                  <ArrowRight className="h-3.5 w-3.5 text-slate-300 transition-all group-hover:text-teal-500 group-hover:translate-x-0.5" />
+                  <ArrowRight className="h-3.5 w-3.5 text-slate-300 transition-[color,transform] duration-200 group-hover:text-teal-500 group-hover:translate-x-0.5" />
                 </Link>
               </ScrollReveal>
             ))}

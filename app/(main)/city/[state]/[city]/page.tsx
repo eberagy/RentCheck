@@ -6,6 +6,10 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { LandlordCard } from '@/components/landlord/LandlordCard'
 import { SearchBar } from '@/components/search/SearchBar'
 import { Button } from '@/components/ui/button'
+import { Eyebrow } from '@/components/vett/Eyebrow'
+import { Grade } from '@/components/vett/Grade'
+import { Stars } from '@/components/vett/Stars'
+import { getGradeLetter } from '@/lib/grade'
 import { US_STATES, COLLEGE_CITIES } from '@/types'
 import type { Landlord } from '@/types'
 import { getCityAliases } from '@/lib/cities'
@@ -88,107 +92,184 @@ export default async function CityPage({ params }: CityPageProps) {
     c => c.city.toLowerCase() === cityName.toLowerCase() && c.state === stateAbbr
   )
 
+  // Compute median rating for the city
+  const ratings = landlords.map((l: Landlord) => l.avg_rating).filter(Boolean) as number[]
+  const medianRating = ratings.length > 0
+    ? ratings.sort((a, b) => a - b)[Math.floor(ratings.length / 2)]
+    : null
+
+  // Split top-rated and most-flagged
+  const topRated = [...landlords]
+    .filter((l: Landlord) => (l.avg_rating ?? 0) >= 3)
+    .sort((a: Landlord, b: Landlord) => (b.avg_rating ?? 0) - (a.avg_rating ?? 0))
+    .slice(0, 5)
+  const mostFlagged = [...landlords]
+    .filter((l: Landlord) => ((l as any).open_violation_count ?? 0) > 0)
+    .sort((a: Landlord, b: Landlord) => ((b as any).open_violation_count ?? 0) - ((a as any).open_violation_count ?? 0))
+    .slice(0, 5)
+
   return (
     <div className="min-h-screen bg-slate-50">
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        {/* Header */}
-        <nav className="mb-4 flex items-center gap-1 text-xs text-slate-500">
-          <Link href="/" className="transition-colors hover:text-navy-700 hover:underline">Home</Link>
-          <span className="text-slate-300">›</span>
-          <Link href="/search" className="transition-colors hover:text-navy-700 hover:underline">Search</Link>
-          <span className="text-slate-300">›</span>
-          <span className="font-medium text-slate-700">{cityName}, {stateAbbr}</span>
-        </nav>
+      {/* Hero */}
+      <section
+        className="relative overflow-hidden px-7 py-16 text-white"
+        style={{
+          background: 'radial-gradient(ellipse at 20% 30%, rgba(94,148,255,0.18), transparent 45%), radial-gradient(ellipse at 80% 20%, rgba(45,212,191,0.18), transparent 40%), #07111f',
+        }}
+      >
+        <div className="relative mx-auto max-w-[1180px]">
+          <Eyebrow dark dot>{stateAbbr} &middot; {cityName} &middot; {stateName}</Eyebrow>
+          <h1 className="mt-[18px] text-[72px] font-extrabold leading-none tracking-[-0.04em]">
+            {cityName} landlords.<br />
+            <span className="bg-gradient-to-r from-white to-teal-300 bg-clip-text text-transparent">
+              Verified. Unvarnished.
+            </span>
+          </h1>
+          <p className="mt-[18px] max-w-[560px] text-[16px] leading-relaxed text-slate-400">
+            {count ?? 0} landlords tracked across {cityName} — every review lease-verified
+            {recordCount ? `, ${recordCount.toLocaleString()} public records pulled from official sources` : ''}.
+          </p>
 
-        <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-          <div className="bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.08),transparent_40%),linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] px-5 py-8 sm:px-8">
-            <div className="flex items-center gap-2 text-sm text-slate-500">
-              <MapPin className="h-4 w-4 text-teal-600" />
-              <span>{stateName}</span>
-            </div>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight text-slate-950 sm:text-4xl">
-              Landlord Reviews in {cityName}, {stateAbbr}
-            </h1>
-            <div className="mt-4 flex flex-wrap items-center gap-4 text-sm">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-600">
-                <Building2 className="h-3.5 w-3.5 text-navy-500" />
-                {count ?? 0} landlords
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 font-medium text-slate-600">
-                <FileText className="h-3.5 w-3.5 text-navy-500" />
-                {recordCount ?? 0} public records
-              </span>
-            </div>
-            {collegeInfo && (
-              <div className="mt-5 flex flex-wrap gap-2">
-                {collegeInfo.universities.map(uni => (
-                  <span key={uni} className="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-navy-50 px-3 py-1.5 text-xs font-medium text-navy-700">
-                    <GraduationCap className="h-3 w-3" />
-                    {uni}
-                  </span>
-                ))}
+          {/* Stats row */}
+          <div className="mt-8 grid grid-cols-4 gap-12" style={{ width: 'fit-content' }}>
+            {[
+              { v: (count ?? 0).toLocaleString(), l: 'Landlords' },
+              { v: landlords.reduce((sum: number, l: Landlord) => sum + (l.review_count ?? 0), 0).toLocaleString(), l: 'Reviews' },
+              { v: (recordCount ?? 0).toLocaleString(), l: 'Public records' },
+              { v: medianRating?.toFixed(1) ?? '—', l: 'Median rating' },
+            ].map(s => (
+              <div key={s.l}>
+                <div className="text-[36px] font-extrabold tracking-tight tabular-nums">{s.v}</div>
+                <div className="mt-0.5 text-[12px] text-slate-500">{s.l}</div>
               </div>
-            )}
-            <div className="mt-6 max-w-xl">
-              <SearchBar size="md" placeholder={`Search landlords in ${cityName}…`} />
-            </div>
+            ))}
           </div>
-        </div>
 
-        {/* Results */}
-        <div className="mt-8">
-          {landlords.length === 0 ? (
-            <div className="rounded-[2rem] border border-dashed border-slate-300 bg-white py-16 text-center shadow-sm">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100">
-                <Building2 className="h-7 w-7 text-slate-400" />
-              </div>
-              <p className="text-base font-semibold text-slate-700">No landlords listed yet in {cityName}</p>
-              <p className="mt-1 text-sm text-slate-400">Be the first to add one and help fellow renters.</p>
-              <div className="mt-6 flex justify-center gap-3">
-                <Button asChild variant="outline" className="rounded-full">
-                  <Link href="/add-landlord">Add a Landlord</Link>
-                </Button>
-                <Button asChild className="rounded-full bg-navy-600 hover:bg-navy-700">
-                  <Link href="/review/new">Write a Review</Link>
-                </Button>
-              </div>
+          {collegeInfo && (
+            <div className="mt-6 flex flex-wrap gap-2">
+              {collegeInfo.universities.map(uni => (
+                <span key={uni} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/80">
+                  <GraduationCap className="h-3 w-3" />
+                  {uni}
+                </span>
+              ))}
             </div>
+          )}
+        </div>
+      </section>
+
+      {/* Top-rated + Most-flagged */}
+      <div className="mx-auto grid max-w-[1180px] gap-7 px-7 py-12 md:grid-cols-2">
+        {/* Top-rated */}
+        <div className="rounded-[24px] border border-slate-200 bg-white p-6">
+          <div className="mb-[18px] flex items-center gap-2.5">
+            <div className="h-7 w-2 rounded bg-gradient-to-b from-teal to-teal-300" />
+            <h2 className="text-[18px] font-bold text-slate-900">Top-rated landlords in {cityName}</h2>
+          </div>
+          {topRated.length === 0 ? (
+            <p className="py-8 text-center text-sm text-slate-400">No highly rated landlords yet.</p>
           ) : (
-            <>
-              <div className="mb-4 rounded-2xl border border-slate-200 bg-white px-5 py-3 shadow-sm">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-                  Top landlords in {cityName}
-                </p>
-                <p className="mt-1 text-sm text-slate-500">
-                  Sorted by review count. Click any card for full details, reviews, and public records.
-                </p>
-              </div>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {landlords.map((landlord: Landlord) => (
-                  <LandlordCard key={landlord.id} landlord={landlord} />
-                ))}
-              </div>
-            </>
+            <div className="grid gap-2.5">
+              {topRated.map((l: Landlord, i: number) => (
+                <Link
+                  key={l.id}
+                  href={l.slug ? `/landlord/${l.slug}` : '/search'}
+                  className="grid items-center gap-3.5 rounded-[14px] border border-slate-100 bg-slate-50 p-3 transition-colors hover:border-slate-200"
+                  style={{ gridTemplateColumns: '24px auto 1fr auto' }}
+                >
+                  <div className="text-[14px] font-extrabold text-slate-400">{i + 1}</div>
+                  <Grade letter={getGradeLetter(l.avg_rating ?? null)} size="sm" />
+                  <div className="min-w-0">
+                    <div className="truncate text-[13.5px] font-bold text-slate-900">{l.display_name}</div>
+                    <div className="mt-0.5 text-[11.5px] text-slate-500">
+                      {l.city} &middot; {l.review_count ?? 0} reviews
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[16px] font-extrabold">{l.avg_rating?.toFixed(1) ?? '—'}</div>
+                    <Stars value={l.avg_rating ?? 0} size={10} />
+                  </div>
+                </Link>
+              ))}
+            </div>
           )}
         </div>
 
-        {/* CTA */}
-        <div className="mt-12 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-          <div className="bg-gradient-to-r from-navy-600 to-teal-600 px-6 py-10 text-center text-white sm:px-10">
-            <h2 className="text-2xl font-bold tracking-tight">Know a landlord in {cityName}?</h2>
-            <p className="mt-2 text-sm text-white/80">
-              Help fellow renters by sharing your lease-verified experience.
-            </p>
-            <div className="mt-6 flex justify-center gap-3">
-              <Button asChild className="rounded-full bg-white text-navy-700 font-semibold hover:bg-slate-100">
-                <Link href="/review/new">
-                  Write a Review <ArrowRight className="ml-2 h-4 w-4" />
+        {/* Most flagged */}
+        <div className="rounded-[24px] border border-slate-200 bg-white p-6">
+          <div className="mb-[18px] flex items-center gap-2.5">
+            <div className="h-7 w-2 rounded bg-gradient-to-b from-rose-500 to-rose-300" />
+            <h2 className="text-[18px] font-bold text-slate-900">Most flagged landlords</h2>
+          </div>
+          {mostFlagged.length === 0 ? (
+            <p className="py-8 text-center text-sm text-slate-400">No landlords with open violations.</p>
+          ) : (
+            <div className="grid gap-2.5">
+              {mostFlagged.map((l: Landlord, i: number) => (
+                <Link
+                  key={l.id}
+                  href={l.slug ? `/landlord/${l.slug}` : '/search'}
+                  className="grid items-center gap-3.5 rounded-[14px] border border-slate-100 bg-slate-50 p-3 transition-colors hover:border-slate-200"
+                  style={{ gridTemplateColumns: '24px auto 1fr auto' }}
+                >
+                  <div className="text-[14px] font-extrabold text-slate-400">{i + 1}</div>
+                  <Grade letter={getGradeLetter(l.avg_rating ?? null)} size="sm" />
+                  <div className="min-w-0">
+                    <div className="truncate text-[13.5px] font-bold text-slate-900">{l.display_name}</div>
+                    <div className="mt-0.5 text-[11.5px] text-slate-500">
+                      {l.city} &middot; {l.review_count ?? 0} reviews
+                      {((l as any).open_violation_count ?? 0) > 0 && (
+                        <span className="text-red-600"> &middot; {(l as any).open_violation_count} open</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[16px] font-extrabold">{l.avg_rating?.toFixed(1) ?? '—'}</div>
+                    <Stars value={l.avg_rating ?? 0} size={10} />
+                  </div>
                 </Link>
-              </Button>
-              <Button asChild variant="outline" className="rounded-full border-white/30 text-white hover:bg-white/10">
-                <Link href="/add-landlord">Add Missing Landlord</Link>
-              </Button>
+              ))}
             </div>
+          )}
+        </div>
+      </div>
+
+      {/* All landlords */}
+      <div className="mx-auto max-w-[1180px] px-7 pb-12">
+        {landlords.length === 0 ? (
+          <div className="rounded-[24px] border border-dashed border-slate-300 bg-white py-16 text-center">
+            <Building2 className="mx-auto mb-4 h-12 w-12 text-slate-300" />
+            <p className="text-base font-semibold text-slate-700">No landlords listed yet in {cityName}</p>
+            <p className="mt-1 text-sm text-slate-400">Be the first to add one and help fellow renters.</p>
+            <div className="mt-6 flex justify-center gap-3">
+              <Button asChild variant="outline" className="rounded-full"><Link href="/add-landlord">Add a Landlord</Link></Button>
+              <Button asChild className="rounded-full bg-teal hover:bg-teal-500 text-white"><Link href="/review/new">Write a Review</Link></Button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">All landlords in {cityName}</div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {landlords.map((landlord: Landlord) => (
+                <LandlordCard key={landlord.id} landlord={landlord} />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* CTA */}
+      <div className="mx-auto max-w-[1180px] px-7 pb-20">
+        <div className="overflow-hidden rounded-[24px] bg-gradient-to-r from-navy-600 to-teal px-6 py-10 text-center text-white sm:px-10">
+          <h2 className="text-2xl font-extrabold tracking-tight">Know a landlord in {cityName}?</h2>
+          <p className="mt-2 text-sm text-white/80">Help fellow renters by sharing your lease-verified experience.</p>
+          <div className="mt-6 flex justify-center gap-3">
+            <Button asChild className="rounded-full bg-white text-navy-700 font-semibold hover:bg-slate-100">
+              <Link href="/review/new">Write a Review <ArrowRight className="ml-2 h-4 w-4" /></Link>
+            </Button>
+            <Button asChild variant="outline" className="rounded-full border-white/30 text-white hover:bg-white/10">
+              <Link href="/add-landlord">Add Missing Landlord</Link>
+            </Button>
           </div>
         </div>
       </div>

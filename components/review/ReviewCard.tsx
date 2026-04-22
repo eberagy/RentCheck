@@ -60,7 +60,7 @@ export function ReviewCard({ review, onMarkHelpful, onFlag, isOwn }: ReviewCardP
   return (
     <>
     {showFlag && <FlagReviewModal reviewId={review.id} onClose={() => setShowFlag(false)} />}
-    <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md">
+    <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md">
       {/* Header */}
       <div className="flex items-start gap-3">
         <Avatar className="mt-0.5 h-10 w-10 flex-shrink-0">
