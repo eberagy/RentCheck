@@ -143,7 +143,7 @@ function boroughToCity(borough: string): string {
 function cleanOwnerName(raw: string): string | null {
   if (!raw) return null
   // Remove common artifacts
-  let name = raw.trim()
+  const name = raw.trim()
     .replace(/\s+/g, ' ')
     .replace(/^[^A-Z0-9]/i, '')
     // Title-case if all caps

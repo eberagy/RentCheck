@@ -72,29 +72,6 @@ export default function NewReviewPage() {
   const [submitting, setSubmitting] = useState(false)
   const supabase = createClient()
 
-  // Auth gate
-  if (!authLoading && !user) {
-    return (
-      <div className="mx-auto max-w-md px-4 py-20 text-center">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-50">
-          <Lock className="h-7 w-7 text-navy-600" />
-        </div>
-        <h1 className="text-2xl font-bold text-slate-900">Sign in to write a review</h1>
-        <p className="mt-2 text-sm text-slate-500">
-          You need an account to submit lease-verified reviews on Vett.
-        </p>
-        <div className="mt-6 flex justify-center gap-3">
-          <Button asChild className="rounded-full bg-navy-600 hover:bg-navy-700">
-            <Link href="/login?redirectTo=/review/new">Sign In</Link>
-          </Button>
-          <Button asChild variant="outline" className="rounded-full">
-            <Link href="/">Back to Home</Link>
-          </Button>
-        </div>
-      </div>
-    )
-  }
-
   const { register, handleSubmit, watch, setValue, trigger, getValues, setError, clearErrors, formState: { errors } } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
     defaultValues: { ratingOverall: 0, ratingResponsiveness: 0, ratingMaintenance: 0, ratingHonesty: 0, ratingLeaseFairness: 0, isCurrentTenant: false, propertyAddress: '' },
@@ -149,6 +126,29 @@ export default function NewReviewPage() {
     accept: { 'application/pdf': ['.pdf'], 'image/*': ['.jpg', '.jpeg', '.png'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'] },
     maxFiles: 1,
   })
+
+  // Auth gate (must come after all hook calls to satisfy Rules of Hooks)
+  if (!authLoading && !user) {
+    return (
+      <div className="mx-auto max-w-md px-4 py-20 text-center">
+        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-50">
+          <Lock className="h-7 w-7 text-navy-600" />
+        </div>
+        <h1 className="text-2xl font-bold text-slate-900">Sign in to write a review</h1>
+        <p className="mt-2 text-sm text-slate-500">
+          You need an account to submit lease-verified reviews on Vett.
+        </p>
+        <div className="mt-6 flex justify-center gap-3">
+          <Button asChild className="rounded-full bg-navy-600 hover:bg-navy-700">
+            <Link href="/login?redirectTo=/review/new">Sign In</Link>
+          </Button>
+          <Button asChild variant="outline" className="rounded-full">
+            <Link href="/">Back to Home</Link>
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   async function handleLeaseUpload() {
     if (!leaseFile || !selectedLandlord) return

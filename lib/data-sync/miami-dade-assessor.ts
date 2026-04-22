@@ -154,7 +154,7 @@ export async function syncMiamiDadeAssessor(supabase: SupabaseClient): Promise<S
 
 function cleanOwnerName(raw: string): string | null {
   if (!raw) return null
-  let name = raw.trim()
+  const name = raw.trim()
     .replace(/\s+/g, ' ')
     .replace(/^[A-Z\s&.,'-]+$/, (s: string) => toTitleCase(s))
   if (name.length < 2 || name.length > 120) return null
