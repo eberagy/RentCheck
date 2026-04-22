@@ -77,6 +77,7 @@ function RecordRow({ record }: { record: PublicRecord }) {
           {record.description && (
             <button
               onClick={() => setExpanded(e => !e)}
+              aria-label={expanded ? 'Collapse record details' : 'Expand record details'}
               className="p-1 text-slate-400 transition-colors hover:text-slate-600"
             >
               {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}

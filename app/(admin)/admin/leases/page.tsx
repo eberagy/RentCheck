@@ -59,15 +59,18 @@ export default function AdminLeasesPage() {
 
   async function verifyLease(reviewId: string, verified: boolean) {
     setProcessing(reviewId)
+    const { data: { user } } = await supabase.auth.getUser()
     const updates: Record<string, unknown> = {
       lease_verified: verified,
       lease_verified_at: new Date().toISOString(),
+      lease_verified_by: user?.id ?? null,
     }
     if (!verified) {
       updates.lease_rejection_reason = notes[reviewId] ?? 'Document could not be verified'
       updates.status = 'rejected'
       updates.admin_notes = notes[reviewId] ?? 'Lease verification failed'
       updates.moderated_at = new Date().toISOString()
+      updates.moderated_by = user?.id ?? null
     }
     const { error } = await supabase.from('reviews').update(updates).eq('id', reviewId)
     if (error) { toast.error('Update failed'); setProcessing(null); return }

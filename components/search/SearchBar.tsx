@@ -69,6 +69,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
           {!inline && (
             <button
               type="submit"
+              aria-label="Search"
               className={cn(
                 'flex-shrink-0 transition-colors',
                 variant === 'dark' ? 'text-slate-400 hover:text-white' : 'text-slate-300 hover:text-slate-500'

@@ -13,6 +13,7 @@ export const PUBLIC_REVIEW_SELECT = `
   rental_period_start,
   rental_period_end,
   is_current_tenant,
+  property_address,
   lease_verified,
   landlord_response,
   landlord_response_at,

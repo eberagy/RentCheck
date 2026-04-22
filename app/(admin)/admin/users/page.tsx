@@ -49,6 +49,7 @@ function UserAvatar({ user }: { user: UserProfile }) {
       <img
         src={user.avatar_url}
         alt={user.full_name ?? ''}
+        loading="lazy"
         className="h-10 w-10 rounded-full object-cover flex-shrink-0 ring-2 ring-white shadow-sm"
       />
     )

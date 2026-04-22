@@ -103,13 +103,12 @@ export function ReviewCard({ review, onMarkHelpful, onFlag, isOwn }: ReviewCardP
             <p className="text-xs text-slate-400">
               {formatRentalPeriod(review.rental_period_start, review.rental_period_end, review.is_current_tenant)}
             </p>
-            {review.property && (
+            {((review as any).property_address || review.property) && (
               <>
                 <span className="text-xs text-slate-300">·</span>
                 <span className="flex items-center gap-0.5 text-xs text-slate-400">
                   <Home className="h-3 w-3" />
-                  {review.property.address_line1}
-                  {review.property.city && `, ${review.property.city}`}
+                  {(review as any).property_address ?? `${review.property?.address_line1}${review.property?.city ? `, ${review.property.city}` : ''}`}
                 </span>
               </>
             )}
