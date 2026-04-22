@@ -21,6 +21,7 @@ type Review = {
   lease_verified: boolean
   lease_doc_path: string | null
   lease_filename: string | null
+  property_address: string | null
   reviewer: { full_name: string | null; email: string | null } | null
   landlord: { display_name: string; slug: string } | null
   property: { address_line1: string; city: string } | null
@@ -42,7 +43,7 @@ export default function AdminReviewsPage() {
     setLoading(true)
     const q = supabase
       .from('reviews')
-      .select('id, title, body, rating_overall, status, created_at, lease_verified, lease_doc_path, lease_filename, admin_notes, reviewer:profiles!reviews_reviewer_id_fkey(full_name, email), landlord:landlords(display_name, slug), property:properties(address_line1, city)')
+      .select('id, title, body, rating_overall, status, created_at, lease_verified, lease_doc_path, lease_filename, admin_notes, property_address, reviewer:profiles!reviews_reviewer_id_fkey(full_name, email), landlord:landlords(display_name, slug), property:properties(address_line1, city)')
       .order('created_at', { ascending: true })
     if (filter !== 'all') q.eq('status', filter)
     const { data } = await q.limit(50)
@@ -126,7 +127,8 @@ export default function AdminReviewsPage() {
                     <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-500 flex-wrap">
                       <span>{review.reviewer?.full_name ?? review.reviewer?.email ?? 'Unknown'}</span>
                       {review.landlord && <span>→ {review.landlord.display_name}</span>}
-                      {review.property && <span>@ {review.property.address_line1}, {review.property.city}</span>}
+                      {review.property_address && <span>@ {review.property_address}</span>}
+                      {!review.property_address && review.property && <span>@ {review.property.address_line1}, {review.property.city}</span>}
                       <span>{formatDate(review.created_at)}</span>
                     </div>
                   </div>

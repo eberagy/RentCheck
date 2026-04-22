@@ -5,6 +5,7 @@ import { z } from 'zod'
 const createSchema = z.object({
   landlordId: z.string().uuid(),
   propertyId: z.string().uuid().optional(),
+  propertyAddress: z.string().max(200).optional(),
   ratingOverall: z.number().int().min(1).max(5),
   ratingResponsiveness: z.number().int().min(1).max(5).optional(),
   ratingMaintenance: z.number().int().min(1).max(5).optional(),
@@ -82,6 +83,7 @@ export async function POST(req: NextRequest) {
       reviewer_id: user.id,
       landlord_id: d.landlordId,
       property_id: d.propertyId ?? null,
+      property_address: d.propertyAddress ?? null,
       rating_overall: d.ratingOverall,
       rating_responsiveness: d.ratingResponsiveness ?? null,
       rating_maintenance: d.ratingMaintenance ?? null,

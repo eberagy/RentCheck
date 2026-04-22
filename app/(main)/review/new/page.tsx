@@ -28,18 +28,22 @@ import type { Landlord } from '@/types'
 const reviewSchema = z.object({
   title: z.string().min(10, 'Title must be at least 10 characters').max(150),
   body: z.string().min(50, 'Review must be at least 50 characters').max(2000),
-  ratingOverall: z.number().min(1).max(5),
-  ratingResponsiveness: z.number().min(1).max(5).optional(),
-  ratingMaintenance: z.number().min(1).max(5).optional(),
-  ratingHonesty: z.number().min(1).max(5).optional(),
-  ratingLeaseFairness: z.number().min(1).max(5).optional(),
-  wouldRentAgain: z.enum(['yes', 'no', 'unsure']).optional(),
-  rentalPeriodStart: z.string().optional(),
+  propertyAddress: z.string().min(3, 'Please enter the property address').max(200),
+  ratingOverall: z.number().min(1, 'Required').max(5),
+  ratingResponsiveness: z.number().min(1, 'Required').max(5),
+  ratingMaintenance: z.number().min(1, 'Required').max(5),
+  ratingHonesty: z.number().min(1, 'Required').max(5),
+  ratingLeaseFairness: z.number().min(1, 'Required').max(5),
+  wouldRentAgain: z.enum(['yes', 'no', 'unsure'], { errorMap: () => ({ message: 'Please select one' }) }),
+  rentalPeriodStart: z.string().min(1, 'Required'),
   rentalPeriodEnd: z.string().optional(),
   isCurrentTenant: z.boolean().default(false),
   confirmedGenuine: z.literal(true, { errorMap: () => ({ message: 'You must confirm this is your genuine experience' }) }),
   confirmedLiability: z.literal(true, { errorMap: () => ({ message: 'You must agree to the terms' }) }),
-})
+}).refine(
+  (data) => data.isCurrentTenant || (data.rentalPeriodEnd && data.rentalPeriodEnd.length > 0),
+  { message: 'Move-out date is required unless you still rent here', path: ['rentalPeriodEnd'] }
+)
 
 type ReviewFormData = z.infer<typeof reviewSchema>
 type UploadedLease = {
@@ -93,7 +97,7 @@ export default function NewReviewPage() {
 
   const { register, handleSubmit, watch, setValue, trigger, formState: { errors } } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
-    defaultValues: { ratingOverall: 0, isCurrentTenant: false },
+    defaultValues: { ratingOverall: 0, ratingResponsiveness: 0, ratingMaintenance: 0, ratingHonesty: 0, ratingLeaseFairness: 0, isCurrentTenant: false, propertyAddress: '' },
   })
 
   useEffect(() => {
@@ -209,6 +213,7 @@ export default function NewReviewPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           landlordId: selectedLandlord.id,
+          propertyAddress: data.propertyAddress,
           ratingOverall: data.ratingOverall,
           ratingResponsiveness: data.ratingResponsiveness,
           ratingMaintenance: data.ratingMaintenance,
@@ -427,8 +432,8 @@ export default function NewReviewPage() {
             toast.error('Upload your lease before continuing')
             return
           }
-          // Only validate review fields — not the confirmation checkboxes on step 3
-          const valid = await trigger(['title', 'body', 'ratingOverall'])
+          // Validate review fields — not the confirmation checkboxes on step 3
+          const valid = await trigger(['title', 'body', 'propertyAddress', 'ratingOverall', 'ratingResponsiveness', 'ratingMaintenance', 'ratingHonesty', 'ratingLeaseFairness', 'wouldRentAgain', 'rentalPeriodStart', 'rentalPeriodEnd'])
           if (valid) setStep(3)
         }}>
           <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
@@ -448,10 +453,20 @@ export default function NewReviewPage() {
                 {errors.ratingOverall && <p className="text-xs text-red-600 mt-1">Please select a rating</p>}
               </div>
 
+              {/* Property address */}
+              <div>
+                <div className="flex items-baseline justify-between mb-2">
+                  <span className="text-[13px] font-semibold text-slate-900">Property address <span className="text-red-600">*</span></span>
+                  <span className="text-[11.5px] text-slate-400">The address you rented at</span>
+                </div>
+                <Input {...register('propertyAddress')} placeholder="123 Main St, Apt 4B, Pittsburgh, PA" className="h-11 rounded-xl border-slate-200 text-[14px]" />
+                {errors.propertyAddress && <p className="text-xs text-red-600 mt-1">{errors.propertyAddress.message}</p>}
+              </div>
+
               {/* Title */}
               <div>
                 <div className="flex items-baseline justify-between mb-2">
-                  <span className="text-[13px] font-semibold text-slate-900">Headline</span>
+                  <span className="text-[13px] font-semibold text-slate-900">Headline <span className="text-red-600">*</span></span>
                   <span className="text-[11.5px] text-slate-400">A short, specific summary — like a subject line.</span>
                 </div>
                 <Input {...register('title')} placeholder="Summarize your experience" className="h-11 rounded-xl border-slate-200 text-[14px]" />
@@ -462,7 +477,7 @@ export default function NewReviewPage() {
               {/* Body */}
               <div>
                 <div className="flex items-baseline justify-between mb-2">
-                  <span className="text-[13px] font-semibold text-slate-900">Your full review</span>
+                  <span className="text-[13px] font-semibold text-slate-900">Your full review <span className="text-red-600">*</span></span>
                   <span className="text-[11.5px] text-slate-400 max-w-[400px] text-right">Dates, documents, and specific interactions help other renters more than feelings.</span>
                 </div>
                 <Textarea
@@ -478,12 +493,14 @@ export default function NewReviewPage() {
               {/* Tenancy dates */}
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <span className="text-[13px] font-semibold text-slate-900 mb-2 block">Move-in</span>
+                  <span className="text-[13px] font-semibold text-slate-900 mb-2 block">Move-in <span className="text-red-600">*</span></span>
                   <Input type="month" {...register('rentalPeriodStart')} className="h-11 rounded-xl border-slate-200 text-[14px]" />
+                  {errors.rentalPeriodStart && <p className="text-xs text-red-600 mt-1">{errors.rentalPeriodStart.message}</p>}
                 </div>
                 <div>
-                  <span className="text-[13px] font-semibold text-slate-900 mb-2 block">Move-out</span>
+                  <span className="text-[13px] font-semibold text-slate-900 mb-2 block">Move-out <span className="text-red-600">*</span></span>
                   <Input type="month" {...register('rentalPeriodEnd')} className="h-11 rounded-xl border-slate-200 text-[14px]" disabled={watch('isCurrentTenant')} />
+                  {errors.rentalPeriodEnd && <p className="text-xs text-red-600 mt-1">{errors.rentalPeriodEnd.message}</p>}
                 </div>
                 <div className="flex items-end pb-2">
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -495,7 +512,7 @@ export default function NewReviewPage() {
 
               {/* Would rent again */}
               <div>
-                <span className="text-[13px] font-semibold text-slate-900 mb-2 block">Would you rent from them again?</span>
+                <span className="text-[13px] font-semibold text-slate-900 mb-2 block">Would you rent from them again? <span className="text-red-600">*</span></span>
                 <div className="flex gap-2.5">
                   {(['yes', 'no', 'unsure'] as const).map(v => (
                     <button
@@ -512,6 +529,7 @@ export default function NewReviewPage() {
                     </button>
                   ))}
                 </div>
+                {errors.wouldRentAgain && <p className="text-xs text-red-600 mt-1">{errors.wouldRentAgain.message}</p>}
               </div>
 
               {/* Sub-ratings */}
@@ -523,12 +541,13 @@ export default function NewReviewPage() {
                   { key: 'ratingLeaseFairness', label: 'Lease Fairness' },
                 ].map(({ key, label }) => (
                   <div key={key}>
-                    <span className="text-[13px] font-semibold text-slate-900 mb-1 block">{label}</span>
+                    <span className="text-[13px] font-semibold text-slate-900 mb-1 block">{label} <span className="text-red-600">*</span></span>
                     <StarRating
                       value={watch(key as keyof ReviewFormData) as number ?? 0}
                       onChange={v => setValue(key as keyof ReviewFormData, v as never)}
                       size="sm"
                     />
+                    {errors[key as keyof ReviewFormData] && <p className="text-xs text-red-600 mt-1">Please select a rating</p>}
                   </div>
                 ))}
               </div>
@@ -545,7 +564,7 @@ export default function NewReviewPage() {
             {/* Actions */}
             <div className="mt-7 flex items-center justify-between">
               <button type="button" onClick={() => setStep(1)} className="text-[13px] font-medium text-slate-500 hover:text-slate-700">&larr; Back</button>
-              <Button type="submit" className="rounded-full bg-teal px-6 hover:bg-teal-500 text-white" disabled={!ratingOverall || leaseStatus !== 'uploaded'}>
+              <Button type="submit" className="rounded-full bg-teal px-6 hover:bg-teal-500 text-white" disabled={leaseStatus !== 'uploaded'}>
                 Continue to confirm <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
               </Button>
             </div>
@@ -563,8 +582,10 @@ export default function NewReviewPage() {
 
             <div className="rounded-[16px] border border-slate-200 bg-slate-50 p-5 text-[14px] text-slate-700 space-y-2 mb-6">
               <p><span className="font-semibold text-slate-900">Landlord:</span> {selectedLandlord?.display_name}</p>
+              <p><span className="font-semibold text-slate-900">Address:</span> {watch('propertyAddress')}</p>
               <p><span className="font-semibold text-slate-900">Overall rating:</span> {watch('ratingOverall')}/5 stars</p>
               <p className="line-clamp-2"><span className="font-semibold text-slate-900">Headline:</span> &ldquo;{watch('title')}&rdquo;</p>
+              <p><span className="font-semibold text-slate-900">Dates:</span> {watch('rentalPeriodStart')} — {watch('isCurrentTenant') ? 'Present' : watch('rentalPeriodEnd')}</p>
               <p><span className="font-semibold text-slate-900">Lease verification:</span> {leaseStatus === 'uploaded' ? '✓ Uploaded (pending founder review)' : 'Not provided'}</p>
             </div>
 

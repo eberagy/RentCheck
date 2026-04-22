@@ -37,7 +37,7 @@ export default function AdminLeasesPage() {
     setLoading(true)
     const { data } = await supabase
       .from('reviews')
-      .select('id, title, lease_doc_path, lease_filename, lease_verified, lease_file_size, created_at, reviewer:profiles!reviews_reviewer_id_fkey(full_name, email), landlord:landlords(display_name), property:properties(address_line1, city, state_abbr)')
+      .select('id, title, lease_doc_path, lease_filename, lease_verified, lease_file_size, created_at, property_address, reviewer:profiles!reviews_reviewer_id_fkey(full_name, email), landlord:landlords(display_name), property:properties(address_line1, city, state_abbr)')
       .not('lease_doc_path', 'is', null)
       .eq('lease_verified', false)
       .order('created_at', { ascending: true })
@@ -112,7 +112,8 @@ export default function AdminLeasesPage() {
                     <div className="text-sm text-gray-600 space-y-0.5 mb-3">
                       <p>Reviewer: <span className="font-medium">{item.reviewer?.full_name ?? item.reviewer?.email ?? 'Unknown'}</span></p>
                       {item.landlord && <p>Landlord: <span className="font-medium">{item.landlord.display_name}</span></p>}
-                      {item.property && <p>Property: {item.property.address_line1}, {item.property.city}, {item.property.state_abbr}</p>}
+                      {(item as any).property_address && <p>Address: <span className="font-medium">{(item as any).property_address}</span></p>}
+                      {!(item as any).property_address && item.property && <p>Property: {item.property.address_line1}, {item.property.city}, {item.property.state_abbr}</p>}
                       <p className="text-xs text-gray-400">Submitted {formatDate(item.created_at)} {item.lease_file_size ? `· ${formatBytes(item.lease_file_size)}` : ''}</p>
                     </div>
 
