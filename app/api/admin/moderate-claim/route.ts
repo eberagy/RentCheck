@@ -54,10 +54,10 @@ export async function POST(req: NextRequest) {
   if (action === 'approved') {
     const landlord = (claim.landlord as unknown) as { id: string; display_name: string; slug: string } | null
     if (landlord) {
-      // Mark landlord as claimed
+      // Mark landlord as claimed and verified
       await serviceClient
         .from('landlords')
-        .update({ is_claimed: true, claimed_by: claim.claimed_by, claimed_at: new Date().toISOString() })
+        .update({ is_claimed: true, is_verified: true, claimed_by: claim.claimed_by, claimed_at: new Date().toISOString() })
         .eq('id', landlord.id)
 
       // Send approval email

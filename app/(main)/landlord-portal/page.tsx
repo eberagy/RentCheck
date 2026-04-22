@@ -95,12 +95,13 @@ export default function LandlordPortalPage() {
   }
 
   async function submitResponse(reviewId: string) {
-    if (!responseText.trim() || responseText.length > MAX_RESPONSE_LENGTH) return
+    const cleaned = responseText.replace(/<[^>]*>/g, '').replace(/\0/g, '').trim()
+    if (!cleaned || cleaned.length > MAX_RESPONSE_LENGTH) return
     setSubmittingResponse(true)
     try {
       const { error } = await supabase
         .from('reviews')
-        .update({ landlord_response: responseText, landlord_response_status: 'pending' })
+        .update({ landlord_response: cleaned, landlord_response_status: 'pending' })
         .eq('id', reviewId)
       if (error) throw error
       toast.success('Response submitted — it will appear after admin approval')

@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import {
   FileText, ShieldCheck, Flag, AlertTriangle,
   Users, TrendingUp, CheckCircle2, Clock, XCircle,
-  Database, Activity, RefreshCw, BarChart3, Eye, MessageSquare
+  Database, Activity, RefreshCw, BarChart3, Eye, MessageSquare, TriangleAlert
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -28,6 +28,7 @@ export default async function AdminDashboardPage() {
     { count: totalPublicRecords },
     { count: pendingLeases },
     { count: pendingResponses },
+    { count: flaggedReviewCount },
     { data: recentSyncs },
     { data: recentPendingReviews },
     { data: recentPendingSubmissions },
@@ -44,6 +45,7 @@ export default async function AdminDashboardPage() {
     supabase.from('public_records').select('*', { count: 'exact', head: true }),
     supabase.from('reviews').select('*', { count: 'exact', head: true }).not('lease_doc_path', 'is', null).eq('lease_verified', false),
     supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('landlord_response_status', 'pending').not('landlord_response', 'is', null),
+    supabase.from('review_flags').select('*', { count: 'exact', head: true }),
     supabase.from('sync_log').select('*').order('started_at', { ascending: false }).limit(6),
     supabase
       .from('reviews')
@@ -121,6 +123,16 @@ export default async function AdminDashboardPage() {
       bg: 'bg-indigo-50',
       border: 'border-indigo-200',
       urgent: false,
+    },
+    {
+      href: '/admin/flags',
+      label: 'Flagged Reviews',
+      count: flaggedReviewCount ?? 0,
+      icon: TriangleAlert,
+      color: 'text-red-600',
+      bg: 'bg-red-50',
+      border: 'border-red-200',
+      urgent: (flaggedReviewCount ?? 0) > 3,
     },
   ]
 

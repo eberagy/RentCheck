@@ -85,16 +85,15 @@ export async function POST(req: NextRequest) {
   }
 
   // Check for duplicate submission (same user + landlord in last 30 days)
-  const { data: existing } = await supabase
+  const { data: existingList } = await supabase
     .from('reviews')
     .select('id')
     .eq('reviewer_id', user.id)
     .eq('landlord_id', d.landlordId)
     .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
     .limit(1)
-    .single()
 
-  if (existing) return NextResponse.json({ error: 'You recently submitted a review for this landlord' }, { status: 409 })
+  if (existingList && existingList.length > 0) return NextResponse.json({ error: 'You recently submitted a review for this landlord' }, { status: 409 })
 
   const { data: review, error } = await supabase
     .from('reviews')
