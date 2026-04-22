@@ -15,7 +15,7 @@ interface ComparePageProps {
 }
 
 export async function generateMetadata({ searchParams }: ComparePageProps): Promise<Metadata> {
-  return { title: 'Compare Landlords | Vett', robots: 'noindex' }
+  return { title: 'Compare Landlords', robots: 'noindex' }
 }
 
 export default async function ComparePage({ searchParams }: ComparePageProps) {

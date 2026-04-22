@@ -5,7 +5,7 @@ import { Eyebrow } from '@/components/vett/Eyebrow'
 import { US_STATES } from '@/types'
 
 export const metadata: Metadata = {
-  title: 'Tenant Rights by State | Vett',
+  title: 'Tenant Rights by State',
   description:
     'Know your rights as a renter in all 50 US states. Security deposits, eviction notices, repair timelines, and legal resources.',
 }

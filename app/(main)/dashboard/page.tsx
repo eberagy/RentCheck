@@ -11,7 +11,7 @@ import { Grade } from '@/components/vett/Grade'
 import { getGradeLetter } from '@/lib/grade'
 import { formatDate } from '@/lib/utils'
 
-export const metadata: Metadata = { title: 'Dashboard | Vett' }
+export const metadata: Metadata = { title: 'Dashboard' }
 
 const STATUS_STYLES: Record<string, string> = {
   approved: 'text-teal-700 border-teal-200 bg-teal-50',

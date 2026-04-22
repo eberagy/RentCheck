@@ -1,9 +1,12 @@
-'use client'
-
+import type { Metadata } from 'next'
 import Link from 'next/link'
-import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { cn } from '@/lib/utils'
+
+export const metadata: Metadata = {
+  title: 'Frequently Asked Questions',
+  description:
+    'How Vett verifies reviews, where public records come from, how to dispute a record, how landlords claim their profile, and more.',
+}
 
 const FAQS = [
   {
@@ -44,7 +47,7 @@ const FAQS = [
   {
     id: 'fcra',
     q: 'Is Vett a consumer reporting agency?',
-    a: "No. Vett is a public-facing review and public records platform. We are not a consumer reporting agency (CRA) under the Fair Credit Reporting Act (FCRA), and our platform should not be used as a \"consumer report\" for employment, credit, insurance, or tenant screening decisions. See our FCRA Notice for full details.",
+    a: 'No. Vett is a public-facing review and public records platform. We are not a consumer reporting agency (CRA) under the Fair Credit Reporting Act (FCRA), and our platform should not be used as a "consumer report" for employment, credit, insurance, or tenant screening decisions. See our FCRA Notice for full details.',
   },
   {
     id: 'privacy',
@@ -57,26 +60,6 @@ const FAQS = [
     a: 'College students are among the most vulnerable renters — many signing their first lease with limited information. We specifically seed landlord data in major college markets and partner with student organizations to distribute the platform.',
   },
 ]
-
-function FAQItem({ id, q, a }: { id: string; q: string; a: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <div id={id} className="border-b border-gray-100">
-      <button
-        onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center justify-between gap-4 py-4 text-left group"
-      >
-        <span className={cn('font-semibold text-sm transition-colors', open ? 'text-teal-700' : 'text-gray-900 group-hover:text-gray-700')}>{q}</span>
-        <ChevronDown className={cn('h-4 w-4 text-gray-300 flex-shrink-0 transition-transform', open && 'rotate-180 text-teal-500')} />
-      </button>
-      {open && (
-        <div className="pb-4">
-          <p className="text-sm text-gray-700 leading-relaxed">{a}</p>
-        </div>
-      )}
-    </div>
-  )
-}
 
 export default function FAQPage() {
   return (
@@ -91,7 +74,17 @@ export default function FAQPage() {
 
       <div>
         {FAQS.map(faq => (
-          <FAQItem key={faq.id} {...faq} />
+          <details key={faq.id} id={faq.id} className="group border-b border-gray-100 [&_summary::-webkit-details-marker]:hidden">
+            <summary className="flex cursor-pointer items-center justify-between gap-4 py-4 text-left list-none">
+              <span className="font-semibold text-sm text-gray-900 transition-colors group-hover:text-gray-700 group-open:text-teal-700">
+                {faq.q}
+              </span>
+              <ChevronDown className="h-4 w-4 flex-shrink-0 text-gray-300 transition-transform group-open:rotate-180 group-open:text-teal-500" />
+            </summary>
+            <div className="pb-4">
+              <p className="text-sm text-gray-700 leading-relaxed">{faq.a}</p>
+            </div>
+          </details>
         ))}
       </div>
 

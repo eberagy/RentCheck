@@ -61,8 +61,8 @@ export default async function CityPage({ params }: CityPageProps) {
   }
 
   const { data: landlords, count } = await landlordQuery
-    .order('total_violation_count', { ascending: false, nullsFirst: false })
-    .order('review_count', { ascending: false })
+    .order('review_count', { ascending: false, nullsFirst: false })
+    .order('display_name', { ascending: true })
     .limit(20)
 
   if (!landlords) notFound()
@@ -84,14 +84,9 @@ export default async function CityPage({ params }: CityPageProps) {
     ? ratings.sort((a, b) => a - b)[Math.floor(ratings.length / 2)]
     : null
 
-  // Split top-rated and most-flagged
   const topRated = [...landlords]
-    .filter((l: Landlord) => (l.avg_rating ?? 0) >= 3)
+    .filter((l: Landlord) => (l.avg_rating ?? 0) >= 3 && (l.review_count ?? 0) > 0)
     .sort((a: Landlord, b: Landlord) => (b.avg_rating ?? 0) - (a.avg_rating ?? 0))
-    .slice(0, 5)
-  const mostFlagged = [...landlords]
-    .filter((l: Landlord) => ((l as any).open_violation_count ?? 0) > 0)
-    .sort((a: Landlord, b: Landlord) => ((b as any).open_violation_count ?? 0) - ((a as any).open_violation_count ?? 0))
     .slice(0, 5)
 
   return (
@@ -142,18 +137,14 @@ export default async function CityPage({ params }: CityPageProps) {
         </div>
       </section>
 
-      {/* Top-rated + Most-flagged */}
-      <div className="mx-auto grid max-w-[1180px] gap-7 px-7 py-12 md:grid-cols-2">
-        {/* Top-rated */}
-        <div className="rounded-[24px] border border-slate-200 bg-white p-6">
-          <div className="mb-[18px] flex items-center gap-2.5">
-            <div className="h-7 w-2 rounded bg-gradient-to-b from-teal to-teal-300" />
-            <h2 className="text-[18px] font-bold text-slate-900">Top-rated landlords in {cityName}</h2>
-          </div>
-          {topRated.length === 0 ? (
-            <p className="py-8 text-center text-sm text-slate-400">No highly rated landlords yet.</p>
-          ) : (
-            <div className="grid gap-2.5">
+      {topRated.length > 0 && (
+        <div className="mx-auto max-w-[1180px] px-7 py-12">
+          <div className="rounded-[24px] border border-slate-200 bg-white p-6">
+            <div className="mb-[18px] flex items-center gap-2.5">
+              <div className="h-7 w-2 rounded bg-gradient-to-b from-teal to-teal-300" />
+              <h2 className="text-[18px] font-bold text-slate-900">Top-rated landlords in {cityName}</h2>
+            </div>
+            <div className="grid gap-2.5 md:grid-cols-2">
               {topRated.map((l: Landlord, i: number) => (
                 <Link
                   key={l.id}
@@ -180,51 +171,9 @@ export default async function CityPage({ params }: CityPageProps) {
                 </Link>
               ))}
             </div>
-          )}
-        </div>
-
-        {/* Most flagged */}
-        <div className="rounded-[24px] border border-slate-200 bg-white p-6">
-          <div className="mb-[18px] flex items-center gap-2.5">
-            <div className="h-7 w-2 rounded bg-gradient-to-b from-rose-500 to-rose-300" />
-            <h2 className="text-[18px] font-bold text-slate-900">Most flagged landlords</h2>
           </div>
-          {mostFlagged.length === 0 ? (
-            <p className="py-8 text-center text-sm text-slate-400">No landlords with open violations.</p>
-          ) : (
-            <div className="grid gap-2.5">
-              {mostFlagged.map((l: Landlord, i: number) => (
-                <Link
-                  key={l.id}
-                  href={l.slug ? `/landlord/${l.slug}` : '/search'}
-                  className="grid items-center gap-3.5 rounded-[14px] border border-slate-100 bg-slate-50 p-3 transition-colors hover:border-slate-200"
-                  style={{ gridTemplateColumns: '24px auto 1fr auto' }}
-                >
-                  <div className="text-[14px] font-extrabold text-slate-400">{i + 1}</div>
-                  {getGradeLetter(l.avg_rating ?? null, l.review_count ?? 0) ? (
-                    <Grade letter={getGradeLetter(l.avg_rating ?? null, l.review_count ?? 0)} size="sm" />
-                  ) : (
-                    <div className="h-8 w-8 rounded-lg inline-flex items-center justify-center bg-slate-100 border border-slate-200 text-[10px] font-semibold text-slate-400">—</div>
-                  )}
-                  <div className="min-w-0">
-                    <div className="truncate text-[13.5px] font-bold text-slate-900">{l.display_name}</div>
-                    <div className="mt-0.5 text-[11.5px] text-slate-500">
-                      {l.city} &middot; {l.review_count ?? 0} reviews
-                      {((l as any).open_violation_count ?? 0) > 0 && (
-                        <span className="text-red-600"> &middot; {(l as any).open_violation_count} open</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-[16px] font-extrabold">{l.avg_rating?.toFixed(1) ?? '—'}</div>
-                    <Stars value={l.avg_rating ?? 0} size={10} />
-                  </div>
-                </Link>
-              ))}
-            </div>
-          )}
         </div>
-      </div>
+      )}
 
       {/* All landlords */}
       <div className="mx-auto max-w-[1180px] px-7 pb-12">

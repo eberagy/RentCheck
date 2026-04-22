@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { AdminNav } from '@/components/layout/AdminNav'
 
-export const metadata: Metadata = { title: 'Admin | Vett', robots: 'noindex' }
+export const metadata: Metadata = { title: 'Admin', robots: 'noindex' }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()

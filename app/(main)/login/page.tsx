@@ -34,12 +34,13 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [magicSent, setMagicSent] = useState(false)
   const [mode, setMode] = useState<Mode>('password')
-  const [passwordTab, setPasswordTab] = useState<PasswordTab>('signin')
 
   const { signInWithGoogle } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirectTo') ?? '/dashboard'
+  const initialTab: PasswordTab = searchParams.get('mode') === 'signup' ? 'signup' : 'signin'
+  const [passwordTab, setPasswordTab] = useState<PasswordTab>(initialTab)
 
   const contextMessage =
     REDIRECT_MESSAGES[redirectTo] ??

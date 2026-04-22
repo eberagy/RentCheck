@@ -7,14 +7,6 @@ interface LandlordGradeProps {
   size?: 'sm' | 'md' | 'lg'
 }
 
-const GRADE_DESCRIPTIONS: Record<TGrade, string> = {
-  A: 'Excellent landlord — few or no violations, high renter satisfaction',
-  B: 'Good landlord — minor issues, mostly positive reviews',
-  C: 'Average — some violations or mixed reviews',
-  D: 'Below average — multiple violations or poor ratings',
-  F: 'Significant concerns — high violations or very low ratings',
-}
-
 export function LandlordGrade({ grade, size = 'md' }: LandlordGradeProps) {
   if (!grade) return null
 
@@ -40,8 +32,8 @@ export function LandlordGrade({ grade, size = 'md' }: LandlordGradeProps) {
         {grade}
       </TooltipTrigger>
       <TooltipContent>
-        <p className="text-xs max-w-xs font-medium">Grade {grade}: {GRADE_DESCRIPTIONS[grade]}</p>
-        <p className="text-xs text-gray-400 mt-1">Based on violation history and renter ratings</p>
+        <p className="text-xs max-w-xs font-medium">Summary of public renter reviews on Vett.</p>
+        <p className="text-xs text-gray-400 mt-1">Not a credit or background report. Not from a consumer reporting agency.</p>
       </TooltipContent>
     </Tooltip>
   )

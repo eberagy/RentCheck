@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
   const { data: prop } = await supabase.from('properties').select('*').eq('id', p.id).single()
   if (!prop) return { title: 'Property Not Found' }
   return {
-    title: `${prop.address_line1}, ${prop.city} Reviews | Vett`,
+    title: `${prop.address_line1}, ${prop.city} Reviews`,
     description: `Renter reviews and violation history for ${prop.address_line1}, ${prop.city}. ${prop.review_count} reviews.`,
   }
 }

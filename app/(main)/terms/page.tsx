@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | Vett',
+  title: 'Terms of Service',
   description: 'Vett Terms of Service',
 }
 
