@@ -10,7 +10,7 @@ const createSchema = z.object({
   ratingMaintenance: z.number().int().min(1).max(5).optional(),
   ratingHonesty: z.number().int().min(1).max(5).optional(),
   ratingLeaseFairness: z.number().int().min(1).max(5).optional(),
-  wouldRentAgain: z.boolean().optional(),
+  wouldRentAgain: z.boolean().nullable().optional(),
   title: z.string().min(10).max(150),
   body: z.string().min(50).max(2000),
   rentalPeriodStart: z.string().optional(),

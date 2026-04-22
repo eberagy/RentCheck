@@ -91,7 +91,7 @@ export default function NewReviewPage() {
     )
   }
 
-  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<ReviewFormData>({
+  const { register, handleSubmit, watch, setValue, trigger, formState: { errors } } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
     defaultValues: { ratingOverall: 0, isCurrentTenant: false },
   })
@@ -421,13 +421,16 @@ export default function NewReviewPage() {
 
       {/* Step 2: Review form */}
       {step === 2 && (
-        <form onSubmit={handleSubmit(() => {
+        <form onSubmit={async (e) => {
+          e.preventDefault()
           if (leaseStatus !== 'uploaded') {
             toast.error('Upload your lease before continuing')
             return
           }
-          setStep(3)
-        })}>
+          // Only validate review fields — not the confirmation checkboxes on step 3
+          const valid = await trigger(['title', 'body', 'ratingOverall'])
+          if (valid) setStep(3)
+        }}>
           <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
             <Eyebrow tone="teal">Step 3 of 5 &middot; Rate & review</Eyebrow>
             <h1 className="mt-3.5 text-[clamp(28px,5.5vw,36px)] font-extrabold tracking-tight text-slate-900">Share your experience.</h1>
