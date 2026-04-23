@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Script from 'next/script'
 import type { Metadata } from 'next'
 import { MapPin, Globe, Phone, MessageSquare, Flag, Building2, GitCompare } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/server'
@@ -150,9 +151,26 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
   const hasRatings = (landlord.avg_rating ?? 0) > 0 && (landlord.review_count ?? 0) > 0
-  const jsonLd = {
+  const reviewSchema = (reviews ?? []).slice(0, 5).map((r: any) => {
+    const authorName = r.reviewer?.full_name?.trim() || 'Verified renter'
+    return {
+      '@type': 'Review',
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: r.rating_overall,
+        bestRating: 5,
+        worstRating: 1,
+      },
+      author: { '@type': 'Person', name: authorName },
+      datePublished: r.created_at,
+      name: r.title ?? undefined,
+      reviewBody: r.body ?? undefined,
+    }
+  })
+  const jsonLd = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
+    '@id': `${siteUrl}/landlord/${landlord.slug}`,
     name: landlord.display_name,
     url: `${siteUrl}/landlord/${landlord.slug}`,
     ...(landlord.business_name && { legalName: landlord.business_name }),
@@ -173,11 +191,14 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
         worstRating: 1,
       },
     }),
-  }
+    ...(reviewSchema.length > 0 && { review: reviewSchema }),
+  })
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <Script id={`landlord-jsonld-${landlord.slug}`} type="application/ld+json" strategy="beforeInteractive">
+        {jsonLd}
+      </Script>
 
       <div className="min-h-screen bg-[#F8FAFC]">
         <div className="mx-auto max-w-[1180px] px-8 py-7">
