@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { logAdminAction } from '@/lib/audit'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -44,5 +45,14 @@ export async function POST(req: NextRequest) {
   const service = createServiceClient()
   const { error } = await service.from('reviews').update(updates).eq('id', reviewId)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  logAdminAction({
+    adminId: admin.id,
+    actionType: verified ? 'lease.verified' : 'lease.rejected',
+    resourceType: 'review',
+    resourceId: reviewId,
+    detail: !verified && rejectionReason ? { rejectionReason } : undefined,
+  })
+
   return NextResponse.json({ ok: true })
 }

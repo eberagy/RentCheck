@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendResponseApprovedEmail, sendResponseRejectedEmail } from '@/lib/email'
+import { logAdminAction } from '@/lib/audit'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -50,6 +51,14 @@ export async function POST(req: NextRequest) {
     .eq('id', reviewId)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  logAdminAction({
+    adminId: user.id,
+    actionType: action === 'approved' ? 'response.approved' : 'response.rejected',
+    resourceType: 'review',
+    resourceId: reviewId,
+    detail: adminNotes ? { adminNotes } : undefined,
+  })
 
   if (review) {
     const landlord = (review.landlord as unknown) as

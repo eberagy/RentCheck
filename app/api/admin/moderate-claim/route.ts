@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { sendClaimApprovedEmail, sendClaimRejectedEmail } from '@/lib/email'
+import { logAdminAction } from '@/lib/audit'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -53,6 +54,15 @@ export async function POST(req: NextRequest) {
 
   const landlord = (claim.landlord as unknown) as { id: string; display_name: string; slug: string } | null
   const claimer = (claim.claimer as unknown) as { full_name: string | null; email: string | null } | null
+
+  logAdminAction({
+    adminId: admin.id,
+    actionType: action === 'approved' ? 'claim.approved' : 'claim.rejected',
+    resourceType: 'landlord_claim',
+    resourceId: claimId,
+    subjectUserId: claim.claimed_by,
+    detail: { landlordId: landlord?.id, landlordName: landlord?.display_name, adminNotes },
+  })
 
   if (action === 'approved') {
     if (landlord) {

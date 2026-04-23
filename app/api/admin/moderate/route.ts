@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { sendReviewApprovedEmail, sendReviewRejectedEmail, sendWatchlistAlertEmail } from '@/lib/email'
+import { logAdminAction } from '@/lib/audit'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -51,6 +52,15 @@ export async function POST(req: NextRequest) {
     .eq('id', reviewId)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  logAdminAction({
+    adminId: user.id,
+    actionType: action === 'approved' ? 'review.approved' : 'review.rejected',
+    resourceType: 'review',
+    resourceId: reviewId,
+    subjectUserId: review?.reviewer_id ?? undefined,
+    detail: adminNotes ? { adminNotes } : undefined,
+  })
 
   // Send email to reviewer (non-blocking)
   if (review) {

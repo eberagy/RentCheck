@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { logAdminAction } from '@/lib/audit'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -31,6 +32,12 @@ export async function POST(req: NextRequest) {
     if (!flagId) return NextResponse.json({ error: 'flagId required' }, { status: 422 })
     const { error } = await service.from('review_flags').delete().eq('id', flagId)
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    logAdminAction({
+      adminId: admin.id,
+      actionType: 'flag.dismissed',
+      resourceType: 'review_flag',
+      resourceId: flagId,
+    })
     return NextResponse.json({ ok: true })
   }
 
@@ -39,6 +46,12 @@ export async function POST(req: NextRequest) {
     const { error: updErr } = await service.from('reviews').update({ status: 'flagged' }).eq('id', reviewId)
     if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 })
     await service.from('review_flags').delete().eq('review_id', reviewId)
+    logAdminAction({
+      adminId: admin.id,
+      actionType: 'flag.review_removed',
+      resourceType: 'review',
+      resourceId: reviewId,
+    })
     return NextResponse.json({ ok: true })
   }
 

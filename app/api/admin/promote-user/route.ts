@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { logAdminAction } from '@/lib/audit'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -32,5 +33,15 @@ export async function POST(req: NextRequest) {
     .eq('id', userId)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  logAdminAction({
+    adminId: admin.id,
+    actionType: 'user.promoted',
+    resourceType: 'profile',
+    resourceId: userId,
+    subjectUserId: userId,
+    detail: { userType },
+  })
+
   return NextResponse.json({ ok: true })
 }

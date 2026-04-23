@@ -4,6 +4,7 @@ import { z } from 'zod'
 import slugify from 'slugify'
 import { US_STATES } from '@/types'
 import { sendSubmissionApprovedEmail, sendSubmissionRejectedEmail } from '@/lib/email'
+import { logAdminAction } from '@/lib/audit'
 
 const schema = z.object({
   submissionId: z.string().uuid(),
@@ -110,6 +111,15 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    logAdminAction({
+      adminId: admin.id,
+      actionType: 'submission.approved',
+      resourceType: 'landlord_submission',
+      resourceId: submissionId,
+      subjectUserId: submission.submitted_by,
+      detail: { landlordId: newLandlord.id, slug: newLandlord.slug, displayName: submission.display_name },
+    })
+
     return NextResponse.json({ ok: true, landlordId: newLandlord.id, slug: newLandlord.slug })
   }
 
@@ -139,6 +149,15 @@ export async function POST(req: NextRequest) {
       }).catch(err => console.error('[email] submission-rejected error:', err))
     }
   }
+
+  logAdminAction({
+    adminId: admin.id,
+    actionType: action === 'duplicate' ? 'submission.duplicate' : 'submission.rejected',
+    resourceType: 'landlord_submission',
+    resourceId: submissionId,
+    subjectUserId: submission.submitted_by,
+    detail: { displayName: submission.display_name, adminNotes },
+  })
 
   return NextResponse.json({ ok: true })
 }

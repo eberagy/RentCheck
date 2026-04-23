@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendDisputeResolvedEmail } from '@/lib/email'
+import { logAdminAction } from '@/lib/audit'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -50,7 +51,24 @@ export async function POST(req: NextRequest) {
   if (decision === 'record_removed' && recordId) {
     const { error: delErr } = await service.from('public_records').delete().eq('id', recordId)
     if (delErr) return NextResponse.json({ error: delErr.message }, { status: 500 })
+    logAdminAction({
+      adminId: admin.id,
+      actionType: 'dispute.record_removed',
+      resourceType: 'public_record',
+      resourceId: recordId,
+      subjectUserId: dispute?.disputed_by,
+      detail: { disputeId, decision, adminNotes },
+    })
   }
+
+  logAdminAction({
+    adminId: admin.id,
+    actionType: 'dispute.resolved',
+    resourceType: 'record_dispute',
+    resourceId: disputeId,
+    subjectUserId: dispute?.disputed_by,
+    detail: { decision, recordId, adminNotes },
+  })
 
   // Fire-and-forget notification to the submitter
   if (dispute?.disputed_by) {
