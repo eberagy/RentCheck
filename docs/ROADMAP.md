@@ -192,10 +192,12 @@ Autonomous heartbeat session (10-minute cadence). Every commit on `main`.
 - `a130369` Response-rate chip on LandlordCard (migration 102 + trigger extension + backfill)
 - `ab7f88f` Blog infra + tenant-rights scenario pages (5 scenarios × 19 states prerendered) + middleware-level CSRF/origin check + token-signed unsubscribe + `/admin/analytics`
 
-Pending migrations (all additive, safe to run in order):
-- `supabase/migrations/099_security_rls_tightening.sql` — profile/landlord column grants + reviews UPDATE WITH CHECK
-- `supabase/migrations/100_admin_actions_log.sql` — admin_actions table for audit log
-- `supabase/migrations/101_email_leads.sql` — email_leads table for signup form
-- `supabase/migrations/102_landlord_response_rate.sql` — landlord.response_rate column + trigger extension + backfill
+Migrations deployed live to prod (2026-04-23):
+- ✅ `supabase/migrations/100_admin_actions_log.sql` — admin_actions table wired; audit trail starts populating as soon as admins take actions
+- ✅ `supabase/migrations/101_email_leads.sql` — email_leads table + RLS live; homepage signup form now stores leads
+- ✅ `supabase/migrations/102_landlord_response_rate.sql` — response_rate + responded_review_count columns + trigger extension + backfill (0 landlords currently have a rate — need ≥3 approved reviews to unlock)
+
+Still pending — needs deeper engineering before deploy:
+- ⚠️ `supabase/migrations/099_security_rls_tightening.sql` — the column-level REVOKE/GRANTs would break `select('*')` on landlords (compare page) + self-profile reads in dashboard/landlord-portal/settings (authenticated users need full own-row read). The critical anon-email-leak is already closed at the API-boundary layer (`PUBLIC_REVIEW_SELECT` drops email, GET /api/reviews uses explicit column lists), so this migration is defense-in-depth not a ship-blocker. Next pass: introduce a `public_profiles` view + update PostgREST embeds to reference it.
 
 See `project_vett_session_2026_04_22.md` and `project_vett_heartbeat.md` in memory for full per-commit breakdowns.
