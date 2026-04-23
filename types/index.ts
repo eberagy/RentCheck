@@ -63,6 +63,8 @@ export interface Landlord {
   open_violation_count: number
   total_violation_count: number
   eviction_count: number
+  response_rate?: number | null
+  responded_review_count?: number
   ai_summary?: string | null
   opencorporates_id: string | null
   created_at: string

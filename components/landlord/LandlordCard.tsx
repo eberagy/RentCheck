@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { MapPin, MessageSquare, AlertTriangle, Gavel } from 'lucide-react'
+import { MapPin, MessageSquare, AlertTriangle, Gavel, Reply } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { VerifiedBadge } from './VerifiedBadge'
 import { StarRating } from '@/components/review/StarRating'
@@ -65,6 +65,19 @@ export function LandlordCard({ landlord, className }: LandlordCardProps) {
             </div>
 
             <div className="flex items-center gap-2">
+              {typeof landlord.response_rate === 'number' && landlord.response_rate > 0 && (
+                <div
+                  className={`flex items-center gap-1 rounded-full px-2 py-1 text-xs font-medium ${
+                    landlord.response_rate >= 50
+                      ? 'bg-teal-50 text-teal-700'
+                      : 'bg-slate-50 text-slate-600'
+                  }`}
+                  title="Share of published reviews this landlord has responded to"
+                >
+                  <Reply className="h-3 w-3" />
+                  <span>{landlord.response_rate}% responds</span>
+                </div>
+              )}
               {landlord.eviction_count > 0 && (
                 <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700">
                   <Gavel className="h-3 w-3" />

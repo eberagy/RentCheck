@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
     landlordIds.length
       ? supabase
           .from('landlords')
-          .select('id, display_name, slug, avg_rating, review_count, open_violation_count, total_violation_count, eviction_count, city, state_abbr, is_verified')
+          .select('id, display_name, slug, avg_rating, review_count, open_violation_count, total_violation_count, eviction_count, city, state_abbr, is_verified, response_rate')
           .in('id', landlordIds)
       : Promise.resolve({ data: [] as any[], error: null }),
     propertyIds.length

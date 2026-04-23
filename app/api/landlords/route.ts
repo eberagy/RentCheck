@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   if (id) {
     const { data, error } = await supabase
       .from('landlords')
-      .select('id, slug, display_name, business_name, city, state_abbr, avg_rating, review_count, is_verified, is_claimed, open_violation_count')
+      .select('id, slug, display_name, business_name, city, state_abbr, avg_rating, review_count, is_verified, is_claimed, open_violation_count, response_rate')
       .eq('id', id)
       .single()
 
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
 
   let q = supabase
     .from('landlords')
-    .select('id, slug, display_name, business_name, city, state_abbr, avg_rating, review_count, is_verified, is_claimed, open_violation_count', { count: 'exact' })
+    .select('id, slug, display_name, business_name, city, state_abbr, avg_rating, review_count, is_verified, is_claimed, open_violation_count, response_rate', { count: 'exact' })
     .order('review_count', { ascending: false })
     .range(offset, offset + limit - 1)
 
