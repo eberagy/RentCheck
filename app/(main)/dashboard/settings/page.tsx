@@ -121,7 +121,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Notifications section */}
-        <div className="p-6">
+        <div id="email-preferences" className="p-6 scroll-mt-24">
           <div className="flex items-center gap-2 mb-4">
             <Bell className="h-4 w-4 text-gray-500" />
             <h2 className="font-semibold text-gray-900">Email Notifications</h2>
