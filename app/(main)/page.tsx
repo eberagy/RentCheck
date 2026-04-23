@@ -14,6 +14,7 @@ import {
 import { SearchBar } from '@/components/search/SearchBar'
 import { ScrollReveal } from '@/components/ui/ScrollReveal'
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter'
+import { NewsletterSignup } from '@/components/marketing/NewsletterSignup'
 import { Button } from '@/components/ui/button'
 import { createServiceClient } from '@/lib/supabase/server'
 import { COLLEGE_CITIES } from '@/types'
@@ -416,6 +417,16 @@ export default async function HomePage() {
                 <ArrowRight className="h-3 w-3 text-slate-300 transition-[color,transform] duration-200 group-hover:text-teal-500 group-hover:translate-x-0.5" />
               </Link>
             ))}
+          </div>
+
+          {/* Waitlist / newsletter capture for cities not yet covered */}
+          <div className="mt-14 max-w-xl">
+            <NewsletterSignup
+              theme="light"
+              source="homepage-cities"
+              heading="Your city not on the list?"
+              description="Drop your email and we'll let you know the moment Vett covers your area."
+            />
           </div>
         </div>
       </section>
