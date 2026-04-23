@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -26,6 +27,9 @@ export async function POST(req: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const rl = rateLimit(`watchlist-add:${user.id}`, 60, 3600_000)
+  if (!rl.success) return rateLimitResponse()
 
   const body = await req.json()
   const parsed = schema.safeParse(body)

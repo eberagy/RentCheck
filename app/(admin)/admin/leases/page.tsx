@@ -46,10 +46,10 @@ export default function AdminLeasesPage() {
     setLoading(false)
   }
 
-  async function getDocUrl(reviewId: string, path: string) {
+  async function getDocUrl(reviewId: string) {
     if (docUrls[reviewId]) { window.open(docUrls[reviewId], '_blank'); return }
     try {
-      const res = await fetch(`/api/admin/lease-url?path=${encodeURIComponent(path)}`)
+      const res = await fetch(`/api/admin/lease-url?reviewId=${encodeURIComponent(reviewId)}`)
       const json = await res.json()
       if (res.ok && json.signedUrl) {
         setDocUrls(prev => ({ ...prev, [reviewId]: json.signedUrl }))
@@ -127,7 +127,7 @@ export default function AdminLeasesPage() {
 
                     {/* Document viewer button */}
                     <button
-                      onClick={() => getDocUrl(item.id, item.lease_doc_path)}
+                      onClick={() => getDocUrl(item.id)}
                       className="inline-flex items-center gap-1.5 text-sm text-navy-600 hover:text-navy-800 font-medium mb-4"
                     >
                       <Eye className="h-4 w-4" />

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sanitizeText } from '@/lib/sanitize'
 import { sendSubmissionReceivedEmail } from '@/lib/email'
+import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { z } from 'zod'
 
 const MAX_RESPONSE_LENGTH = 1000
@@ -15,6 +16,9 @@ export async function POST(req: NextRequest) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Not signed in' }, { status: 401 })
+
+  const rl = rateLimit(`landlord-response:${user.id}`, 10, 3600_000)
+  if (!rl.success) return rateLimitResponse()
 
   const body = await req.json()
   const parsed = schema.safeParse(body)

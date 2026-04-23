@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { buildLandlordSummary, buildPropertySummary, truncateSummary } from '@/lib/summaries'
+import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -10,6 +11,12 @@ const schema = z.object({
 })
 
 export async function GET(req: NextRequest) {
+  // Rate-limit on IP since search allows unauthenticated use. Tight limits
+  // because search_all is an expensive full-text RPC.
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? req.headers.get('x-real-ip') ?? 'anon'
+  const rl = rateLimit(`search:${ip}`, 60, 60_000)
+  if (!rl.success) return rateLimitResponse()
+
   const parsed = schema.safeParse(Object.fromEntries(req.nextUrl.searchParams))
   if (!parsed.success) return NextResponse.json({ error: 'Invalid query' }, { status: 400 })
 
