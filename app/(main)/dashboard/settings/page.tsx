@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Save, Loader2, User, Bell, Lock } from 'lucide-react'
+import { ArrowLeft, Save, Loader2, User, Bell, Lock, Download, Trash2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -207,14 +208,95 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Danger zone */}
-      <div className="mt-8 bg-white border border-red-200 rounded-xl p-6">
-        <h2 className="font-semibold text-red-700 mb-1">Delete Account</h2>
+      {/* Data + account control */}
+      <div className="mt-6 bg-white border border-gray-200 rounded-xl p-6">
+        <div className="flex items-center gap-2 mb-2">
+          <Download className="h-4 w-4 text-gray-500" />
+          <h2 className="font-semibold text-gray-900">Download your data</h2>
+        </div>
         <p className="text-sm text-gray-500 mb-4">
-          Permanently delete your account and all your reviews. This cannot be undone.
-          Please email <a href="mailto:support@vettrentals.com" className="text-navy-600 hover:underline">support@vettrentals.com</a> to request account deletion.
+          Export every row Vett stores about you (profile, reviews, watchlist, submissions, disputes) as a JSON file.
         </p>
+        <Button variant="outline" asChild>
+          <a href="/api/me/export" download>
+            <Download className="h-4 w-4 mr-2" /> Download data
+          </a>
+        </Button>
       </div>
+
+      <AccountDeleteSection />
+    </div>
+  )
+}
+
+function AccountDeleteSection() {
+  const router = useRouter()
+  const [confirm, setConfirm] = useState('')
+  const [expanded, setExpanded] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+
+  async function handleDelete() {
+    if (confirm !== 'DELETE MY ACCOUNT') return
+    setDeleting(true)
+    try {
+      const res = await fetch('/api/me/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirm }),
+      })
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}))
+        throw new Error(json.error ?? 'Failed to delete account')
+      }
+      toast.success('Account deleted.')
+      router.push('/')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete account')
+      setDeleting(false)
+    }
+  }
+
+  return (
+    <div className="mt-8 bg-white border border-red-200 rounded-xl p-6">
+      <h2 className="font-semibold text-red-700 mb-1">Delete account</h2>
+      <p className="text-sm text-gray-500 mb-4">
+        Permanently deletes your profile, watchlist, submissions, and stored documents.
+        Your published reviews stay visible but are disassociated from you.
+      </p>
+      {!expanded ? (
+        <Button variant="outline" className="border-red-300 text-red-700 hover:bg-red-50" onClick={() => setExpanded(true)}>
+          <Trash2 className="h-4 w-4 mr-2" /> Start deletion
+        </Button>
+      ) : (
+        <div className="space-y-3">
+          <div>
+            <Label htmlFor="confirm-delete" className="text-sm font-medium text-red-700">
+              Type <span className="font-mono font-bold">DELETE MY ACCOUNT</span> to confirm
+            </Label>
+            <Input
+              id="confirm-delete"
+              value={confirm}
+              onChange={e => setConfirm(e.target.value)}
+              placeholder="DELETE MY ACCOUNT"
+              className="mt-1.5"
+              autoComplete="off"
+            />
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="border-red-300 bg-red-600 text-white hover:bg-red-700 hover:text-white hover:border-red-700"
+              onClick={handleDelete}
+              disabled={deleting || confirm !== 'DELETE MY ACCOUNT'}
+            >
+              {deleting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Deleting…</> : <>Confirm delete</>}
+            </Button>
+            <Button variant="outline" onClick={() => { setExpanded(false); setConfirm('') }} disabled={deleting}>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
