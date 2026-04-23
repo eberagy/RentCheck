@@ -103,7 +103,12 @@ export default async function DashboardPage() {
               <div className="py-10 text-center">
                 <Eye className="mx-auto mb-3 h-8 w-8 text-slate-200" />
                 <p className="text-sm text-slate-600">No landlords watched yet.</p>
-                <p className="mt-1 text-[12.5px] text-slate-400">Visit a landlord page and click &ldquo;Watch Landlord&rdquo;.</p>
+                <p className="mt-1 text-[12.5px] text-slate-400">
+                  Get notified when watched landlords get new reviews or violations.
+                </p>
+                <Link href="/search" className="mt-3 inline-block text-[12.5px] font-medium text-teal hover:underline">
+                  Find a landlord to watch &rarr;
+                </Link>
               </div>
             ) : (
               <div className="grid gap-2.5">

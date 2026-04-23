@@ -298,28 +298,28 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             ))}
           </div>
 
-          {/* Rating breakdown */}
-          {(avgResponsiveness || avgMaintenance || avgHonesty || avgLeaseFairness) && (
-            <div className="border-t border-slate-100 px-6 py-6 sm:px-8">
-              <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-[14px] font-bold text-slate-900">Rating breakdown</h3>
-                {wouldRentAgainPct !== null && approved.length > 0 && (
-                  <p className="text-[13px] text-slate-500">
-                    <span className={`font-bold ${wouldRentAgainPct >= 50 ? 'text-amber-700' : 'text-red-600'}`}>
-                      {wouldRentAgainPct}%
-                    </span>{' '}
-                    would rent again
-                  </p>
-                )}
-              </div>
-              <div className="grid max-w-[900px] gap-x-10 gap-y-3.5 sm:grid-cols-2">
-                <RatingBar label="Responsiveness" value={avgResponsiveness} />
-                <RatingBar label="Maintenance" value={avgMaintenance} />
-                <RatingBar label="Honesty" value={avgHonesty} />
-                <RatingBar label="Lease Fairness" value={avgLeaseFairness} />
-              </div>
+          {/* Rating breakdown — always shown; null values render as em-dash for consistency */}
+          <div className="border-t border-slate-100 px-6 py-6 sm:px-8">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-[14px] font-bold text-slate-900">Rating breakdown</h3>
+              {wouldRentAgainPct !== null && approved.length > 0 ? (
+                <p className="text-[13px] text-slate-500">
+                  <span className={`font-bold ${wouldRentAgainPct >= 50 ? 'text-amber-700' : 'text-red-600'}`}>
+                    {wouldRentAgainPct}%
+                  </span>{' '}
+                  would rent again
+                </p>
+              ) : (
+                <p className="text-[12px] text-slate-400">Based on {approved.length} review{approved.length === 1 ? '' : 's'}</p>
+              )}
             </div>
-          )}
+            <div className="grid max-w-[900px] gap-x-10 gap-y-3.5 sm:grid-cols-2">
+              <RatingBar label="Responsiveness" value={avgResponsiveness} />
+              <RatingBar label="Maintenance" value={avgMaintenance} />
+              <RatingBar label="Honesty" value={avgHonesty} />
+              <RatingBar label="Lease Fairness" value={avgLeaseFairness} />
+            </div>
+          </div>
 
           {/* Bio */}
           {landlord.bio && (
