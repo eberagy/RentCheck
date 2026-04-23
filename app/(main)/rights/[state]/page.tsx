@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { US_STATES } from '@/types'
+import { getAllScenarios } from '@/lib/rights-scenarios'
 
 interface TenantRightsPageProps {
   params: { state: string }
@@ -474,6 +475,25 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
           </ul>
         </CardContent>
       </Card>
+
+      {/* ── Common scenarios ── */}
+      <div className="mb-8">
+        <p className="text-sm font-semibold text-gray-700 mb-3">Common scenarios</p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {getAllScenarios().map(s => (
+            <Link
+              key={s.slug}
+              href={`/rights/${stateAbbr.toLowerCase()}/${s.slug}`}
+              className="group block rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:border-navy-300"
+            >
+              <div className="text-[14.5px] font-semibold text-slate-900 group-hover:text-navy-700">
+                {s.title}
+              </div>
+              <div className="mt-1 text-[12.5px] text-slate-500 line-clamp-2">{s.summary}</div>
+            </Link>
+          ))}
+        </div>
+      </div>
 
       {/* ── Browse other states ── */}
       <div>

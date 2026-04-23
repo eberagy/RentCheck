@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { COLLEGE_CITIES } from '@/types'
+import { getAllPosts } from '@/lib/blog'
 
 export const revalidate = 3600
 
@@ -38,7 +39,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/terms`, changeFrequency: 'monthly' },
     { url: `${baseUrl}/privacy`, changeFrequency: 'monthly' },
     { url: `${baseUrl}/fcra-notice`, changeFrequency: 'monthly' },
+    { url: `${baseUrl}/press`, changeFrequency: 'monthly' },
+    { url: `${baseUrl}/blog`, changeFrequency: 'weekly' },
   ]
+
+  const blogPages: MetadataRoute.Sitemap = getAllPosts().map(post => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.publishedAt),
+    changeFrequency: 'monthly' as const,
+  }))
 
   const statePages: MetadataRoute.Sitemap = [
     'md', 'pa', 'sc', 'ny', 'ca', 'il', 'tx', 'wa', 'ma',
@@ -66,5 +75,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'weekly' as const,
   }))
 
-  return [...staticPages, ...statePages, ...cityPages, ...landlordPages, ...propertyPages]
+  return [...staticPages, ...blogPages, ...statePages, ...cityPages, ...landlordPages, ...propertyPages]
 }

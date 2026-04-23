@@ -1,17 +1,23 @@
 import { Hr, Link, Text } from '@react-email/components'
 
 // Shared CAN-SPAM compliant footer. Used by every transactional email template.
-// Includes working unsubscribe link, physical mailing address, and privacy link.
-// Keep copy minimal — every email should include this; its job is legal compliance,
-// not conversion.
+// Includes working unsubscribe link (token-signed for one-click opt-out when
+// a recipient user ID is available), physical mailing address, and privacy link.
+// Keep copy minimal — every email should include this; its job is legal
+// compliance, not conversion.
 
 const VETT_POSTAL_ADDRESS = 'Vett, Inc. · 1234 Market St · Philadelphia, PA 19107'
 
 interface EmailFooterProps {
   note?: string
+  /** Token-signed unsubscribe link (see lib/unsubscribe-token.ts#createUnsubscribeToken). If provided, renders a one-click opt-out URL. */
+  unsubscribeToken?: string
 }
 
-export function EmailFooter({ note }: EmailFooterProps) {
+export function EmailFooter({ note, unsubscribeToken }: EmailFooterProps) {
+  const unsubscribeHref = unsubscribeToken
+    ? `https://vettrentals.com/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`
+    : 'https://vettrentals.com/unsubscribe'
   return (
     <>
       <Hr style={hr} />
@@ -19,8 +25,8 @@ export function EmailFooter({ note }: EmailFooterProps) {
         {note ?? 'You received this because you have an account on Vett.'}
       </Text>
       <Text style={line}>
-        <Link href="https://vettrentals.com/unsubscribe" style={link}>
-          Manage emails
+        <Link href={unsubscribeHref} style={link}>
+          {unsubscribeToken ? 'Unsubscribe' : 'Manage emails'}
         </Link>{' '}·{' '}
         <Link href="https://vettrentals.com/privacy" style={link}>
           Privacy

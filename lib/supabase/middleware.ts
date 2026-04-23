@@ -1,8 +1,59 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// Routes that legitimately accept cross-origin POSTs:
+// - Stripe webhook verifies its own signature
+// - Cron + sync endpoints verify CRON_SECRET header
+// Everything else under /api/ that's a state-changing request needs an
+// Origin / Referer from an allowlisted domain.
+const CROSS_ORIGIN_ALLOWED_PREFIXES = [
+  '/api/stripe/webhook',
+  '/api/cron/',
+  '/api/sync/',
+]
+
+const ALLOWED_ORIGINS = new Set<string>([
+  'https://vettrentals.com',
+  'https://www.vettrentals.com',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+])
+
+function originIsAllowed(origin: string | null): boolean {
+  if (!origin) return false
+  if (ALLOWED_ORIGINS.has(origin)) return true
+  try {
+    const url = new URL(origin)
+    if (url.hostname.endsWith('.vercel.app')) return true
+  } catch {
+    return false
+  }
+  return false
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
+
+  // Origin check for state-changing API requests. Runs BEFORE auth so a
+  // forged cross-origin cookie attack gets dropped at the edge.
+  const method = request.method
+  const pathname = request.nextUrl.pathname
+  const isWrite = method === 'POST' || method === 'PATCH' || method === 'DELETE' || method === 'PUT'
+  const isApi = pathname.startsWith('/api/')
+  const needsOriginCheck =
+    isApi && isWrite && !CROSS_ORIGIN_ALLOWED_PREFIXES.some(p => pathname.startsWith(p))
+
+  if (needsOriginCheck) {
+    const origin = request.headers.get('origin')
+    const referer = request.headers.get('referer')
+    const candidate = origin ?? (referer ? safeOrigin(referer) : null)
+    if (!originIsAllowed(candidate)) {
+      return NextResponse.json(
+        { error: 'Cross-origin request blocked' },
+        { status: 403 },
+      )
+    }
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,7 +79,6 @@ export async function updateSession(request: NextRequest) {
 
   // Protect routes
   const url = request.nextUrl.clone()
-  const pathname = url.pathname
 
   // Admin routes: require admin user_type
   if (pathname.startsWith('/admin')) {
@@ -74,4 +124,8 @@ export async function updateSession(request: NextRequest) {
   }
 
   return supabaseResponse
+}
+
+function safeOrigin(referer: string): string | null {
+  try { return new URL(referer).origin } catch { return null }
 }

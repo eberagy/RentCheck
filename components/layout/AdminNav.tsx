@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, FileText, AlertTriangle, Users,
-  RefreshCw, Flag, ShieldCheck, Home, PlusSquare, MessageSquare, TriangleAlert, ScrollText,
+  RefreshCw, Flag, ShieldCheck, Home, PlusSquare, MessageSquare, TriangleAlert, ScrollText, BarChart3,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Logo } from '@/components/Logo'
@@ -21,6 +21,7 @@ const ADMIN_LINKS = [
   { href: '/admin/submissions', label: 'Submissions', icon: PlusSquare },
   { href: '/admin/data-sync', label: 'Data Sync', icon: RefreshCw },
   { href: '/admin/audit', label: 'Audit Log', icon: ScrollText },
+  { href: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
 ]
 
 export function AdminNav() {
