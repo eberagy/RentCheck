@@ -30,10 +30,9 @@ export async function GET(req: NextRequest) {
   for (const record of newRecords) {
     if (!record.landlord_id) continue
     if (!byLandlord.has(record.landlord_id)) {
-      const isEviction = record.record_type?.includes('eviction')
-      const isCourt = record.record_type?.includes('court')
+      const isCourtLike = record.record_type?.includes('eviction') || record.record_type?.includes('court')
       byLandlord.set(record.landlord_id, {
-        type: isEviction ? 'new_court_case' : isCourt ? 'new_court_case' : 'new_violation',
+        type: isCourtLike ? 'new_court_case' : 'new_violation',
         summary: record.title ?? record.description ?? 'A new public record was added',
       })
     }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendWelcomeEmail } from '@/lib/email'
+import { captureException } from '@/lib/sentry'
 
 export async function GET(req: NextRequest) {
   const { searchParams, origin } = req.nextUrl
@@ -44,6 +45,10 @@ export async function GET(req: NextRequest) {
       }
 
       return NextResponse.redirect(`${origin}${next}`)
+    }
+
+    if (error) {
+      captureException(error, { where: 'auth/callback:exchange' })
     }
   }
 

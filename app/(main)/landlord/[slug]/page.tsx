@@ -97,7 +97,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       .order('review_count', { ascending: false }),
     supabase
       .from('reviews')
-      .select('rating_responsiveness, rating_maintenance, rating_honesty, rating_lease_fairness, would_rent_again')
+      .select('rating_responsiveness, rating_maintenance, rating_honesty, rating_lease_fairness, would_rent_again, landlord_response_status')
       .eq('landlord_id', landlord.id)
       .eq('status', 'approved'),
   ])
@@ -127,6 +127,10 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
   const avgLeaseFairness = avg('rating_lease_fairness')
   const wouldRentAgainPct = approved.length
     ? Math.round((approved.filter(r => r.would_rent_again === true).length / approved.length) * 100)
+    : null
+  const respondedCount = approved.filter((r: any) => r.landlord_response_status === 'approved').length
+  const responseRatePct = approved.length >= 3
+    ? Math.round((respondedCount / approved.length) * 100)
     : null
 
   // Merge direct records + property-linked records (deduplicate by id)
@@ -319,6 +323,16 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
               <RatingBar label="Honesty" value={avgHonesty} />
               <RatingBar label="Lease Fairness" value={avgLeaseFairness} />
             </div>
+
+            {responseRatePct !== null && (
+              <div className="mt-5 flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5">
+                <MessageSquare className="h-4 w-4 text-slate-500" aria-hidden="true" />
+                <span className="text-[13px] text-slate-700">
+                  Responds to <span className={`font-bold ${responseRatePct >= 50 ? 'text-teal-700' : 'text-slate-900'}`}>{responseRatePct}%</span> of reviews
+                  <span className="ml-1 text-slate-400">({respondedCount} of {approved.length})</span>
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Bio */}
