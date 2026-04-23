@@ -62,6 +62,7 @@
     { "path": "/api/sync/franklin-county",        "schedule": "30 5 * * 0"  },
     { "path": "/api/sync/mecklenburg-assessor",   "schedule": "45 5 * * 0"  },
     { "path": "/api/sync/travis-county",          "schedule": "0 6 * * 0"   },
-    { "path": "/api/sync/mine-owners",            "schedule": "0 1 * * *"   }
+    { "path": "/api/sync/mine-owners",            "schedule": "0 1 * * *"   },
+    { "path": "/api/cron/admin-digest",           "schedule": "0 13 * * *"  }
   ]
 }

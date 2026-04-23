@@ -10,6 +10,7 @@ import SubmissionRejectedEmail from '@/emails/submission-rejected'
 import ClaimRejectedEmail from '@/emails/claim-rejected'
 import ResponseApprovedEmail from '@/emails/response-approved'
 import ResponseRejectedEmail from '@/emails/response-rejected'
+import AdminDigestEmail, { type AdminDigestCounts } from '@/emails/admin-digest'
 
 const FROM = process.env.RESEND_FROM_EMAIL ?? 'Vett <noreply@vettrentals.com>'
 
@@ -110,4 +111,10 @@ export async function sendResponseRejectedEmail(to: string, props: {
   reason?: string
 }) {
   await sendEmail(to, `Update on your response`, ResponseRejectedEmail(props) as any)
+}
+
+export async function sendAdminDigestEmail(to: string, counts: AdminDigestCounts) {
+  const total = Object.values(counts).reduce((a, b) => a + b, 0)
+  const subject = total === 0 ? 'Vett admin: all queues empty' : `Vett admin: ${total} ${total === 1 ? 'item' : 'items'} need attention`
+  await sendEmail(to, subject, AdminDigestEmail({ counts }) as any)
 }
