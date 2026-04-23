@@ -56,6 +56,10 @@ export default function LandlordPortalPage() {
   const [responseText, setResponseText] = useState('')
   const [submittingResponse, setSubmittingResponse] = useState(false)
   const [expandedRatings, setExpandedRatings] = useState<string | null>(null)
+  const [editingProfile, setEditingProfile] = useState(false)
+  const [profileWebsite, setProfileWebsite] = useState('')
+  const [profilePhone, setProfilePhone] = useState('')
+  const [savingProfile, setSavingProfile] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -81,6 +85,8 @@ export default function LandlordPortalPage() {
       const l = claimData.landlord as unknown as Landlord
       setLandlord(l)
       setClaim(claimData as unknown as LandlordClaim)
+      setProfileWebsite(l.website ?? '')
+      setProfilePhone(l.phone ?? '')
       const { data: r } = await supabase
         .from('reviews')
         .select('*, reviewer:profiles!reviews_reviewer_id_fkey(full_name, avatar_url)')
@@ -92,6 +98,33 @@ export default function LandlordPortalPage() {
       setClaim(claimData as unknown as LandlordClaim)
     }
     setLoading(false)
+  }
+
+  async function saveProfile() {
+    if (!landlord) return
+    setSavingProfile(true)
+    try {
+      const res = await fetch('/api/landlord-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          landlordId: landlord.id,
+          website: profileWebsite.trim(),
+          phone: profilePhone.trim(),
+        }),
+      })
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}))
+        throw new Error(json.error ?? 'Failed to save')
+      }
+      toast.success('Profile updated')
+      setLandlord({ ...landlord, website: profileWebsite.trim() || null, phone: profilePhone.trim() || null })
+      setEditingProfile(false)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to save')
+    } finally {
+      setSavingProfile(false)
+    }
   }
 
   async function submitResponse(reviewId: string) {
@@ -231,6 +264,68 @@ export default function LandlordPortalPage() {
                   <div className={`mt-1 text-[12px] ${s.tone === 'amber' ? 'text-amber-600' : 'text-teal'}`}>{s.sub}</div>
                 </div>
               ))}
+            </div>
+
+            {/* Profile info */}
+            <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-[18px] font-bold text-slate-900">Public profile</h2>
+                {!editingProfile ? (
+                  <Button size="sm" variant="outline" onClick={() => setEditingProfile(true)}>Edit</Button>
+                ) : (
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" onClick={() => {
+                      setEditingProfile(false)
+                      setProfileWebsite(landlord.website ?? '')
+                      setProfilePhone(landlord.phone ?? '')
+                    }} disabled={savingProfile}>Cancel</Button>
+                    <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white" onClick={saveProfile} disabled={savingProfile}>
+                      {savingProfile ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
+                      Save
+                    </Button>
+                  </div>
+                )}
+              </div>
+
+              {!editingProfile ? (
+                <dl className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Website</dt>
+                    <dd className="mt-1 text-[14px] text-slate-900">
+                      {landlord.website ? <a href={landlord.website} target="_blank" rel="noopener noreferrer" className="text-navy-600 hover:underline break-all">{landlord.website}</a> : <span className="text-slate-400 italic">Not set</span>}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Phone</dt>
+                    <dd className="mt-1 text-[14px] text-slate-900">
+                      {landlord.phone ? landlord.phone : <span className="text-slate-400 italic">Not set</span>}
+                    </dd>
+                  </div>
+                </dl>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <label className="block">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Website</span>
+                    <input
+                      type="url"
+                      value={profileWebsite}
+                      onChange={e => setProfileWebsite(e.target.value)}
+                      placeholder="https://example.com"
+                      className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-100"
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Phone</span>
+                    <input
+                      type="tel"
+                      value={profilePhone}
+                      onChange={e => setProfilePhone(e.target.value)}
+                      placeholder="(555) 123-4567"
+                      className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-100"
+                    />
+                  </label>
+                </div>
+              )}
             </div>
 
             {/* Needs a response */}
