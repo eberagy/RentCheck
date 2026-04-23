@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { sendDisputeResolvedEmail } from '@/lib/email'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -28,6 +29,13 @@ export async function POST(req: NextRequest) {
   const { disputeId, decision, adminNotes, recordId } = parsed.data
   const service = createServiceClient()
 
+  // Look up submitter + record label before touching anything, for the email later
+  const { data: dispute } = await service
+    .from('record_disputes')
+    .select('disputed_by, record:public_records(title, description)')
+    .eq('id', disputeId)
+    .single()
+
   const { error } = await service
     .from('record_disputes')
     .update({
@@ -42,6 +50,31 @@ export async function POST(req: NextRequest) {
   if (decision === 'record_removed' && recordId) {
     const { error: delErr } = await service.from('public_records').delete().eq('id', recordId)
     if (delErr) return NextResponse.json({ error: delErr.message }, { status: 500 })
+  }
+
+  // Fire-and-forget notification to the submitter
+  if (dispute?.disputed_by) {
+    void (async () => {
+      try {
+        const { data: submitter } = await service
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', dispute.disputed_by)
+          .single()
+        if (submitter?.email) {
+          const rec = (dispute.record as unknown) as { title: string | null; description: string | null } | null
+          const label = rec?.title || rec?.description?.slice(0, 60) || undefined
+          await sendDisputeResolvedEmail(submitter.email, {
+            firstName: submitter.full_name?.split(' ')[0],
+            decision,
+            recordLabel: label,
+            adminNotes,
+          })
+        }
+      } catch (err) {
+        console.error('[resolve-dispute] notify failed:', err)
+      }
+    })()
   }
 
   return NextResponse.json({ ok: true })

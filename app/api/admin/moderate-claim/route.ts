@@ -62,6 +62,14 @@ export async function POST(req: NextRequest) {
         .update({ is_claimed: true, is_verified: true, claimed_by: claim.claimed_by, claimed_at: new Date().toISOString() })
         .eq('id', landlord.id)
 
+      // Promote the claimer to landlord user_type so the navbar surfaces the portal link.
+      // Only upgrade — never downgrade an admin.
+      await serviceClient
+        .from('profiles')
+        .update({ user_type: 'landlord' })
+        .eq('id', claim.claimed_by)
+        .neq('user_type', 'admin')
+
       if (claimer?.email) {
         sendClaimApprovedEmail(claimer.email, {
           firstName: claimer.full_name?.split(' ')[0],

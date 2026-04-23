@@ -21,6 +21,8 @@ export function AuthErrorHandler() {
       toast.error('Sign-in failed. Please try again.')
     } else if (error === 'auth_failed') {
       toast.error('Authentication failed. Please try again.')
+    } else if (error === 'account_suspended') {
+      toast.error('Your account is suspended. Email support@vettrentals.com if this is a mistake.', { duration: 8000 })
     } else if (errorDesc) {
       toast.error(decodeURIComponent(errorDesc.replace(/\+/g, ' ')))
     }

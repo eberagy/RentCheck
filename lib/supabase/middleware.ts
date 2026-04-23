@@ -48,8 +48,14 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Dashboard + portal: require auth + not banned
-  if (pathname.startsWith('/dashboard') || pathname.startsWith('/landlord-portal')) {
+  // Auth-gated user flows: dashboard, landlord portal, review submission, add-landlord, dispute
+  const requiresAuthAndNotBanned =
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/landlord-portal') ||
+    pathname.startsWith('/review/new') ||
+    pathname.startsWith('/add-landlord') ||
+    pathname.startsWith('/dispute')
+  if (requiresAuthAndNotBanned) {
     if (!user) {
       url.pathname = '/login'
       url.searchParams.set('redirectTo', pathname)
@@ -62,6 +68,7 @@ export async function updateSession(request: NextRequest) {
       .single()
     if (prof?.is_banned) {
       url.pathname = '/'
+      url.searchParams.set('error', 'account_suspended')
       return NextResponse.redirect(url)
     }
   }

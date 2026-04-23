@@ -52,6 +52,7 @@ export default function LandlordPortalPage() {
   const [landlord, setLandlord] = useState<Landlord | null>(null)
   const [claim, setClaim] = useState<LandlordClaim | null>(null)
   const [reviews, setReviews] = useState<Review[]>([])
+  const [openDisputes, setOpenDisputes] = useState(0)
   const [responding, setResponding] = useState<string | null>(null)
   const [responseText, setResponseText] = useState('')
   const [submittingResponse, setSubmittingResponse] = useState(false)
@@ -87,13 +88,36 @@ export default function LandlordPortalPage() {
       setClaim(claimData as unknown as LandlordClaim)
       setProfileWebsite(l.website ?? '')
       setProfilePhone(l.phone ?? '')
-      const { data: r } = await supabase
-        .from('reviews')
-        .select('*, reviewer:profiles!reviews_reviewer_id_fkey(full_name, avatar_url)')
-        .eq('landlord_id', l.id)
-        .eq('status', 'approved')
-        .order('created_at', { ascending: false })
+      const [{ data: r }, { data: propIds }] = await Promise.all([
+        supabase
+          .from('reviews')
+          .select('*, reviewer:profiles!reviews_reviewer_id_fkey(full_name, avatar_url)')
+          .eq('landlord_id', l.id)
+          .eq('status', 'approved')
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('properties')
+          .select('id')
+          .eq('landlord_id', l.id),
+      ])
       setReviews((r ?? []) as Review[])
+
+      const propertyIds = (propIds ?? []).map((p: { id: string }) => p.id)
+      const orParts = [`record.landlord_id.eq.${l.id}`]
+      if (propertyIds.length) orParts.push(`record.property_id.in.(${propertyIds.join(',')})`)
+      // Count open disputes touching this landlord's records (direct OR via their properties)
+      const { data: disputes } = await supabase
+        .from('record_disputes')
+        .select('id, record:public_records(landlord_id, property_id)')
+        .eq('status', 'open')
+      const ours = (disputes ?? []).filter((d: any) => {
+        const rec = d.record as { landlord_id: string | null; property_id: string | null } | null
+        if (!rec) return false
+        if (rec.landlord_id === l.id) return true
+        if (rec.property_id && propertyIds.includes(rec.property_id)) return true
+        return false
+      })
+      setOpenDisputes(ours.length)
     } else if (claimData) {
       setClaim(claimData as unknown as LandlordClaim)
     }
@@ -256,7 +280,7 @@ export default function LandlordPortalPage() {
                 { l: 'Average rating', v: avgRating.toFixed(1), sub: `${landlord.review_count ?? 0} total reviews`, tone: 'teal' },
                 { l: 'Total reviews', v: String(reviews.length), sub: `${verifiedReviews} lease-verified`, tone: 'navy' },
                 { l: 'Response rate', v: reviews.length > 0 ? `${Math.round((respondedReviews / reviews.length) * 100)}%` : '—', sub: `${respondedReviews} responded`, tone: 'teal' },
-                { l: 'Open disputes', v: '0', sub: 'No open disputes', tone: 'amber' },
+                { l: 'Open disputes', v: String(openDisputes), sub: openDisputes === 0 ? 'No open disputes' : `${openDisputes} in review`, tone: 'amber' },
               ].map(s => (
                 <div key={s.l} className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
                   <div className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-slate-400">{s.l}</div>

@@ -35,7 +35,7 @@ const RESOLUTION_OPTIONS = [
   { value: 'record_removed', label: 'Remove the record' },
   { value: 'record_updated', label: 'Update record with note' },
   { value: 'no_action', label: 'No action — record accurate' },
-  { value: 'referred_to_source', label: 'Referred to source agency' },
+  { value: 'refer_to_source', label: 'Referred to source agency' },
 ]
 
 export default function AdminDisputesPage() {

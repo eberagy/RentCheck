@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     supabase.from('landlord_submissions').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('landlord_response_status', 'pending').not('landlord_response', 'is', null),
     supabase.from('review_flags').select('*', { count: 'exact', head: true }),
-    supabase.from('record_disputes').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+    supabase.from('record_disputes').select('*', { count: 'exact', head: true }).eq('status', 'open'),
   ])
 
   const counts: AdminDigestCounts = {

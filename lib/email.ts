@@ -12,6 +12,7 @@ import ResponseApprovedEmail from '@/emails/response-approved'
 import ResponseRejectedEmail from '@/emails/response-rejected'
 import AdminDigestEmail, { type AdminDigestCounts } from '@/emails/admin-digest'
 import SubmissionReceivedEmail, { type SubmissionKind } from '@/emails/submission-received'
+import DisputeResolvedEmail, { type DisputeDecision } from '@/emails/dispute-resolved'
 
 const FROM = process.env.RESEND_FROM_EMAIL ?? 'Vett <noreply@vettrentals.com>'
 
@@ -135,4 +136,20 @@ export async function sendSubmissionReceivedEmail(to: string, props: {
   eta?: string
 }) {
   await sendEmail(to, SUBMISSION_SUBJECTS[props.kind], SubmissionReceivedEmail(props) as any)
+}
+
+const DISPUTE_SUBJECTS: Record<DisputeDecision, string> = {
+  record_removed: 'Your disputed record was removed',
+  record_updated: 'Your disputed record was updated',
+  no_action: 'Update on your record dispute',
+  refer_to_source: 'Update on your record dispute',
+}
+
+export async function sendDisputeResolvedEmail(to: string, props: {
+  firstName?: string
+  decision: DisputeDecision
+  recordLabel?: string
+  adminNotes?: string
+}) {
+  await sendEmail(to, DISPUTE_SUBJECTS[props.decision], DisputeResolvedEmail(props) as any)
 }
