@@ -1,7 +1,8 @@
 import {
   Html, Head, Preview, Body, Container, Section,
-  Heading, Text, Button, Hr
+  Heading, Text, Button,
 } from '@react-email/components'
+import { EmailFooter } from './_components/Footer'
 
 interface ResponseRejectedEmailProps {
   firstName?: string
@@ -37,10 +38,7 @@ export default function ResponseRejectedEmail({ firstName, landlordName, reason 
             <Button style={button} href="https://vettrentals.com/landlord-portal">
               Back to Landlord Portal →
             </Button>
-            <Hr style={hr} />
-            <Text style={footer}>
-              Questions? Reply to this email or contact <a href="mailto:support@vettrentals.com" style={link}>support@vettrentals.com</a>
-            </Text>
+            <EmailFooter note="You received this because you submitted a landlord response on Vett." />
           </Section>
         </Container>
       </Body>

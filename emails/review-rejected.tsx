@@ -1,7 +1,8 @@
 import {
   Html, Head, Preview, Body, Container, Section,
-  Heading, Text, Button, Hr
+  Heading, Text, Button,
 } from '@react-email/components'
+import { EmailFooter } from './_components/Footer'
 
 interface ReviewRejectedEmailProps {
   firstName?: string
@@ -35,10 +36,7 @@ export default function ReviewRejectedEmail({ firstName, reviewTitle, reason }: 
             <Button style={button} href="https://vettrentals.com/review/new">
               Submit a New Review
             </Button>
-            <Hr style={hr} />
-            <Text style={footer}>
-              Questions? Reply to this email or contact <a href="mailto:support@vettrentals.com" style={link}>support@vettrentals.com</a>
-            </Text>
+            <EmailFooter note="You received this because you submitted a review on Vett." />
           </Section>
         </Container>
       </Body>

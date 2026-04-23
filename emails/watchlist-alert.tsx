@@ -1,7 +1,8 @@
 import {
   Html, Head, Preview, Body, Container, Section,
-  Heading, Text, Button, Hr
+  Heading, Text, Button,
 } from '@react-email/components'
+import { EmailFooter } from './_components/Footer'
 
 interface WatchlistAlertEmailProps {
   firstName?: string
@@ -44,12 +45,7 @@ export default function WatchlistAlertEmail({ firstName, landlordName, landlordS
             <Button style={button} href={`https://vettrentals.com/landlord/${landlordSlug}`}>
               View Profile →
             </Button>
-            <Hr style={hr} />
-            <Text style={footer}>
-              You&apos;re receiving this because you watch {landlordName} on Vett.{' '}
-              <a href={`https://vettrentals.com/dashboard`} style={link}>Manage watchlist</a> ·{' '}
-              <a href="https://vettrentals.com/privacy" style={link}>Privacy</a>
-            </Text>
+            <EmailFooter note={`You receive this because you're watching ${landlordName} on Vett.`} />
           </Section>
         </Container>
       </Body>

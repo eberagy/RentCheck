@@ -1,7 +1,8 @@
 import {
   Html, Head, Preview, Body, Container, Section,
-  Heading, Text, Button, Hr
+  Heading, Text, Button,
 } from '@react-email/components'
+import { EmailFooter } from './_components/Footer'
 
 interface ResponseApprovedEmailProps {
   firstName?: string
@@ -41,10 +42,7 @@ export default function ResponseApprovedEmail({
             <Button style={button} href={landlordUrl}>
               View on Your Profile →
             </Button>
-            <Hr style={hr} />
-            <Text style={footer}>
-              Vett · Know before you rent · <a href="https://vettrentals.com/privacy" style={link}>Privacy</a>
-            </Text>
+            <EmailFooter note="You received this because your landlord response on Vett was approved." />
           </Section>
         </Container>
       </Body>

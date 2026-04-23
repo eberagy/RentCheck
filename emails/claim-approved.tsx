@@ -1,7 +1,8 @@
 import {
   Html, Head, Preview, Body, Container, Section,
-  Heading, Text, Button, Hr
+  Heading, Text, Button,
 } from '@react-email/components'
+import { EmailFooter } from './_components/Footer'
 
 interface ClaimApprovedEmailProps {
   firstName?: string
@@ -33,10 +34,7 @@ export default function ClaimApprovedEmail({ firstName, landlordName, landlordSl
             <Button style={button} href="https://vettrentals.com/landlord-portal">
               Open Landlord Portal →
             </Button>
-            <Hr style={hr} />
-            <Text style={footer}>
-              Vett · <a href="https://vettrentals.com/privacy" style={link}>Privacy</a>
-            </Text>
+            <EmailFooter note="You received this because your landlord claim on Vett was approved." />
           </Section>
         </Container>
       </Body>

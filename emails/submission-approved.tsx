@@ -1,7 +1,8 @@
 import {
   Html, Head, Preview, Body, Container, Section,
-  Heading, Text, Button, Hr
+  Heading, Text, Button,
 } from '@react-email/components'
+import { EmailFooter } from './_components/Footer'
 
 interface SubmissionApprovedEmailProps {
   firstName?: string
@@ -34,10 +35,7 @@ export default function SubmissionApprovedEmail({ firstName, landlordName, landl
             <Text style={secondaryText}>
               Or <a href={`https://vettrentals.com/landlord/${landlordSlug}`} style={link}>view the landlord profile</a>.
             </Text>
-            <Hr style={hr} />
-            <Text style={footer}>
-              Vett · <a href="https://vettrentals.com/privacy" style={footerLink}>Privacy</a>
-            </Text>
+            <EmailFooter note="You received this because you submitted a landlord to Vett." />
           </Section>
         </Container>
       </Body>

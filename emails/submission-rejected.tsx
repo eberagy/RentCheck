@@ -1,7 +1,8 @@
 import {
   Html, Head, Preview, Body, Container, Section,
-  Heading, Text, Button, Hr
+  Heading, Text, Button,
 } from '@react-email/components'
+import { EmailFooter } from './_components/Footer'
 
 interface SubmissionRejectedEmailProps {
   firstName?: string
@@ -48,10 +49,7 @@ export default function SubmissionRejectedEmail({
             <Button style={button} href={isDuplicate ? 'https://vettrentals.com/search' : 'https://vettrentals.com/submit'}>
               {isDuplicate ? 'Search Vett →' : 'Submit Again →'}
             </Button>
-            <Hr style={hr} />
-            <Text style={footer}>
-              Questions? Reply to this email or contact <a href="mailto:support@vettrentals.com" style={link}>support@vettrentals.com</a>
-            </Text>
+            <EmailFooter note="You received this because you submitted a landlord to Vett." />
           </Section>
         </Container>
       </Body>
