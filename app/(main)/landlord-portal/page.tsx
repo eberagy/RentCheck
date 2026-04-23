@@ -60,6 +60,7 @@ export default function LandlordPortalPage() {
   const [editingProfile, setEditingProfile] = useState(false)
   const [profileWebsite, setProfileWebsite] = useState('')
   const [profilePhone, setProfilePhone] = useState('')
+  const [profileDescription, setProfileDescription] = useState('')
   const [savingProfile, setSavingProfile] = useState(false)
   const supabase = createClient()
 
@@ -88,6 +89,7 @@ export default function LandlordPortalPage() {
       setClaim(claimData as unknown as LandlordClaim)
       setProfileWebsite(l.website ?? '')
       setProfilePhone(l.phone ?? '')
+      setProfileDescription((l as unknown as { description?: string | null }).description ?? '')
       const [{ data: r }, { data: propIds }] = await Promise.all([
         supabase
           .from('reviews')
@@ -135,6 +137,7 @@ export default function LandlordPortalPage() {
           landlordId: landlord.id,
           website: profileWebsite.trim(),
           phone: profilePhone.trim(),
+          description: profileDescription.trim(),
         }),
       })
       if (!res.ok) {
@@ -142,7 +145,13 @@ export default function LandlordPortalPage() {
         throw new Error(json.error ?? 'Failed to save')
       }
       toast.success('Profile updated')
-      setLandlord({ ...landlord, website: profileWebsite.trim() || null, phone: profilePhone.trim() || null })
+      setLandlord({
+        ...landlord,
+        website: profileWebsite.trim() || null,
+        phone: profilePhone.trim() || null,
+        // description lives on the Landlord row; cast through an extended shape.
+        ...(({ description: profileDescription.trim() || null } as unknown as Partial<Landlord>)),
+      })
       setEditingProfile(false)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Failed to save')
@@ -302,6 +311,7 @@ export default function LandlordPortalPage() {
                       setEditingProfile(false)
                       setProfileWebsite(landlord.website ?? '')
                       setProfilePhone(landlord.phone ?? '')
+                      setProfileDescription((landlord as unknown as { description?: string | null }).description ?? '')
                     }} disabled={savingProfile}>Cancel</Button>
                     <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white" onClick={saveProfile} disabled={savingProfile}>
                       {savingProfile ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
@@ -325,28 +335,52 @@ export default function LandlordPortalPage() {
                       {landlord.phone ? landlord.phone : <span className="text-slate-400 italic">Not set</span>}
                     </dd>
                   </div>
+                  <div className="sm:col-span-2">
+                    <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">About / description</dt>
+                    <dd className="mt-1 text-[14px] text-slate-800 whitespace-pre-wrap">
+                      {(landlord as unknown as { description?: string | null }).description
+                        ? (landlord as unknown as { description: string }).description
+                        : <span className="text-slate-400 italic">Not set — add a short bio so renters know who they&apos;re leasing from.</span>}
+                    </dd>
+                  </div>
                 </dl>
               ) : (
-                <div className="grid gap-4 sm:grid-cols-2">
+                <div className="grid gap-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <label className="block">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Website</span>
+                      <input
+                        type="url"
+                        value={profileWebsite}
+                        onChange={e => setProfileWebsite(e.target.value)}
+                        placeholder="https://example.com"
+                        className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-100"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Phone</span>
+                      <input
+                        type="tel"
+                        value={profilePhone}
+                        onChange={e => setProfilePhone(e.target.value)}
+                        placeholder="(555) 123-4567"
+                        className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-100"
+                      />
+                    </label>
+                  </div>
                   <label className="block">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Website</span>
-                    <input
-                      type="url"
-                      value={profileWebsite}
-                      onChange={e => setProfileWebsite(e.target.value)}
-                      placeholder="https://example.com"
+                    <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">
+                      About / description <span className="font-normal text-slate-400 normal-case tracking-normal">(up to 1200 chars)</span>
+                    </span>
+                    <textarea
+                      value={profileDescription}
+                      onChange={e => setProfileDescription(e.target.value.slice(0, 1200))}
+                      rows={5}
+                      maxLength={1200}
+                      placeholder="Who you are, how renters can reach you for maintenance, your response expectations."
                       className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-100"
                     />
-                  </label>
-                  <label className="block">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Phone</span>
-                    <input
-                      type="tel"
-                      value={profilePhone}
-                      onChange={e => setProfilePhone(e.target.value)}
-                      placeholder="(555) 123-4567"
-                      className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-100"
-                    />
+                    <p className="mt-1 text-[11px] text-slate-400">{profileDescription.length}/1200</p>
                   </label>
                 </div>
               )}

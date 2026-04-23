@@ -19,6 +19,7 @@ type UserProfile = {
   created_at: string
   review_count: number
   avatar_url: string | null
+  admin_notes?: string | null
 }
 
 function UserTypeBadge({ type }: { type: string }) {
@@ -80,7 +81,7 @@ export default function AdminUsersPage() {
     setSearching(true)
     let dbq = supabase
       .from('profiles')
-      .select('id, full_name, email, user_type, is_banned, created_at, review_count, avatar_url')
+      .select('id, full_name, email, user_type, is_banned, created_at, review_count, avatar_url, admin_notes')
       .order('created_at', { ascending: false })
       .limit(50)
 
@@ -342,6 +343,7 @@ export default function AdminUsersPage() {
                         ))}
                       </div>
                     )}
+                    <AdminNotesEditor user={user} onSaved={next => setUsers(prev => prev.map(u => u.id === user.id ? { ...u, admin_notes: next } : u))} />
                     <p className="text-xs text-gray-300 mt-3 font-mono">ID: {user.id}</p>
                   </div>
                 )}
@@ -350,6 +352,61 @@ export default function AdminUsersPage() {
           ))}
         </div>
       )}
+    </div>
+  )
+}
+
+function AdminNotesEditor({ user, onSaved }: { user: UserProfile; onSaved: (next: string | null) => void }) {
+  const [value, setValue] = useState(user.admin_notes ?? '')
+  const [saving, setSaving] = useState(false)
+  const dirty = value !== (user.admin_notes ?? '')
+
+  async function save() {
+    setSaving(true)
+    try {
+      const res = await fetch('/api/admin/user-notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, notes: value }),
+      })
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}))
+        throw new Error(json.error ?? 'Failed to save')
+      }
+      onSaved(value || null)
+      toast.success('Notes saved')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to save')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="mt-4 rounded-lg border border-amber-100 bg-amber-50/50 p-3">
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-800">
+        Internal admin notes
+      </p>
+      <textarea
+        value={value}
+        onChange={e => setValue(e.target.value.slice(0, 4000))}
+        rows={3}
+        maxLength={4000}
+        placeholder="Context on this user that other admins should see. Never surfaced publicly."
+        className="w-full rounded-md border border-amber-200 bg-white px-2.5 py-2 text-[13px] text-slate-900 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
+      />
+      <div className="mt-2 flex items-center justify-between">
+        <span className="text-[11px] text-slate-400">{value.length}/4000</span>
+        <Button
+          size="sm"
+          variant="outline"
+          className="border-amber-300 bg-white text-amber-800 hover:bg-amber-100"
+          onClick={save}
+          disabled={saving || !dirty}
+        >
+          {saving ? <><Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> Saving…</> : 'Save notes'}
+        </Button>
+      </div>
     </div>
   )
 }

@@ -8,6 +8,7 @@ const schema = z.object({
   landlordId: z.string().uuid(),
   website: z.string().url().max(300).optional().or(z.literal('')),
   phone: z.string().max(30).optional().or(z.literal('')),
+  description: z.string().max(1200).optional().or(z.literal('')),
 })
 
 export async function POST(req: NextRequest) {
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: 'Invalid input' }, { status: 422 })
 
-  const { landlordId, website, phone } = parsed.data
+  const { landlordId, website, phone, description } = parsed.data
   const service = createServiceClient()
 
   const { data: landlord } = await service
@@ -39,6 +40,7 @@ export async function POST(req: NextRequest) {
   const updates: Record<string, string | null> = {}
   if (website !== undefined) updates.website = website ? website : null
   if (phone !== undefined) updates.phone = phone ? sanitizeText(phone).slice(0, 30) : null
+  if (description !== undefined) updates.description = description ? sanitizeText(description).slice(0, 1200) : null
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: 'No fields to update' }, { status: 422 })
