@@ -164,6 +164,7 @@ export default function AdminDataSyncPage() {
   const neverRun = SYNC_SOURCES.filter(s => !getLatest(s.logKey)).length
   const succeeded = SYNC_SOURCES.filter(s => getLatest(s.logKey)?.status === 'success').length
   const errored = SYNC_SOURCES.filter(s => getLatest(s.logKey)?.status === 'error').length
+  const partial = SYNC_SOURCES.filter(s => getLatest(s.logKey)?.status === 'partial').length
   const totalAdded = Object.values(syncLogs).flat().reduce((sum, l) => sum + (l.records_added ?? 0), 0)
 
   return (
@@ -191,10 +192,11 @@ export default function AdminDataSyncPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-2 gap-3 mb-6 md:grid-cols-5">
         {[
           { label: 'Never run', count: neverRun, color: 'bg-gray-50 border-gray-200 text-gray-600' },
           { label: 'Succeeded', count: succeeded, color: 'bg-teal-50 border-teal-200 text-teal-700' },
+          { label: 'Partial', count: partial, color: 'bg-amber-50 border-amber-200 text-amber-700' },
           { label: 'Errors', count: errored, color: 'bg-red-50 border-red-200 text-red-700' },
           { label: 'Records total', count: totalAdded.toLocaleString(), color: 'bg-blue-50 border-blue-200 text-blue-700' },
         ].map(s => (

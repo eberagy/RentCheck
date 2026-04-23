@@ -112,11 +112,17 @@ export default function AdminUsersPage() {
 
   async function toggleBan(userId: string, isBanned: boolean) {
     setProcessing(userId)
-    const { error } = await supabase
-      .from('profiles')
-      .update({ is_banned: !isBanned })
-      .eq('id', userId)
-    if (error) { toast.error('Failed'); setProcessing(null); return }
+    const res = await fetch('/api/admin/ban-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, banned: !isBanned }),
+    })
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}))
+      toast.error(json.error ?? 'Failed to update')
+      setProcessing(null)
+      return
+    }
     toast.success(isBanned ? 'User unbanned' : 'User banned')
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_banned: !isBanned } : u))
     setProcessing(null)
@@ -125,11 +131,17 @@ export default function AdminUsersPage() {
   async function promoteToAdmin(userId: string) {
     if (!confirm('Promote this user to admin? This gives full platform access.')) return
     setProcessing(userId)
-    const { error } = await supabase
-      .from('profiles')
-      .update({ user_type: 'admin' })
-      .eq('id', userId)
-    if (error) { toast.error('Failed'); setProcessing(null); return }
+    const res = await fetch('/api/admin/promote-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, userType: 'admin' }),
+    })
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}))
+      toast.error(json.error ?? 'Failed to promote')
+      setProcessing(null)
+      return
+    }
     toast.success('User promoted to admin')
     setUsers(prev => prev.map(u => u.id === userId ? { ...u, user_type: 'admin' } : u))
     setProcessing(null)

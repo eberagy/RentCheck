@@ -136,17 +136,19 @@ export default async function HomePage() {
             </div>
           </ScrollReveal>
 
-          {/* Stats row — editorial magazine style */}
-          {(stats.reviews > 0 || stats.landlords > 0) && (
+          {/* Stats row — editorial magazine style. Hide the reviews stat until it's meaningful. */}
+          {stats.landlords > 0 && (
             <ScrollReveal delay={320} direction="up">
-              <div className="mt-16 grid grid-cols-3 gap-0 border-t border-white/[0.08] pt-8 divide-x divide-white/[0.06]">
-                <div className="pr-6">
-                  <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
-                    <AnimatedCounter target={stats.reviews} duration={2000} />
-                  </p>
-                  <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Verified reviews</p>
-                </div>
-                <div className="px-6">
+              <div className={`mt-16 grid gap-0 border-t border-white/[0.08] pt-8 divide-x divide-white/[0.06] ${stats.reviews >= 25 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                {stats.reviews >= 25 && (
+                  <div className="pr-6">
+                    <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
+                      <AnimatedCounter target={stats.reviews} duration={2000} />
+                    </p>
+                    <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Verified reviews</p>
+                  </div>
+                )}
+                <div className={stats.reviews >= 25 ? 'px-6' : 'pr-6'}>
                   <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
                     <AnimatedCounter target={stats.landlords} duration={2000} />
                   </p>
@@ -299,8 +301,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── RECENT REVIEWS ── */}
-      {recentReviews.length > 0 && (
+      {/* ── RECENT REVIEWS ── Only show when we have enough to fill the grid */}
+      {recentReviews.length >= 3 && (
         <section className="border-t border-slate-200 bg-white">
           <div className="mx-auto max-w-[1100px] px-6 py-20 lg:py-28">
             <div className="flex items-end justify-between gap-4 mb-10">

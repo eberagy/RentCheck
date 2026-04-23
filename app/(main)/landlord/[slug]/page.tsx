@@ -260,20 +260,26 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             </div>
           </div>
 
-          {/* Stats row */}
-          <div className="grid grid-cols-2 gap-4 border-t border-slate-100 px-6 py-5 sm:grid-cols-4 sm:px-8">
-            {[
-              { label: 'Reviews', value: landlord.review_count, color: '' },
+          {/* Stats row — hide zero-value stats to avoid a wall of zeros on sparse profiles */}
+          {(() => {
+            const statCards = [
+              { label: 'Reviews', value: landlord.review_count ?? 0, color: '' },
               { label: 'Properties', value: (properties ?? []).length, color: '' },
               { label: 'Public records', value: landlordRecords.length, color: 'text-amber-700' },
               { label: 'Open violations', value: openViolationCount, color: 'text-red-600' },
-            ].map(s => (
-              <div key={s.label} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">{s.label}</p>
-                <p className={`mt-1 text-[22px] font-extrabold tracking-tight ${s.color || 'text-slate-900'}`}>{s.value}</p>
+            ].filter(s => s.value > 0)
+            if (statCards.length === 0) return null
+            return (
+              <div className="flex flex-wrap gap-4 border-t border-slate-100 px-6 py-5 sm:px-8">
+                {statCards.map(s => (
+                  <div key={s.label} className="min-w-[140px] flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">{s.label}</p>
+                    <p className={`mt-1 text-[22px] font-extrabold tracking-tight ${s.color || 'text-slate-900'}`}>{s.value}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            )
+          })()}
 
           {/* Rating breakdown */}
           {(avgResponsiveness || avgMaintenance || avgHonesty || avgLeaseFairness) && (

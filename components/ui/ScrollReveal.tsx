@@ -22,7 +22,7 @@ export function ScrollReveal({
   duration = 600,
   once = true,
 }: ScrollRevealProps) {
-  const [isVisible, setIsVisible] = useState(false)
+  const [isVisible, setIsVisible] = useState(true)
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -34,6 +34,16 @@ export function ScrollReveal({
     if (prefersReducedMotion) { setIsVisible(true); return }
     const el = ref.current
     if (!el) return
+
+    const rect = el.getBoundingClientRect()
+    const belowFold = rect.top > window.innerHeight
+
+    if (!belowFold) {
+      setIsVisible(true)
+      return
+    }
+
+    setIsVisible(false)
 
     const observer = new IntersectionObserver(
       (entries) => {
