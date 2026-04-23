@@ -173,4 +173,22 @@ Security + ops
 - Sentry wrapper wired into client error paths (reviews, add-landlord, claim)
 - /unsubscribe page (CAN-SPAM)
 
-See `project_vett_session_2026_04_22.md` in memory for per-commit breakdown.
+### Shipped overnight 2026-04-23
+
+Autonomous heartbeat session (10-minute cadence). Every commit on `main`.
+
+- `6991185` Admin actions audit log (migration 100, `lib/audit.ts`, instrumented 9 admin routes, `/admin/audit` page, AdminNav link)
+- `ab06633` CCPA/GDPR self-serve — `/api/me/export` JSON data dump, `/api/me/delete` purges storage + profile + anonymizes reviews. Settings UI rebuilt.
+- `c35fde4` Lease-doc 30-day deletion cron at `/api/cron/purge-leases` (daily 04:00 UTC), honors the public retention commitment
+- `7d8bdb7` Dynamic per-landlord OG image via `ImageResponse` (1200x630 with rating/count/violations/verified badge)
+- `1051f79` Per-city dynamic OG image + CAN-SPAM shared `EmailFooter` component (postal address + unsubscribe) rolled into 7 legacy templates
+- `e25f1c8` Content safety: `lib/content-filter.ts` auto-flags slur/doxxing/threat patterns on submit; 3-flag distinct-user escalation auto-hides from public feed
+- `401d102` IDOR fix on `/api/admin/lease-url` (reviewId-gated, lease access now logged to audit trail) + rate limits on 5 previously unlimited endpoints (verify-lease, landlord-response, landlord-profile, watchlist POST, search)
+- `0c42efa` Newsletter / city-waitlist signup (migration 101 email_leads + `/api/email-leads` + `NewsletterSignup` component mounted on homepage)
+
+Two pending migrations require manual deployment (safe to run now, both additive):
+- `supabase/migrations/099_security_rls_tightening.sql` — profile/landlord column grants + reviews UPDATE WITH CHECK
+- `supabase/migrations/100_admin_actions_log.sql` — admin_actions table for audit log
+- `supabase/migrations/101_email_leads.sql` — email_leads table for signup form
+
+See `project_vett_session_2026_04_22.md` and `project_vett_heartbeat.md` in memory for full per-commit breakdowns.
