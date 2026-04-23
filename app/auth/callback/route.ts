@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { sendWelcomeEmail } from '@/lib/email'
 
 export async function GET(req: NextRequest) {
   const { searchParams, origin } = req.nextUrl
@@ -29,6 +30,12 @@ export async function GET(req: NextRequest) {
           full_name: fullName,
           avatar_url: avatarUrl,
         })
+
+        // Fire-and-forget welcome email
+        if (user.email) {
+          void sendWelcomeEmail(user.email, fullName?.split(' ')[0] ?? undefined)
+            .catch(err => console.error('[auth/callback] welcome email failed:', err))
+        }
       } else if (!existing.full_name && fullName) {
         // Existing user without a name — update it
         await supabase.from('profiles')

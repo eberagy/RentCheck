@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sanitizeText } from '@/lib/sanitize'
+import { sendSubmissionReceivedEmail } from '@/lib/email'
 import { z } from 'zod'
 
 const MAX_RESPONSE_LENGTH = 1000
@@ -52,5 +53,22 @@ export async function POST(req: NextRequest) {
     .eq('id', reviewId)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  void (async () => {
+    try {
+      const { data: claimer } = await service.from('profiles').select('full_name, email').eq('id', user.id).single()
+      const { data: landlordInfo } = await service.from('landlords').select('display_name').eq('id', review.landlord_id).single()
+      if (claimer?.email) {
+        await sendSubmissionReceivedEmail(claimer.email, {
+          firstName: claimer.full_name?.split(' ')[0],
+          kind: 'response',
+          target: landlordInfo?.display_name,
+        })
+      }
+    } catch (err) {
+      console.error('[landlord-response] ack email failed:', err)
+    }
+  })()
+
   return NextResponse.json({ ok: true })
 }

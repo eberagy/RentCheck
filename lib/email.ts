@@ -11,6 +11,7 @@ import ClaimRejectedEmail from '@/emails/claim-rejected'
 import ResponseApprovedEmail from '@/emails/response-approved'
 import ResponseRejectedEmail from '@/emails/response-rejected'
 import AdminDigestEmail, { type AdminDigestCounts } from '@/emails/admin-digest'
+import SubmissionReceivedEmail, { type SubmissionKind } from '@/emails/submission-received'
 
 const FROM = process.env.RESEND_FROM_EMAIL ?? 'Vett <noreply@vettrentals.com>'
 
@@ -117,4 +118,21 @@ export async function sendAdminDigestEmail(to: string, counts: AdminDigestCounts
   const total = Object.values(counts).reduce((a, b) => a + b, 0)
   const subject = total === 0 ? 'Vett admin: all queues empty' : `Vett admin: ${total} ${total === 1 ? 'item' : 'items'} need attention`
   await sendEmail(to, subject, AdminDigestEmail({ counts }) as any)
+}
+
+const SUBMISSION_SUBJECTS: Record<SubmissionKind, string> = {
+  review: 'We got your review — verifying now',
+  landlord: 'Your landlord submission is in review',
+  claim: 'Your claim request is in review',
+  dispute: 'Your dispute is in review',
+  response: 'Your response is in review',
+}
+
+export async function sendSubmissionReceivedEmail(to: string, props: {
+  firstName?: string
+  kind: SubmissionKind
+  target?: string
+  eta?: string
+}) {
+  await sendEmail(to, SUBMISSION_SUBJECTS[props.kind], SubmissionReceivedEmail(props) as any)
 }

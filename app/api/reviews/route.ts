@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { sanitizeText } from '@/lib/sanitize'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { sendSubmissionReceivedEmail } from '@/lib/email'
 
 const createSchema = z.object({
   landlordId: z.string().uuid(),
@@ -126,5 +127,26 @@ export async function POST(req: NextRequest) {
     console.error('Review insert failed:', error.message, error.details, error.hint)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
+
+  // Non-blocking acknowledgment email
+  void (async () => {
+    try {
+      const service = createServiceClient()
+      const [{ data: profile }, { data: landlord }] = await Promise.all([
+        service.from('profiles').select('full_name, email').eq('id', user.id).single(),
+        service.from('landlords').select('display_name').eq('id', d.landlordId).single(),
+      ])
+      if (profile?.email) {
+        await sendSubmissionReceivedEmail(profile.email, {
+          firstName: profile.full_name?.split(' ')[0],
+          kind: 'review',
+          target: landlord?.display_name,
+        })
+      }
+    } catch (err) {
+      console.error('[reviews] ack email failed:', err)
+    }
+  })()
+
   return NextResponse.json({ reviewId: review.id }, { status: 201 })
 }

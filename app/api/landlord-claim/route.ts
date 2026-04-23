@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { sendSubmissionReceivedEmail } from '@/lib/email'
 
 const schema = z.object({
   landlordId: z.string().uuid(),
@@ -67,5 +68,22 @@ export async function POST(req: NextRequest) {
   })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  void (async () => {
+    try {
+      const service = createServiceClient()
+      const { data: claimer } = await service.from('profiles').select('full_name, email').eq('id', user.id).single()
+      if (claimer?.email) {
+        await sendSubmissionReceivedEmail(claimer.email, {
+          firstName: claimer.full_name?.split(' ')[0],
+          kind: 'claim',
+          target: landlord.display_name,
+        })
+      }
+    } catch (err) {
+      console.error('[landlord-claim] ack email failed:', err)
+    }
+  })()
+
   return NextResponse.json({ ok: true, message: 'Claim submitted. We will review within 48 hours.' }, { status: 201 })
 }
