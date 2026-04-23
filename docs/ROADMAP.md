@@ -186,9 +186,16 @@ Autonomous heartbeat session (10-minute cadence). Every commit on `main`.
 - `401d102` IDOR fix on `/api/admin/lease-url` (reviewId-gated, lease access now logged to audit trail) + rate limits on 5 previously unlimited endpoints (verify-lease, landlord-response, landlord-profile, watchlist POST, search)
 - `0c42efa` Newsletter / city-waitlist signup (migration 101 email_leads + `/api/email-leads` + `NewsletterSignup` component mounted on homepage)
 
-Two pending migrations require manual deployment (safe to run now, both additive):
+### Final batch (user said "just do them all now")
+- `8b657d9` Admin bulk moderation on review queue (checkboxes + select-all + Approve/Reject toolbar)
+- `4217728` Security M3: sanitizeText upgraded from regex to `sanitize-html` (Node-native, no JSDOM)
+- `a130369` Response-rate chip on LandlordCard (migration 102 + trigger extension + backfill)
+- `ab7f88f` Blog infra + tenant-rights scenario pages (5 scenarios × 19 states prerendered) + middleware-level CSRF/origin check + token-signed unsubscribe + `/admin/analytics`
+
+Pending migrations (all additive, safe to run in order):
 - `supabase/migrations/099_security_rls_tightening.sql` — profile/landlord column grants + reviews UPDATE WITH CHECK
 - `supabase/migrations/100_admin_actions_log.sql` — admin_actions table for audit log
 - `supabase/migrations/101_email_leads.sql` — email_leads table for signup form
+- `supabase/migrations/102_landlord_response_rate.sql` — landlord.response_rate column + trigger extension + backfill
 
 See `project_vett_session_2026_04_22.md` and `project_vett_heartbeat.md` in memory for full per-commit breakdowns.
