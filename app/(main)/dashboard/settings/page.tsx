@@ -19,6 +19,7 @@ type Profile = {
   avatar_url: string | null
   email_reviews: boolean
   email_watchlist: boolean
+  public_profile?: boolean
 }
 
 export default function SettingsPage() {
@@ -28,6 +29,7 @@ export default function SettingsPage() {
   const [name, setName] = useState('')
   const [emailReviews, setEmailReviews] = useState(true)
   const [emailWatchlist, setEmailWatchlist] = useState(true)
+  const [publicProfile, setPublicProfile] = useState(false)
   const [newPassword, setNewPassword] = useState('')
   const [savingPassword, setSavingPassword] = useState(false)
   const supabase = createClient()
@@ -42,6 +44,7 @@ export default function SettingsPage() {
         setName(data.full_name ?? '')
         setEmailReviews(data.email_reviews ?? true)
         setEmailWatchlist(data.email_watchlist ?? true)
+        setPublicProfile(data.public_profile ?? false)
       }
       setLoading(false)
     }
@@ -57,6 +60,7 @@ export default function SettingsPage() {
         full_name: name.trim() || null,
         email_reviews: emailReviews,
         email_watchlist: emailWatchlist,
+        public_profile: publicProfile,
         updated_at: new Date().toISOString(),
       })
       .eq('id', profile.id)
@@ -65,7 +69,13 @@ export default function SettingsPage() {
       toast.error('Failed to save changes')
     } else {
       toast.success('Settings saved')
-      setProfile(prev => prev ? { ...prev, full_name: name.trim() || null, email_reviews: emailReviews, email_watchlist: emailWatchlist } : prev)
+      setProfile(prev => prev ? {
+        ...prev,
+        full_name: name.trim() || null,
+        email_reviews: emailReviews,
+        email_watchlist: emailWatchlist,
+        public_profile: publicProfile,
+      } : prev)
     }
     setSaving(false)
   }
@@ -152,6 +162,35 @@ export default function SettingsPage() {
                 onCheckedChange={setEmailWatchlist}
               />
             </div>
+          </div>
+        </div>
+
+        {/* Public profile toggle */}
+        <div id="public-profile" className="p-6 border-t border-gray-100 scroll-mt-24">
+          <div className="flex items-center gap-2 mb-4">
+            <User className="h-4 w-4 text-gray-500" />
+            <h2 className="font-semibold text-gray-900">Public profile</h2>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="pr-4">
+              <p className="text-sm font-medium text-gray-900">Share my published reviews</p>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Opt-in. Turns on a public page at{' '}
+                <code className="rounded bg-gray-100 px-1 py-0.5 text-[11px] text-gray-700">
+                  /u/{profile?.id?.slice(0, 8) ?? '…'}
+                </code>{' '}
+                showing only your <strong>approved</strong> reviews. Your email is never shown.
+              </p>
+              {publicProfile && profile && (
+                <p className="mt-2 text-[12px]">
+                  Share link:{' '}
+                  <Link href={`/u/${profile.id}`} className="text-teal-700 hover:underline break-all">
+                    vettrentals.com/u/{profile.id}
+                  </Link>
+                </p>
+              )}
+            </div>
+            <Switch checked={publicProfile} onCheckedChange={setPublicProfile} />
           </div>
         </div>
 
