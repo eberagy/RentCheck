@@ -21,9 +21,12 @@ import { COLLEGE_CITIES } from '@/types'
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: 'Vett — Know Before You Rent',
+  // `absolute` bypasses the `%s | Vett` template from the root layout so the
+  // brand name doesn't duplicate on the homepage.
+  title: { absolute: 'Vett — Know Before You Rent' },
   description:
     'Lease-verified renter reviews and public records on landlords in major cities and growing coverage nationwide. Know before you rent.',
+  alternates: { canonical: '/' },
 }
 
 async function getStats() {

@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { sanitizeText } from '@/lib/sanitize'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { sendSubmissionReceivedEmail } from '@/lib/email'
+import { PUBLIC_REVIEW_SELECT, stripPrivateReviewFields } from '@/lib/reviews/public'
 
 const createSchema = z.object({
   landlordId: z.string().uuid(),
@@ -36,7 +37,7 @@ export async function GET(req: NextRequest) {
 
   let q = supabase
     .from('reviews')
-    .select('*, reviewer:profiles!reviews_reviewer_id_fkey(full_name, avatar_url), property:properties(address_line1, city, state_abbr), evidence:review_evidence(*)', { count: 'exact' })
+    .select(PUBLIC_REVIEW_SELECT, { count: 'exact' })
     .eq('status', 'approved')
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1)
@@ -47,7 +48,8 @@ export async function GET(req: NextRequest) {
   const { data, error, count } = await q
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  return NextResponse.json({ reviews: data ?? [], total: count ?? 0, page, limit })
+  const safe = (data ?? []).map((r: any) => stripPrivateReviewFields(r))
+  return NextResponse.json({ reviews: safe, total: count ?? 0, page, limit })
 }
 
 export async function POST(req: NextRequest) {

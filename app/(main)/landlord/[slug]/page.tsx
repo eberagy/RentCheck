@@ -52,6 +52,7 @@ export async function generateMetadata({ params }: LandlordPageProps): Promise<M
   return {
     title: `${landlord.display_name} Reviews${location ? ` — ${location}` : ''}`,
     description,
+    alternates: { canonical: `/landlord/${p.slug}` },
     openGraph: {
       title: `${landlord.display_name} Reviews | Vett`,
       description: ogDescription,
@@ -171,6 +172,16 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       reviewBody: r.body ?? undefined,
     }
   })
+  const cityPath = landlord.city && landlord.state_abbr ? cityPagePath(landlord.city, landlord.state_abbr) : null
+  const breadcrumbJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+      ...(cityPath ? [{ '@type': 'ListItem', position: 2, name: `${getCanonicalCity(landlord.city)}, ${landlord.state_abbr}`, item: `${siteUrl}${cityPath}` }] : []),
+      { '@type': 'ListItem', position: cityPath ? 3 : 2, name: landlord.display_name, item: `${siteUrl}/landlord/${landlord.slug}` },
+    ],
+  })
   const jsonLd = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
@@ -202,6 +213,9 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
     <>
       <Script id={`landlord-jsonld-${landlord.slug}`} type="application/ld+json" strategy="beforeInteractive">
         {jsonLd}
+      </Script>
+      <Script id={`landlord-breadcrumb-${landlord.slug}`} type="application/ld+json" strategy="beforeInteractive">
+        {breadcrumbJsonLd}
       </Script>
 
       <div className="min-h-screen bg-[#F8FAFC]">

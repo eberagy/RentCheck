@@ -23,8 +23,13 @@ const display = Instrument_Serif({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'),
   title: {
+    // Homepage uses `default` as-is (no template suffix), so we don't double
+    // the brand. Child pages get `| Vett` appended via the template.
     default: 'Vett — Know Before You Rent',
     template: '%s | Vett',
+  },
+  alternates: {
+    canonical: '/',
   },
   description: 'Lease-verified renter reviews and public records on landlords nationwide. Know before you rent.',
   keywords: ['landlord reviews', 'renter reviews', 'landlord background check', 'housing violations', 'eviction records'],

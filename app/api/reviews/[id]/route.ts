@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sanitizeText } from '@/lib/sanitize'
+import { PUBLIC_REVIEW_SELECT, stripPrivateReviewFields } from '@/lib/reviews/public'
 import { z } from 'zod'
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
@@ -9,13 +10,13 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
 
   const { data, error } = await supabase
     .from('reviews')
-    .select('*, reviewer:profiles!reviews_reviewer_id_fkey(full_name, avatar_url), landlord:landlords(display_name, slug), property:properties(address_line1, city, state_abbr), evidence:review_evidence(*)')
+    .select(`${PUBLIC_REVIEW_SELECT}, landlord:landlords(display_name, slug)`)
     .eq('id', id)
     .eq('status', 'approved')
     .single()
 
   if (error || !data) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json({ review: data })
+  return NextResponse.json({ review: stripPrivateReviewFields(data as any) })
 }
 
 const patchSchema = z.object({

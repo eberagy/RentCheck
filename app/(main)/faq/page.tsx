@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Script from 'next/script'
 import { ChevronDown } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'Frequently Asked Questions',
   description:
     'How Vett verifies reviews, where public records come from, how to dispute a record, how landlords claim their profile, and more.',
+  alternates: { canonical: '/faq' },
 }
 
 const FAQS = [
@@ -62,8 +64,20 @@ const FAQS = [
 ]
 
 export default function FAQPage() {
+  const faqJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQS.map(faq => ({
+      '@type': 'Question',
+      name: faq.q,
+      acceptedAnswer: { '@type': 'Answer', text: faq.a },
+    })),
+  })
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
+      <Script id="faq-jsonld" type="application/ld+json" strategy="beforeInteractive">
+        {faqJsonLd}
+      </Script>
       <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900 mb-3">Frequently Asked Questions</h1>
       <p className="text-gray-500 mb-10">
         Can&apos;t find your answer? Email{' '}
