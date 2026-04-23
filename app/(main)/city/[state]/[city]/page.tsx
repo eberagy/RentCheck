@@ -109,18 +109,20 @@ export default async function CityPage({ params }: CityPageProps) {
             {recordCount ? `, ${recordCount.toLocaleString()} public records pulled from official sources` : ''}.
           </p>
 
-          {/* Stats row — only show stats that have meaningful values */}
+          {/* Stats row — always show all four dimensions for consistency */}
           {(() => {
             const totalReviews = landlords.reduce((sum: number, l: Landlord) => sum + (l.review_count ?? 0), 0)
-            const stats: { v: string; l: string }[] = [{ v: (count ?? 0).toLocaleString(), l: 'Landlords' }]
-            if (recordCount > 0) stats.push({ v: recordCount.toLocaleString(), l: 'Public records' })
-            if (totalReviews >= 10) stats.push({ v: totalReviews.toLocaleString(), l: 'Reviews' })
-            if (medianRating != null && totalReviews >= 10) stats.push({ v: medianRating.toFixed(1), l: 'Median rating' })
+            const stats = [
+              { v: (count ?? 0).toLocaleString(), l: 'Landlords' },
+              { v: recordCount.toLocaleString(), l: 'Public records' },
+              { v: totalReviews.toLocaleString(), l: 'Reviews' },
+              { v: medianRating != null ? medianRating.toFixed(1) : '—', l: 'Median rating' },
+            ]
             return (
-              <div className="mt-8 flex flex-wrap gap-x-12 gap-y-6">
+              <div className="mt-8 grid grid-cols-2 gap-x-10 gap-y-6 sm:grid-cols-4" style={{ width: 'fit-content', maxWidth: '100%' }}>
                 {stats.map(s => (
                   <div key={s.l}>
-                    <div className="text-[36px] font-extrabold tracking-tight tabular-nums">{s.v}</div>
+                    <div className={`text-[36px] font-extrabold tracking-tight tabular-nums ${s.v === '0' || s.v === '—' ? 'text-slate-500' : ''}`}>{s.v}</div>
                     <div className="mt-0.5 text-[12px] text-slate-500">{s.l}</div>
                   </div>
                 ))}

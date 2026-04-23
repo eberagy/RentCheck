@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 const US_STATES = [
   ['AL','Alabama'],['AK','Alaska'],['AZ','Arizona'],['AR','Arkansas'],['CA','California'],
@@ -96,7 +97,7 @@ export default function AddLandlordPage() {
           .from('landlord-verification-docs')
           .upload(path, proofFile, { upsert: false })
         if (uploadErr) {
-          console.error('Proof upload error:', uploadErr)
+          captureException(uploadErr, { where: 'add-landlord:proof-upload' })
           toast.error('Could not upload proof document. Submitting without it.')
         } else {
           proofDocUrl = path
@@ -120,7 +121,7 @@ export default function AddLandlordPage() {
       if (data.pending) { toast.info('You already submitted this landlord — it\'s pending review'); return }
       setSubmitted(true)
     } catch (err) {
-      console.error('Submit landlord error:', err)
+      captureException(err, { where: 'add-landlord:submit' })
       toast.error('Something went wrong. Please try again.')
     } finally {
       setLoading(false)

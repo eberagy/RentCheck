@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 import type { Landlord } from '@/types'
 
 // ── Step indicator ────────────────────────────────────────────
@@ -132,7 +133,7 @@ export default function ClaimProfilePage() {
       setSubmitted(true)
     } catch (err) {
       toast.error('Submission failed. Please try again.')
-      console.error(err)
+      captureException(err, { where: 'landlord-portal-claim:submit' })
     } finally {
       setSubmitting(false)
     }

@@ -18,7 +18,7 @@ import { getGradeLetter } from '@/lib/grade'
 type SortKey = 'reviewed' | 'highest' | 'lowest' | 'violations'
 
 interface SearchPageProps {
-  searchParams: { q?: string; city?: string; state?: string; rating?: string; verified?: string; page?: string; sort?: string }
+  searchParams: { q?: string; city?: string; state?: string; rating?: string; verified?: string; violations?: string; page?: string; sort?: string }
 }
 
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
@@ -79,6 +79,7 @@ async function SearchResults({
   state,
   minRating,
   verifiedOnly,
+  hasViolationsOnly,
   page,
   sort,
 }: {
@@ -87,6 +88,7 @@ async function SearchResults({
   state: string
   minRating: number
   verifiedOnly: boolean
+  hasViolationsOnly: boolean
   page: number
   sort: SortKey
 }) {
@@ -183,6 +185,7 @@ async function SearchResults({
         if (city && result.city?.toLowerCase() !== city.toLowerCase()) return false
         if (state && result.state_abbr?.toLowerCase() !== state.toLowerCase()) return false
         if (minRating > 0 && (result.avg_rating ?? 0) < minRating) return false
+        if (hasViolationsOnly && ((result as any).open_violation_count ?? 0) === 0) return false
         if (verifiedOnly) {
           if (result.result_type === 'landlord') return result.is_verified
           if (result.result_type === 'property') return result.landlordIsVerified === true
@@ -237,6 +240,7 @@ async function SearchResults({
               if (state) qs.set('state', state)
               if (minRating > 0) qs.set('rating', String(minRating))
               if (verifiedOnly) qs.set('verified', 'true')
+              if (hasViolationsOnly) qs.set('violations', 'true')
               if (opt.key !== 'reviewed') qs.set('sort', opt.key)
               return (
                 <Link
@@ -268,7 +272,7 @@ async function SearchResults({
           <div className="flex items-center justify-center gap-2 pt-2">
             {page > 1 && (
               <a
-                href={`?q=${encodeURIComponent(q)}${city ? `&city=${encodeURIComponent(city)}` : ''}${state ? `&state=${encodeURIComponent(state)}` : ''}${minRating > 0 ? `&rating=${minRating}` : ''}${verifiedOnly ? '&verified=true' : ''}&page=${page - 1}`}
+                href={`?q=${encodeURIComponent(q)}${city ? `&city=${encodeURIComponent(city)}` : ''}${state ? `&state=${encodeURIComponent(state)}` : ''}${minRating > 0 ? `&rating=${minRating}` : ''}${verifiedOnly ? '&verified=true' : ''}${hasViolationsOnly ? '&violations=true' : ''}&page=${page - 1}`}
                 className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50"
               >
                 ← Previous
@@ -279,7 +283,7 @@ async function SearchResults({
             </span>
             {page * pageSize < total && (
               <a
-                href={`?q=${encodeURIComponent(q)}${city ? `&city=${encodeURIComponent(city)}` : ''}${state ? `&state=${encodeURIComponent(state)}` : ''}${minRating > 0 ? `&rating=${minRating}` : ''}${verifiedOnly ? '&verified=true' : ''}&page=${page + 1}`}
+                href={`?q=${encodeURIComponent(q)}${city ? `&city=${encodeURIComponent(city)}` : ''}${state ? `&state=${encodeURIComponent(state)}` : ''}${minRating > 0 ? `&rating=${minRating}` : ''}${verifiedOnly ? '&verified=true' : ''}${hasViolationsOnly ? '&violations=true' : ''}&page=${page + 1}`}
                 className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50"
               >
                 Next →
@@ -316,6 +320,7 @@ async function SearchResults({
   if (state) query = query.eq('state_abbr', state.toUpperCase())
   if (minRating > 0) query = query.gte('avg_rating', minRating)
   if (verifiedOnly) query = query.eq('is_verified', true)
+  if (hasViolationsOnly) query = query.gt('open_violation_count', 0)
 
   const { data: landlords, count } = await query
   const total = count ?? 0
@@ -353,6 +358,7 @@ async function SearchResults({
               if (state) qs.set('state', state)
               if (minRating > 0) qs.set('rating', String(minRating))
               if (verifiedOnly) qs.set('verified', 'true')
+              if (hasViolationsOnly) qs.set('violations', 'true')
               if (opt.key !== 'reviewed') qs.set('sort', opt.key)
               return (
                 <Link
@@ -383,7 +389,7 @@ async function SearchResults({
         {total > pageSize && (
           <div className="flex items-center justify-center gap-2 pt-2">
             {page > 1 && (
-              <a href={`?${city ? `city=${encodeURIComponent(city)}&` : ''}${state ? `state=${encodeURIComponent(state)}&` : ''}${minRating > 0 ? `rating=${minRating}&` : ''}${verifiedOnly ? 'verified=true&' : ''}page=${page - 1}`} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
+              <a href={`?${city ? `city=${encodeURIComponent(city)}&` : ''}${state ? `state=${encodeURIComponent(state)}&` : ''}${minRating > 0 ? `rating=${minRating}&` : ''}${verifiedOnly ? 'verified=true&' : ''}${hasViolationsOnly ? 'violations=true&' : ''}page=${page - 1}`} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
                 ← Previous
               </a>
             )}
@@ -391,7 +397,7 @@ async function SearchResults({
               Page <span className="font-semibold text-slate-900">{page}</span> of {Math.ceil(total / pageSize)}
             </span>
             {page * pageSize < total && (
-              <a href={`?${city ? `city=${encodeURIComponent(city)}&` : ''}${state ? `state=${encodeURIComponent(state)}&` : ''}${minRating > 0 ? `rating=${minRating}&` : ''}${verifiedOnly ? 'verified=true&' : ''}page=${page + 1}`} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
+              <a href={`?${city ? `city=${encodeURIComponent(city)}&` : ''}${state ? `state=${encodeURIComponent(state)}&` : ''}${minRating > 0 ? `rating=${minRating}&` : ''}${verifiedOnly ? 'verified=true&' : ''}${hasViolationsOnly ? 'violations=true&' : ''}page=${page + 1}`} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
                 Next →
               </a>
             )}
@@ -486,6 +492,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const state = params.state ?? ''
   const minRating = parseFloat(params.rating ?? '0')
   const verifiedOnly = params.verified === 'true'
+  const hasViolationsOnly = params.violations === 'true'
   const page = parseInt(params.page ?? '1', 10)
   const sortParam = (params.sort ?? 'reviewed') as SortKey
   const sort: SortKey = ['reviewed', 'highest', 'lowest', 'violations'].includes(sortParam) ? sortParam : 'reviewed'
@@ -584,6 +591,17 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               </div>
             </div>
 
+            {/* Violations filter */}
+            <div className="rounded-lg border border-slate-200 bg-white p-[18px]">
+              <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Public records</div>
+              <div className="grid gap-2">
+                <label className="flex cursor-pointer items-center gap-2 text-[13px] text-slate-700">
+                  <input type="checkbox" name="violations" value="true" defaultChecked={hasViolationsOnly} className="accent-teal" />
+                  Has open violations
+                </label>
+              </div>
+            </div>
+
             {/* State filter */}
             <div className="rounded-lg border border-slate-200 bg-white p-[18px]">
               <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">State</div>
@@ -600,7 +618,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </button>
           </form>
 
-          {(state || minRating > 0 || verifiedOnly) && (
+          {(state || minRating > 0 || verifiedOnly || hasViolationsOnly) && (
             <a
               href={q ? `?q=${q}` : '/search'}
               className="self-start rounded-full border border-slate-200 bg-white px-3.5 py-2 text-[12.5px] text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
@@ -617,7 +635,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
             </div>
           }>
-            <SearchResults q={q} city={city} state={state} minRating={minRating} verifiedOnly={verifiedOnly} page={page} sort={sort} />
+            <SearchResults q={q} city={city} state={state} minRating={minRating} verifiedOnly={verifiedOnly} hasViolationsOnly={hasViolationsOnly} page={page} sort={sort} />
           </Suspense>
         </div>
       </div>

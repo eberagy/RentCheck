@@ -23,6 +23,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import { detectFileType, ALLOWED_LEASE_TYPES, MAX_LEASE_SIZE } from '@/lib/utils'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 import type { Landlord } from '@/types'
 
 // Plain z.object — NO .refine(). Refine wraps the schema in ZodEffects which
@@ -86,7 +87,7 @@ export default function ReviewForm() {
       if (data.landlord) setSelectedLandlord(data.landlord as Landlord)
     }
 
-    loadPreselectedLandlord().catch(console.error)
+    loadPreselectedLandlord().catch(err => captureException(err, { where: 'review:preselect-landlord' }))
   }, [preselectedLandlordId, selectedLandlord])
 
   // Step 0: search for landlord
@@ -163,7 +164,7 @@ export default function ReviewForm() {
         .from('lease-docs')
         .upload(path, leaseFile, { upsert: false })
       if (uploadError) {
-        console.error('Storage upload error:', uploadError)
+        captureException(uploadError, { where: 'review:lease-upload' })
         setLeaseStatus('idle')
         setLeaseError('Upload failed — the storage service may be temporarily unavailable. Please try again.')
         return
@@ -177,7 +178,7 @@ export default function ReviewForm() {
       })
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}))
-        console.error('Lease verification error:', errData)
+        captureException(new Error(errData.error || 'Verification failed'), { where: 'review:verify-lease', status: res.status })
         throw new Error(errData.error || 'Verification failed')
       }
       const payload = await res.json()
@@ -192,7 +193,7 @@ export default function ReviewForm() {
     } catch (err) {
       setLeaseStatus('idle')
       setLeaseError('Upload failed. Please try again.')
-      console.error(err)
+      captureException(err, { where: 'review:handle-lease-upload' })
     }
   }
 
@@ -245,7 +246,7 @@ export default function ReviewForm() {
       setStep(4)
     } catch (err) {
       toast.error('Failed to submit review. Please try again.')
-      console.error('Review submit error:', err)
+      captureException(err, { where: 'review:submit' })
     } finally {
       setSubmitting(false)
     }

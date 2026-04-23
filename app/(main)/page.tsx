@@ -136,33 +136,29 @@ export default async function HomePage() {
             </div>
           </ScrollReveal>
 
-          {/* Stats row — editorial magazine style. Hide the reviews stat until it's meaningful. */}
-          {stats.landlords > 0 && (
-            <ScrollReveal delay={320} direction="up">
-              <div className={`mt-16 grid gap-0 border-t border-white/[0.08] pt-8 divide-x divide-white/[0.06] ${stats.reviews >= 25 ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                {stats.reviews >= 25 && (
-                  <div className="pr-6">
-                    <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
-                      <AnimatedCounter target={stats.reviews} duration={2000} />
-                    </p>
-                    <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Verified reviews</p>
-                  </div>
-                )}
-                <div className={stats.reviews >= 25 ? 'px-6' : 'pr-6'}>
-                  <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
-                    <AnimatedCounter target={stats.landlords} duration={2000} />
-                  </p>
-                  <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Landlords tracked</p>
-                </div>
-                <div className="pl-6">
-                  <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
-                    <AnimatedCounter target={stats.records} duration={2000} />
-                  </p>
-                  <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Public records</p>
-                </div>
+          {/* Stats row — editorial magazine style. Always show all three. */}
+          <ScrollReveal delay={320} direction="up">
+            <div className="mt-16 grid grid-cols-3 gap-0 border-t border-white/[0.08] pt-8 divide-x divide-white/[0.06]">
+              <div className="pr-6">
+                <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
+                  <AnimatedCounter target={stats.reviews} duration={2000} />
+                </p>
+                <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Verified reviews</p>
               </div>
-            </ScrollReveal>
-          )}
+              <div className="px-6">
+                <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
+                  <AnimatedCounter target={stats.landlords} duration={2000} />
+                </p>
+                <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Landlords tracked</p>
+              </div>
+              <div className="pl-6">
+                <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
+                  <AnimatedCounter target={stats.records} duration={2000} />
+                </p>
+                <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Public records</p>
+              </div>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
