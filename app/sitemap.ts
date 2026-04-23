@@ -39,7 +39,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/terms`, changeFrequency: 'monthly' },
     { url: `${baseUrl}/privacy`, changeFrequency: 'monthly' },
     { url: `${baseUrl}/fcra-notice`, changeFrequency: 'monthly' },
-    { url: `${baseUrl}/press`, changeFrequency: 'monthly' },
     { url: `${baseUrl}/blog`, changeFrequency: 'weekly' },
   ]
 

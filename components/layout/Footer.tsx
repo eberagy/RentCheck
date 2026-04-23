@@ -35,7 +35,6 @@ const FOOTER_COLS = [
     links: [
       { href: '/about', label: 'About Vett' },
       { href: '/blog', label: 'Blog' },
-      { href: '/press', label: 'Press' },
       { href: '/contact', label: 'Contact' },
       { href: '/fcra-notice', label: 'FCRA notice' },
     ],
