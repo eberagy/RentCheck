@@ -5,6 +5,7 @@ import { sanitizeText } from '@/lib/sanitize'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { sendSubmissionReceivedEmail } from '@/lib/email'
 import { PUBLIC_REVIEW_SELECT, stripPrivateReviewFields } from '@/lib/reviews/public'
+import { checkReviewContent } from '@/lib/content-filter'
 
 const createSchema = z.object({
   landlordId: z.string().uuid(),
@@ -98,6 +99,16 @@ export async function POST(req: NextRequest) {
 
   if (existingList && existingList.length > 0) return NextResponse.json({ error: 'You recently submitted a review for this landlord' }, { status: 409 })
 
+  // Conservative content-safety tripwire. Slurs / doxxing / explicit threats
+  // land in the flagged queue instead of the pending queue so admin sees them
+  // first AND they never surface publicly (status='flagged' is hidden by the
+  // public select filter).
+  const filter = checkReviewContent({ title: d.title, body: d.body })
+  const initialStatus = filter.flagged ? 'flagged' : 'pending'
+  const adminNote = filter.flagged
+    ? `Auto-flagged on submission (reason: ${filter.reason})`
+    : null
+
   const { data: review, error } = await supabase
     .from('reviews')
     .insert({
@@ -120,7 +131,8 @@ export async function POST(req: NextRequest) {
       lease_filename: d.leaseFilename,
       lease_file_size: d.leaseFileSize,
       lease_verified: false,
-      status: 'pending',
+      status: initialStatus,
+      admin_notes: adminNote,
     })
     .select('id')
     .single()

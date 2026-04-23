@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { sanitizeText } from '@/lib/sanitize'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
+
+// Three independent users flagging the same review auto-hides it from the
+// public feed (status → 'flagged') while it waits for human moderation.
+// Keeps abuse amplification off the site overnight without requiring admins
+// to chase every flag individually.
+const AUTO_HIDE_FLAG_THRESHOLD = 3
 
 const schema = z.object({
   reviewId: z.string().uuid(),
@@ -57,6 +63,30 @@ export async function POST(req: NextRequest) {
   })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Escalation: distinct-user flag count at/above threshold → auto-hide.
+  // Use service role so RLS on reviews doesn't stop the status update.
+  void (async () => {
+    try {
+      const service = createServiceClient()
+      const { count } = await service
+        .from('review_flags')
+        .select('flagged_by', { count: 'exact', head: true })
+        .eq('review_id', reviewId)
+      if ((count ?? 0) >= AUTO_HIDE_FLAG_THRESHOLD) {
+        await service
+          .from('reviews')
+          .update({
+            status: 'flagged',
+            admin_notes: `Auto-hidden after ${count} flags (escalation threshold ${AUTO_HIDE_FLAG_THRESHOLD})`,
+          })
+          .eq('id', reviewId)
+          .eq('status', 'approved')
+      }
+    } catch (err) {
+      console.error('[flag] escalation check failed:', err)
+    }
+  })()
 
   return NextResponse.json({ ok: true })
 }
