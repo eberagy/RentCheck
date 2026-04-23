@@ -2,19 +2,10 @@ import Link from 'next/link'
 import { MapPin, MessageSquare, AlertTriangle, Gavel } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { VerifiedBadge } from './VerifiedBadge'
-import { LandlordGrade } from './LandlordGrade'
 import { StarRating } from '@/components/review/StarRating'
 import { cn } from '@/lib/utils'
 import { buildLandlordSummary, truncateSummary } from '@/lib/summaries'
 import type { Landlord } from '@/types'
-
-const GRADE_BORDER: Record<string, string> = {
-  A: 'border-l-teal-500',
-  B: 'border-l-green-500',
-  C: 'border-l-yellow-400',
-  D: 'border-l-orange-500',
-  F: 'border-l-red-500',
-}
 
 interface LandlordCardProps {
   landlord: Landlord
@@ -22,7 +13,6 @@ interface LandlordCardProps {
 }
 
 export function LandlordCard({ landlord, className }: LandlordCardProps) {
-  const gradeBorder = GRADE_BORDER[landlord.grade ?? ''] ?? 'border-l-gray-200'
   const summary = truncateSummary(
     buildLandlordSummary({
       landlord,
@@ -33,8 +23,7 @@ export function LandlordCard({ landlord, className }: LandlordCardProps) {
   return (
     <Link href={`/landlord/${landlord.slug}`} className="block group">
       <Card className={cn(
-        'cursor-pointer overflow-hidden border-l-4 border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] shadow-sm transition-[transform,box-shadow,border-color] duration-300 group-hover:-translate-y-1 group-hover:border-navy-200 group-hover:shadow-[0_24px_70px_rgba(15,23,42,0.12)]',
-        gradeBorder,
+        'cursor-pointer overflow-hidden border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] shadow-sm transition-[transform,box-shadow,border-color] duration-300 group-hover:-translate-y-1 group-hover:border-navy-200 group-hover:shadow-[0_24px_70px_rgba(15,23,42,0.12)]',
         className
       )}>
         <div className="h-1 bg-gradient-to-r from-transparent via-sky-200/80 to-transparent transition-[background] duration-300 group-hover:via-teal-300/60" />
@@ -58,7 +47,6 @@ export function LandlordCard({ landlord, className }: LandlordCardProps) {
               )}
               <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-600">{summary}</p>
             </div>
-            <LandlordGrade grade={landlord.grade} size="sm" />
           </div>
 
           <div className="mt-4 flex items-center justify-between gap-2 flex-wrap">

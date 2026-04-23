@@ -67,23 +67,24 @@ export default function AdminDisputesPage() {
 
     setProcessing(disputeId)
     try {
-      const updates: Record<string, unknown> = {
-        status: 'resolved',
-        admin_notes: notes[disputeId] ?? null,
-        admin_decision: dec,
-        resolved_at: new Date().toISOString(),
+      const res = await fetch('/api/admin/resolve-dispute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          disputeId,
+          decision: dec,
+          adminNotes: notes[disputeId],
+          recordId: dec === 'record_removed' ? d.record?.id : undefined,
+        }),
+      })
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}))
+        throw new Error(json.error ?? 'Failed')
       }
-      const { error } = await supabase.from('record_disputes').update(updates).eq('id', disputeId)
-      if (error) throw error
-
-      if (dec === 'record_removed' && d.record) {
-        await supabase.from('public_records').delete().eq('id', d.record.id)
-      }
-
       toast.success('Dispute resolved')
       setDisputes(prev => prev.filter(x => x.id !== disputeId))
-    } catch {
-      toast.error('Failed to resolve dispute')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to resolve dispute')
     } finally {
       setProcessing(null)
     }

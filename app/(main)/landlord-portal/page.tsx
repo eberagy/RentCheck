@@ -99,17 +99,21 @@ export default function LandlordPortalPage() {
     if (!cleaned || cleaned.length > MAX_RESPONSE_LENGTH) return
     setSubmittingResponse(true)
     try {
-      const { error } = await supabase
-        .from('reviews')
-        .update({ landlord_response: cleaned, landlord_response_status: 'pending' })
-        .eq('id', reviewId)
-      if (error) throw error
+      const res = await fetch('/api/landlord-response', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewId, response: cleaned }),
+      })
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}))
+        throw new Error(json.error ?? 'Failed to submit response')
+      }
       toast.success('Response submitted — it will appear after admin approval')
       setResponding(null)
       setResponseText('')
       loadData()
-    } catch {
-      toast.error('Failed to submit response')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to submit response')
     } finally {
       setSubmittingResponse(false)
     }

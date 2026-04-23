@@ -19,13 +19,19 @@ export function AnimatedCounter({
   suffix = '',
   separator = true,
 }: AnimatedCounterProps) {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(target)
   const [hasAnimated, setHasAnimated] = useState(false)
   const ref = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setHasAnimated(true)
+      return
+    }
     const el = ref.current
     if (!el) return
+
+    setCount(0)
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -37,10 +43,10 @@ export function AnimatedCounter({
           const step = (now: number) => {
             const elapsed = now - startTime
             const progress = Math.min(elapsed / duration, 1)
-            // Ease-out cubic for smooth deceleration
             const eased = 1 - Math.pow(1 - progress, 3)
             setCount(Math.floor(eased * target))
             if (progress < 1) requestAnimationFrame(step)
+            else setCount(target)
           }
           requestAnimationFrame(step)
         }

@@ -118,7 +118,7 @@ async function SearchResults({
       landlordIds.length
         ? supabase
             .from('landlords')
-            .select('id, display_name, avg_rating, review_count, open_violation_count, total_violation_count, eviction_count, city, state_abbr, is_verified, grade, slug')
+            .select('id, display_name, avg_rating, review_count, open_violation_count, total_violation_count, eviction_count, city, state_abbr, is_verified, slug')
             .in('id', landlordIds)
         : Promise.resolve({ data: [] as any[], error: null }),
       propertyIds.length
@@ -157,7 +157,6 @@ async function SearchResults({
             total_violation_count: landlord.total_violation_count ?? 0,
             review_count: landlord.review_count ?? result.review_count,
             avg_rating: landlord.avg_rating ?? result.avg_rating,
-            grade: landlord.grade ?? (result as any).grade,
             is_verified: landlord.is_verified ?? result.is_verified,
             summary: truncateSummary(buildLandlordSummary({ landlord }), 140),
           }
@@ -406,9 +405,7 @@ function SearchResultCard({ result }: { result: SearchPageResult }) {
   const href = result.result_type === 'landlord'
     ? (result.slug ? `/landlord/${result.slug}` : '/search')
     : `/property/${result.id}`
-  const dbGrade = (result as any).grade as string | undefined
-  const isValidGrade = dbGrade === 'A' || dbGrade === 'B' || dbGrade === 'C' || dbGrade === 'D' || dbGrade === 'F'
-  const grade = isValidGrade ? dbGrade : getGradeLetter(result.avg_rating ?? null, result.review_count ?? 0)
+  const grade = getGradeLetter(result.avg_rating ?? null, result.review_count ?? 0)
   const violationCount = (result as any).open_violation_count ?? 0
 
   return (

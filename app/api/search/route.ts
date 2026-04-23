@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
     landlordIds.length
       ? supabase
           .from('landlords')
-          .select('id, display_name, slug, avg_rating, review_count, open_violation_count, total_violation_count, eviction_count, city, state_abbr, is_verified, grade')
+          .select('id, display_name, slug, avg_rating, review_count, open_violation_count, total_violation_count, eviction_count, city, state_abbr, is_verified')
           .in('id', landlordIds)
       : Promise.resolve({ data: [] as any[], error: null }),
     propertyIds.length
@@ -70,7 +70,6 @@ export async function GET(req: NextRequest) {
         total_violation_count: landlord.total_violation_count ?? 0,
         review_count: landlord.review_count ?? result.review_count,
         avg_rating: landlord.avg_rating ?? result.avg_rating,
-        grade: landlord.grade ?? result.grade,
         is_verified: landlord.is_verified ?? result.is_verified,
         summary: truncateSummary(buildLandlordSummary({ landlord }), 140),
       }

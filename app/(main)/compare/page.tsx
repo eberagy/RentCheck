@@ -4,7 +4,6 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { ArrowLeft, CheckCircle2, XCircle, Minus, Search } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { LandlordGrade } from '@/components/landlord/LandlordGrade'
 import { VerifiedBadge } from '@/components/landlord/VerifiedBadge'
 import { StarRating } from '@/components/review/StarRating'
 import { Button } from '@/components/ui/button'
@@ -89,6 +88,16 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
       <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Landlord Comparison</h1>
       <p className="text-[15px] text-slate-500 mb-8">Side-by-side comparison of public records and renter ratings</p>
 
+      {(a.review_count ?? 0) === 0 && (b.review_count ?? 0) === 0 && (
+        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
+          Neither landlord has renter reviews yet. Comparison is limited to public records.
+          {' '}
+          <Link href="/review/new" className="font-semibold underline underline-offset-2 hover:text-amber-950">
+            Be the first to write a review
+          </Link>.
+        </div>
+      )}
+
       {/* Header cards */}
       <div className="grid grid-cols-2 gap-4 mb-6">
         {[a, b].map((landlord, i) => (
@@ -111,7 +120,6 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
                   <p className="text-sm text-gray-500 mt-0.5">{[landlord.city, landlord.state_abbr].filter(Boolean).join(', ')}</p>
                 )}
               </div>
-              <LandlordGrade grade={landlord.grade} size="md" />
             </div>
             <div className="mt-3">
               {landlord.avg_rating > 0 ? (

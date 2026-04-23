@@ -47,8 +47,17 @@ export default function AdminFlagsPage() {
 
   async function dismissFlag(flagId: string) {
     setProcessing(flagId)
-    const { error } = await supabase.from('review_flags').delete().eq('id', flagId)
-    if (error) { toast.error('Failed to dismiss'); setProcessing(null); return }
+    const res = await fetch('/api/admin/moderate-flag', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'dismiss', flagId }),
+    })
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}))
+      toast.error(json.error ?? 'Failed to dismiss')
+      setProcessing(null)
+      return
+    }
     toast.success('Flag dismissed')
     setItems(prev => prev.filter(f => f.id !== flagId))
     setProcessing(null)
@@ -56,10 +65,17 @@ export default function AdminFlagsPage() {
 
   async function removeReview(flagId: string, reviewId: string) {
     setProcessing(flagId)
-    const { error } = await supabase.from('reviews').update({ status: 'flagged' }).eq('id', reviewId)
-    if (error) { toast.error('Failed to remove review'); setProcessing(null); return }
-    // Also delete all flags for this review
-    await supabase.from('review_flags').delete().eq('review_id', reviewId)
+    const res = await fetch('/api/admin/moderate-flag', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'remove_review', reviewId }),
+    })
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}))
+      toast.error(json.error ?? 'Failed to remove review')
+      setProcessing(null)
+      return
+    }
     toast.success('Review removed and flags cleared')
     setItems(prev => prev.filter(f => f.review?.id !== reviewId))
     setProcessing(null)
