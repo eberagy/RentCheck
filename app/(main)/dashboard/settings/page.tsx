@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, Save, Loader2, User, Bell, Lock, Download, Trash2 } from 'lucide-react'
+import Image from 'next/image'
+import { ArrowLeft, Save, Loader2, User, Bell, Lock, Download, Trash2, Upload, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -32,6 +33,8 @@ export default function SettingsPage() {
   const [publicProfile, setPublicProfile] = useState(false)
   const [newPassword, setNewPassword] = useState('')
   const [savingPassword, setSavingPassword] = useState(false)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -50,6 +53,41 @@ export default function SettingsPage() {
     }
     load()
   }, []) // eslint-disable-line
+
+  async function uploadAvatar(file: File) {
+    if (!profile) return
+    if (file.size > 5 * 1024 * 1024) { toast.error('Image must be under 5 MB'); return }
+    setUploadingAvatar(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const res = await fetch('/api/me/avatar', { method: 'POST', body: fd })
+      const json = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(json.error ?? 'Upload failed')
+      setProfile(prev => prev ? { ...prev, avatar_url: json.avatarUrl } : prev)
+      toast.success('Photo updated')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Upload failed')
+    } finally {
+      setUploadingAvatar(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  async function removeAvatar() {
+    if (!profile?.avatar_url) return
+    setUploadingAvatar(true)
+    try {
+      const res = await fetch('/api/me/avatar', { method: 'DELETE' })
+      if (!res.ok) throw new Error('Could not remove photo')
+      setProfile(prev => prev ? { ...prev, avatar_url: null } : prev)
+      toast.success('Photo removed')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Could not remove photo')
+    } finally {
+      setUploadingAvatar(false)
+    }
+  }
 
   async function saveProfile() {
     if (!profile) return
@@ -106,6 +144,64 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-4">
+            <div>
+              <Label className="text-sm font-medium">Profile photo</Label>
+              <div className="mt-2 flex items-center gap-4">
+                <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-full border border-gray-200 bg-gray-50">
+                  {profile?.avatar_url ? (
+                    <Image
+                      src={profile.avatar_url}
+                      alt="Your avatar"
+                      fill
+                      sizes="64px"
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-xl font-semibold text-gray-400">
+                      {(name || profile?.email || '?').trim().charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-wrap gap-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif,image/heic,image/heif"
+                      className="hidden"
+                      onChange={e => {
+                        const f = e.target.files?.[0]
+                        if (f) void uploadAvatar(f)
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={uploadingAvatar}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {uploadingAvatar ? <><Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> Uploading…</> : <><Upload className="h-4 w-4 mr-1.5" /> {profile?.avatar_url ? 'Change photo' : 'Upload photo'}</>}
+                    </Button>
+                    {profile?.avatar_url && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        disabled={uploadingAvatar}
+                        onClick={removeAvatar}
+                        className="text-gray-500 hover:text-red-600"
+                      >
+                        <X className="h-4 w-4 mr-1.5" /> Remove
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400">JPEG, PNG, WebP, or HEIC. Up to 5 MB. We crop to a square.</p>
+                </div>
+              </div>
+            </div>
+
             <div>
               <Label htmlFor="name" className="text-sm font-medium">Display Name</Label>
               <Input

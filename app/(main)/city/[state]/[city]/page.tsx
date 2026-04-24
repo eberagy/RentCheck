@@ -13,6 +13,7 @@ import { getGradeLetter } from '@/lib/grade'
 import { US_STATES, COLLEGE_CITIES } from '@/types'
 import type { Landlord } from '@/types'
 import { getCityAliases } from '@/lib/cities'
+import { CitySubscribeButton } from '@/components/city/CitySubscribeButton'
 
 export const revalidate = 3600
 
@@ -140,6 +141,10 @@ export default async function CityPage({ params }: CityPageProps) {
               ))}
             </div>
           )}
+
+          <div className="mt-6">
+            <CitySubscribeButton city={cityName} stateAbbr={stateAbbr} />
+          </div>
         </div>
       </section>
 

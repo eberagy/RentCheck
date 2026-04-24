@@ -4,11 +4,13 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
   Shield, CheckCircle2, Clock, MessageSquare, Flag, ArrowRight,
-  Star, TrendingUp, MessageCircle, BarChart2, ChevronDown, ChevronUp, Loader2
+  Star, TrendingUp, MessageCircle, BarChart2, ChevronDown, ChevronUp, Loader2,
+  BookTemplate, Plus, Trash2, X
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
 import { formatDate, formatReviewerName, gradeColor, gradeBgLight, ratingToColor } from '@/lib/utils'
@@ -62,6 +64,12 @@ export default function LandlordPortalPage() {
   const [profilePhone, setProfilePhone] = useState('')
   const [profileDescription, setProfileDescription] = useState('')
   const [savingProfile, setSavingProfile] = useState(false)
+  const [templates, setTemplates] = useState<Array<{ id: string; label: string; body: string }>>([])
+  const [showTemplatePicker, setShowTemplatePicker] = useState(false)
+  const [managingTemplates, setManagingTemplates] = useState(false)
+  const [newTplLabel, setNewTplLabel] = useState('')
+  const [newTplBody, setNewTplBody] = useState('')
+  const [savingTpl, setSavingTpl] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -120,10 +128,68 @@ export default function LandlordPortalPage() {
         return false
       })
       setOpenDisputes(ours.length)
+      void loadTemplates(l.id)
     } else if (claimData) {
       setClaim(claimData as unknown as LandlordClaim)
     }
     setLoading(false)
+  }
+
+  async function loadTemplates(landlordId: string) {
+    try {
+      const res = await fetch(`/api/landlord-response-templates?landlordId=${landlordId}`)
+      if (!res.ok) return
+      const json = await res.json()
+      setTemplates(json.templates ?? [])
+    } catch {
+      // non-fatal
+    }
+  }
+
+  async function createTemplate() {
+    if (!landlord) return
+    const label = newTplLabel.trim()
+    const body = newTplBody.trim()
+    if (!label || !body) { toast.error('Label and body required'); return }
+    setSavingTpl(true)
+    try {
+      const res = await fetch('/api/landlord-response-templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ landlordId: landlord.id, label, body }),
+      })
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}))
+        throw new Error(json.error ?? 'Failed to save template')
+      }
+      toast.success('Template saved')
+      setNewTplLabel('')
+      setNewTplBody('')
+      await loadTemplates(landlord.id)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to save template')
+    } finally {
+      setSavingTpl(false)
+    }
+  }
+
+  async function deleteTemplate(id: string) {
+    if (!landlord) return
+    try {
+      const res = await fetch(`/api/landlord-response-templates?id=${id}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}))
+        throw new Error(json.error ?? 'Failed to delete')
+      }
+      await loadTemplates(landlord.id)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to delete')
+    }
+  }
+
+  function applyTemplate(body: string) {
+    setResponseText(prev => (prev ? `${prev}\n\n${body}` : body).slice(0, MAX_RESPONSE_LENGTH))
+    setShowTemplatePicker(false)
   }
 
   async function saveProfile() {
@@ -386,6 +452,87 @@ export default function LandlordPortalPage() {
               )}
             </div>
 
+            {/* Response templates */}
+            {landlord.is_verified && (
+              <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-[17px] font-bold text-slate-900 flex items-center gap-2">
+                      <BookTemplate className="h-4 w-4 text-teal-600" /> Response templates
+                    </h2>
+                    <p className="text-[12.5px] text-slate-500 mt-0.5">
+                      Save canned replies and insert them when responding to reviews.
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="rounded-full text-xs"
+                    onClick={() => setManagingTemplates(v => !v)}
+                  >
+                    {managingTemplates ? 'Close' : `Manage (${templates.length})`}
+                  </Button>
+                </div>
+
+                {managingTemplates && (
+                  <div className="mt-4 space-y-4">
+                    {templates.length > 0 && (
+                      <ul className="divide-y divide-slate-100 rounded-lg border border-slate-200">
+                        {templates.map(t => (
+                          <li key={t.id} className="flex items-start justify-between gap-3 px-4 py-3">
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-semibold text-slate-900">{t.label}</p>
+                              <p className="mt-0.5 line-clamp-2 text-[13px] text-slate-500">{t.body}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => deleteTemplate(t.id)}
+                              className="flex-shrink-0 rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                              aria-label={`Delete ${t.label}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                      <p className="text-[12px] font-semibold uppercase tracking-wide text-slate-500 mb-2">
+                        New template
+                      </p>
+                      <div className="space-y-2">
+                        <Input
+                          placeholder="Label (e.g. “Maintenance follow-up”)"
+                          value={newTplLabel}
+                          onChange={e => setNewTplLabel(e.target.value.slice(0, 80))}
+                          maxLength={80}
+                        />
+                        <Textarea
+                          placeholder="The full response text to insert…"
+                          value={newTplBody}
+                          onChange={e => setNewTplBody(e.target.value.slice(0, 1000))}
+                          rows={4}
+                          maxLength={1000}
+                        />
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] text-slate-400">{newTplBody.length}/1000</span>
+                          <Button
+                            size="sm"
+                            className="rounded-full bg-teal text-white hover:bg-teal-500"
+                            disabled={savingTpl || !newTplLabel.trim() || !newTplBody.trim()}
+                            onClick={createTemplate}
+                          >
+                            {savingTpl ? <><Loader2 className="mr-1 h-3 w-3 animate-spin" /> Saving…</> : <><Plus className="mr-1 h-3 w-3" /> Save template</>}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Needs a response */}
             <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
               <div className="mb-4 flex items-center justify-between">
@@ -489,12 +636,45 @@ export default function LandlordPortalPage() {
                                     maxLength={MAX_RESPONSE_LENGTH}
                                     className="border-0 p-0 text-sm shadow-none focus-visible:ring-0 resize-none"
                                   />
+                                  {templates.length > 0 && showTemplatePicker && (
+                                    <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
+                                      <div className="mb-1.5 flex items-center justify-between">
+                                        <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Insert a template</span>
+                                        <button type="button" onClick={() => setShowTemplatePicker(false)} className="text-slate-400 hover:text-slate-600">
+                                          <X className="h-3.5 w-3.5" />
+                                        </button>
+                                      </div>
+                                      <div className="flex flex-wrap gap-1.5">
+                                        {templates.map(t => (
+                                          <button
+                                            key={t.id}
+                                            type="button"
+                                            onClick={() => applyTemplate(t.body)}
+                                            className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] text-slate-700 hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700"
+                                            title={t.body.slice(0, 120)}
+                                          >
+                                            {t.label}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
                                   <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-2">
                                     <span className={`text-xs ${responseText.length > MAX_RESPONSE_LENGTH * 0.9 ? 'text-amber-600' : 'text-slate-400'}`}>
                                       {responseText.length} / {MAX_RESPONSE_LENGTH}
                                     </span>
                                     <div className="flex gap-2">
-                                      <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => { setResponding(null); setResponseText('') }}>Cancel</Button>
+                                      {templates.length > 0 && (
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="h-8 text-xs"
+                                          onClick={() => setShowTemplatePicker(v => !v)}
+                                        >
+                                          <BookTemplate className="mr-1 h-3 w-3" /> Templates
+                                        </Button>
+                                      )}
+                                      <Button size="sm" variant="outline" className="h-8 text-xs" onClick={() => { setResponding(null); setResponseText(''); setShowTemplatePicker(false) }}>Cancel</Button>
                                       <Button
                                         size="sm"
                                         className="h-8 rounded-full bg-teal text-xs text-white hover:bg-teal-500"

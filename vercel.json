@@ -38,6 +38,7 @@
     { "path": "/api/sync/cleveland",        "schedule": "45 11 * * *" },
     { "path": "/api/sync/raleigh",          "schedule": "0 12 * * *"  },
     { "path": "/api/cron/watchlist-alerts", "schedule": "30 12 * * *" },
+    { "path": "/api/cron/saved-search-alerts", "schedule": "0 14 * * 1" },
     { "path": "/api/sync/hud-inspections",  "schedule": "0 13 * * 1"  },
     { "path": "/api/sync/court-listener",   "schedule": "30 13 * * 1" },
     { "path": "/api/sync/lsc-evictions",    "schedule": "0 14 1 * *"  },

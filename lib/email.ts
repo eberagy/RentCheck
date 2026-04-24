@@ -13,6 +13,7 @@ import ResponseRejectedEmail from '@/emails/response-rejected'
 import AdminDigestEmail, { type AdminDigestCounts } from '@/emails/admin-digest'
 import SubmissionReceivedEmail, { type SubmissionKind } from '@/emails/submission-received'
 import DisputeResolvedEmail, { type DisputeDecision } from '@/emails/dispute-resolved'
+import SavedSearchDigestEmail from '@/emails/saved-search-digest'
 
 const FROM = process.env.RESEND_FROM_EMAIL ?? 'Vett <noreply@vettrentals.com>'
 
@@ -152,4 +153,19 @@ export async function sendDisputeResolvedEmail(to: string, props: {
   adminNotes?: string
 }) {
   await sendEmail(to, DISPUTE_SUBJECTS[props.decision], DisputeResolvedEmail(props) as any)
+}
+
+export async function sendSavedSearchDigestEmail(to: string, props: {
+  firstName?: string
+  city: string
+  stateAbbr: string
+  newReviewCount: number
+  newLandlords: Array<{ name: string; slug: string; rating: number | null; reviewCount: number }>
+  unsubscribeToken?: string
+}) {
+  await sendEmail(
+    to,
+    `This week in ${props.city}: ${props.newReviewCount} new review${props.newReviewCount === 1 ? '' : 's'}`,
+    SavedSearchDigestEmail(props) as any,
+  )
 }
