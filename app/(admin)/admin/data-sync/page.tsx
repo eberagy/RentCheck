@@ -89,6 +89,7 @@ const SYNC_SOURCES = [
   { id: 'mecklenburg-assessor',  logKey: 'mecklenburg_assessor',    label: 'Mecklenburg (Charlotte)',      schedule: 'Weekly Sunday 5:45am', description: 'Mecklenburg County property assessment — covers Charlotte metro' },
   { id: 'travis-county',         logKey: 'travis_county_assessor',  label: 'Travis County (Austin)',       schedule: 'Weekly Sunday 6am',    description: 'Travis County property assessment — covers Austin metro' },
   { id: 'mine-owners',           logKey: 'mine_violation_owners',   label: 'Mine Owners from Violations',  schedule: 'Daily 1am',            description: 'Back-fills landlord links by extracting owner names from existing violation raw_data (100k records/run)' },
+  { id: 'ny-corp-registry',      logKey: 'ny_dos_corporations',     label: 'NY Secretary of State',        schedule: 'Weekly Sunday 6:30am', description: 'NY DOS active-corporation registry — enriches NY landlords with LLC age, type, jurisdiction, and registered agent (informational)' },
 ]
 
 export default function AdminDataSyncPage() {

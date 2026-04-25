@@ -143,11 +143,15 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       landlordRecords.push(r)
     }
   }
-  // Compute actual open violation count from merged records (includes property-linked ones)
-  const EXCLUDED_TYPES = ['court_case', 'lsc_eviction', 'court_listener']
+  // Compute actual open violation count from merged records (includes property-linked ones).
+  // Exclude court / informational records — only true open violations belong in this count.
+  const EXCLUDED_TYPES = ['court_case', 'lsc_eviction', 'court_listener', 'business_registration']
   const openViolationCount = landlordRecords.filter(
     r => !['closed', 'dismissed'].includes(r.status ?? '') && !EXCLUDED_TYPES.includes(r.record_type ?? '')
   ).length
+
+  // Most recent business registration (for the "Registered as" sidebar chip)
+  const businessRegistration = landlordRecords.find(r => r.record_type === 'business_registration')
 
   const landlordSummary = buildLandlordSummary({
     landlord,
@@ -271,6 +275,11 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                   <Chip icon={<Phone className="h-3 w-3" />}>{landlord.phone}</Chip>
                 )}
                 <Chip tone="teal" icon={<Building2 className="h-3 w-3" />}>{(properties ?? []).length} properties</Chip>
+                {businessRegistration?.filed_date && (
+                  <Chip icon={<Building2 className="h-3 w-3" />}>
+                    Filed {new Date(businessRegistration.filed_date).getFullYear()}
+                  </Chip>
+                )}
               </div>
             </div>
 
