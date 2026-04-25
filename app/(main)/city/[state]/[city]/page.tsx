@@ -90,6 +90,20 @@ export default async function CityPage({ params }: CityPageProps) {
     .sort((a: Landlord, b: Landlord) => (b.avg_rating ?? 0) - (a.avg_rating ?? 0))
     .slice(0, 5)
 
+  // Recent public-records activity in this city — surfaces the 175k+
+  // government records we ingest so the page feels alive even before
+  // renters review. Skip purely-informational types (business filings).
+  const landlordIdsForActivity = landlords.map((l: Landlord) => l.id).slice(0, 200)
+  const recentRecords = landlordIdsForActivity.length
+    ? (await supabase
+        .from('public_records')
+        .select('id, record_type, title, severity, status, filed_date, source_url, landlord:landlords(display_name, slug)')
+        .in('landlord_id', landlordIdsForActivity)
+        .neq('record_type', 'business_registration')
+        .order('filed_date', { ascending: false, nullsFirst: false })
+        .limit(8)).data ?? []
+    : []
+
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Hero */}
@@ -209,6 +223,55 @@ export default async function CityPage({ params }: CityPageProps) {
           </>
         )}
       </div>
+
+      {/* Recent public-records activity */}
+      {recentRecords.length > 0 && (
+        <div className="mx-auto max-w-[1180px] px-7 pb-12">
+          <div className="rounded-[24px] border border-slate-200 bg-white p-6">
+            <div className="mb-[18px] flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="h-7 w-2 rounded bg-gradient-to-b from-amber-400 to-amber-200" />
+                <h2 className="text-[18px] font-bold text-slate-900">Recent activity in {cityName}</h2>
+              </div>
+              <p className="text-[12px] text-slate-400">Last {recentRecords.length} public records</p>
+            </div>
+            <ul className="divide-y divide-slate-100">
+              {recentRecords.map(r => {
+                const landlord = r.landlord as unknown as { display_name: string; slug: string } | null
+                const isClosed = r.status?.toLowerCase() === 'closed' || r.status?.toLowerCase() === 'dismissed'
+                const sev = r.severity?.toLowerCase() ?? ''
+                const tone = isClosed
+                  ? 'border-slate-200 bg-slate-50 text-slate-500'
+                  : sev === 'high' || sev === 'critical'
+                    ? 'border-red-200 bg-red-50 text-red-700'
+                    : sev === 'medium'
+                      ? 'border-amber-200 bg-amber-50 text-amber-800'
+                      : 'border-slate-200 bg-slate-50 text-slate-700'
+                return (
+                  <li key={r.id} className="flex items-center justify-between gap-3 py-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="line-clamp-1 text-[13.5px] font-medium text-slate-900">{r.title}</p>
+                      <p className="mt-0.5 text-[12px] text-slate-500">
+                        {landlord?.slug ? (
+                          <Link href={`/landlord/${landlord.slug}`} className="hover:underline">
+                            {landlord.display_name}
+                          </Link>
+                        ) : (
+                          <span>{landlord?.display_name ?? 'Unlinked landlord'}</span>
+                        )}
+                        {r.filed_date && <span className="ml-2 text-slate-400">· {new Date(r.filed_date).toLocaleDateString()}</span>}
+                      </p>
+                    </div>
+                    <span className={`flex-shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-semibold capitalize ${tone}`}>
+                      {isClosed ? 'closed' : (r.status ?? 'open')}
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </div>
+      )}
 
       {/* CTA */}
       <div className="mx-auto max-w-[1180px] px-7 pb-20">
