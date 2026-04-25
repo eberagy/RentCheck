@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
-import { FileText, Eye, Star, Plus, ArrowRight, Settings, CheckCircle2, AlertTriangle, Edit, Sparkles, Building2, Clock } from 'lucide-react'
+import { FileText, Eye, Star, Plus, ArrowRight, Settings, CheckCircle2, AlertTriangle, Edit, Sparkles, Building2, Clock, Bell } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Stars } from '@/components/vett/Stars'
@@ -30,6 +30,7 @@ export default async function DashboardPage() {
     { data: reviews },
     { data: watchlist },
     { data: submissions },
+    { data: savedSearches },
   ] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase
@@ -50,11 +51,18 @@ export default async function DashboardPage() {
       .eq('submitted_by', user.id)
       .order('created_at', { ascending: false })
       .limit(10),
+    supabase
+      .from('saved_searches')
+      .select('id, city, state_abbr, last_notified_at, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(20),
   ])
 
   const reviewList = reviews ?? []
   const watchList = watchlist ?? []
   const submissionList = submissions ?? []
+  const savedSearchList = (savedSearches ?? []) as Array<{ id: string; city: string; state_abbr: string; last_notified_at: string | null; created_at: string }>
   const verifiedCount = reviewList.filter((r: any) => r.lease_verified).length
   const firstName = profile?.full_name?.split(' ')[0] ?? null
 
@@ -224,6 +232,44 @@ export default async function DashboardPage() {
                     </Badge>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* City alerts panel */}
+          {savedSearchList.length > 0 && (
+            <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className="text-[16px] font-bold text-slate-900 flex items-center gap-2">
+                  <Bell className="h-4 w-4 text-teal-600" />
+                  City alerts <span className="font-normal text-slate-400">&middot; {savedSearchList.length}</span>
+                </h3>
+                <p className="text-[12px] text-slate-400">Weekly digest emails when new reviews land</p>
+              </div>
+              <div className="grid gap-1">
+                {savedSearchList.map((s, i) => {
+                  const stateLower = s.state_abbr.toLowerCase()
+                  const slug = s.city.toLowerCase().replace(/\s+/g, '-')
+                  const last = s.last_notified_at ? `Last digest ${formatDate(s.last_notified_at)}` : 'No digest sent yet'
+                  return (
+                    <Link
+                      key={s.id}
+                      href={`/city/${stateLower}/${slug}`}
+                      className={`grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 px-1 hover:bg-slate-50 rounded ${i < savedSearchList.length - 1 ? 'border-b border-slate-100' : ''}`}
+                    >
+                      <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
+                        <Bell className="h-3 w-3 text-teal-500" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-[13px] font-bold text-slate-900">
+                          {s.city}, {s.state_abbr}
+                        </p>
+                        <p className="mt-0.5 text-[12px] text-slate-500 truncate">{last}</p>
+                      </div>
+                      <span className="text-[11px] text-slate-400">Manage →</span>
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           )}
