@@ -7,12 +7,15 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.boston.gov/api/3/action/datastore_search'
-// Try multiple known resource IDs — Analyze Boston may rotate these
+// Try multiple known resource IDs — Analyze Boston may rotate these.
+// Verified working as of 2026-04-25: 800a2663-1d6a-46e7-9356-bedb70f5332c
+// (Building and Property Violations).
 const RESOURCE_IDS = [
   process.env.BOSTON_RESOURCE_ID,
-  'wc8w-nujj',   // ISD Property Violations
-  'ug4g-cbe8',   // Building and Property Violations
-  'uzih-pxpv',   // Property Violations alternate
+  '800a2663-1d6a-46e7-9356-bedb70f5332c', // Building and Property Violations (current)
+  'wc8w-nujj',   // ISD Property Violations (legacy)
+  'ug4g-cbe8',   // Building and Property Violations (legacy)
+  'uzih-pxpv',   // Property Violations alternate (legacy)
   '90ed3816-5e70-443c-803d-9a71f6a7a77f', // legacy
 ].filter(Boolean) as string[]
 
@@ -66,16 +69,31 @@ export async function syncBoston(supabase: SupabaseClient): Promise<SyncResult> 
         const sourceId = String(row.case_no ?? row.sam_id ?? row.case_number ?? row._id ?? '')
         if (!sourceId) { result.skipped++; continue }
 
-        const street = row.address ?? row.stno ?? ''
+        // Modern dataset fields: violation_stno + violation_street (+ suffix).
+        // Legacy resources used `address` / `stno`. Try both shapes.
+        const modernStreet = [row.violation_stno, row.violation_street, row.violation_suffix]
+          .map((s: unknown) => (typeof s === 'string' ? s.trim() : ''))
+          .filter(Boolean)
+          .join(' ')
+        const street = modernStreet || row.address || row.stno || row.contact_addr1 || ''
+        const cityName = row.violation_city || 'Boston'
+        const zip = row.violation_zip || row.zip || ''
         const addrNorm = normalizeAddress(street)
 
-        let propertyId = await resolveProperty(supabase, addrNorm, 'Boston', 'MA')
+        let propertyId = await resolveProperty(supabase, addrNorm, cityName, 'MA')
         if (!propertyId && street) {
           const { data: newProp } = await supabase
             .from('properties')
-            .insert({ address_line1: street, city: 'Boston', state: 'Massachusetts', state_abbr: 'MA', zip: row.zip ?? '', address_normalized: addrNorm })
+            .insert({ address_line1: street, city: cityName, state: 'Massachusetts', state_abbr: 'MA', zip, address_normalized: addrNorm })
             .select('id').single()
           propertyId = newProp?.id ?? null
+        }
+
+        let filedDate: string | null = null
+        const dateRaw = row.status_dttm ?? row.open_dt
+        if (dateRaw) {
+          const d = new Date(dateRaw)
+          if (!isNaN(d.getTime())) filedDate = d.toISOString().split('T')[0] ?? null
         }
 
         const { error } = await supabase.from('public_records').upsert({
@@ -83,11 +101,11 @@ export async function syncBoston(supabase: SupabaseClient): Promise<SyncResult> 
           source_id: sourceId,
           record_type: 'boston_violation',
           property_id: propertyId,
-          title: buildBostonTitle(row.description, row.code_description, row.status),
-          description: row.description ?? row.code_description ?? null,
+          title: buildBostonTitle(row.description, row.code_description ?? row.code, row.status),
+          description: row.description ?? row.code_description ?? row.code ?? null,
           severity: 'medium',
           status: row.status?.toLowerCase().includes('close') ? 'closed' : 'open',
-          filed_date: row.open_dt ? new Date(row.open_dt).toISOString().split('T')[0] : null,
+          filed_date: filedDate,
           raw_data: row,
         }, { onConflict: 'source,source_id', ignoreDuplicates: false })
 
