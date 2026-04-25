@@ -14,7 +14,7 @@ export async function syncNycDob(supabase: SupabaseClient): Promise<SyncResult> 
   let offset = 0
 
   while (true) {
-    const url = `${ENDPOINT}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=complaintnumber`
+    const url = `${ENDPOINT}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=complaint_number`
     let rows: any[]
     try {
       const res = await withRetry(() => fetch(url, {
@@ -26,11 +26,11 @@ export async function syncNycDob(supabase: SupabaseClient): Promise<SyncResult> 
     } catch (e) { result.errors.push(e instanceof Error ? e.message : String(e)); break }
     if (!rows.length) break
 
-    // Batch-upsert properties
+    // Batch-upsert properties. Socrata uses snake_case column names.
     const uniqueAddrs = new Map<string, { addr: string; zip: string }>()
     for (const row of rows) {
-      const addr = [row.housenumber, row.streetname].filter(Boolean).join(' ')
-      if (addr) uniqueAddrs.set(normalizeAddress(addr), { addr, zip: row.zipcode ?? '' })
+      const addr = [row.house_number, row.house_street].filter(Boolean).join(' ')
+      if (addr) uniqueAddrs.set(normalizeAddress(addr), { addr, zip: row.zip_code ?? '' })
     }
     const propRows = Array.from(uniqueAddrs.entries()).map(([norm, v]) => ({
       address_line1: v.addr, city: 'New York City', state: 'New York',
@@ -47,18 +47,24 @@ export async function syncNycDob(supabase: SupabaseClient): Promise<SyncResult> 
     // Build record rows
     const toInsert: Record<string, unknown>[] = []
     for (const row of rows) {
-      const sourceId = String(row.complaintnumber ?? '')
+      const sourceId = String(row.complaint_number ?? '')
       if (!sourceId) { result.skipped++; continue }
-      const addr = [row.housenumber, row.streetname].filter(Boolean).join(' ')
+      const addr = [row.house_number, row.house_street].filter(Boolean).join(' ')
       const propertyId = addr ? (propIdMap.get(normalizeAddress(addr)) ?? null) : null
+      // date_entered comes back as MM/DD/YYYY; strip to YYYY-MM-DD for Postgres date.
+      let filedDate: string | null = null
+      if (row.date_entered) {
+        const d = new Date(row.date_entered)
+        if (!isNaN(d.getTime())) filedDate = d.toISOString().split('T')[0] ?? null
+      }
       toInsert.push({
         source: 'nyc_dob', source_id: sourceId, record_type: 'dob_complaint',
         property_id: propertyId,
-        title: `DOB Complaint: ${row.complaintcategory ?? row.status ?? 'Complaint'}`.slice(0, 150),
-        description: row.complaintcategory ?? row.status ?? null,
+        title: `DOB Complaint: ${row.complaint_category ?? row.status ?? 'Complaint'}`.slice(0, 150),
+        description: row.complaint_category ?? row.status ?? null,
         severity: 'medium',
         status: (row.status ?? '').toLowerCase().includes('close') ? 'closed' : 'open',
-        filed_date: row.dateentered ? new Date(row.dateentered).toISOString().split('T')[0] : null,
+        filed_date: filedDate,
         raw_data: row,
       })
     }

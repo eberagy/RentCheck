@@ -180,6 +180,20 @@ export async function withSyncLog(
 ): Promise<SyncResult> {
   const supabase = createServiceClient()
 
+  // Sweep: any prior 'running' row for this source that's older than the
+  // Vercel function ceiling (5 min) was killed mid-flight. Mark them
+  // 'failed' so the sync_log isn't permanently lying about state.
+  await supabase
+    .from('sync_log')
+    .update({
+      status: 'failed',
+      finished_at: new Date().toISOString(),
+      error_message: 'Auto-swept on next run (function timed out without finalize)',
+    })
+    .eq('source', source)
+    .eq('status', 'running')
+    .lt('started_at', new Date(Date.now() - 15 * 60_000).toISOString())
+
   const { data: log } = await supabase
     .from('sync_log')
     .insert({ source, status: 'running', started_at: new Date().toISOString() })

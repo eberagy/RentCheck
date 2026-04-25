@@ -16,6 +16,7 @@ export type RecordType =
   | 'dc_violation' | 'atlanta_violation' | 'nashville_violation'
   | 'phoenix_violation' | 'minneapolis_violation' | 'portland_violation'
   | 'san_antonio_violation' | 'detroit_violation' | 'charlotte_violation' | 'columbus_violation'
+  | 'business_registration'
 export type Severity = 'low' | 'medium' | 'high' | 'critical'
 export type LandlordGrade = 'A' | 'B' | 'C' | 'D' | 'F'
 
@@ -343,6 +344,7 @@ export const RECORD_TYPE_LABELS: Record<RecordType, string> = {
   detroit_violation: 'Detroit Blight Violation',
   charlotte_violation: 'Charlotte Code Violation',
   columbus_violation: 'Columbus Code Violation',
+  business_registration: 'Business Registration',
 }
 
 export const SOURCE_LABELS: Record<string, string> = {
@@ -376,6 +378,7 @@ export const SOURCE_LABELS: Record<string, string> = {
   detroit_blight: 'Detroit Open Data',
   charlotte_code: 'Charlotte Open Data',
   columbus_code: 'Columbus Open Data',
+  ny_dos: 'NY Department of State',
 }
 
 export const COLLEGE_CITIES = [

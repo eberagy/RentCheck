@@ -23,7 +23,13 @@ const GROUP_ORDER = [
   'chicago_violation', 'pittsburgh_violation', 'baltimore_vacant_notice',
   'austin_complaint', 'seattle_violation', 'la_violation',
   '311_complaint', 'code_enforcement',
+  // Informational (non-actionable) record types render last:
+  'business_registration',
 ]
+
+// Record types that are purely informational — never count as "open issues"
+// and don't warrant the red severity treatment.
+const INFORMATIONAL_TYPES = new Set(['business_registration'])
 
 function groupByType(records: PublicRecord[]) {
   const grouped: Record<string, PublicRecord[]> = {}
@@ -40,18 +46,25 @@ function groupByType(records: PublicRecord[]) {
 function RecordRow({ record }: { record: PublicRecord }) {
   const [expanded, setExpanded] = useState(false)
   const isClosed = record.status?.toLowerCase() === 'closed' || record.status?.toLowerCase() === 'dismissed'
+  const isInformational = INFORMATIONAL_TYPES.has(record.record_type)
 
   return (
-    <div className={`rounded-2xl border p-4 shadow-sm transition-colors ${isClosed ? 'border-slate-200 bg-slate-50' : 'border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)]'}`}>
+    <div className={`rounded-2xl border p-4 shadow-sm transition-colors ${isClosed || isInformational ? 'border-slate-200 bg-slate-50' : 'border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)]'}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <ViolationBadge
-              severity={record.severity}
-              status={record.status}
-              violationClass={record.violation_class}
-              size="sm"
-            />
+            {isInformational ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wide text-slate-500">
+                <Info className="h-3 w-3" /> Informational
+              </span>
+            ) : (
+              <ViolationBadge
+                severity={record.severity}
+                status={record.status}
+                violationClass={record.violation_class}
+                size="sm"
+              />
+            )}
             {record.case_number && (
               <span className="font-mono text-xs text-slate-500">#{record.case_number}</span>
             )}
@@ -97,7 +110,11 @@ function RecordRow({ record }: { record: PublicRecord }) {
 
 export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propertyAddress }: PublicRecordsPanelProps) {
   const grouped = groupByType(records)
-  const openCount = records.filter(r => r.status?.toLowerCase() !== 'closed' && r.status?.toLowerCase() !== 'dismissed').length
+  const openCount = records.filter(r =>
+    !INFORMATIONAL_TYPES.has(r.record_type) &&
+    r.status?.toLowerCase() !== 'closed' &&
+    r.status?.toLowerCase() !== 'dismissed'
+  ).length
 
   return (
     <section className="space-y-4">

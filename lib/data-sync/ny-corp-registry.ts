@@ -150,7 +150,7 @@ export async function syncNyCorpRegistry(supabase: SupabaseClient): Promise<Sync
       source_id: row.dos_id,
       source_url: `https://apps.dos.ny.gov/publicInquiry/EntityDisplay?selectedSearchID=${row.dos_id}`,
       severity: 'low',
-      status: 'open',
+      status: 'active',
       title: buildTitle(row),
       description: buildDescription(row),
       filed_date: row.initial_dos_filing_date?.slice(0, 10) ?? null,

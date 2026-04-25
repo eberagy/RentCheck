@@ -18,7 +18,7 @@ export async function syncPhiladelphia(supabase: SupabaseClient): Promise<SyncRe
   while (true) {
     const sql = `
       SELECT casenumber, address, zip, violationdate, violationdescription,
-             casetype, casestatus, caseprioritydesc
+             aptype, casestatus, caseprioritydesc
       FROM li_violations
       WHERE violationdate > '${since}'
       ORDER BY casenumber
@@ -62,8 +62,8 @@ export async function syncPhiladelphia(supabase: SupabaseClient): Promise<SyncRe
           source_id: sourceId,
           record_type: 'philly_violation',
           property_id: propertyId,
-          title: buildPhillyTitle(row.violationdescription, row.casetype, row.caseprioritydesc),
-          description: row.casetype ?? null,
+          title: buildPhillyTitle(row.violationdescription, row.aptype, row.caseprioritydesc),
+          description: row.aptype ?? null,
           severity: row.caseprioritydesc?.toLowerCase().includes('immed') ? 'high' : 'medium',
           status: row.casestatus?.toLowerCase().includes('close') ? 'closed' : 'open',
           filed_date: row.violationdate ? new Date(row.violationdate).toISOString().split('T')[0] : null,

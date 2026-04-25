@@ -40,7 +40,9 @@ export async function syncNyc311(supabase: SupabaseClient): Promise<SyncResult> 
   // Filter by HPD agency only (keeps URL short — HPD handles all housing complaints)
   let offset = 0
   while (true) {
-    const url = `${ENDPOINT}?$where=created_date>'${since}' AND agency='HPD'&$limit=${PAGE_SIZE}&$offset=${offset}&$order=unique_key`
+    // Socrata expects URL-encoded $where; an unencoded `>` and `'` returned HTTP 400.
+    const where = encodeURIComponent(`created_date>'${since}' AND agency='HPD'`)
+    const url = `${ENDPOINT}?$where=${where}&$limit=${PAGE_SIZE}&$offset=${offset}&$order=unique_key`
     let rows: any[]
     try {
       const res = await fetch(url, {
