@@ -66,8 +66,11 @@ const STATE_FROM_SOURCE: Record<string, { state: string; stateAbbr: string }> = 
   baltimore_vacants:{ state: 'Maryland', stateAbbr: 'MD' },
 }
 
-const PAGE_SIZE = 500
-const MAX_PAGES = 200 // 100k records per run max
+// Smaller pages so the joined SELECT (public_records + properties) stays
+// inside the Postgres statement_timeout. Earlier runs were hitting
+// "canceling statement due to statement timeout" at 500 rows/page.
+const PAGE_SIZE = 200
+const MAX_PAGES = 500 // still 100k records per run max
 
 export async function syncMineViolationOwners(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
@@ -81,6 +84,7 @@ export async function syncMineViolationOwners(supabase: SupabaseClient): Promise
     const { data: records, error } = await supabase
       .from('public_records')
       .select(`
+        id,
         property_id,
         source,
         raw_data,
@@ -88,6 +92,9 @@ export async function syncMineViolationOwners(supabase: SupabaseClient): Promise
       `)
       .not('property_id', 'is', null)
       .not('raw_data', 'is', null)
+      // Explicit ordering so .range() is deterministic across pages and
+      // Postgres uses the primary-key index instead of a full scan.
+      .order('id', { ascending: true })
       .range(offset, offset + PAGE_SIZE - 1)
 
     if (error) { result.errors.push(error.message); break }
