@@ -59,6 +59,3 @@ const iconWrap = { fontSize: '40px', margin: '0 0 16px' }
 const h2 = { fontSize: '20px', fontWeight: '700', color: '#111827', margin: '0 0 12px' }
 const text = { fontSize: '14px', color: '#374151', lineHeight: '1.6', margin: '0 0 12px', textAlign: 'left' as const }
 const button = { backgroundColor: '#0F7B6C', color: '#ffffff', borderRadius: '8px', padding: '12px 24px', textDecoration: 'none', fontSize: '14px', fontWeight: '600', display: 'inline-block', margin: '8px 0' }
-const hr = { borderColor: '#e5e7eb', margin: '24px 0' }
-const footer = { fontSize: '12px', color: '#9ca3af' }
-const link = { color: '#6b7280' }

@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     .update({ is_banned: banned })
     .eq('id', userId)
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
 
   logAdminAction({
     adminId: admin.id,

@@ -452,7 +452,16 @@ export default function LandlordPortalPage() {
               )}
             </div>
 
-            {/* Response templates */}
+            {/* Response templates — locked until verified */}
+            {!landlord.is_verified && (
+              <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-5 text-[13px] text-slate-500 flex items-start gap-3">
+                <BookTemplate className="h-4 w-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="font-semibold text-slate-700">Response templates unlock after verification.</p>
+                  <p className="mt-0.5">Once your claim is verified you&apos;ll be able to save canned replies and insert them when responding to reviews.</p>
+                </div>
+              </div>
+            )}
             {landlord.is_verified && (
               <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
                 <div className="flex items-center justify-between">

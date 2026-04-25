@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
       resolved_at: new Date().toISOString(),
     })
     .eq('id', disputeId)
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
 
   if (decision === 'record_removed' && recordId) {
     const { error: delErr } = await service.from('public_records').delete().eq('id', recordId)

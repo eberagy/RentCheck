@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     note: note ?? null,
   })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
 
   // Escalation: distinct-user flag count at/above threshold → auto-hide.
   // Use service role so RLS on reviews doesn't stop the status update.

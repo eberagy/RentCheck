@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
     .eq('landlord_id', landlordId)
     .order('updated_at', { ascending: false })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
   return NextResponse.json({ templates: data ?? [] })
 }
 
@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
     .select('id, label, body, created_at, updated_at')
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
   return NextResponse.json({ template: data })
 }
 
@@ -116,6 +116,6 @@ export async function DELETE(req: NextRequest) {
   if ('error' in gate) return NextResponse.json({ error: gate.error }, { status: gate.status })
 
   const { error } = await service.from('response_templates').delete().eq('id', id)
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
   return NextResponse.json({ ok: true })
 }

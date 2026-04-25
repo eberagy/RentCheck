@@ -80,7 +80,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   const { error } = await service.from('reviews').update(updates).eq('id', id)
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
   return NextResponse.json({ ok: true })
 }
 
@@ -94,7 +94,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   const ownerId = review.reviewer_id
 
   const { error } = await service.from('reviews').delete().eq('id', id)
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
 
   // Best-effort: remove the stored lease doc since it was never verified.
   void (async () => {

@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   const supabase = await createClient()
 
   const { data, error } = await supabase.rpc('search_all', { query: q, limit_n: limit })
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
 
   const rawResults = (data ?? []).filter((r: any) => type === 'all' || r.result_type === type)
   const landlordIds = rawResults.filter((r: any) => r.result_type === 'landlord').map((r: any) => r.id)

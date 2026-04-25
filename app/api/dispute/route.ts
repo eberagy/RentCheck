@@ -60,6 +60,6 @@ export async function POST(req: NextRequest) {
     status: 'open',
   })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
   return NextResponse.json({ ok: true, message: 'Dispute submitted. We will review within 5-7 business days.' }, { status: 201 })
 }

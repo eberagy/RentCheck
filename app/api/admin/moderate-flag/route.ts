@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   if (action === 'dismiss') {
     if (!flagId) return NextResponse.json({ error: 'flagId required' }, { status: 422 })
     const { error } = await service.from('review_flags').delete().eq('id', flagId)
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+    if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
     logAdminAction({
       adminId: admin.id,
       actionType: 'flag.dismissed',

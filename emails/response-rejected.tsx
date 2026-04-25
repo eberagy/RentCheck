@@ -55,6 +55,3 @@ const h2 = { fontSize: '20px', fontWeight: '700', color: '#111827', margin: '0 0
 const text = { fontSize: '14px', color: '#374151', lineHeight: '1.6', margin: '0 0 12px' }
 const reasonBox = { backgroundColor: '#fef3c7', border: '1px solid #fde68a', borderRadius: '8px', padding: '12px 16px', margin: '12px 0' }
 const button = { backgroundColor: '#1E3A5F', color: '#ffffff', borderRadius: '8px', padding: '12px 24px', textDecoration: 'none', fontSize: '14px', fontWeight: '600', display: 'inline-block', margin: '8px 0' }
-const hr = { borderColor: '#e5e7eb', margin: '24px 0' }
-const footer = { fontSize: '12px', color: '#9ca3af' }
-const link = { color: '#6b7280' }

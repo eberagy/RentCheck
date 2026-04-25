@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
   if (zip) q = q.eq('zip', zip)
 
   const { data, error, count } = await q
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
 
   return NextResponse.json({ properties: data ?? [], total: count ?? 0, page, limit })
 }

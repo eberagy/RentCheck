@@ -65,6 +65,7 @@ import { syncFranklinCountyAssessor } from '@/lib/data-sync/franklin-county-asse
 import { syncMecklenburgAssessor } from '@/lib/data-sync/mecklenburg-assessor'
 import { syncTravisCountyAssessor } from '@/lib/data-sync/travis-county-assessor'
 import { syncMineViolationOwners } from '@/lib/data-sync/mine-violation-owners'
+import { syncNyCorpRegistry } from '@/lib/data-sync/ny-corp-registry'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 type SyncFn = (supabase: SupabaseClient) => Promise<{ added: number; updated: number; skipped: number; errors: string[] }>
@@ -138,6 +139,7 @@ const SYNC_HANDLERS: Record<string, { fn: SyncFn; logKey: string }> = {
   'mecklenburg-assessor': { fn: syncMecklenburgAssessor, logKey: 'mecklenburg_assessor' },
   'travis-county':        { fn: syncTravisCountyAssessor, logKey: 'travis_county_assessor' },
   'mine-owners':          { fn: syncMineViolationOwners, logKey: 'mine_violation_owners' },
+  'ny-corp-registry':     { fn: syncNyCorpRegistry, logKey: 'ny_dos_corporations' },
 }
 
 export const maxDuration = 300 // Vercel Pro: 5 min max

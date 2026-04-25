@@ -243,6 +243,7 @@ export default function ReviewForm() {
         }
         return
       }
+      toast.success('Review submitted — we\'ll email you when it\'s approved.')
       setStep(4)
     } catch (err) {
       toast.error('Failed to submit review. Please try again.')

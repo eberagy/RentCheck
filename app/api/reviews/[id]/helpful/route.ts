@@ -19,7 +19,7 @@ export async function PATCH(_req: NextRequest, { params }: { params: { id: strin
     p_review_id: id,
     p_user_id: user.id,
   })
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
 
   const { data: review } = await supabase
     .from('reviews')

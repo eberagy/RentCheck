@@ -9,6 +9,18 @@ const createSchema = z.object({
   notifyEmail: z.boolean().optional().default(true),
 })
 
+// PostgREST .or()/.ilike() filter syntax is comma-separated and uses dots,
+// parens, and colons as delimiters. City names we recognize contain only
+// letters, spaces, hyphens, apostrophes, and periods (e.g. "St. Louis").
+// Strip anything that could break the filter string when interpolated.
+function sanitizeCity(raw: string): string {
+  return raw
+    .trim()
+    .replace(/[,()*:%"]/g, '')
+    .replace(/\s+/g, ' ')
+    .slice(0, 120)
+}
+
 export async function GET() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -21,7 +33,7 @@ export async function GET() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
   return NextResponse.json({ searches: data ?? [] })
 }
 
@@ -37,9 +49,10 @@ export async function POST(req: NextRequest) {
   const parsed = createSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: 'Invalid input' }, { status: 422 })
 
-  const city = parsed.data.city.trim().slice(0, 120)
+  const city = sanitizeCity(parsed.data.city)
   const stateAbbr = parsed.data.stateAbbr.toUpperCase()
   if (!city) return NextResponse.json({ error: 'City required' }, { status: 422 })
+  if (!/^[A-Z]{2}$/.test(stateAbbr)) return NextResponse.json({ error: 'Invalid state' }, { status: 422 })
 
   const service = createServiceClient()
 
@@ -65,7 +78,7 @@ export async function POST(req: NextRequest) {
     .select('id, city, state_abbr, notify_email, created_at')
     .single()
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
   return NextResponse.json({ search: data })
 }
 
@@ -86,6 +99,6 @@ export async function DELETE(req: NextRequest) {
     .eq('id', id)
     .eq('user_id', user.id)
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
   return NextResponse.json({ ok: true })
 }

@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     .update(updates)
     .eq('id', reviewId)
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
 
   logAdminAction({
     adminId: user.id,

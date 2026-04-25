@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Logo } from '@/components/Logo'
 import { useAuth } from '@/hooks/useAuth'
 import { createClient } from '@/lib/supabase/client'
+import { safeRedirectPath } from '@/lib/safe-redirect'
 import { toast } from 'sonner'
 
 const BENEFITS = [
@@ -38,7 +39,7 @@ export default function LoginClient() {
   const { signInWithGoogle } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const redirectTo = searchParams.get('redirectTo') ?? '/dashboard'
+  const redirectTo = safeRedirectPath(searchParams.get('redirectTo'))
   const initialTab: PasswordTab = searchParams.get('mode') === 'signup' ? 'signup' : 'signin'
   const [passwordTab, setPasswordTab] = useState<PasswordTab>(initialTab)
 

@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
   if (propertyId) q = q.eq('property_id', propertyId)
 
   const { data, error, count } = await q
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
 
   const safe = (data ?? []).map((r: any) => stripPrivateReviewFields(r))
   return NextResponse.json({ reviews: safe, total: count ?? 0, page, limit })
@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
 
   if (error) {
     console.error('Review insert failed:', error.message, error.details, error.hint)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
   }
 
   // Non-blocking acknowledgment email

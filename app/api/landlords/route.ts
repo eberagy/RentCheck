@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
   if (verified !== undefined) q = q.eq('is_verified', verified)
 
   const { data, error, count } = await q
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
 
   return NextResponse.json({ landlords: data ?? [], total: count ?? 0, page, limit })
 }

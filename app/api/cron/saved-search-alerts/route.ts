@@ -53,7 +53,14 @@ export async function GET(req: NextRequest) {
         .single<Reviewer>()
       if (!profile?.email || profile.email_watchlist === false) continue
 
-      const aliases = getCityAliases(sub.city) ?? [sub.city]
+      const rawAliases = getCityAliases(sub.city) ?? [sub.city]
+      // Defense-in-depth: strip anything that could break PostgREST filter
+      // syntax. Existing rows written before saved-searches sanitize may
+      // contain stray commas/colons/parens; drop those chars here too.
+      const aliases = rawAliases
+        .map(a => a.replace(/[,()*:%"]/g, '').replace(/\s+/g, ' ').trim())
+        .filter(a => a.length > 0)
+      if (!aliases.length) continue
 
       // Landlords in this city (multi-alias)
       const orClause = aliases.map(a => `city.ilike.%${a}%`).join(',')

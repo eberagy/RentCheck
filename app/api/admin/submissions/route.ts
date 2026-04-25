@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   if (filter !== 'all') q.eq('status', filter)
 
   const { data, error } = await q.limit(50)
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
 
   return NextResponse.json({ submissions: data ?? [] })
 }

@@ -51,6 +51,6 @@ export async function POST(req: NextRequest) {
     .update(updates)
     .eq('id', landlordId)
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
   return NextResponse.json({ ok: true })
 }

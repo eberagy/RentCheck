@@ -65,6 +65,3 @@ const alertTitle = { fontSize: '12px', fontWeight: '600', color: '#92400e', text
 const alertLandlord = { fontSize: '16px', fontWeight: '700', color: '#111827', margin: '0 0 4px' }
 const alertSummary = { fontSize: '13px', color: '#374151', margin: '0' }
 const button = { backgroundColor: '#1E3A5F', color: '#ffffff', borderRadius: '8px', padding: '12px 24px', textDecoration: 'none', fontSize: '14px', fontWeight: '600', display: 'inline-block', margin: '0 0 8px' }
-const hr = { borderColor: '#e5e7eb', margin: '24px 0' }
-const footer = { fontSize: '12px', color: '#9ca3af', lineHeight: '1.6' }
-const link = { color: '#6b7280' }

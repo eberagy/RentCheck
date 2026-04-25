@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     })
     .eq('id', claimId)
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
 
   const landlord = (claim.landlord as unknown) as { id: string; display_name: string; slug: string } | null
   const claimer = (claim.claimer as unknown) as { full_name: string | null; email: string | null } | null

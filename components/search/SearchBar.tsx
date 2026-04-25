@@ -133,8 +133,10 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
             <button
               key={result.id}
               type="button"
+              role="option"
+              aria-selected="false"
               onClick={() => handleSelect(result)}
-              className="flex w-full items-center gap-3 border-b border-slate-100 px-4 py-3 text-left transition-colors hover:bg-slate-50 last:border-0"
+              className="flex w-full items-center gap-3 border-b border-slate-100 px-4 py-3 text-left transition-colors hover:bg-slate-50 last:border-0 focus:outline-none focus:bg-slate-50"
             >
               <div className={cn(
                 'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg',
