@@ -180,9 +180,11 @@ export async function withSyncLog(
 ): Promise<SyncResult> {
   const supabase = createServiceClient()
 
-  // Sweep: any prior 'running' row for this source that's older than the
-  // Vercel function ceiling (5 min) was killed mid-flight. Mark them
+  // Sweep: ANY 'running' row older than the Vercel function ceiling
+  // (5 min × 3 for safety = 15 min) was killed mid-flight. Mark them
   // 'failed' so the sync_log isn't permanently lying about state.
+  // Sweep across all sources, not just the current one — otherwise a
+  // stuck row from another sync sits there forever and may peg Postgres.
   await supabase
     .from('sync_log')
     .update({
@@ -190,7 +192,6 @@ export async function withSyncLog(
       finished_at: new Date().toISOString(),
       error_message: 'Auto-swept on next run (function timed out without finalize)',
     })
-    .eq('source', source)
     .eq('status', 'running')
     .lt('started_at', new Date(Date.now() - 15 * 60_000).toISOString())
 
