@@ -13,11 +13,15 @@ export async function GET(req: NextRequest) {
   const supabase = createServiceClient()
   const since = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString() // last 25h to avoid gaps
 
-  // Get public records added since last run, grouped by landlord
+  // Get public records added since last run, grouped by landlord.
+  // Skip purely-informational types (LLC filings, etc.) — those should
+  // surface on the profile but never trigger an alarming watchlist alert.
+  const INFORMATIONAL_TYPES = ['business_registration']
   const { data: newRecords } = await supabase
     .from('public_records')
     .select('id, landlord_id, record_type, description, title')
     .not('landlord_id', 'is', null)
+    .not('record_type', 'in', `(${INFORMATIONAL_TYPES.map(t => `"${t}"`).join(',')})`)
     .gte('created_at', since)
     .order('created_at', { ascending: false })
 
