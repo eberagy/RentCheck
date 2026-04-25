@@ -4,6 +4,7 @@
     { "path": "/api/sync/nyc-dob",          "schedule": "30 2 * * *"  },
     { "path": "/api/sync/nyc-registration", "schedule": "0 3 * * *"   },
     { "path": "/api/sync/nyc-311",          "schedule": "30 3 * * *"  },
+    { "path": "/api/sync/nyc-evictions",    "schedule": "45 3 * * *"  },
     { "path": "/api/sync/chicago",          "schedule": "0 4 * * *"   },
     { "path": "/api/sync/sf",               "schedule": "15 4 * * *"  },
     { "path": "/api/sync/boston",           "schedule": "30 4 * * *"  },

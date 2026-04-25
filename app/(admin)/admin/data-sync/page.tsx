@@ -90,6 +90,7 @@ const SYNC_SOURCES = [
   { id: 'travis-county',         logKey: 'travis_county_assessor',  label: 'Travis County (Austin)',       schedule: 'Weekly Sunday 6am',    description: 'Travis County property assessment — covers Austin metro' },
   { id: 'mine-owners',           logKey: 'mine_violation_owners',   label: 'Mine Owners from Violations',  schedule: 'Daily 1am',            description: 'Back-fills landlord links by extracting owner names from existing violation raw_data (100k records/run)' },
   { id: 'ny-corp-registry',      logKey: 'ny_dos_corporations',     label: 'NY Secretary of State',        schedule: 'Weekly Sunday 6:30am', description: 'NY DOS active-corporation registry — enriches NY landlords with LLC age, type, jurisdiction, and registered agent (informational)' },
+  { id: 'nyc-evictions',         logKey: 'nyc_marshals_evictions',  label: 'NYC Marshal Evictions',        schedule: 'Daily 3:45am',         description: 'Every executed residential eviction by a NYC city marshal in the last 18 months (high-signal — actual lockouts, not court filings)' },
 ]
 
 export default function AdminDataSyncPage() {
