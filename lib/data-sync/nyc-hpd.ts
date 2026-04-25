@@ -11,11 +11,16 @@ const PAGE_SIZE = 1000
 export async function syncNycHpd(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
 
-  const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  // Tighter window (30 days) so the run finishes inside Vercel's 5-min ceiling.
+  // Daily cron means we still capture every new violation.
+  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
   let offset = 0
 
   while (true) {
-    const url = `${ENDPOINT}?$where=inspectiondate>'${since}'&$limit=${PAGE_SIZE}&$offset=${offset}&$order=violationid`
+    // Socrata $where must be URL-encoded — the `>` and `'` previously
+    // returned HTTP 400 silently.
+    const where = encodeURIComponent(`inspectiondate>'${since}'`)
+    const url = `${ENDPOINT}?$where=${where}&$limit=${PAGE_SIZE}&$offset=${offset}&$order=violationid`
     let rows: any[]
     try {
       const res = await fetch(url, { headers: { 'X-App-Token': process.env.NYC_OPEN_DATA_TOKEN ?? '' } })
@@ -28,7 +33,8 @@ export async function syncNycHpd(supabase: SupabaseClient): Promise<SyncResult> 
     const uniqueAddrs = new Map<string, { addr: string; zip: string }>()
     for (const row of rows) {
       const addr = [row.housenumber, row.streetname].filter(Boolean).join(' ')
-      if (addr) uniqueAddrs.set(normalizeAddress(addr), { addr, zip: row.postcode ?? '' })
+      // HPD dataset uses `zip` not `postcode`.
+      if (addr) uniqueAddrs.set(normalizeAddress(addr), { addr, zip: row.zip ?? '' })
     }
     const propRows = Array.from(uniqueAddrs.entries()).map(([norm, v]) => ({
       address_line1: v.addr, city: 'New York City', state: 'New York',

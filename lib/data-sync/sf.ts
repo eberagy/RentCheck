@@ -16,7 +16,9 @@ const PAGE_SIZE = 1000
 export async function syncSf(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
 
-  const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  // Tight window keeps the run inside Vercel's 5-min ceiling. Daily cron
+  // means we still capture every new violation.
+  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
   // Try endpoints in order; use first one that returns data
   let workingEndpoint: string | null = null
@@ -45,7 +47,8 @@ export async function syncSf(supabase: SupabaseClient): Promise<SyncResult> {
 
   let offset = 0
   while (true) {
-    const url = `${workingEndpoint}?$where=${dateField}>'${since}'&$limit=${PAGE_SIZE}&$offset=${offset}&$order=${idField}`
+    const where = encodeURIComponent(`${dateField}>'${since}'`)
+    const url = `${workingEndpoint}?$where=${where}&$limit=${PAGE_SIZE}&$offset=${offset}&$order=${idField}`
     let rows: any[]
     try {
       const res = await fetch(url, {
@@ -108,6 +111,8 @@ export async function syncSf(supabase: SupabaseClient): Promise<SyncResult> {
 
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break
+    // Cap so the run stays under Vercel's 5-min function ceiling.
+    if (offset > 30_000) break
   }
 
   return result
