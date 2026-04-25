@@ -69,9 +69,13 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
   const landlord = property.landlord as any
   const isUnclaimed = !landlord?.is_claimed
+  // Match landlord-page logic: court / informational records aren't violations.
+  const PROPERTY_OPEN_EXCLUDE = ['court_case', 'lsc_eviction', 'court_listener', 'business_registration']
   const openViolations = (records ?? []).filter(
     (r: PublicRecord) =>
-      r.status?.toLowerCase() !== 'closed' && r.status?.toLowerCase() !== 'dismissed'
+      r.status?.toLowerCase() !== 'closed' &&
+      r.status?.toLowerCase() !== 'dismissed' &&
+      !PROPERTY_OPEN_EXCLUDE.includes(r.record_type ?? '')
   ).length
 
   const reviewList = (reviews ?? []) as unknown as Review[]

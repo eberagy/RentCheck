@@ -68,6 +68,8 @@ export async function POST(req: NextRequest) {
     service.from('landlord_submissions').delete().eq('submitted_by', user.id),
     service.from('record_disputes').delete().eq('disputed_by', user.id),
     service.from('review_flags').delete().eq('flagged_by', user.id),
+    service.from('saved_searches').delete().eq('user_id', user.id),
+    service.from('response_templates').delete().eq('created_by', user.id),
     // review_helpful_votes may or may not exist depending on migrations; tolerate.
     (async () => {
       try { await service.from('review_helpful_votes').delete().eq('user_id', user.id) }

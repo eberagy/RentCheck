@@ -25,6 +25,8 @@ export async function GET(_req: NextRequest) {
     { data: disputes },
     { data: flags },
     { data: responses },
+    { data: savedSearches },
+    { data: responseTemplates },
   ] = await Promise.all([
     service.from('profiles').select('*').eq('id', user.id).maybeSingle(),
     service.from('reviews').select('*').eq('reviewer_id', user.id),
@@ -37,6 +39,8 @@ export async function GET(_req: NextRequest) {
       try { return await service.from('review_helpful_votes').select('*').eq('user_id', user.id) }
       catch { return { data: null } }
     })(),
+    service.from('saved_searches').select('*').eq('user_id', user.id),
+    service.from('response_templates').select('*').eq('created_by', user.id),
   ])
 
   const payload = {
@@ -54,6 +58,8 @@ export async function GET(_req: NextRequest) {
     record_disputes: disputes ?? [],
     review_flags: flags ?? [],
     review_helpful_votes: responses ?? [],
+    saved_searches: savedSearches ?? [],
+    response_templates: responseTemplates ?? [],
   }
 
   const body = JSON.stringify(payload, null, 2)
