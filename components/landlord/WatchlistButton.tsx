@@ -30,7 +30,15 @@ export function WatchlistButton({ landlordId }: WatchlistButtonProps) {
 
   async function toggle() {
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { toast.error('Sign in to set alerts'); return }
+    if (!user) {
+      // Send the visitor to sign in, then bring them back here so the
+      // alert intent is preserved instead of dead-ended.
+      const here = typeof window !== 'undefined' ? window.location.pathname : '/'
+      toast.message('Sign in to set alerts', {
+        action: { label: 'Sign in', onClick: () => { window.location.href = `/login?redirectTo=${encodeURIComponent(here)}` } },
+      })
+      return
+    }
     setLoading(true)
     try {
       if (watching) {
