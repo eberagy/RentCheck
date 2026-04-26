@@ -51,7 +51,13 @@ function DisputeForm() {
         }),
       })
       const data = await res.json()
-      if (res.status === 401) { toast.error('Sign in to submit a dispute'); return }
+      if (res.status === 401) {
+        const here = typeof window !== 'undefined' ? `${window.location.pathname}${window.location.search}` : '/dispute'
+        toast.message('Sign in to submit a dispute', {
+          action: { label: 'Sign in', onClick: () => { window.location.href = `/login?redirectTo=${encodeURIComponent(here)}` } },
+        })
+        return
+      }
       if (res.status === 409) { toast.info('You already have an open dispute for this record'); return }
       if (!res.ok) { toast.error(data.error ?? 'Submission failed'); return }
       setDone(true)
