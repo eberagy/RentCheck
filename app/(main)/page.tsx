@@ -33,14 +33,36 @@ export const metadata: Metadata = {
 async function getStats() {
   try {
     const supabase = createServiceClient()
-    const [{ count: reviewCount }, { count: landlordCount }, { count: recordCount }] = await Promise.all([
+    const [
+      { count: reviewCount },
+      { count: landlordCount },
+      { count: recordCount },
+      { data: cityRows },
+    ] = await Promise.all([
       supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
       supabase.from('landlords').select('*', { count: 'exact', head: true }),
       supabase.from('public_records').select('*', { count: 'exact', head: true }),
+      // Cities with real coverage (≥5 landlords). Same threshold the sitemap uses.
+      supabase.from('landlords').select('city, state_abbr').not('city', 'is', null).not('state_abbr', 'is', null).limit(50_000),
     ])
-    return { reviews: reviewCount ?? 0, landlords: landlordCount ?? 0, records: recordCount ?? 0 }
+
+    const cityCounts = new Map<string, number>()
+    for (const row of (cityRows ?? []) as Array<{ city: string | null; state_abbr: string | null }>) {
+      if (!row.city || !row.state_abbr) continue
+      const key = `${row.state_abbr}|${row.city.toLowerCase()}`
+      cityCounts.set(key, (cityCounts.get(key) ?? 0) + 1)
+    }
+    let cities = 0
+    cityCounts.forEach(n => { if (n >= 5) cities++ })
+
+    return {
+      reviews: reviewCount ?? 0,
+      landlords: landlordCount ?? 0,
+      records: recordCount ?? 0,
+      cities: cities || 21,
+    }
   } catch {
-    return { reviews: 0, landlords: 0, records: 0 }
+    return { reviews: 0, landlords: 0, records: 0, cities: 21 }
   }
 }
 
@@ -229,7 +251,7 @@ export default async function HomePage() {
                 <div className="mt-10 grid grid-cols-2 gap-0 divide-x divide-slate-200">
                   <div className="pr-6">
                     <p className="font-display text-[clamp(2.25rem,3vw,3rem)] leading-none tracking-tight text-slate-900 tabular-nums">
-                      <AnimatedCounter target={21} suffix="+" />
+                      <AnimatedCounter target={stats.cities} suffix="+" />
                     </p>
                     <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Cities covered</p>
                   </div>
