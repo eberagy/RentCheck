@@ -11,7 +11,7 @@
  * unit-level street address; we link to a property by normalized address.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.cityofnewyork.us/resource/6z8x-wfk4.json'
 const PAGE_SIZE = 1000
@@ -71,65 +71,88 @@ export async function syncNycEvictions(supabase: SupabaseClient): Promise<SyncRe
 
     if (!Array.isArray(rows) || rows.length === 0) break
 
+    // Batch-upsert properties first so we don't make one resolveProperty
+    // network round-trip per row (that was hitting the 5-min Vercel
+    // ceiling on the first run with 30k rows).
+    const uniqueAddrs = new Map<string, { addr: string; city: string; zip: string }>()
     for (const row of rows) {
-      try {
-        const sourceId = [row.court_index_number, row.docket_number, row.executed_date]
-          .filter(Boolean).join('|')
-        if (!sourceId || !row.eviction_address) { result.skipped++; continue }
-
-        const street = row.eviction_address.trim()
-        const cityName = normalizeBorough(row.borough)
-        const addrNorm = normalizeAddress(street)
-
-        let propertyId = await resolveProperty(supabase, addrNorm, cityName, 'NY')
-        if (!propertyId) {
-          const { data: newProp } = await supabase
-            .from('properties')
-            .insert({
-              address_line1: street,
-              city: cityName,
-              state: 'New York',
-              state_abbr: 'NY',
-              zip: row.eviction_zip ?? '',
-              address_normalized: addrNorm,
-            })
-            .select('id').single()
-          propertyId = newProp?.id ?? null
-        }
-
-        const apt = row.eviction_apt_num ? ` Apt ${row.eviction_apt_num}` : ''
-        const titleBase = `Marshal eviction executed at ${street}${apt}`
-        const title = titleBase.length >= 10 ? titleBase.slice(0, 150) : 'Marshal eviction executed (NYC)'
-
-        const marshal = [row.marshal_first_name, row.marshal_last_name].filter(Boolean).join(' ').trim()
-        const descLines: string[] = []
-        if (row.eviction_possession) descLines.push(`Result: ${row.eviction_possession}`)
-        if (row.ejectment && row.ejectment !== 'Not an Ejectment') descLines.push(`Type: ${row.ejectment}`)
-        if (marshal) descLines.push(`Marshal: ${marshal}`)
-        if (row.court_index_number) descLines.push(`Court index: ${row.court_index_number}`)
-
-        const filed = row.executed_date ? row.executed_date.slice(0, 10) : null
-
-        const { error } = await supabase.from('public_records').upsert({
-          source: 'nyc_marshals',
-          source_id: sourceId,
-          source_url: 'https://data.cityofnewyork.us/City-Government/Evictions/6z8x-wfk4',
-          record_type: 'eviction',
-          property_id: propertyId,
-          title,
-          description: descLines.length ? descLines.join('\n') : null,
-          severity: 'high',
-          status: 'closed', // executed = already happened
-          filed_date: filed,
-          case_number: row.court_index_number ?? null,
-          raw_data: row,
-        }, { onConflict: 'source,source_id', ignoreDuplicates: false })
-
-        if (error) { result.errors.push(error.message); continue }
-        result.added++
-      } catch (e) {
-        result.errors.push(e instanceof Error ? e.message : String(e))
+      if (!row.eviction_address) continue
+      const street = row.eviction_address.trim()
+      if (!street) continue
+      const norm = normalizeAddress(street)
+      if (!uniqueAddrs.has(norm)) {
+        uniqueAddrs.set(norm, {
+          addr: street,
+          city: normalizeBorough(row.borough),
+          zip: row.eviction_zip ?? '',
+        })
       }
+    }
+    const propRows = Array.from(uniqueAddrs.entries()).map(([norm, v]) => ({
+      address_line1: v.addr,
+      city: v.city,
+      state: 'New York',
+      state_abbr: 'NY',
+      zip: v.zip,
+      address_normalized: norm,
+    }))
+    const propIdMap = new Map<string, string>()
+    for (let i = 0; i < propRows.length; i += 200) {
+      const slice = propRows.slice(i, i + 200)
+      const { data } = await supabase.from('properties')
+        .upsert(slice, { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
+        .select('id, address_normalized')
+      for (const p of data ?? []) {
+        if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
+      }
+    }
+
+    // Build record rows
+    const toInsert: Record<string, unknown>[] = []
+    for (const row of rows) {
+      const sourceId = [row.court_index_number, row.docket_number, row.executed_date]
+        .filter(Boolean).join('|')
+      if (!sourceId || !row.eviction_address) { result.skipped++; continue }
+
+      const street = row.eviction_address.trim()
+      const addrNorm = normalizeAddress(street)
+      const propertyId = propIdMap.get(addrNorm) ?? null
+
+      const apt = row.eviction_apt_num ? ` Apt ${row.eviction_apt_num}` : ''
+      const titleBase = `Marshal eviction executed at ${street}${apt}`
+      const title = titleBase.length >= 10 ? titleBase.slice(0, 150) : 'Marshal eviction executed (NYC)'
+
+      const marshal = [row.marshal_first_name, row.marshal_last_name].filter(Boolean).join(' ').trim()
+      const descLines: string[] = []
+      if (row.eviction_possession) descLines.push(`Result: ${row.eviction_possession}`)
+      if (row.ejectment && row.ejectment !== 'Not an Ejectment') descLines.push(`Type: ${row.ejectment}`)
+      if (marshal) descLines.push(`Marshal: ${marshal}`)
+      if (row.court_index_number) descLines.push(`Court index: ${row.court_index_number}`)
+
+      toInsert.push({
+        source: 'nyc_marshals',
+        source_id: sourceId,
+        source_url: 'https://data.cityofnewyork.us/City-Government/Evictions/6z8x-wfk4',
+        record_type: 'eviction',
+        property_id: propertyId,
+        title,
+        description: descLines.length ? descLines.join('\n') : null,
+        severity: 'high',
+        status: 'closed', // executed = already happened
+        filed_date: row.executed_date ? row.executed_date.slice(0, 10) : null,
+        case_number: row.court_index_number ?? null,
+        raw_data: row,
+      })
+    }
+
+    // Batch-upsert records (chunked) so one bad row doesn't kill the page.
+    for (let i = 0; i < toInsert.length; i += 200) {
+      const slice = toInsert.slice(i, i + 200)
+      const { error, count } = await supabase
+        .from('public_records')
+        .upsert(slice, { onConflict: 'source,source_id', count: 'exact' })
+      if (error) result.errors.push(error.message)
+      else result.added += count ?? slice.length
     }
 
     offset += PAGE_SIZE
