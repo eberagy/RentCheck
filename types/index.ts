@@ -312,7 +312,7 @@ export const RECORD_TYPE_LABELS: Record<RecordType, string> = {
   dob_violation: 'Building Violation',
   dob_complaint: 'Building Complaint',
   court_case: 'Court Case',
-  eviction: 'Eviction Filing',
+  eviction: 'Eviction Records',
   eviction_filing: 'Eviction Filing',
   '311_complaint': '311 Complaint',
   code_enforcement: 'Code Enforcement',
@@ -379,6 +379,7 @@ export const SOURCE_LABELS: Record<string, string> = {
   charlotte_code: 'Charlotte Open Data',
   columbus_code: 'Columbus Open Data',
   ny_dos: 'NY Department of State',
+  nyc_marshals: 'NYC City Marshals',
 }
 
 export const COLLEGE_CITIES = [
