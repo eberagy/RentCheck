@@ -37,7 +37,10 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
         body: JSON.stringify({ reviewId, reason, note: note.trim() || undefined }),
       })
       if (res.status === 401) {
-        toast.error('Sign in to flag reviews')
+        const here = typeof window !== 'undefined' ? window.location.pathname : '/'
+        toast.message('Sign in to flag reviews', {
+          action: { label: 'Sign in', onClick: () => { window.location.href = `/login?redirectTo=${encodeURIComponent(here)}` } },
+        })
         onClose()
         return
       }
