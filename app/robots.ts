@@ -8,7 +8,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin/', '/dashboard/', '/landlord-portal/', '/api/', '/auth/'],
+        // /landlord-portal and /landlord-portal/claim are public
+        // marketing pages; only the authenticated subpaths are private.
+        disallow: ['/admin/', '/dashboard/', '/api/', '/auth/'],
       },
       {
         // Block AI training scrapers
