@@ -31,8 +31,10 @@ export async function GET() {
     supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('lease_verified', false).not('lease_doc_path', 'is', null),
     supabase.from('landlord_claims').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-    supabase.from('public_records').select('*', { count: 'exact', head: true }),
-    supabase.from('public_records').select('*', { count: 'exact', head: true }).not('status', 'in', '("closed","dismissed")'),
+    // ~360k rows; exact COUNT(*) trips statement timeout. Estimated is fine
+    // for a dashboard headline number.
+    supabase.from('public_records').select('*', { count: 'estimated', head: true }),
+    supabase.from('public_records').select('*', { count: 'estimated', head: true }).not('status', 'in', '("closed","dismissed")'),
     supabase.from('reviews').select('created_at').eq('status', 'approved').gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
   ])
 

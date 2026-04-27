@@ -42,7 +42,7 @@ export default async function AdminDashboardPage() {
     supabase.from('profiles').select('*', { count: 'exact', head: true }),
     supabase.from('landlords').select('*', { count: 'exact', head: true }),
     supabase.from('watchlist').select('*', { count: 'exact', head: true }),
-    supabase.from('public_records').select('*', { count: 'exact', head: true }),
+    supabase.from('public_records').select('*', { count: 'estimated', head: true }),
     supabase.from('reviews').select('*', { count: 'exact', head: true }).not('lease_doc_path', 'is', null).eq('lease_verified', false),
     supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('landlord_response_status', 'pending').not('landlord_response', 'is', null),
     supabase.from('review_flags').select('*', { count: 'exact', head: true }),

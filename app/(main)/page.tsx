@@ -41,7 +41,11 @@ async function getStats() {
     ] = await Promise.all([
       supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
       supabase.from('landlords').select('*', { count: 'exact', head: true }),
-      supabase.from('public_records').select('*', { count: 'exact', head: true }),
+      // public_records is ~360k rows — exact COUNT(*) trips the PostgREST
+      // statement timeout. Estimated count (pg_class.reltuples) is fine
+      // for a "350,000+ records" headline stat and orders of magnitude
+      // cheaper.
+      supabase.from('public_records').select('*', { count: 'estimated', head: true }),
       // Postgres-side aggregation. Pulling all 25k landlord rows over the
       // PostgREST API gets capped at 1000 silently, so use an RPC.
       supabase.rpc('count_cities_with_landlords', { min_landlords: 5 }),
