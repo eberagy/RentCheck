@@ -26,8 +26,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ] = await Promise.all([
     supabase.from('landlords').select('slug, updated_at').order('review_count', { ascending: false }).limit(MAX_URLS_PER_SET),
     supabase.from('properties').select('id, updated_at').order('review_count', { ascending: false }).limit(MAX_URLS_PER_SET),
-    // Cities with real coverage (≥5 landlords). Pull a wide net then dedupe in JS.
-    supabase.from('landlords').select('city, state_abbr').not('city', 'is', null).not('state_abbr', 'is', null).limit(50_000),
+    // Cities with real coverage (≥5 landlords). Postgres-side aggregation —
+    // PostgREST silently caps `select(...).limit(50000)` at 1000 rows.
+    supabase.rpc('cities_with_landlords', { min_landlords: 5 }),
   ])
 
   const staticPages: MetadataRoute.Sitemap = [
@@ -59,22 +60,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'monthly' as const,
   }))
 
-  // Combine: COLLEGE_CITIES (curated, always include) + cities with ≥5 landlords.
+  // Combine: COLLEGE_CITIES (curated, always include) + cities the RPC returns.
   const cityKeyToEntry = new Map<string, { city: string; state: string }>()
   for (const entry of COLLEGE_CITIES) {
     cityKeyToEntry.set(`${entry.state}|${entry.city.toLowerCase()}`, { city: entry.city, state: entry.state })
   }
-  const cityCounts = new Map<string, { city: string; state: string; n: number }>()
-  for (const row of cityRows ?? []) {
+  for (const row of (cityRows ?? []) as Array<{ city: string; state_abbr: string }>) {
     if (!row.city || !row.state_abbr) continue
     const key = `${row.state_abbr}|${row.city.toLowerCase()}`
-    const existing = cityCounts.get(key)
-    if (existing) existing.n++
-    else cityCounts.set(key, { city: row.city, state: row.state_abbr, n: 1 })
+    cityKeyToEntry.set(key, { city: row.city, state: row.state_abbr })
   }
-  cityCounts.forEach((entry, key) => {
-    if (entry.n >= 5) cityKeyToEntry.set(key, { city: entry.city, state: entry.state })
-  })
   const cityPages: MetadataRoute.Sitemap = Array.from(cityKeyToEntry.values()).map(entry => ({
     url: `${baseUrl}/city/${entry.state.toLowerCase()}/${citySlug(entry.city)}`,
     lastModified: new Date(),

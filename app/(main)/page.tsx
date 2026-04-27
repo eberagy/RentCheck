@@ -37,29 +37,21 @@ async function getStats() {
       { count: reviewCount },
       { count: landlordCount },
       { count: recordCount },
-      { data: cityRows },
+      { data: cityCountResult },
     ] = await Promise.all([
       supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
       supabase.from('landlords').select('*', { count: 'exact', head: true }),
       supabase.from('public_records').select('*', { count: 'exact', head: true }),
-      // Cities with real coverage (≥5 landlords). Same threshold the sitemap uses.
-      supabase.from('landlords').select('city, state_abbr').not('city', 'is', null).not('state_abbr', 'is', null).limit(50_000),
+      // Postgres-side aggregation. Pulling all 25k landlord rows over the
+      // PostgREST API gets capped at 1000 silently, so use an RPC.
+      supabase.rpc('count_cities_with_landlords', { min_landlords: 5 }),
     ])
-
-    const cityCounts = new Map<string, number>()
-    for (const row of (cityRows ?? []) as Array<{ city: string | null; state_abbr: string | null }>) {
-      if (!row.city || !row.state_abbr) continue
-      const key = `${row.state_abbr}|${row.city.toLowerCase()}`
-      cityCounts.set(key, (cityCounts.get(key) ?? 0) + 1)
-    }
-    let cities = 0
-    cityCounts.forEach(n => { if (n >= 5) cities++ })
 
     return {
       reviews: reviewCount ?? 0,
       landlords: landlordCount ?? 0,
       records: recordCount ?? 0,
-      cities: cities || 21,
+      cities: Number(cityCountResult ?? 0) || 21,
     }
   } catch {
     return { reviews: 0, landlords: 0, records: 0, cities: 21 }
