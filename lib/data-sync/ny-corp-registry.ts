@@ -1,6 +1,8 @@
 /**
  * New York State Department of State — Active Corporations
- * Source: data.ny.gov, dataset n9v6-gdje (Active Corporations: Beginning 1800)
+ * Source: data.ny.gov, dataset n9v6-gdp6 (Active Corporations: Beginning 1800)
+ * The previous ID (n9v6-gdje) was rotated by data.ny.gov on 2026-04-27;
+ * the new one keeps the same field schema so the sync logic is unchanged.
  *
  * Public registry of every business entity formed or authorized to do
  * business in NY. We use it to enrich existing NY landlord profiles with:
@@ -18,7 +20,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { SyncResult } from './utils'
 
-const ENDPOINT = 'https://data.ny.gov/resource/n9v6-gdje.json'
+const ENDPOINT = 'https://data.ny.gov/resource/n9v6-gdp6.json'
 const PAGE_SIZE = 5000
 const MAX_PAGES = 20 // 100k rows ceiling per run — NY has ~3M total but most won't match
 
