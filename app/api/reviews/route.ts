@@ -25,6 +25,9 @@ const createSchema = z.object({
   leaseDocPath: z.string().min(1),
   leaseFilename: z.string().min(1),
   leaseFileSize: z.number().int().positive(),
+  // Privacy-first default: hide the reviewer name + address unless the
+  // reviewer explicitly opts in to showing their name on the review.
+  isAnonymous: z.boolean().default(true),
 })
 
 export async function GET(req: NextRequest) {
@@ -131,6 +134,7 @@ export async function POST(req: NextRequest) {
       lease_filename: d.leaseFilename,
       lease_file_size: d.leaseFileSize,
       lease_verified: false,
+      is_anonymous: d.isAnonymous,
       status: initialStatus,
       admin_notes: adminNote,
     })

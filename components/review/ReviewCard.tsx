@@ -67,7 +67,11 @@ export function ReviewCard({ review, onMarkHelpful, onFlag, isOwn }: ReviewCardP
       {/* Header */}
       <div className="flex items-start gap-3">
         <Avatar className="mt-0.5 h-10 w-10 flex-shrink-0">
-          <AvatarImage src={review.reviewer?.avatar_url ?? undefined} />
+          {/* Hide reviewer photo when the review is anonymous so the avatar
+              + display name read as a single privacy unit. */}
+          {!(review as any).is_anonymous && (
+            <AvatarImage src={review.reviewer?.avatar_url ?? undefined} />
+          )}
           <AvatarFallback className="bg-navy-100 text-xs font-semibold text-navy-700">
             <User className="h-4 w-4" />
           </AvatarFallback>
@@ -76,7 +80,9 @@ export function ReviewCard({ review, onMarkHelpful, onFlag, isOwn }: ReviewCardP
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-sm font-semibold text-slate-950">
-              {formatReviewerName(review.reviewer?.full_name, review.reviewer?.email)}
+              {(review as any).is_anonymous
+                ? 'Anonymous renter'
+                : formatReviewerName(review.reviewer?.full_name, review.reviewer?.email)}
             </span>
             {review.lease_verified ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-teal-200 bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
@@ -106,7 +112,7 @@ export function ReviewCard({ review, onMarkHelpful, onFlag, isOwn }: ReviewCardP
             <p className="text-xs text-slate-400">
               {formatRentalPeriod(review.rental_period_start, review.rental_period_end, review.is_current_tenant)}
             </p>
-            {((review as any).property_address || review.property) && (
+            {!((review as any).is_anonymous) && ((review as any).property_address || review.property) && (
               <>
                 <span className="text-xs text-slate-300">·</span>
                 <span className="flex items-center gap-0.5 text-xs text-slate-400">

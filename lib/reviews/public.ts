@@ -24,6 +24,7 @@ export const PUBLIC_REVIEW_SELECT = `
   landlord_response_status,
   helpful_count,
   flag_count,
+  is_anonymous,
   created_at,
   updated_at,
   reviewer:profiles!reviews_reviewer_id_fkey(full_name, avatar_url),
@@ -54,6 +55,7 @@ export type PublicReview = {
   landlord_response_status: 'pending' | 'approved' | 'rejected' | null
   helpful_count: number
   flag_count: number
+  is_anonymous: boolean
   created_at: string
   updated_at: string | null
   reviewer: { full_name: string | null; avatar_url: string | null } | null

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, FileText, AlertTriangle, Users,
   RefreshCw, Flag, ShieldCheck, Home, PlusSquare, MessageSquare, TriangleAlert, ScrollText, BarChart3,
+  ExternalLink,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Logo } from '@/components/Logo'
@@ -30,7 +31,16 @@ export function AdminNav() {
   return (
     <aside className="w-56 min-h-screen bg-navy-900 text-white flex flex-col">
       <div className="p-4 border-b border-navy-700">
-        <Logo size="sm" href="/admin" />
+        <div className="flex items-center justify-between gap-2">
+          <Logo size="sm" href="/admin" />
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1 rounded-md border border-navy-600 bg-navy-800 px-2 py-1 text-[11px] font-medium text-navy-200 hover:bg-navy-700 hover:text-white"
+            title="Open the public site"
+          >
+            <ExternalLink className="h-3 w-3" /> Site
+          </Link>
+        </div>
         <span className="text-xs text-navy-300 mt-1 block">Admin Panel</span>
       </div>
       <nav className="flex-1 p-3 space-y-1">

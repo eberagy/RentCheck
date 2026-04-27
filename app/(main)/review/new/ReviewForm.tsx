@@ -44,6 +44,9 @@ const reviewSchema = z.object({
   isCurrentTenant: z.boolean().default(false),
   confirmedGenuine: z.boolean().default(false),
   confirmedLiability: z.boolean().default(false),
+  // Default off → review is anonymous (no name, no apartment address).
+  // Reviewer ticks the box to show their name.
+  showMyName: z.boolean().default(false),
 })
 
 type ReviewFormData = z.infer<typeof reviewSchema>
@@ -229,6 +232,7 @@ export default function ReviewForm() {
           leaseDocPath: uploadedLease.docPath,
           leaseFilename: uploadedLease.filename,
           leaseFileSize: uploadedLease.fileSize,
+          isAnonymous: !data.showMyName,
         }),
       })
       if (!res.ok) {
@@ -618,6 +622,20 @@ export default function ReviewForm() {
               <p className="line-clamp-2"><span className="font-semibold text-slate-900">Headline:</span> &ldquo;{watch('title')}&rdquo;</p>
               <p><span className="font-semibold text-slate-900">Dates:</span> {watch('rentalPeriodStart')} — {watch('isCurrentTenant') ? 'Present' : watch('rentalPeriodEnd')}</p>
               <p><span className="font-semibold text-slate-900">Lease verification:</span> {leaseStatus === 'uploaded' ? '✓ Uploaded (pending founder review)' : 'Not provided'}</p>
+            </div>
+
+            <div className="rounded-[14px] border border-slate-200 bg-white p-4 mb-6">
+              <p className="text-[12px] font-bold uppercase tracking-[0.16em] text-slate-500 mb-2">Privacy</p>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input type="checkbox" {...register('showMyName')} className="mt-0.5 rounded accent-teal" />
+                <span className="text-[13px] text-slate-700 leading-relaxed">
+                  <span className="font-semibold text-slate-900">Show my name on this review.</span>
+                  <br />
+                  <span className="text-slate-500">
+                    Off by default. When unchecked, your review shows as &ldquo;Anonymous renter&rdquo; and the property address is hidden — your lease is still verified privately by Vett.
+                  </span>
+                </span>
+              </label>
             </div>
 
             <div className="space-y-4 mb-6">

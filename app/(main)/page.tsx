@@ -15,6 +15,7 @@ import { SearchBar } from '@/components/search/SearchBar'
 import { ScrollReveal } from '@/components/ui/ScrollReveal'
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter'
 import { NewsletterSignup } from '@/components/marketing/NewsletterSignup'
+import { CityAlertSignup } from '@/components/marketing/CityAlertSignup'
 import { Button } from '@/components/ui/button'
 import { createServiceClient } from '@/lib/supabase/server'
 import { COLLEGE_CITIES } from '@/types'
@@ -437,12 +438,23 @@ export default async function HomePage() {
             ))}
           </div>
 
-          {/* Waitlist / newsletter capture for cities not yet covered */}
-          <div className="mt-14 max-w-xl">
+          {/* City alert signup — visitor picks a city + state + email and we
+              save it to email_leads for follow-up. */}
+          <div className="mt-14 max-w-2xl">
+            <CityAlertSignup
+              theme="light"
+              source="homepage-city-alerts"
+              heading="Get city alerts"
+              description="Tell us where you’re looking. We’ll email you when new lease-verified reviews land for that city — no account required."
+            />
+          </div>
+          {/* Fallback newsletter signup for visitors who don't want to pick a
+              specific city yet. */}
+          <div className="mt-8 max-w-xl">
             <NewsletterSignup
               theme="light"
               source="homepage-cities"
-              heading="Your city not on the list?"
+              heading="Don’t know your city yet?"
               description="Drop your email and we'll let you know the moment Vett covers your area."
             />
           </div>
