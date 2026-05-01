@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { Star, MapPin, BadgeCheck } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/server'
@@ -73,7 +74,14 @@ export default async function RenterProfilePage({ params }: RenterProfilePagePro
           >
             {profile.avatar_url ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={profile.avatar_url} alt="" className="h-20 w-20 rounded-2xl object-cover" />
+              <Image
+                src={profile.avatar_url}
+                alt=""
+                width={80}
+                height={80}
+                className="h-20 w-20 rounded-2xl object-cover"
+                unoptimized
+              />
             ) : (
               <span>{firstName.charAt(0).toUpperCase()}</span>
             )}

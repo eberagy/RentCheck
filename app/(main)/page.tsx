@@ -93,9 +93,18 @@ function StarDisplay({ rating }: { rating: number }) {
 
 export default async function HomePage() {
   const [stats, recentReviews] = await Promise.all([getStats(), getRecentReviews()])
-  const priorityCities = COLLEGE_CITIES.filter((city) =>
-    ['Baltimore', 'Pittsburgh', 'State College', 'Philadelphia', 'New York', 'Chicago'].includes(city.city)
-  )
+  // Anchor cities for the hero pill row — the first 8 with the deepest
+  // public-records coverage. Order is deliberate (NYC + Chicago lead).
+  const priorityCities = [
+    { city: 'New York', state: 'NY' },
+    { city: 'Chicago', state: 'IL' },
+    { city: 'Philadelphia', state: 'PA' },
+    { city: 'Boston', state: 'MA' },
+    { city: 'San Francisco', state: 'CA' },
+    { city: 'Pittsburgh', state: 'PA' },
+    { city: 'Baltimore', state: 'MD' },
+    { city: 'State College', state: 'PA' },
+  ]
 
   return (
     <div className="min-h-screen">

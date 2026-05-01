@@ -35,7 +35,35 @@ const OWNER_FIELDS_BY_SOURCE: Record<string, string[]> = {
   dc_dcra:          ['owner_name', 'ownername', 'respondent_name'],
   atlanta_permits:  ['owner_name', 'applicant_name', 'contractor_name'],
   nashville_code:   ['owner_name', 'complainant_name'],
-  // Catchall for any source
+
+  // Assessor + ownership-only sources — most have a clean owner column.
+  cook_county_assessor:    ['owner_name', 'mail_owner_name', 'taxpayer_name', 'taxpayer'],
+  philly_opa:              ['owner_1', 'owner_2', 'mailing_care_of'],
+  boston_assessing:        ['owner', 'mail_address', 'mailing_address'],
+  la_rso:                  ['property_owner', 'owner_name', 'last_name'],
+  dc_assessor:             ['ownername', 'owner_name', 'owner1', 'owner2'],
+  miami_dade_assessor:     ['true_owner1', 'owner1', 'owner2', 'owner_name'],
+  denver_assessor:         ['owner', 'owner_name', 'taxpayer'],
+  harris_county_assessor:  ['owner_name', 'mailing_owner', 'taxpayer'],
+  maricopa_assessor:       ['owner', 'owner_name', 'mailaddress'],
+  king_county_assessor:    ['owner_name', 'taxpayer_name', 'mailaddress'],
+  sf_assessor:             ['owner', 'owner_name', 'mailowner'],
+  allegheny_assessor:      ['owner_name', 'owner', 'taxpayer_name'],
+  la_county_assessor:      ['owner_name', 'mailaddress', 'taxpayer_name'],
+  cuyahoga_assessor:       ['owner_name', 'taxpayer_name', 'mail_address'],
+  wake_county_assessor:    ['owner_name', 'name', 'taxpayer'],
+  franklin_county_assessor:['owner_name', 'taxpayer', 'owner'],
+  mecklenburg_assessor:    ['owner_name', 'taxpayer', 'mail_address'],
+  travis_county_assessor:  ['owner_name', 'taxpayer', 'mailaddress'],
+
+  // HUD multifamily includes management agents alongside the owner.
+  hud_multifamily:         ['owner', 'owner_name', 'managing_agent', 'mgmt_agent'],
+  hud_reac:                ['owner_organization_name', 'owner', 'managing_agent'],
+
+  // NYC PLUTO (rich landlord-side metadata)
+  nyc_pluto:               ['ownername', 'owner_name'],
+
+  // Catchall for any source not listed above
   default:          ['owner_name', 'ownername', 'property_owner', 'taxpayer_name',
                      'taxpayer', 'owner', 'respondent_name', 'managing_agent',
                      'landlord_name', 'registered_owner', 'head_officer'],
@@ -64,6 +92,26 @@ const STATE_FROM_SOURCE: Record<string, { state: string; stateAbbr: string }> = 
   nashville_code:   { state: 'Tennessee', stateAbbr: 'TN' },
   pittsburgh_pli:   { state: 'Pennsylvania', stateAbbr: 'PA' },
   baltimore_vacants:{ state: 'Maryland', stateAbbr: 'MD' },
+
+  // Assessors + national ownership sources
+  philly_opa:              { state: 'Pennsylvania', stateAbbr: 'PA' },
+  boston_assessing:        { state: 'Massachusetts', stateAbbr: 'MA' },
+  la_rso:                  { state: 'California', stateAbbr: 'CA' },
+  dc_assessor:             { state: 'District of Columbia', stateAbbr: 'DC' },
+  miami_dade_assessor:     { state: 'Florida', stateAbbr: 'FL' },
+  denver_assessor:         { state: 'Colorado', stateAbbr: 'CO' },
+  harris_county_assessor:  { state: 'Texas', stateAbbr: 'TX' },
+  maricopa_assessor:       { state: 'Arizona', stateAbbr: 'AZ' },
+  king_county_assessor:    { state: 'Washington', stateAbbr: 'WA' },
+  sf_assessor:             { state: 'California', stateAbbr: 'CA' },
+  allegheny_assessor:      { state: 'Pennsylvania', stateAbbr: 'PA' },
+  la_county_assessor:      { state: 'California', stateAbbr: 'CA' },
+  cuyahoga_assessor:       { state: 'Ohio', stateAbbr: 'OH' },
+  wake_county_assessor:    { state: 'North Carolina', stateAbbr: 'NC' },
+  franklin_county_assessor:{ state: 'Ohio', stateAbbr: 'OH' },
+  mecklenburg_assessor:    { state: 'North Carolina', stateAbbr: 'NC' },
+  travis_county_assessor:  { state: 'Texas', stateAbbr: 'TX' },
+  // HUD is multi-state — fall back to row-level state when extracting; default unused.
 }
 
 // Two-stage keyset pagination so this stays inside Postgres'

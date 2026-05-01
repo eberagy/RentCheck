@@ -40,7 +40,7 @@ export function Navbar() {
           : 'border-b border-slate-200 bg-white/85 backdrop-blur-xl'
       )}
     >
-      <div className="mx-auto grid max-w-[1200px] grid-cols-[auto_1fr_auto] items-center gap-6 px-7 py-[18px]">
+      <div className="mx-auto grid max-w-[1200px] grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-[18px] sm:gap-6 sm:px-7">
         {/* Logo */}
         <Logo size="md" inverted={isDark} />
 
@@ -173,7 +173,7 @@ export function Navbar() {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <SheetContent side="right" className="w-80 border-l border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] pt-8">
+          <SheetContent side="right" className="w-[min(20rem,90vw)] border-l border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] pt-8">
             <div className="mb-6">
               <Logo size="sm" className="mb-4" />
               <p className="text-[10.5px] font-bold uppercase tracking-[0.22em] text-slate-400">
