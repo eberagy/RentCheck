@@ -42,10 +42,24 @@ export async function syncNycHpd(supabase: SupabaseClient): Promise<SyncResult> 
     }))
     const propertyMap = new Map<string, string>()
     for (let i = 0; i < propRows.length; i += 200) {
+      const slice = propRows.slice(i, i + 200)
       const { data } = await supabase.from('properties')
-        .upsert(propRows.slice(i, i + 200), { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
+        .upsert(slice, { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
         .select('id, address_normalized')
       for (const p of data ?? []) if (p.address_normalized) propertyMap.set(p.address_normalized, p.id)
+      // Backfill IDs for rows that already existed (ignoreDuplicates:true
+      // suppresses them from the response) so the records we're about to
+      // insert get a property_id instead of null.
+      const missing = slice
+        .map(r => r.address_normalized)
+        .filter((norm): norm is string => typeof norm === 'string' && !propertyMap.has(norm))
+      if (missing.length) {
+        const { data: existing } = await supabase.from('properties')
+          .select('id, address_normalized')
+          .in('address_normalized', missing)
+          .eq('state_abbr', 'NY')
+        for (const p of existing ?? []) if (p.address_normalized) propertyMap.set(p.address_normalized, p.id)
+      }
     }
 
     // ── Build record rows (landlord linking done by mine-owners sync) ────────

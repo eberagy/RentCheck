@@ -99,11 +99,28 @@ export async function syncNycEvictions(supabase: SupabaseClient): Promise<SyncRe
     const propIdMap = new Map<string, string>()
     for (let i = 0; i < propRows.length; i += 200) {
       const slice = propRows.slice(i, i + 200)
-      const { data } = await supabase.from('properties')
+      // ignoreDuplicates:true means PostgREST does NOT return existing rows.
+      // The first NYC marshal eviction runs ended up with 24,189 of 24,548
+      // records lacking a property_id because addresses already in the
+      // properties table were silently dropped from the upsert response.
+      // Insert what's new, then look up the rest in a follow-up SELECT.
+      const { data: inserted } = await supabase.from('properties')
         .upsert(slice, { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
         .select('id, address_normalized')
-      for (const p of data ?? []) {
+      for (const p of inserted ?? []) {
         if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
+      }
+      const missing = slice
+        .map(r => r.address_normalized as string)
+        .filter(norm => !propIdMap.has(norm))
+      if (missing.length > 0) {
+        const { data: found } = await supabase.from('properties')
+          .select('id, address_normalized')
+          .in('address_normalized', missing)
+          .eq('state_abbr', 'NY')
+        for (const p of found ?? []) {
+          if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
+        }
       }
     }
 
