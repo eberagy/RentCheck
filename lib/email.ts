@@ -14,6 +14,7 @@ import AdminDigestEmail, { type AdminDigestCounts } from '@/emails/admin-digest'
 import SubmissionReceivedEmail, { type SubmissionKind } from '@/emails/submission-received'
 import DisputeResolvedEmail, { type DisputeDecision } from '@/emails/dispute-resolved'
 import SavedSearchDigestEmail from '@/emails/saved-search-digest'
+import CityAlertConfirmationEmail from '@/emails/city-alert-confirmation'
 
 const FROM = process.env.RESEND_FROM_EMAIL ?? 'Vett <noreply@vettrentals.com>'
 
@@ -153,6 +154,14 @@ export async function sendDisputeResolvedEmail(to: string, props: {
   adminNotes?: string
 }) {
   await sendEmail(to, DISPUTE_SUBJECTS[props.decision], DisputeResolvedEmail(props) as any)
+}
+
+export async function sendCityAlertConfirmationEmail(to: string, props: { city: string; stateAbbr: string }) {
+  await sendEmail(
+    to,
+    `You're on the list for ${props.city}, ${props.stateAbbr}`,
+    CityAlertConfirmationEmail(props) as any,
+  )
 }
 
 export async function sendSavedSearchDigestEmail(to: string, props: {

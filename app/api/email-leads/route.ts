@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { sanitizeText } from '@/lib/sanitize'
+import { sendCityAlertConfirmationEmail } from '@/lib/email'
 import { z } from 'zod'
 
 // POST /api/email-leads — anon-friendly email capture endpoint.
@@ -30,19 +31,31 @@ export async function POST(req: NextRequest) {
   const { email, source, city, stateAbbr } = parsed.data
   const service = createServiceClient()
 
+  const cleanEmail = email.toLowerCase().trim()
+  const cleanCity = city ? sanitizeText(city).slice(0, 100) : null
+  const cleanState = stateAbbr ? stateAbbr.toUpperCase() : null
+
   const { error } = await service
     .from('email_leads')
     .insert({
-      email: email.toLowerCase().trim(),
+      email: cleanEmail,
       source: sanitizeText(source).slice(0, 64),
-      city: city ? sanitizeText(city).slice(0, 100) : null,
-      state_abbr: stateAbbr ? stateAbbr.toUpperCase() : null,
+      city: cleanCity,
+      state_abbr: cleanState,
     })
 
-  // Duplicate (email,source) is fine — treat as idempotent success.
-  if (error && !error.message.includes('duplicate') && !error.message.includes('unique')) {
+  const isDuplicate = error && (error.message.includes('duplicate') || error.message.includes('unique'))
+  if (error && !isDuplicate) {
     console.error('[email-leads] insert failed:', error)
     return NextResponse.json({ error: 'Could not save' }, { status: 500 })
+  }
+
+  // Confirmation email — only send when (a) the lead is new, (b) we have a
+  // city + state to confirm, and (c) RESEND_API_KEY is set. Fire-and-forget
+  // so the API responds fast even if Resend is slow.
+  if (!isDuplicate && cleanCity && cleanState && process.env.RESEND_API_KEY) {
+    void sendCityAlertConfirmationEmail(cleanEmail, { city: cleanCity, stateAbbr: cleanState })
+      .catch(err => console.error('[email-leads] confirmation send failed:', err))
   }
 
   return NextResponse.json({ ok: true })
