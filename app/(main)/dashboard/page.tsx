@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { Stars } from '@/components/vett/Stars'
 import { Chip } from '@/components/vett/Chip'
 import { Grade } from '@/components/vett/Grade'
+import { ReviewPrivacyToggle } from '@/components/dashboard/ReviewPrivacyToggle'
 import { getGradeLetter } from '@/lib/grade'
 import { formatDate } from '@/lib/utils'
 
@@ -35,7 +36,7 @@ export default async function DashboardPage() {
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase
       .from('reviews')
-      .select('id, title, status, rating_overall, created_at, lease_verified, landlord:landlords(display_name, slug)')
+      .select('id, title, status, rating_overall, created_at, lease_verified, is_anonymous, landlord:landlords(display_name, slug)')
       .eq('reviewer_id', user.id)
       .order('created_at', { ascending: false })
       .limit(10),
@@ -184,8 +185,9 @@ export default async function DashboardPage() {
                       </div>
                       <div className="min-w-0">
                         <p className="truncate text-[13px] font-bold text-slate-900">{r.title}</p>
-                        <p className="mt-0.5 text-[12px] text-slate-500 truncate">
-                          {landlord?.display_name ?? 'Unknown'} &middot; {formatDate(r.created_at)}
+                        <p className="mt-0.5 flex items-center gap-2 text-[12px] text-slate-500 truncate">
+                          <span className="truncate">{landlord?.display_name ?? 'Unknown'} &middot; {formatDate(r.created_at)}</span>
+                          <ReviewPrivacyToggle reviewId={r.id} initialAnonymous={!!r.is_anonymous} />
                         </p>
                       </div>
                       <Badge className={`text-[11px] border capitalize ${STATUS_STYLES[r.status] ?? 'text-slate-500 border-slate-200'}`}>
