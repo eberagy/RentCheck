@@ -81,10 +81,21 @@ export async function syncNashville(supabase: SupabaseClient): Promise<SyncResul
     }))
     const propIdMap = new Map<string, string>()
     for (let i = 0; i < propRows.length; i += 200) {
+      const slice = propRows.slice(i, i + 200)
       const { data } = await supabase.from('properties')
-        .upsert(propRows.slice(i, i + 200), { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
+        .upsert(slice, { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
         .select('id, address_normalized')
       for (const p of data ?? []) if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
+      const missing = slice
+        .map(r => r.address_normalized)
+        .filter((norm): norm is string => typeof norm === 'string' && !propIdMap.has(norm))
+      if (missing.length) {
+        const { data: existing } = await supabase.from('properties')
+          .select('id, address_normalized')
+          .in('address_normalized', missing)
+          .eq('state_abbr', 'TN')
+        for (const p of existing ?? []) if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
+      }
     }
 
     const toInsert: Record<string, unknown>[] = []

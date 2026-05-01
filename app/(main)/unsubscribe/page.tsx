@@ -45,10 +45,29 @@ export default async function UnsubscribePage({ searchParams }: UnsubscribePageP
     }
 
     const service = createServiceClient()
-    await service
+    const { error: updateErr } = await service
       .from('profiles')
       .update({ email_reviews: false, email_watchlist: false })
       .eq('id', payload.userId)
+
+    if (updateErr) {
+      console.error('[unsubscribe] update failed:', updateErr.message)
+      return (
+        <div className="mx-auto max-w-md px-4 py-20 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50">
+            <Mail className="h-7 w-7 text-amber-600" />
+          </div>
+          <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-tight tracking-tight text-slate-900">
+            We hit a snag.
+          </h1>
+          <p className="mt-3 text-[15px] leading-relaxed text-slate-500">
+            Couldn&apos;t update your preferences. Email{' '}
+            <a href="mailto:support@vettrentals.com" className="underline">support@vettrentals.com</a>{' '}
+            and we&apos;ll unsubscribe you by hand within 24 hours.
+          </p>
+        </div>
+      )
+    }
 
     return (
       <div className="mx-auto max-w-md px-4 py-20 text-center">

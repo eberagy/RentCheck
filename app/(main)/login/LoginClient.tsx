@@ -74,7 +74,9 @@ export default function LoginClient() {
         } else if (error.message.includes('Email not confirmed')) {
           toast.error('Please confirm your email first.')
         } else {
-          toast.error(error.message)
+          // Don't leak Supabase internals to the user. Log for debug, show generic.
+          console.error('[login] signInWithPassword:', error.message)
+          toast.error('Sign in failed. Please try again.')
         }
       } else {
         router.push(redirectTo)
@@ -95,7 +97,15 @@ export default function LoginClient() {
       })
       setLoading(false)
       if (error) {
-        toast.error(error.message)
+        console.error('[login] signUp:', error.message)
+        // Surface only known-safe Supabase errors; otherwise generic.
+        if (error.message.toLowerCase().includes('already registered')) {
+          toast.error('An account with that email already exists.')
+        } else if (error.message.toLowerCase().includes('password')) {
+          toast.error('Password must be at least 6 characters.')
+        } else {
+          toast.error('Could not create account. Please try again.')
+        }
       } else {
         toast.success('Account created! Check your email to confirm, then sign in.')
         setPasswordTab('signin')

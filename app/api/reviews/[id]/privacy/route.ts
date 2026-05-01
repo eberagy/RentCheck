@@ -32,9 +32,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!review) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   if (review.reviewer_id !== user.id) return NextResponse.json({ error: 'Not yours' }, { status: 403 })
 
+  // Don't bump updated_at — privacy is metadata, not content. Bumping
+  // updated_at would jump the review on "Most recent" sorts every time
+  // the user toggles the pill.
   const { error } = await service
     .from('reviews')
-    .update({ is_anonymous: parsed.data.isAnonymous, updated_at: new Date().toISOString() })
+    .update({ is_anonymous: parsed.data.isAnonymous })
     .eq('id', id)
 
   if (error) {

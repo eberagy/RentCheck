@@ -33,6 +33,7 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   return {
     title: `Landlord Reviews in ${cityName}, ${stateAbbr}`,
     description: `Read lease-verified renter reviews and public records for landlords in ${cityName}, ${stateName}. Research before you rent.`,
+    alternates: { canonical: `/city/${p.state.toLowerCase()}/${p.city.toLowerCase()}` },
     openGraph: {
       title: `Landlord Reviews in ${cityName}, ${stateAbbr} | Vett`,
       description: `Research landlords in ${cityName}. Lease-verified reviews + housing violations + eviction records.`,

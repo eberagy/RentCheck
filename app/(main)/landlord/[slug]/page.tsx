@@ -100,7 +100,11 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       .from('reviews')
       .select('rating_responsiveness, rating_maintenance, rating_honesty, rating_lease_fairness, would_rent_again, landlord_response_status')
       .eq('landlord_id', landlord.id)
-      .eq('status', 'approved'),
+      .eq('status', 'approved')
+      // Cap at 1k — the rating breakdown is purely an aggregate, not a list.
+      // PostgREST defaults to 1000 anyway; making it explicit guards against
+      // a hot-path landlord with 5k+ reviews stalling page render.
+      .limit(1000),
   ])
 
   // Also fetch records linked through this landlord's properties

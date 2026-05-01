@@ -143,7 +143,7 @@ export async function POST(req: NextRequest) {
 
   if (error) {
     console.error('Review insert failed:', error.message, error.details, error.hint)
-    { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+    return NextResponse.json({ error: 'Database error' }, { status: 500 })
   }
 
   // Non-blocking acknowledgment email

@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Script from 'next/script'
 import type { Metadata } from 'next'
 import {
   AlertTriangle,
@@ -59,12 +60,14 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       .select(PUBLIC_REVIEW_SELECT)
       .eq('property_id', property.id)
       .eq('status', 'approved')
-      .order('created_at', { ascending: false }),
+      .order('created_at', { ascending: false })
+      .limit(50),
     supabase
       .from('public_records')
       .select('*')
       .eq('property_id', property.id)
-      .order('filed_date', { ascending: false }),
+      .order('filed_date', { ascending: false })
+      .limit(200),
   ])
 
   const landlord = property.landlord as any
@@ -86,8 +89,39 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     records: recordList,
   })
 
+  // Schema.org structured data — Apartment / ApartmentComplex when units > 1.
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
+  const propertyJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': (property.unit_count ?? 1) > 1 ? 'ApartmentComplex' : 'Apartment',
+    name: property.address_line1,
+    url: `${siteUrl}/property/${property.id}`,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: property.address_line1,
+      addressLocality: property.city ?? undefined,
+      addressRegion: property.state_abbr ?? undefined,
+      postalCode: property.zip ?? undefined,
+      addressCountry: 'US',
+    },
+    ...(property.year_built ? { yearBuilt: property.year_built } : {}),
+    ...(property.unit_count ? { numberOfRooms: property.unit_count } : {}),
+    ...(property.review_count > 0 && property.avg_rating > 0 ? {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: property.avg_rating,
+        reviewCount: property.review_count,
+        bestRating: 5,
+        worstRating: 1,
+      },
+    } : {}),
+  })
+
   return (
     <div className="min-h-screen bg-slate-50">
+      <Script id={`property-jsonld-${property.id}`} type="application/ld+json" strategy="beforeInteractive">
+        {propertyJsonLd}
+      </Script>
       <div className="mx-auto max-w-4xl px-4 py-8">
         <nav className="mb-6 flex items-center gap-1 text-xs text-slate-500">
           <Link href="/" className="transition-colors hover:text-navy-700 hover:underline">

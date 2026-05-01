@@ -76,8 +76,8 @@ export async function POST(req: NextRequest) {
           landlordSlug: landlord.slug,
         }).catch(console.error)
 
-        // Fire watchlist alerts for users watching this landlord
-        fireWatchlistAlerts(serviceClient, review.landlord_id, landlord.display_name, landlord.slug, review.title ?? 'A new review').catch(console.error)
+        // Fire watchlist alerts for users watching this landlord (excluding the reviewer)
+        fireWatchlistAlerts(serviceClient, review.landlord_id, landlord.display_name, landlord.slug, review.title ?? 'A new review', review.reviewer_id ?? null).catch(console.error)
       } else {
         sendReviewRejectedEmail(reviewer.email, {
           firstName: reviewer.full_name?.split(' ')[0],
@@ -96,13 +96,17 @@ async function fireWatchlistAlerts(
   landlordId: string,
   landlordName: string,
   landlordSlug: string,
-  summary: string
+  summary: string,
+  excludeUserId: string | null
 ) {
-  // Get all users watching this landlord (excluding the reviewer themselves)
-  const { data: watchers } = await serviceClient
+  // Get all users watching this landlord. Skip the reviewer themselves so
+  // they don't receive an alert about their own approved review.
+  let query = serviceClient
     .from('watchlist')
     .select('user_id, notify_email, user:profiles(full_name, email, email_watchlist)')
     .eq('landlord_id', landlordId)
+  if (excludeUserId) query = query.neq('user_id', excludeUserId)
+  const { data: watchers } = await query
 
   if (!watchers?.length) return
 
