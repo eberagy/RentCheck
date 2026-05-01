@@ -66,42 +66,68 @@ const STATE_FROM_SOURCE: Record<string, { state: string; stateAbbr: string }> = 
   baltimore_vacants:{ state: 'Maryland', stateAbbr: 'MD' },
 }
 
-// Smaller pages so the joined SELECT (public_records + properties) stays
-// inside the Postgres statement_timeout. Earlier runs were hitting
-// "canceling statement due to statement timeout" at 500 rows/page.
-const PAGE_SIZE = 200
-const MAX_PAGES = 500 // still 100k records per run max
+// Two-stage keyset pagination so this stays inside Postgres'
+// statement_timeout even as public_records crosses 400k rows.
+// Page through unlinked PROPERTIES first, then fetch a record per
+// property — skipping properties that already have a landlord and
+// avoiding the OFFSET scan that was timing out previously.
+const PROPERTY_PAGE_SIZE = 300
+const MAX_PROPERTY_PAGES = 200 // 60k properties per run
 
 export async function syncMineViolationOwners(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
 
   const processedOwners = new Map<string, string>() // `${ownerKey}|${stateAbbr}` → landlordId
   let pagesProcessed = 0
-  let offset = 0
+  let lastPropertyId = '00000000-0000-0000-0000-000000000000' // keyset cursor
 
-  while (pagesProcessed < MAX_PAGES) {
-    // Fetch public_records that have property_id, with property join to check landlord_id
-    const { data: records, error } = await supabase
-      .from('public_records')
-      .select(`
-        id,
-        property_id,
-        source,
-        raw_data,
-        properties:property_id (id, landlord_id, city, state_abbr, address_line1)
-      `)
-      .not('property_id', 'is', null)
-      .not('raw_data', 'is', null)
-      // Explicit ordering so .range() is deterministic across pages and
-      // Postgres uses the primary-key index instead of a full scan.
+  while (pagesProcessed < MAX_PROPERTY_PAGES) {
+    // Stage 1: get the next page of unlinked properties via keyset cursor.
+    const { data: properties, error: propErr } = await supabase
+      .from('properties')
+      .select('id, city, state_abbr, address_line1')
+      .is('landlord_id', null)
+      .gt('id', lastPropertyId)
       .order('id', { ascending: true })
-      .range(offset, offset + PAGE_SIZE - 1)
+      .limit(PROPERTY_PAGE_SIZE)
 
-    if (error) { result.errors.push(error.message); break }
-    if (!records || records.length === 0) break
+    if (propErr) { result.errors.push(propErr.message); break }
+    if (!properties || properties.length === 0) break
 
-    // Filter to only records where property has no landlord yet
-    const unlinked = (records as any[]).filter(r => r.properties && !r.properties.landlord_id)
+    const propertyIds = properties.map(p => p.id)
+    lastPropertyId = properties[properties.length - 1]!.id
+
+    // Stage 2: pull one record per property with a usable raw_data + source.
+    // We don't need every record for the property — just one with owner info.
+    const { data: records, error: recErr } = await supabase
+      .from('public_records')
+      .select('id, property_id, source, raw_data')
+      .in('property_id', propertyIds)
+      .not('raw_data', 'is', null)
+      .order('property_id, id', { ascending: true })
+
+    if (recErr) { result.errors.push(recErr.message); break }
+
+    // Group by property_id, take the first record per property
+    const recordByProperty = new Map<string, { source: string; raw_data: Record<string, any> }>()
+    for (const r of records ?? []) {
+      const pid = r.property_id as string
+      if (!pid || recordByProperty.has(pid)) continue
+      recordByProperty.set(pid, { source: r.source as string, raw_data: r.raw_data as Record<string, any> })
+    }
+
+    // Build a unified iterable that mirrors the old `unlinked` shape
+    const unlinked = properties
+      .map(p => {
+        const rec = recordByProperty.get(p.id)
+        if (!rec) return null
+        return {
+          source: rec.source,
+          raw_data: rec.raw_data,
+          properties: { id: p.id, city: p.city, state_abbr: p.state_abbr, address_line1: p.address_line1, landlord_id: null as string | null },
+        }
+      })
+      .filter(Boolean) as Array<{ source: string; raw_data: Record<string, any>; properties: { id: string; city: string | null; state_abbr: string | null; address_line1: string | null; landlord_id: string | null } }>
 
     for (const rec of unlinked) {
       try {
@@ -164,9 +190,8 @@ export async function syncMineViolationOwners(supabase: SupabaseClient): Promise
       }
     }
 
-    offset += PAGE_SIZE
     pagesProcessed++
-    if (records.length < PAGE_SIZE) break
+    if (properties.length < PROPERTY_PAGE_SIZE) break
   }
 
   return result
