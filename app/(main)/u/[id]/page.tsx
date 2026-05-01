@@ -46,11 +46,15 @@ export default async function RenterProfilePage({ params }: RenterProfilePagePro
     notFound()
   }
 
+  // Public profile shows only reviews the user explicitly chose to display
+  // their name on. is_anonymous=true reviews stay invisible here even though
+  // the user opted into a public profile — they made two separate decisions.
   const { data: reviews } = await service
     .from('reviews')
     .select('id, title, body, rating_overall, lease_verified, created_at, landlord:landlords(display_name, slug, city, state_abbr)')
     .eq('reviewer_id', p.id)
     .eq('status', 'approved')
+    .eq('is_anonymous', false)
     .order('created_at', { ascending: false })
     .limit(50)
 

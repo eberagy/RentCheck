@@ -23,11 +23,14 @@ export default async function OgImage({ params }: { params: { id: string } }) {
   let reviewCount = 0
   let verifiedCount = 0
   if (isPublic) {
+    // Same filter as the page: only the reviewer's non-anonymous reviews
+    // surface on /u/[id], so the OG card should count the same set.
     const { data: reviews } = await service
       .from('reviews')
       .select('id, lease_verified')
       .eq('reviewer_id', p.id)
       .eq('status', 'approved')
+      .eq('is_anonymous', false)
     reviewCount = reviews?.length ?? 0
     verifiedCount = reviews?.filter(r => r.lease_verified).length ?? 0
   }
