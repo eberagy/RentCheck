@@ -35,11 +35,13 @@ export function StarRating({ value, onChange, readonly = false, size = 'md', sho
               onMouseEnter={() => !readonly && setHovered(star)}
               onMouseLeave={() => !readonly && setHovered(0)}
               className={cn(
-                'focus:outline-none transition-transform',
+                'transition-transform rounded-sm',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2',
                 !readonly && 'hover:scale-110 cursor-pointer',
                 readonly && 'cursor-default'
               )}
               aria-label={`${star} star${star !== 1 ? 's' : ''}`}
+              aria-pressed={!readonly && star <= display}
             >
               <Star
                 className={cn(

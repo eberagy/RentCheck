@@ -82,14 +82,14 @@ export function LandlordCard({ landlord, className }: LandlordCardProps) {
                 </div>
               )}
               {landlord.eviction_count > 0 && (
-                <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700">
-                  <Gavel className="h-3 w-3" />
+                <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700" title={`${landlord.eviction_count} eviction record${landlord.eviction_count !== 1 ? 's' : ''} on file`}>
+                  <Gavel className="h-3 w-3" aria-hidden="true" />
                   <span>{landlord.eviction_count} eviction{landlord.eviction_count !== 1 ? 's' : ''}</span>
                 </div>
               )}
               {landlord.open_violation_count > 0 && (
-                <div className="flex items-center gap-1 rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700">
-                  <AlertTriangle className="h-3 w-3" />
+                <div className="flex items-center gap-1 rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700" title={`${landlord.open_violation_count} open violation${landlord.open_violation_count !== 1 ? 's' : ''}`}>
+                  <AlertTriangle className="h-3 w-3" aria-hidden="true" />
                   <span>{landlord.open_violation_count} violation{landlord.open_violation_count !== 1 ? 's' : ''}</span>
                 </div>
               )}

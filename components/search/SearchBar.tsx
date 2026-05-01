@@ -123,8 +123,9 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
       {open && results.length > 0 && (
         <div
           role="listbox"
+          aria-label="Search suggestions"
           className={cn(
-            'absolute left-0 right-0 top-full z-50 max-h-[min(24rem,70vh)] max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain',
+            'absolute left-0 right-0 top-full z-50 max-h-[min(24rem,70vh)] max-w-[calc(100vw-2rem)] overflow-x-hidden overflow-y-auto overscroll-contain',
             'mt-2 rounded-2xl border bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]',
             variant === 'dark' ? 'border-white/10' : 'border-slate-200'
           )}

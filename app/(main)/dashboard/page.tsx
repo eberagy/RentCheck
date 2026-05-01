@@ -70,7 +70,7 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Hero strip */}
-      <section className="relative overflow-hidden bg-[#07111f] px-7 py-14 text-white">
+      <section className="relative overflow-hidden bg-[#07111f] px-4 py-14 sm:px-7 text-white">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_15%_-10%,rgba(15,123,108,0.22),transparent_55%),radial-gradient(ellipse_at_85%_110%,rgba(30,58,95,0.25),transparent_55%)]" />
         <div
           className="absolute inset-0 opacity-[0.04]"
@@ -98,7 +98,7 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      <div className="mx-auto grid max-w-[1180px] gap-6 px-7 py-7 lg:grid-cols-[1fr_320px]">
+      <div className="mx-auto grid max-w-[1180px] gap-6 px-4 py-7 sm:px-7 lg:grid-cols-[1fr_320px]">
         <div className="grid gap-5">
           {/* Watchlist panel */}
           <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">

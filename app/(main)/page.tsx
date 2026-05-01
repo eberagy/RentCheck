@@ -161,7 +161,7 @@ export default async function HomePage() {
 
           {/* Stats row — editorial magazine style. Always show all three. */}
           <ScrollReveal delay={320} direction="up">
-            <div className="mt-16 grid grid-cols-3 gap-0 border-t border-white/[0.08] pt-8 divide-x divide-white/[0.06]">
+            <div className="mt-16 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-white/[0.08] border-t border-white/[0.08] pt-8">
               <div className="pr-6">
                 <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
                   <AnimatedCounter target={stats.reviews} duration={2000} />

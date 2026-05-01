@@ -159,21 +159,26 @@ export function ReviewCard({ review, onMarkHelpful, onFlag, isOwn }: ReviewCardP
       {/* Actions */}
       <div className="mt-4 flex items-center gap-4 border-t border-slate-100 pt-3">
         <button
+          type="button"
           onClick={handleHelpful}
           disabled={voting}
-          className={`flex items-center gap-1.5 text-xs transition-colors ${
+          aria-pressed={didVote}
+          aria-label={didVote ? 'Unmark this review as helpful' : 'Mark this review as helpful'}
+          className={`flex items-center gap-1.5 rounded text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ${
             didVote ? 'font-semibold text-navy-600' : 'text-slate-500 hover:text-navy-600'
           }`}
         >
-          <ThumbsUp className={`h-3.5 w-3.5 ${didVote ? 'fill-navy-600' : ''}`} />
+          <ThumbsUp className={`h-3.5 w-3.5 ${didVote ? 'fill-navy-600' : ''}`} aria-hidden="true" />
           Helpful {helpfulCount > 0 && `(${helpfulCount})`}
         </button>
         {!isOwn && (
           <button
+            type="button"
             onClick={() => setShowFlag(true)}
-            className="flex items-center gap-1.5 text-xs text-slate-400 transition-colors hover:text-red-500"
+            aria-label="Flag this review for moderation"
+            className="flex items-center gap-1.5 rounded text-xs text-slate-400 transition-colors hover:text-red-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
           >
-            <Flag className="h-3.5 w-3.5" />
+            <Flag className="h-3.5 w-3.5" aria-hidden="true" />
             Flag
           </button>
         )}
