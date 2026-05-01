@@ -95,8 +95,26 @@ export async function GET(req: NextRequest) {
         }),
         140
       ),
+      // Surface signal counts on the search result so downstream code can
+      // sort/filter empty properties to the bottom.
+      record_count: (recordsByPropertyId.get(result.id) ?? []).length,
+      review_count: property.review_count ?? 0,
     }
   })
 
-  return NextResponse.json({ results, query: q })
+  // Push property results that have NO reviews AND NO records to the bottom.
+  // They're noise — a street name matched the query but the row has nothing
+  // useful to show. Landlord results stay in their original ranked order.
+  const enriched = results.map((r: any) => {
+    const isEmptyProperty = r.result_type === 'property'
+      && (r.review_count ?? 0) === 0
+      && (r.record_count ?? 0) === 0
+    return { r, isEmptyProperty }
+  })
+  enriched.sort((a: { isEmptyProperty: boolean }, b: { isEmptyProperty: boolean }) => {
+    if (a.isEmptyProperty !== b.isEmptyProperty) return a.isEmptyProperty ? 1 : -1
+    return 0
+  })
+
+  return NextResponse.json({ results: enriched.map((e: { r: unknown }) => e.r), query: q })
 }
