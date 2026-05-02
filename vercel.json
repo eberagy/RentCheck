@@ -67,6 +67,7 @@
     { "path": "/api/sync/ny-corp-registry",       "schedule": "30 6 * * 0"  },
     { "path": "/api/sync/mine-owners",            "schedule": "0 1 * * *"   },
     { "path": "/api/cron/admin-digest",           "schedule": "0 13 * * *"  },
-    { "path": "/api/cron/purge-leases",           "schedule": "0 4 * * *"   }
+    { "path": "/api/cron/purge-leases",           "schedule": "0 4 * * *"   },
+    { "path": "/api/cron/refresh-city-stats",     "schedule": "30 13 * * *" }
   ]
 }

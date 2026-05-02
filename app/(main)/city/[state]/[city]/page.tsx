@@ -78,11 +78,37 @@ export default async function CityPage({ params }: CityPageProps) {
 
   if (!landlords) notFound()
 
-  // Count public records for this city using server-side RPC (avoids URL length limits)
-  const { data: recordCountResult } = aliases
-    ? await supabase.rpc('count_city_records_multi', { city_names: aliases, state_code: stateAbbr })
-    : await supabase.rpc('count_city_records', { city_name: cityName, state_code: stateAbbr })
-  const recordCount = Number(recordCountResult ?? 0)
+  // Count public records for this city. Try the cached city_stats table
+  // first (refreshed nightly via cron); fall back to the live RPC if the
+  // city has no cached row yet. Cache hit is sub-millisecond; live RPC
+  // takes 1-20s depending on city size.
+  let recordCount = 0
+  if (aliases) {
+    const { data: cached } = await supabase
+      .from('city_stats')
+      .select('city, record_count')
+      .eq('state_abbr', stateAbbr)
+      .in('city', aliases)
+    if (cached && cached.length > 0) {
+      recordCount = cached.reduce((sum, r) => sum + (r.record_count ?? 0), 0)
+    } else {
+      const { data: live } = await supabase.rpc('count_city_records_multi', { city_names: aliases, state_code: stateAbbr })
+      recordCount = Number(live ?? 0)
+    }
+  } else {
+    const { data: cached } = await supabase
+      .from('city_stats')
+      .select('record_count')
+      .eq('state_abbr', stateAbbr)
+      .eq('city', cityName)
+      .maybeSingle()
+    if (cached) {
+      recordCount = cached.record_count ?? 0
+    } else {
+      const { data: live } = await supabase.rpc('count_city_records', { city_name: cityName, state_code: stateAbbr })
+      recordCount = Number(live ?? 0)
+    }
+  }
 
   // Get college info
   const collegeInfo = COLLEGE_CITIES.find(
