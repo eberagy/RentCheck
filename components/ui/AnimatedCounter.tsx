@@ -31,13 +31,20 @@ export function AnimatedCounter({
     const el = ref.current
     if (!el) return
 
-    setCount(0)
+    // Only reset to 0 when the element will actually animate.
+    // Otherwise we'd flash target → 0 before the IntersectionObserver
+    // fires, causing a visible "0" pop on first paint.
+    const inView = el.getBoundingClientRect().top < window.innerHeight
+    if (!inView) setCount(0)
 
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0]
         if (entry?.isIntersecting && !hasAnimated) {
           setHasAnimated(true)
+          // If we're already in view at first paint we kept the target value;
+          // animation kicks off from 0 only when we genuinely need to.
+          if (count > 0 && count === target) return
 
           const startTime = performance.now()
           const step = (now: number) => {
