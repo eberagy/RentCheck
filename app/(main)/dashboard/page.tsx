@@ -11,6 +11,7 @@ import { Grade } from '@/components/vett/Grade'
 import { ReviewPrivacyToggle } from '@/components/dashboard/ReviewPrivacyToggle'
 import { getGradeLetter } from '@/lib/grade'
 import { formatDate } from '@/lib/utils'
+import { cityPagePath } from '@/lib/cities'
 
 export const metadata: Metadata = { title: 'Dashboard' }
 
@@ -250,13 +251,14 @@ export default async function DashboardPage() {
               </div>
               <div className="grid gap-1">
                 {savedSearchList.map((s, i) => {
-                  const stateLower = s.state_abbr.toLowerCase()
-                  const slug = s.city.toLowerCase().replace(/\s+/g, '-')
+                  // Use the canonical-city helper so "New York City" resolves
+                  // to /city/ny/new-york (matches the city pages we generate).
+                  const href = cityPagePath(s.city, s.state_abbr)
                   const last = s.last_notified_at ? `Last digest ${formatDate(s.last_notified_at)}` : 'No digest sent yet'
                   return (
                     <Link
                       key={s.id}
-                      href={`/city/${stateLower}/${slug}`}
+                      href={href}
                       className={`grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 px-1 hover:bg-slate-50 rounded ${i < savedSearchList.length - 1 ? 'border-b border-slate-100' : ''}`}
                     >
                       <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
