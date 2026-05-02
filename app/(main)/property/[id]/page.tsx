@@ -153,7 +153,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
         <div className="mb-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
           <div className="h-1.5 bg-gradient-to-r from-navy-600 via-sky-500 to-teal-500" />
-          <div className="grid gap-6 px-5 py-6 sm:px-7 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
+          <div className="grid gap-6 px-4 py-6 sm:px-7 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
             <div className="min-w-0 space-y-4">
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-navy-50 text-navy-600 ring-1 ring-navy-100">
@@ -261,7 +261,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </div>
 
           {openViolations > 0 && (
-            <div className="border-t border-slate-100 px-5 py-5 sm:px-7">
+            <div className="border-t border-slate-100 px-4 py-5 sm:px-7">
               <div className="flex items-start gap-2.5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
                 <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600" />
                 <div>
