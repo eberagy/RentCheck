@@ -31,6 +31,13 @@ const nextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(self)' },
+          // HSTS: tells browsers to use HTTPS for the next year. Required
+          // for the apex + www to qualify for the HSTS preload list.
+          { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' },
+          // Don't allow being framed even by us (combined with X-Frame-Options
+          // DENY for older browsers). Stops clickjacking via embeds.
+          { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+          { key: 'Cross-Origin-Embedder-Policy', value: 'unsafe-none' },
         ],
       },
     ]
