@@ -44,7 +44,8 @@ export async function POST(req: NextRequest) {
   if (!landlord) return NextResponse.json({ error: 'Landlord not found' }, { status: 404 })
   if (landlord.is_claimed) return NextResponse.json({ error: 'This profile has already been claimed' }, { status: 409 })
 
-  // Check for existing pending claim from this user
+  // Check for existing pending claim from this user.
+  // maybeSingle so we don't throw PGRST116 on the no-row common case.
   const { data: existingClaim } = await supabase
     .from('landlord_claims')
     .select('id, status')
@@ -52,7 +53,7 @@ export async function POST(req: NextRequest) {
     .eq('claimed_by', user.id)
     .eq('status', 'pending')
     .limit(1)
-    .single()
+    .maybeSingle()
 
   if (existingClaim) {
     return NextResponse.json({ error: 'You already have a pending claim for this landlord' }, { status: 409 })

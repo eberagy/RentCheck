@@ -40,13 +40,21 @@ export async function POST(req: NextRequest) {
 
   // 1. Purge storage objects the user owns in folder `{user.id}/`.
   // Lease docs + verification docs + avatars all live under user-id folders.
+  // Loop pages so users with >1000 historical uploads don't leave orphans.
   const buckets = ['lease-docs', 'landlord-verification-docs', 'avatars']
   for (const bucket of buckets) {
     try {
-      const { data: objects } = await service.storage.from(bucket).list(user.id, { limit: 1000 })
-      if (objects && objects.length > 0) {
+      let offset = 0
+      const PAGE = 100
+      while (offset < 10_000) {
+        const { data: objects } = await service.storage
+          .from(bucket)
+          .list(user.id, { limit: PAGE, offset })
+        if (!objects || objects.length === 0) break
         const paths = objects.map(o => `${user.id}/${o.name}`)
         await service.storage.from(bucket).remove(paths)
+        if (objects.length < PAGE) break
+        offset += PAGE
       }
     } catch (err) {
       console.error(`[me/delete] failed to purge ${bucket}:`, err)

@@ -40,14 +40,17 @@ export async function POST(req: NextRequest) {
 
   if (!record) return NextResponse.json({ error: 'Record not found' }, { status: 404 })
 
-  // Check for existing open dispute from this user for same record
+  // Check for existing open dispute from this user for same record.
+  // Use maybeSingle: .single() throws PGRST116 when zero rows, which is
+  // the common case here.
   const { data: existing } = await supabase
     .from('record_disputes')
     .select('id')
     .eq('record_id', recordId)
     .eq('disputed_by', user.id)
     .in('status', ['open', 'pending', 'reviewed'])
-    .single()
+    .limit(1)
+    .maybeSingle()
 
   if (existing) return NextResponse.json({ error: 'You already have an open dispute for this record' }, { status: 409 })
 

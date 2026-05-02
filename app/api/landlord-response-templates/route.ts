@@ -32,6 +32,10 @@ export async function GET(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Not signed in' }, { status: 401 })
 
+  // Throttle so a compromised account can't enumerate templates rapidly.
+  const rl = rateLimit(`response-templates-get:${user.id}`, 120, 60_000)
+  if (!rl.success) return rateLimitResponse()
+
   const url = new URL(req.url)
   const landlordId = url.searchParams.get('landlordId') ?? ''
   if (!landlordId) return NextResponse.json({ error: 'Missing landlordId' }, { status: 422 })

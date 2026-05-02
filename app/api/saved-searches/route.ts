@@ -26,6 +26,9 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Not signed in' }, { status: 401 })
 
+  const rl = rateLimit(`saved-searches-get:${user.id}`, 120, 60_000)
+  if (!rl.success) return rateLimitResponse()
+
   const service = createServiceClient()
   const { data, error } = await service
     .from('saved_searches')
