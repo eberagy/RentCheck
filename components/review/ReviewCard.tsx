@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ThumbsUp, Flag, CheckCircle2, User, Home } from 'lucide-react'
+import { ThumbsUp, Flag, CheckCircle2, XCircle, User, Home } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { StarRating } from './StarRating'
 import { RatingBar } from '@/components/landlord/RatingBar'
@@ -99,12 +99,15 @@ export function ReviewCard({ review, onMarkHelpful, onFlag, isOwn }: ReviewCardP
               </span>
             )}
             {review.would_rent_again !== null && review.would_rent_again !== undefined && (
-              <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${
+              <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${
                 review.would_rent_again
                   ? 'bg-teal-50 text-teal-700 border-teal-200'
                   : 'bg-red-50 text-red-700 border-red-200'
               }`}>
-                {review.would_rent_again ? '✓ Would rent again' : '✗ Would not rent again'}
+                {review.would_rent_again
+                  ? <CheckCircle2 className="h-3 w-3" aria-hidden="true" />
+                  : <XCircle className="h-3 w-3" aria-hidden="true" />}
+                {review.would_rent_again ? 'Would rent again' : 'Would not rent again'}
               </span>
             )}
           </div>

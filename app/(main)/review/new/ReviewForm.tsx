@@ -161,8 +161,12 @@ export default function ReviewForm() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { toast.error('Please sign in first'); return }
 
-      const ext = leaseFile.name.split('.').pop()
-      const path = `${user.id}/${Date.now()}.${ext}`
+      // Extract extension safely. Files like "LICENSE" or ".gitignore" have
+      // no usable suffix; default to .pdf since the dropzone accepts only
+      // pdf/png/jpg.
+      const parts = leaseFile.name.split('.')
+      const ext = parts.length > 1 ? parts.pop()!.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) : 'pdf'
+      const path = `${user.id}/${Date.now()}.${ext || 'pdf'}`
       const { error: uploadError } = await supabase.storage
         .from('lease-docs')
         .upload(path, leaseFile, { upsert: false })

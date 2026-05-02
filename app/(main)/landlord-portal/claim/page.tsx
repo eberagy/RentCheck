@@ -112,8 +112,10 @@ export default function ClaimProfilePage() {
 
     setSubmitting(true)
     try {
-      const ext = docFile.name.split('.').pop()
-      const path = `${user.id}/${selectedLandlord.id}/${Date.now()}.${ext}`
+      // Extract extension safely; files like "LICENSE" have no extension.
+      const parts = docFile.name.split('.')
+      const ext = parts.length > 1 ? parts.pop()!.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 8) : 'pdf'
+      const path = `${user.id}/${selectedLandlord.id}/${Date.now()}.${ext || 'pdf'}`
       const { error: uploadError } = await supabase.storage
         .from('landlord-verification-docs')
         .upload(path, docFile)
