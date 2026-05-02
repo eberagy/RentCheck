@@ -86,7 +86,12 @@ export default function AdminUsersPage() {
       .limit(50)
 
     if (q && q.length > 1) {
-      dbq = dbq.or(`full_name.ilike.%${q}%,email.ilike.%${q}%`)
+      // Strip PostgREST filter metacharacters so an admin's typed query
+      // can't break the .or() syntax (e.g. comma, paren, colon, %, ").
+      const safe = q.replace(/[,()*:%"]/g, '').replace(/\s+/g, ' ').trim()
+      if (safe) {
+        dbq = dbq.or(`full_name.ilike.%${safe}%,email.ilike.%${safe}%`)
+      }
     }
 
     const { data } = await dbq
