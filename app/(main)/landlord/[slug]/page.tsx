@@ -255,7 +255,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           <div className="h-[3px] bg-navy-500" />
 
           {/* Top row: identity + at-a-glance */}
-          <div className="grid gap-6 px-6 py-7 sm:px-8 lg:grid-cols-[1fr_320px] lg:items-start">
+          <div className="grid gap-6 px-4 py-7 sm:px-8 lg:grid-cols-[1fr_320px] lg:items-start">
             <div className="min-w-0 space-y-4">
               <div className="flex flex-wrap items-center gap-3">
                 <h1 className="font-display text-[clamp(1.8rem,4vw,2.4rem)] leading-tight tracking-tight text-slate-900">
@@ -319,7 +319,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           </div>
 
           {/* Stats row — always show all four tracked dimensions for consistency */}
-          <div className="grid grid-cols-2 gap-4 border-t border-slate-100 px-6 py-5 sm:grid-cols-4 sm:px-8">
+          <div className="grid grid-cols-2 gap-4 border-t border-slate-100 px-4 py-5 sm:grid-cols-4 sm:px-8">
             {[
               { label: 'Reviews', value: landlord.review_count ?? 0, color: '', zeroColor: 'text-slate-300' },
               { label: 'Properties', value: (properties ?? []).length, color: '', zeroColor: 'text-slate-300' },
@@ -336,7 +336,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           </div>
 
           {/* Rating breakdown — always shown; null values render as em-dash for consistency */}
-          <div className="border-t border-slate-100 px-6 py-6 sm:px-8">
+          <div className="border-t border-slate-100 px-4 py-6 sm:px-8">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-[14px] font-bold text-slate-900">Rating breakdown</h3>
               {wouldRentAgainPct !== null && approved.length > 0 ? (
@@ -370,7 +370,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
 
           {/* Landlord-authored description (only shown if claimant added one) */}
           {(landlord as unknown as { description?: string | null }).description && (
-            <div className="border-t border-slate-100 px-6 py-5 sm:px-8">
+            <div className="border-t border-slate-100 px-4 py-5 sm:px-8">
               <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-teal-700">
                 From the landlord
               </div>
@@ -382,7 +382,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
 
           {/* Bio */}
           {landlord.bio && (
-            <div className="border-t border-slate-100 px-6 py-5 sm:px-8">
+            <div className="border-t border-slate-100 px-4 py-5 sm:px-8">
               <p className="text-sm leading-6 text-slate-700">{landlord.bio}</p>
             </div>
           )}
