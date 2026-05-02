@@ -14,6 +14,7 @@ import { US_STATES, COLLEGE_CITIES } from '@/types'
 import type { Landlord } from '@/types'
 import { getCityAliases } from '@/lib/cities'
 import { CitySubscribeButton } from '@/components/city/CitySubscribeButton'
+import Script from 'next/script'
 
 export const revalidate = 3600
 
@@ -113,8 +114,55 @@ export default async function CityPage({ params }: CityPageProps) {
         .limit(8)).data ?? []
     : []
 
+  // CollectionPage JSON-LD — tells Google this is a directory page for
+  // a specific locale, so it ranks for "{city} landlords" queries.
+  const cityJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `Landlord Reviews in ${cityName}, ${stateAbbr}`,
+    url: `https://vettrentals.com/city/${stateAbbr.toLowerCase()}/${cityName.toLowerCase().replace(/\s+/g, '-')}`,
+    isPartOf: { '@id': 'https://vettrentals.com/#website' },
+    about: {
+      '@type': 'Place',
+      name: `${cityName}, ${stateName}`,
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: cityName,
+        addressRegion: stateAbbr,
+        addressCountry: 'US',
+      },
+    },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: count ?? 0,
+      itemListElement: topRated.slice(0, 5).map((l, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'LocalBusiness',
+          name: l.display_name,
+          url: l.slug ? `https://vettrentals.com/landlord/${l.slug}` : undefined,
+          ...(l.avg_rating && (l.review_count ?? 0) > 0
+            ? {
+                aggregateRating: {
+                  '@type': 'AggregateRating',
+                  ratingValue: l.avg_rating,
+                  reviewCount: l.review_count,
+                  bestRating: 5,
+                  worstRating: 1,
+                },
+              }
+            : {}),
+        },
+      })),
+    },
+  })
+
   return (
     <div className="min-h-screen bg-slate-50">
+      <Script id={`city-jsonld-${stateAbbr}-${cityName}`} type="application/ld+json" strategy="beforeInteractive">
+        {cityJsonLd}
+      </Script>
       {/* Hero */}
       <section
         className="relative overflow-hidden px-4 py-16 sm:px-7 text-white"
