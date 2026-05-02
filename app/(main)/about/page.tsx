@@ -2,11 +2,57 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Script from 'next/script'
 import { Shield, Search, BarChart3, Scale, ArrowRight } from 'lucide-react'
+import { createServiceClient } from '@/lib/supabase/server'
+
+// Refresh once per hour. The numbers come from the city_stats cache,
+// which is itself refreshed nightly via cron, so anything tighter would
+// just rebuild the same RSC.
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'About — Glassdoor for Landlords',
   description: 'Vett is a free platform that combines lease-verified renter reviews with public government records to help renters make informed housing decisions.',
   alternates: { canonical: '/about' },
+}
+
+async function loadStats() {
+  const service = createServiceClient()
+  // city_stats is the same cache the city/admin pages use — pre-aggregated
+  // via cron (migration 112), so this is one fast index scan.
+  const [{ data: agg }, { count: reviewCount }] = await Promise.all([
+    service
+      .from('city_stats')
+      .select('record_count, landlord_count, state_abbr, city'),
+    service
+      .from('reviews')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'approved'),
+  ])
+
+  let totalRecords = 0
+  let totalLandlords = 0
+  const states = new Set<string>()
+  const cities = new Set<string>()
+  for (const r of agg ?? []) {
+    totalRecords += r.record_count ?? 0
+    totalLandlords += r.landlord_count ?? 0
+    if (r.state_abbr) states.add(r.state_abbr)
+    if (r.city && r.state_abbr) cities.add(`${r.state_abbr}::${r.city}`)
+  }
+
+  return {
+    landlords: totalLandlords,
+    records: totalRecords,
+    cities: cities.size,
+    states: states.size,
+    reviews: reviewCount ?? 0,
+  }
+}
+
+function formatCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000)     return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1)}k`
+  return String(n)
 }
 
 const aboutJsonLd = JSON.stringify({
@@ -24,7 +70,8 @@ const aboutJsonLd = JSON.stringify({
   },
 })
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const stats = await loadStats()
   const values = [
     { icon: Shield, num: '01', title: 'Transparency', desc: 'We surface public records and lease-verified experiences that have historically been difficult for renters to access.' },
     { icon: Scale, num: '02', title: 'Fairness', desc: 'All landlords — claimed or not — follow the same fair process. No pay-to-remove, no pay-to-hide.' },
@@ -59,6 +106,30 @@ export default function AboutPage() {
           <p className="mt-7 max-w-[580px] text-[17px] leading-relaxed text-slate-300/90">
             Lease-verified renter reviews, housing court records, code violation histories, and eviction filings — all in one searchable database.
           </p>
+        </div>
+      </section>
+
+      {/* ── BY THE NUMBERS (live from city_stats cache) ── */}
+      <section className="border-b border-slate-100 bg-white">
+        <div className="mx-auto max-w-[1100px] px-6 py-14 lg:py-16">
+          <p className="text-[11px] font-mono uppercase tracking-widest text-slate-400">§ By the numbers</p>
+          <p className="mt-2 max-w-[640px] text-[15px] leading-relaxed text-slate-600">
+            Live coverage as of today. Counts refresh nightly from public-record syncs.
+          </p>
+          <dl className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {[
+              { label: 'Landlords tracked',      value: formatCount(stats.landlords) },
+              { label: 'Public records',         value: formatCount(stats.records)   },
+              { label: 'Verified reviews',       value: formatCount(stats.reviews)   },
+              { label: 'Cities covered',         value: formatCount(stats.cities)    },
+              { label: 'States covered',         value: formatCount(stats.states)    },
+            ].map(({ label, value }) => (
+              <div key={label} className="rounded-2xl border border-slate-200 bg-white px-5 py-4">
+                <div className="font-display text-[28px] leading-none tracking-tight text-slate-950">{value}</div>
+                <div className="mt-2 text-[11.5px] uppercase tracking-[0.18em] text-slate-500">{label}</div>
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
 
