@@ -27,6 +27,7 @@ export async function GET(_req: NextRequest) {
     { data: responses },
     { data: savedSearches },
     { data: responseTemplates },
+    { data: emailLeads },
   ] = await Promise.all([
     service.from('profiles').select('*').eq('id', user.id).maybeSingle(),
     service.from('reviews').select('*').eq('reviewer_id', user.id),
@@ -41,6 +42,11 @@ export async function GET(_req: NextRequest) {
     })(),
     service.from('saved_searches').select('*').eq('user_id', user.id),
     service.from('response_templates').select('*').eq('created_by', user.id),
+    // email_leads doesn't have user_id (anon capture path), but if the
+    // user submitted while signed in their email matches profile.email.
+    user.email
+      ? service.from('email_leads').select('*').eq('email', user.email.toLowerCase())
+      : Promise.resolve({ data: [] }),
   ])
 
   const payload = {
@@ -60,6 +66,7 @@ export async function GET(_req: NextRequest) {
     review_helpful_votes: responses ?? [],
     saved_searches: savedSearches ?? [],
     response_templates: responseTemplates ?? [],
+    email_leads: emailLeads ?? [],
   }
 
   const body = JSON.stringify(payload, null, 2)

@@ -78,6 +78,11 @@ export async function POST(req: NextRequest) {
     service.from('review_flags').delete().eq('flagged_by', user.id),
     service.from('saved_searches').delete().eq('user_id', user.id),
     service.from('response_templates').delete().eq('created_by', user.id),
+    // email_leads has no user_id; match by email so anon-path captures
+    // get cleaned up too. Best-effort.
+    user.email
+      ? service.from('email_leads').delete().eq('email', user.email.toLowerCase())
+      : Promise.resolve({ data: null }),
     // review_helpful_votes may or may not exist depending on migrations; tolerate.
     (async () => {
       try { await service.from('review_helpful_votes').delete().eq('user_id', user.id) }
