@@ -5,6 +5,7 @@ import { AlertTriangle } from 'lucide-react'
 export const metadata: Metadata = {
   title: 'FCRA Notice',
   description: 'Vett Fair Credit Reporting Act (FCRA) Notice — important information about use of this platform.',
+  alternates: { canonical: '/fcra-notice' },
 }
 
 export default function FcraNoticePage() {

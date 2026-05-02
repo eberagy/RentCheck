@@ -1,11 +1,28 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Script from 'next/script'
 import { Shield, Search, BarChart3, Scale, ArrowRight } from 'lucide-react'
 
 export const metadata: Metadata = {
   title: 'About — Glassdoor for Landlords',
   description: 'Vett is a free platform that combines lease-verified renter reviews with public government records to help renters make informed housing decisions.',
+  alternates: { canonical: '/about' },
 }
+
+const aboutJsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'About Vett',
+  url: 'https://vettrentals.com/about',
+  mainEntity: {
+    '@type': 'Organization',
+    '@id': 'https://vettrentals.com/#organization',
+    name: 'Vett',
+    url: 'https://vettrentals.com',
+    slogan: 'Know before you rent',
+    description: 'Lease-verified renter reviews and public records on landlords nationwide.',
+  },
+})
 
 export default function AboutPage() {
   const values = [
@@ -17,6 +34,9 @@ export default function AboutPage() {
 
   return (
     <div className="bg-white">
+      <Script id="about-jsonld" type="application/ld+json" strategy="beforeInteractive">
+        {aboutJsonLd}
+      </Script>
       {/* ── HERO ── */}
       <section className="relative isolate overflow-hidden bg-[#07111f] text-white">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_-10%,rgba(15,123,108,0.2),transparent_55%),radial-gradient(ellipse_at_80%_110%,rgba(30,58,95,0.25),transparent_55%)]" />
