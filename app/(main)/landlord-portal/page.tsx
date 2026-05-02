@@ -267,14 +267,14 @@ export default function LandlordPortalPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header strip */}
-      <section className="relative overflow-hidden bg-ink px-7 py-10 text-white">
+      <section className="relative overflow-hidden bg-ink px-4 py-10 sm:px-7 text-white">
         <div className="absolute right-0 top-[-40px] h-[200px] w-[200px] rounded-full bg-teal/30 blur-[80px]" />
-        <div className="relative mx-auto flex max-w-[1180px] items-center justify-between">
+        <div className="relative mx-auto flex max-w-[1180px] flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             {landlord ? (
               <>
                 <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-teal-300">Landlord portal</div>
-                <h1 className="mt-3.5 text-[36px] font-extrabold tracking-tight">{landlord.display_name}</h1>
+                <h1 className="mt-3.5 text-[clamp(28px,6vw,36px)] font-extrabold tracking-tight">{landlord.display_name}</h1>
                 <div className="mt-1 text-[13.5px] text-slate-400">
                   {landlord.is_verified ? 'Verified' : 'Claimed'} &middot; {landlord.review_count ?? 0} reviews
                   {landlord.city && ` · ${landlord.city}, ${landlord.state_abbr}`}
@@ -283,12 +283,12 @@ export default function LandlordPortalPage() {
             ) : (
               <>
                 <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-teal-300">Landlord portal</div>
-                <h1 className="mt-3.5 text-[36px] font-extrabold tracking-tight">Manage your profile</h1>
+                <h1 className="mt-3.5 text-[clamp(28px,6vw,36px)] font-extrabold tracking-tight">Manage your profile</h1>
               </>
             )}
           </div>
           {landlord && (
-            <div className="flex gap-2.5">
+            <div className="flex flex-wrap gap-2.5">
               <Button asChild size="sm" variant="outline" className="rounded-full border-white/20 text-white bg-white/5 hover:bg-white/10">
                 <Link href={`/landlord/${landlord.slug}`}>View public profile</Link>
               </Button>
@@ -300,7 +300,7 @@ export default function LandlordPortalPage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1180px] px-7 py-7">
+      <div className="mx-auto max-w-[1180px] px-4 py-7 sm:px-7">
         {/* ── No claim yet ── */}
         {!claim && (
           <div className="rounded-[24px] border border-slate-200 bg-white p-10 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
