@@ -279,7 +279,7 @@ export async function resolveOrQueueLandlord(
   supabase: SupabaseClient,
   name: string,
   city?: string,
-  state?: string
+  _state?: string
 ): Promise<string | null> {
   if (!name) return null
 

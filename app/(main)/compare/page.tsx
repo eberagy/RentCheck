@@ -1,19 +1,17 @@
-import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { ArrowLeft, CheckCircle2, XCircle, Minus, Search } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, Search } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 import { VerifiedBadge } from '@/components/landlord/VerifiedBadge'
 import { StarRating } from '@/components/review/StarRating'
 import { Button } from '@/components/ui/button'
-import { RatingBar } from '@/components/landlord/RatingBar'
 
 interface ComparePageProps {
   searchParams: Promise<{ a?: string; b?: string }>
 }
 
-export async function generateMetadata({ searchParams }: ComparePageProps): Promise<Metadata> {
+export async function generateMetadata(_props: ComparePageProps): Promise<Metadata> {
   return { title: 'Compare Landlords', robots: 'noindex' }
 }
 
@@ -192,21 +190,18 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
           valA={String(a.open_violation_count ?? 0)}
           valB={String(b.open_violation_count ?? 0)}
           winner={winner(a.open_violation_count ?? 0, b.open_violation_count ?? 0, false)}
-          lowerIsBetter
         />
         <CompareRow
           label="Total Violations"
           valA={String(a.total_violation_count ?? 0)}
           valB={String(b.total_violation_count ?? 0)}
           winner={winner(a.total_violation_count ?? 0, b.total_violation_count ?? 0, false)}
-          lowerIsBetter
         />
         <CompareRow
           label="Eviction Filings"
           valA={String(a.eviction_count ?? 0)}
           valB={String(b.eviction_count ?? 0)}
           winner={winner(a.eviction_count ?? 0, b.eviction_count ?? 0, false)}
-          lowerIsBetter
         />
         <CompareRow
           label="Profile Verified"
@@ -234,14 +229,12 @@ function CompareRow({
   valA,
   valB,
   winner,
-  lowerIsBetter = false,
   note = false,
 }: {
   label: string
   valA: string
   valB: string
   winner: 'a' | 'b' | 'tie'
-  lowerIsBetter?: boolean
   note?: boolean
 }) {
   const isGoodA = winner === 'a' && !note

@@ -1,11 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { withRetry, upsertRecords } from './utils'
 
-const DATASETS = [
-  'https://www.stlouis-mo.gov/data/upload/data-files/code-violations.json', // flat file
-  'https://data.stlouis-mo.gov/resource/5vj9-v8c5.json', // code violations
-  'https://data.stlouis-mo.gov/resource/px5e-4jkv.json', // building permits & violations
-]
 const SOCRATA_DATASETS = [
   'https://data.stlouis-mo.gov/resource/5vj9-v8c5.json',
   'https://data.stlouis-mo.gov/resource/px5e-4jkv.json',

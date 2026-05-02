@@ -18,8 +18,6 @@ const ENDPOINTS = [
 
 const PAGE_SIZE = 2000
 
-const RESIDENTIAL_CODES = ['R', 'A', 'C', 'D', 'RH', 'RM', 'RTO', 'NCT']
-
 export async function syncSfAssessor(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
 

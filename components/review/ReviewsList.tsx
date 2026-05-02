@@ -22,7 +22,7 @@ interface ReviewsListProps {
   landlordSlug: string
 }
 
-export function ReviewsList({ reviews, landlordId, landlordSlug }: ReviewsListProps) {
+export function ReviewsList({ reviews, landlordId, landlordSlug: _landlordSlug }: ReviewsListProps) {
   const [sort, setSort] = useState<SortOption>('recent')
 
   const sorted = useMemo(() => {

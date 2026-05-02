@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Menu, ChevronDown, User, LogOut, LayoutDashboard, Shield, Settings, ArrowRight } from 'lucide-react'
+import { Menu, ChevronDown, User, LogOut, LayoutDashboard, Shield, Settings } from 'lucide-react'
 import { Logo } from '@/components/Logo'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'

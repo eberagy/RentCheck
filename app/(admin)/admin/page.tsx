@@ -8,7 +8,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { formatDate, formatDateRelative } from '@/lib/utils'
+import { formatDateRelative } from '@/lib/utils'
 
 export const revalidate = 60
 
@@ -408,7 +408,6 @@ export default async function AdminDashboardPage() {
             ) : (
               <div className="divide-y divide-gray-100">
                 {dataSources.map((s: any) => {
-                  const isHealthy = s.status === 'completed' || s.status === 'success'
                   const hasError = s.status === 'failed' || !!s.error_message
                   return (
                     <div key={s.id} className="px-4 py-3 flex items-center justify-between gap-3">

@@ -56,7 +56,7 @@ export async function syncCookCountyAssessor(supabase: SupabaseClient): Promise<
       if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }
       rows = await res.json()
       if (!Array.isArray(rows)) break
-    } catch (e) {
+    } catch {
       // Fall back to no filter
       try {
         const fallback = await fetch(`${workingEndpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`, {

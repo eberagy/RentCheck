@@ -9,30 +9,6 @@ import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
 const ENDPOINT = 'https://data.cityofnewyork.us/resource/erm2-nwe9.json'
 const PAGE_SIZE = 1000
 
-// Complaint types relevant to housing/landlord issues
-const HOUSING_COMPLAINT_TYPES = [
-  'HEAT/HOT WATER',
-  'PLUMBING',
-  'PAINT/PLASTER',
-  'DOOR/WINDOW',
-  'FLOORING/STAIRS',
-  'ELEVATOR',
-  'PESTS',
-  'WATER LEAK',
-  'GENERAL',
-  'MOLD',
-  'ELECTRIC',
-  'APPLIANCE',
-  'OUTSIDE BUILDING',
-  'OUTSIDE BUILDING (SILENTLY)',
-  'HOUSING - RADIATOR',
-  'UNSANITARY CONDITION',
-  'RODENT',
-  'LEAD',
-  'ASBESTOS',
-  'CARBON MONOXIDE',
-]
-
 export async function syncNyc311(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
   const since = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()

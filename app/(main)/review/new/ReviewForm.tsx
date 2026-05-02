@@ -8,15 +8,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
   CheckCircle2, Upload, FileText, X, AlertTriangle,
-  ArrowRight, ArrowLeft, Lock, Loader2, Search, Building2, Check
+  ArrowRight, Lock, Loader2, Search, Building2, Check
 } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { StarRating } from '@/components/review/StarRating'
-import { Progress } from '@/components/ui/progress'
 import { Eyebrow } from '@/components/vett/Eyebrow'
 import { VerifiedBadge } from '@/components/vett/VerifiedBadge'
 import { createClient } from '@/lib/supabase/client'
@@ -76,7 +74,7 @@ export default function ReviewForm() {
   const [submitting, setSubmitting] = useState(false)
   const supabase = createClient()
 
-  const { register, handleSubmit, watch, setValue, trigger, getValues, setError, clearErrors, formState: { errors } } = useForm<ReviewFormData>({
+  const { register, watch, setValue, getValues, setError, clearErrors, formState: { errors } } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
     defaultValues: { ratingOverall: 0, ratingResponsiveness: 0, ratingMaintenance: 0, ratingHonesty: 0, ratingLeaseFairness: 0, isCurrentTenant: false, propertyAddress: '' },
   })

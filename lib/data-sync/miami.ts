@@ -25,7 +25,6 @@ const PAGE_SIZE = 1000
 
 export async function syncMiami(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
-  const since = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).getTime()
 
   let workingService: string | null = null
   for (const svc of FEATURE_SERVICES) {

@@ -22,7 +22,6 @@ const PAGE_SIZE = 1000
 
 export async function syncHouston(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
-  const since = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
   let workingEndpoint: string | null = null
   for (const id of DATASET_IDS) {

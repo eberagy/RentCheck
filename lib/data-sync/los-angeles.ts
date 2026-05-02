@@ -39,8 +39,6 @@ export async function syncLosAngeles(supabase: SupabaseClient): Promise<SyncResu
   }
 
   let offset = 0
-  // Try common date fields
-  const DATE_FIELDS = ['date_filed', 'date_initiated', 'date_opened', 'permit_date', 'created_date']
 
   while (true) {
     // Try to find which date field works (first iteration only)

@@ -10,7 +10,6 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { normalizeAddress, type SyncResult } from './utils'
 import slugify from 'slugify'
 
-const DOMAINS = ['opendata.miamidade.gov', 'services.arcgis.com']
 const KNOWN_IDS = [
   process.env.MIAMI_DADE_DATASET,
   'apf9-3pih',  // Miami-Dade Property Search

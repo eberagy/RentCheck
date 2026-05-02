@@ -13,7 +13,7 @@
  * Run weekly — picks up newly imported violation records and back-fills linkages.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, type SyncResult } from './utils'
+import type { SyncResult } from './utils'
 import slugify from 'slugify'
 
 // Known owner field names in raw_data by source prefix

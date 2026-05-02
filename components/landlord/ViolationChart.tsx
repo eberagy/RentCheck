@@ -8,49 +8,6 @@ interface ViolationChartProps {
   records: PublicRecord[]
 }
 
-const TYPE_COLORS: Record<string, string> = {
-  hpd_violation: '#ef4444',
-  dob_violation: '#f97316',
-  dob_complaint: '#fb923c',
-  eviction: '#dc2626',
-  eviction_filing: '#dc2626',
-  lsc_eviction: '#dc2626',
-  court_case: '#7c3aed',
-  court_listener: '#7c3aed',
-  chicago_violation: '#ef4444',
-  pittsburgh_violation: '#ef4444',
-  baltimore_vacant_notice: '#f97316',
-  sf_violation: '#ef4444',
-  sf_eviction: '#dc2626',
-  boston_violation: '#ef4444',
-  philly_violation: '#ef4444',
-  austin_complaint: '#fb923c',
-  seattle_violation: '#ef4444',
-  la_violation: '#ef4444',
-  code_enforcement: '#f59e0b',
-  code_violation: '#f59e0b',
-  '311_complaint': '#f59e0b',
-  // Newer record types — keep informational ones distinct from violations.
-  business_registration: '#94a3b8',
-  hud_inspection: '#0ea5e9',
-  nyc_311: '#f59e0b',
-  // City-specific violations defaulting to red:
-  houston_violation: '#ef4444',
-  miami_violation: '#ef4444',
-  denver_violation: '#ef4444',
-  dallas_violation: '#ef4444',
-  dc_violation: '#ef4444',
-  atlanta_violation: '#ef4444',
-  nashville_violation: '#ef4444',
-  phoenix_violation: '#ef4444',
-  minneapolis_violation: '#ef4444',
-  portland_violation: '#ef4444',
-  san_antonio_violation: '#ef4444',
-  detroit_violation: '#ef4444',
-  charlotte_violation: '#ef4444',
-  columbus_violation: '#ef4444',
-}
-
 export function ViolationChart({ records }: ViolationChartProps) {
   const data = useMemo(() => {
     const byYear: Record<number, number> = {}

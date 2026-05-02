@@ -11,9 +11,8 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { normalizeAddress, type SyncResult } from './utils'
 import slugify from 'slugify'
 
-// Primary: CARTO SQL API (reliable). Fallback: Socrata.
+// Primary: CARTO SQL API (reliable). Socrata mirror is at xt3q-t474 if needed.
 const CARTO_BASE = 'https://phl.carto.com/api/v2/sql'
-const SOCRATA_ENDPOINT = 'https://data.phila.gov/resource/xt3q-t474.json'
 const PAGE_SIZE = 2000
 
 export async function syncPhillyOpa(supabase: SupabaseClient): Promise<SyncResult> {

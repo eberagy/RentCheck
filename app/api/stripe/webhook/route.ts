@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server'
 // customer.subscription.deleted, invoice.payment_failed
 
 export async function POST(req: NextRequest) {
-  const body = await req.text()
+  const _body = await req.text()
   const sig = req.headers.get('stripe-signature')
 
   if (!sig || !process.env.STRIPE_WEBHOOK_SECRET) {
