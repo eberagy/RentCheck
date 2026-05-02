@@ -15,25 +15,51 @@ export async function GET(req: NextRequest) {
   const since = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString() // last 25h to avoid gaps
 
   // Get public records added since last run, grouped by landlord.
-  // Skip purely-informational types (LLC filings, etc.) — those should
-  // surface on the profile but never trigger an alarming watchlist alert.
+  // Two paths: (1) records with landlord_id set directly, (2) records
+  // linked via a property whose landlord_id is set. Most of our 400k+
+  // records are property-linked only — watchers would have missed those
+  // alerts before.
   const INFORMATIONAL_TYPES = ['business_registration']
-  const { data: newRecords } = await supabase
-    .from('public_records')
-    .select('id, landlord_id, record_type, description, title')
-    .not('landlord_id', 'is', null)
-    .not('record_type', 'in', `(${INFORMATIONAL_TYPES.map(t => `"${t}"`).join(',')})`)
-    .gte('created_at', since)
-    .order('created_at', { ascending: false })
 
-  if (!newRecords?.length) {
+  const [{ data: directRecords }, { data: propertyLinked }] = await Promise.all([
+    supabase
+      .from('public_records')
+      .select('id, landlord_id, record_type, description, title')
+      .not('landlord_id', 'is', null)
+      .not('record_type', 'in', `(${INFORMATIONAL_TYPES.map(t => `"${t}"`).join(',')})`)
+      .gte('created_at', since)
+      .order('created_at', { ascending: false }),
+    // Records joined through their property's landlord_id.
+    supabase
+      .from('public_records')
+      .select('id, record_type, description, title, properties:property_id (landlord_id)')
+      .not('property_id', 'is', null)
+      .is('landlord_id', null)
+      .not('record_type', 'in', `(${INFORMATIONAL_TYPES.map(t => `"${t}"`).join(',')})`)
+      .gte('created_at', since)
+      .order('created_at', { ascending: false }),
+  ])
+
+  const newRecords: Array<{ landlord_id: string; record_type: string | null; description: string | null; title: string | null }> = []
+  for (const r of directRecords ?? []) {
+    if (r.landlord_id) {
+      newRecords.push({ landlord_id: r.landlord_id as string, record_type: r.record_type, description: r.description, title: r.title })
+    }
+  }
+  for (const r of propertyLinked ?? []) {
+    const lid = (r.properties as unknown as { landlord_id: string | null } | null)?.landlord_id
+    if (lid) {
+      newRecords.push({ landlord_id: lid, record_type: r.record_type, description: r.description, title: r.title })
+    }
+  }
+
+  if (!newRecords.length) {
     return NextResponse.json({ ok: true, alerts: 0 })
   }
 
   // Deduplicate by landlord (one alert per landlord per run)
   const byLandlord = new Map<string, { type: string; summary: string }>()
   for (const record of newRecords) {
-    if (!record.landlord_id) continue
     if (!byLandlord.has(record.landlord_id)) {
       const isCourtLike = record.record_type?.includes('eviction') || record.record_type?.includes('court')
       byLandlord.set(record.landlord_id, {
