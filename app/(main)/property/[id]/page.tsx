@@ -21,6 +21,7 @@ import { ReviewCard } from '@/components/review/ReviewCard'
 import { StarRating } from '@/components/review/StarRating'
 import { VerifiedBadge } from '@/components/landlord/VerifiedBadge'
 import { Button } from '@/components/ui/button'
+import { WatchlistButton } from '@/components/landlord/WatchlistButton'
 import { PUBLIC_REVIEW_SELECT } from '@/lib/reviews/public'
 import { formatAddress } from '@/lib/utils'
 import { buildPropertySummary } from '@/lib/summaries'
@@ -224,6 +225,13 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                     <p className="mt-2 text-sm text-slate-500">No reviews yet</p>
                   </div>
                 )}
+
+                <div className="flex flex-wrap gap-2">
+                  <WatchlistButton
+                    propertyId={property.id}
+                    successMessage="You'll be notified when new violations or reviews land at this address."
+                  />
+                </div>
 
                 <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
