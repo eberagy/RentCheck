@@ -44,11 +44,11 @@ const FOOTER_COLS = [
 export function Footer() {
   return (
     <footer className="border-t border-white/[0.08] bg-[#07111f] text-slate-400">
-      <div className="mx-auto max-w-[1200px] px-7 pt-16 pb-10">
+      <div className="mx-auto max-w-[1200px] px-4 pt-16 pb-10 sm:px-7">
         {/* Main grid */}
-        <div className="grid grid-cols-2 gap-10 md:grid-cols-[1.2fr_repeat(4,1fr)]">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-[1.2fr_repeat(4,1fr)]">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="sm:col-span-2 md:col-span-1">
             <Logo size="md" href="/" inverted />
             <p className="mt-5 max-w-[280px] text-[13px] leading-relaxed">
               Lease-verified renter reviews and public records on landlords in major cities and growing coverage nationwide.
