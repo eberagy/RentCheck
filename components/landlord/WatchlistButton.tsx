@@ -46,7 +46,14 @@ export function WatchlistButton({ landlordId }: WatchlistButtonProps) {
         setWatching(false)
         toast.success('Alert removed')
       } else {
-        await supabase.from('watchlist').insert({ user_id: user.id, landlord_id: landlordId })
+        // Upsert in case the user double-tapped — idempotent under the
+        // unique index added in migration 111.
+        await supabase
+          .from('watchlist')
+          .upsert(
+            { user_id: user.id, landlord_id: landlordId },
+            { onConflict: 'user_id,landlord_id', ignoreDuplicates: true },
+          )
         setWatching(true)
         toast.success('You\'ll be notified of new violations or reviews')
       }
