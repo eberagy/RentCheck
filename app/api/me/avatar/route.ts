@@ -56,7 +56,10 @@ export async function POST(req: NextRequest) {
     .from('avatars')
     .upload(key, processed, { contentType: 'image/webp', upsert: false, cacheControl: '3600' })
 
-  if (uploadErr) return NextResponse.json({ error: uploadErr.message }, { status: 500 })
+  if (uploadErr) {
+    console.error('[avatar] storage upload failed:', uploadErr.message)
+    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
+  }
 
   const { data: pub } = service.storage.from('avatars').getPublicUrl(key)
   const avatarUrl = pub.publicUrl
@@ -73,7 +76,10 @@ export async function POST(req: NextRequest) {
     .update({ avatar_url: avatarUrl, updated_at: new Date().toISOString() })
     .eq('id', user.id)
 
-  if (updateErr) return NextResponse.json({ error: updateErr.message }, { status: 500 })
+  if (updateErr) {
+    console.error('[avatar] profile update failed:', updateErr.message)
+    return NextResponse.json({ error: 'Database error' }, { status: 500 })
+  }
 
   return NextResponse.json({ ok: true, avatarUrl })
 }

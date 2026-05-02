@@ -50,7 +50,10 @@ export async function POST(req: NextRequest) {
 
   if (decision === 'record_removed' && recordId) {
     const { error: delErr } = await service.from('public_records').delete().eq('id', recordId)
-    if (delErr) return NextResponse.json({ error: delErr.message }, { status: 500 })
+    if (delErr) {
+      console.error('[resolve-dispute] record delete failed:', delErr.message)
+      return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    }
     logAdminAction({
       adminId: admin.id,
       actionType: 'dispute.record_removed',

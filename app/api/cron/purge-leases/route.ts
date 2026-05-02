@@ -60,7 +60,8 @@ export async function GET(req: NextRequest) {
     .in('id', rows.map(r => r.id))
 
   if (updateErr) {
-    return NextResponse.json({ error: updateErr.message, purged: 0 }, { status: 500 })
+    console.error('[cron/purge-leases] update failed:', updateErr.message)
+    return NextResponse.json({ error: 'Database error', purged: 0 }, { status: 500 })
   }
 
   return NextResponse.json({ ok: true, purged: rows.length, batch_cap: 1000 })
