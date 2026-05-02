@@ -130,6 +130,7 @@ export default function ClaimProfilePage() {
         }),
       })
       if (!res.ok) throw new Error('Submission failed')
+      toast.success('Claim submitted — we review within 48 hours.')
       setSubmitted(true)
     } catch (err) {
       toast.error('Submission failed. Please try again.')
