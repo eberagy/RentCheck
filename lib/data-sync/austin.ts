@@ -9,10 +9,11 @@ import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
 const BASE_DOMAIN = 'https://data.austintexas.gov'
 const DATASET_IDS = [
   process.env.AUSTIN_DATASET,
-  '3ntu-iuld',   // Austin Code Cases (primary)
-  'rvvd-esxg',   // Austin Code Complaints alternate
-  '99qw-4hup',   // Austin Code Enforcement alternate
-  'i26j-ai4z',   // legacy
+  '6wtj-zbtb',   // Austin Code Complaint Cases — verified 2026-05-02 (82,984 rows)
+  '3ntu-iuld',   // Austin Code Cases (legacy)
+  'rvvd-esxg',   // alt legacy
+  '99qw-4hup',   // alt legacy
+  'i26j-ai4z',   // alt legacy
 ].filter(Boolean) as string[]
 
 const PAGE_SIZE = 1000
@@ -81,8 +82,8 @@ export async function syncAustin(supabase: SupabaseClient): Promise<SyncResult> 
           description: row.description ?? row.case_type ?? null,
           severity: 'medium',
           status: (row.status_current ?? row.status ?? '').toLowerCase().includes('close') ? 'closed' : 'open',
-          filed_date: (row.date_entered ?? row.open_date ?? row.created_date)
-            ? new Date(row.date_entered ?? row.open_date ?? row.created_date).toISOString().split('T')[0]
+          filed_date: (row.opened_date ?? row.date_entered ?? row.open_date ?? row.created_date)
+            ? new Date(row.opened_date ?? row.date_entered ?? row.open_date ?? row.created_date).toISOString().split('T')[0]
             : null,
           raw_data: row,
         }, { onConflict: 'source,source_id', ignoreDuplicates: false })

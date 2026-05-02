@@ -9,11 +9,13 @@ import { normalizeAddress, batchUpsert, withRetry, type SyncResult } from './uti
 const DOMAIN = 'www.dallasopendata.com'
 const KNOWN_IDS = [
   process.env.DALLAS_DATASET,
-  'v6j2-4g6d',  // Dallas 311 Service Requests
-  'jp2b-96m6',  // Building Inspections
-  'tbnj-w5hb',  // Code Enforcement Cases
-  'g2y9-9w4f',  // Code violation cases
-  'btjx-b6m6',  // 311 requests alt
+  'yvha-at84',  // Code Violations — verified 2026-05-02 (712,998 rows)
+  'x9pz-kdq9',  // Code Violations (mirror of yvha-at84)
+  'v6j2-4g6d',  // legacy: Dallas 311 Service Requests
+  'jp2b-96m6',  // legacy: Building Inspections
+  'tbnj-w5hb',  // legacy: Code Enforcement Cases
+  'g2y9-9w4f',  // legacy
+  'btjx-b6m6',  // legacy
 ].filter(Boolean) as string[]
 
 const PAGE_SIZE = 1000
@@ -75,7 +77,10 @@ export async function syncDallas(supabase: SupabaseClient): Promise<SyncResult> 
 
     const uniqueAddrs = new Map<string, string>()
     for (const row of rows) {
-      const addr = row.address ?? row.property_address ?? row.location_address ?? row.address1 ?? ''
+      // yvha-at84 ships str_num + str_nam (e.g., "1234" + "MAIN ST"); legacy
+      // datasets used `address` / `property_address`.
+      const composed = row.str_num && row.str_nam ? `${row.str_num} ${row.str_nam}` : ''
+      const addr = composed || row.address || row.property_address || row.location_address || row.address1 || ''
       if (addr) uniqueAddrs.set(normalizeAddress(addr), addr)
     }
     const propRows = Array.from(uniqueAddrs.entries()).map(([norm, addr]) => ({
@@ -102,11 +107,17 @@ export async function syncDallas(supabase: SupabaseClient): Promise<SyncResult> 
 
     const toInsert: Record<string, unknown>[] = []
     for (const row of rows) {
-      const sourceId = String(row.case_number ?? row.service_request_id ?? row.sr_number ?? row.id ?? '')
+      // yvha-at84 has no explicit case_number — synthesize from
+      // (str_num, str_nam, type, created) so we can dedupe on re-runs.
+      const composed = row.str_num && row.str_nam ? `${row.str_num} ${row.str_nam}` : ''
+      const sourceId = String(
+        row.case_number ?? row.service_request_id ?? row.sr_number ?? row.id ??
+        (composed && row.type && row.created ? `${composed}|${row.type}|${row.created}` : '')
+      )
       if (!sourceId) { result.skipped++; continue }
-      const addr = row.address ?? row.property_address ?? row.location_address ?? row.address1 ?? ''
+      const addr = composed || row.address || row.property_address || row.location_address || row.address1 || ''
       const propertyId = addr ? (propIdMap.get(normalizeAddress(addr)) ?? null) : null
-      const desc = row.case_type ?? row.description ?? row.service_name ?? row.type_of_service_request ?? null
+      const desc = row.type ?? row.case_type ?? row.description ?? row.service_name ?? row.type_of_service_request ?? null
       toInsert.push({
         source: 'dallas_code', source_id: sourceId, record_type: 'dallas_violation',
         property_id: propertyId,
@@ -114,8 +125,8 @@ export async function syncDallas(supabase: SupabaseClient): Promise<SyncResult> 
         description: desc,
         severity: 'medium',
         status: (row.status ?? row.case_status ?? '').toLowerCase().includes('close') ? 'closed' : 'open',
-        filed_date: (row.date_filed ?? row.date_opened ?? row.creation_date ?? row.open_dt)
-          ? new Date(row.date_filed ?? row.date_opened ?? row.creation_date ?? row.open_dt).toISOString().split('T')[0]
+        filed_date: (row.created ?? row.date_filed ?? row.date_opened ?? row.creation_date ?? row.open_dt)
+          ? new Date(row.created ?? row.date_filed ?? row.date_opened ?? row.creation_date ?? row.open_dt).toISOString().split('T')[0]
           : null,
         raw_data: row,
       })
