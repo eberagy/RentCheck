@@ -40,6 +40,14 @@ export async function GET() {
     },
     region: process.env.VERCEL_REGION ?? 'local',
     commit: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? 'dev',
+    // Useful for the data-sync admin page status pill + uptime monitors:
+    env: {
+      resend: !!process.env.RESEND_API_KEY,
+      cron_secret: !!process.env.CRON_SECRET,
+      sentry: !!process.env.NEXT_PUBLIC_SENTRY_DSN,
+      stripe: !!process.env.STRIPE_SECRET_KEY,
+      nyc_token: !!process.env.NYC_OPEN_DATA_TOKEN,
+    },
   }
 
   return NextResponse.json(body, {

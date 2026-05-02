@@ -408,17 +408,20 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
 
         <Tabs defaultValue="reviews">
           <TabsList className="mb-5 grid w-full grid-cols-3 gap-1 rounded-2xl bg-slate-100 p-1.5">
-            <TabsTrigger value="reviews" className="rounded-xl py-3 text-[14px] font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <MessageSquare className="mr-2 h-3.5 w-3.5" />
-              Reviews <span className="ml-1 text-slate-400">({landlord.review_count})</span>
+            <TabsTrigger value="reviews" className="flex items-center justify-center rounded-xl py-3 text-[12px] sm:text-[14px] font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <MessageSquare className="mr-1.5 sm:mr-2 h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+              <span className="truncate">Reviews</span>
+              <span className="ml-1 text-slate-400 hidden sm:inline">({landlord.review_count})</span>
             </TabsTrigger>
-            <TabsTrigger value="records" className="rounded-xl py-3 text-[14px] font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Flag className="mr-2 h-3.5 w-3.5" />
-              Public records <span className="ml-1 text-slate-400">({landlordRecords.length})</span>
+            <TabsTrigger value="records" className="flex items-center justify-center rounded-xl py-3 text-[12px] sm:text-[14px] font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Flag className="mr-1.5 sm:mr-2 h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+              <span className="truncate">Records</span>
+              <span className="ml-1 text-slate-400 hidden sm:inline">({landlordRecords.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="properties" className="rounded-xl py-3 text-[14px] font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
-              <Building2 className="mr-2 h-3.5 w-3.5" />
-              Properties <span className="ml-1 text-slate-400">({(properties ?? []).length})</span>
+            <TabsTrigger value="properties" className="flex items-center justify-center rounded-xl py-3 text-[12px] sm:text-[14px] font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              <Building2 className="mr-1.5 sm:mr-2 h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
+              <span className="truncate">Properties</span>
+              <span className="ml-1 text-slate-400 hidden sm:inline">({(properties ?? []).length})</span>
             </TabsTrigger>
           </TabsList>
 
