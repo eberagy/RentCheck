@@ -37,6 +37,18 @@ function groupByType(records: PublicRecord[]) {
     if (!grouped[r.record_type]) grouped[r.record_type] = []
     grouped[r.record_type]!.push(r)
   }
+  // Sort each group: open records first, then most-recent filed first.
+  // Closed/dismissed/informational drop to the bottom of their bucket.
+  for (const type in grouped) {
+    grouped[type]!.sort((a, b) => {
+      const aClosed = a.status === 'closed' || a.status === 'dismissed' ? 1 : 0
+      const bClosed = b.status === 'closed' || b.status === 'dismissed' ? 1 : 0
+      if (aClosed !== bClosed) return aClosed - bClosed
+      const aDate = a.filed_date ? new Date(a.filed_date).getTime() : 0
+      const bDate = b.filed_date ? new Date(b.filed_date).getTime() : 0
+      return bDate - aDate
+    })
+  }
   return Object.entries(grouped).sort(([a], [b]) => {
     const ia = GROUP_ORDER.indexOf(a), ib = GROUP_ORDER.indexOf(b)
     return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib)
