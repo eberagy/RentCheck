@@ -9,6 +9,7 @@ import { Stars } from '@/components/vett/Stars'
 import { Chip } from '@/components/vett/Chip'
 import { Grade } from '@/components/vett/Grade'
 import { ReviewPrivacyToggle } from '@/components/dashboard/ReviewPrivacyToggle'
+import { SavedSearchUnsubscribeButton } from '@/components/dashboard/SavedSearchUnsubscribeButton'
 import { getGradeLetter } from '@/lib/grade'
 import { formatDate } from '@/lib/utils'
 import { cityPagePath } from '@/lib/cities'
@@ -256,22 +257,22 @@ export default async function DashboardPage() {
                   const href = cityPagePath(s.city, s.state_abbr)
                   const last = s.last_notified_at ? `Last digest ${formatDate(s.last_notified_at)}` : 'No digest sent yet'
                   return (
-                    <Link
+                    <div
                       key={s.id}
-                      href={href}
-                      className={`grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 px-1 hover:bg-slate-50 rounded ${i < savedSearchList.length - 1 ? 'border-b border-slate-100' : ''}`}
+                      className={`grid grid-cols-[auto_1fr_auto_auto] items-center gap-3 py-3 px-1 ${i < savedSearchList.length - 1 ? 'border-b border-slate-100' : ''}`}
                     >
-                      <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
-                        <Bell className="h-3 w-3 text-teal-500" />
-                      </div>
-                      <div className="min-w-0">
+                      <Link href={href} className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 hover:border-slate-300">
+                        <Bell className="h-3 w-3 text-teal-500" aria-hidden="true" />
+                      </Link>
+                      <Link href={href} className="min-w-0 hover:opacity-80">
                         <p className="truncate text-[13px] font-bold text-slate-900">
                           {s.city}, {s.state_abbr}
                         </p>
                         <p className="mt-0.5 text-[12px] text-slate-500 truncate">{last}</p>
-                      </div>
-                      <span className="text-[11px] text-slate-400">Manage →</span>
-                    </Link>
+                      </Link>
+                      <Link href={href} className="text-[11px] text-slate-400 hover:text-slate-700">View →</Link>
+                      <SavedSearchUnsubscribeButton searchId={s.id} city={s.city} stateAbbr={s.state_abbr} />
+                    </div>
                   )
                 })}
               </div>
