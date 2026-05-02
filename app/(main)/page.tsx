@@ -155,15 +155,21 @@ export default async function HomePage() {
             <div className="mt-10 max-w-[560px]">
               <SearchBar size="lg" autoFocus variant="dark" />
               <div className="mt-4 flex flex-wrap gap-1.5">
-                {priorityCities.map((city) => (
-                  <Link
-                    key={`${city.city}-${city.state}`}
-                    href={`/search?city=${encodeURIComponent(city.city)}&state=${city.state}`}
-                    className="rounded-full bg-white/[0.06] px-3 py-1 text-[12px] text-slate-400 transition-colors hover:bg-white/[0.12] hover:text-slate-200"
-                  >
-                    {city.city}, {city.state}
-                  </Link>
-                ))}
+                {priorityCities.map((city) => {
+                  // Route to the dedicated city page (rich stats + activity
+                  // feed) instead of /search?city=X&state=Y which only
+                  // surfaces a filter view.
+                  const slug = city.city.toLowerCase().replace(/\s+/g, '-')
+                  return (
+                    <Link
+                      key={`${city.city}-${city.state}`}
+                      href={`/city/${city.state.toLowerCase()}/${slug}`}
+                      className="rounded-full bg-white/[0.06] px-3 py-1 text-[12px] text-slate-400 transition-colors hover:bg-white/[0.12] hover:text-slate-200"
+                    >
+                      {city.city}, {city.state}
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           </ScrollReveal>
