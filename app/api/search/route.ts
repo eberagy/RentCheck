@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { buildLandlordSummary, buildPropertySummary, truncateSummary } from '@/lib/summaries'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { z } from 'zod'
+import type { Landlord, Property } from '@/types'
 
 const schema = z.object({
   q: z.string().min(2).max(200),
@@ -23,12 +24,31 @@ export async function GET(req: NextRequest) {
   const { q, type, limit } = parsed.data
   const supabase = await createClient()
 
+  type SearchHit = {
+    id: string
+    result_type: 'landlord' | 'property'
+    slug?: string | null
+    review_count?: number | null
+    avg_rating?: number | null
+    open_violation_count?: number | null
+    total_violation_count?: number | null
+    is_verified?: boolean | null
+    record_count?: number | null
+    summary?: string | null
+  }
+  type LandlordRow = Pick<Landlord, 'id' | 'display_name' | 'slug' | 'avg_rating' | 'review_count' | 'open_violation_count' | 'total_violation_count' | 'eviction_count' | 'city' | 'state_abbr' | 'is_verified' | 'response_rate'>
+  type PropertyRow = Pick<Property, 'id' | 'address_line1' | 'avg_rating' | 'review_count' | 'city' | 'state_abbr'> & {
+    landlord: { display_name: string } | null
+  }
+  type RecordRow = { property_id: string | null; title: string; status: string | null; filed_date: string | null }
+
   const { data, error } = await supabase.rpc('search_all', { query: q, limit_n: limit })
   if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
 
-  const rawResults = (data ?? []).filter((r: any) => type === 'all' || r.result_type === type)
-  const landlordIds = rawResults.filter((r: any) => r.result_type === 'landlord').map((r: any) => r.id)
-  const propertyIds = rawResults.filter((r: any) => r.result_type === 'property').map((r: any) => r.id)
+  const allHits = (data ?? []) as SearchHit[]
+  const rawResults = allHits.filter(r => type === 'all' || r.result_type === type)
+  const landlordIds = rawResults.filter(r => r.result_type === 'landlord').map(r => r.id)
+  const propertyIds = rawResults.filter(r => r.result_type === 'property').map(r => r.id)
 
   const [
     { data: landlords },
@@ -39,24 +59,24 @@ export async function GET(req: NextRequest) {
       ? supabase
           .from('landlords')
           .select('id, display_name, slug, avg_rating, review_count, open_violation_count, total_violation_count, eviction_count, city, state_abbr, is_verified, response_rate')
-          .in('id', landlordIds)
-      : Promise.resolve({ data: [] as any[], error: null }),
+          .in('id', landlordIds) as unknown as Promise<{ data: LandlordRow[] | null; error: unknown }>
+      : Promise.resolve({ data: [] as LandlordRow[], error: null }),
     propertyIds.length
       ? supabase
           .from('properties')
           .select('id, address_line1, avg_rating, review_count, city, state_abbr, landlord:landlords(display_name)')
-          .in('id', propertyIds)
-      : Promise.resolve({ data: [] as any[], error: null }),
+          .in('id', propertyIds) as unknown as Promise<{ data: PropertyRow[] | null; error: unknown }>
+      : Promise.resolve({ data: [] as PropertyRow[], error: null }),
     propertyIds.length
       ? supabase
           .from('public_records')
           .select('property_id, title, status, filed_date')
-          .in('property_id', propertyIds)
-      : Promise.resolve({ data: [] as any[], error: null }),
+          .in('property_id', propertyIds) as unknown as Promise<{ data: RecordRow[] | null; error: unknown }>
+      : Promise.resolve({ data: [] as RecordRow[], error: null }),
   ])
 
-  const landlordsById = new Map((landlords ?? []).map((landlord: any) => [landlord.id, landlord]))
-  const propertiesById = new Map((properties ?? []).map((property: any) => [property.id, property]))
+  const landlordsById = new Map((landlords ?? []).map(landlord => [landlord.id, landlord]))
+  const propertiesById = new Map((properties ?? []).map(property => [property.id, property]))
   const recordsByPropertyId = new Map<string, Array<{ title: string; status: string | null; filed_date: string | null }>>()
 
   for (const record of propertyRecords ?? []) {
@@ -66,7 +86,7 @@ export async function GET(req: NextRequest) {
     recordsByPropertyId.set(record.property_id, bucket)
   }
 
-  const results = rawResults.map((result: any) => {
+  const results: SearchHit[] = rawResults.map(result => {
     if (result.result_type === 'landlord') {
       const landlord = landlordsById.get(result.id)
       if (!landlord) return result
@@ -95,8 +115,6 @@ export async function GET(req: NextRequest) {
         }),
         140
       ),
-      // Surface signal counts on the search result so downstream code can
-      // sort/filter empty properties to the bottom.
       record_count: (recordsByPropertyId.get(result.id) ?? []).length,
       review_count: property.review_count ?? 0,
     }
@@ -105,16 +123,16 @@ export async function GET(req: NextRequest) {
   // Push property results that have NO reviews AND NO records to the bottom.
   // They're noise — a street name matched the query but the row has nothing
   // useful to show. Landlord results stay in their original ranked order.
-  const enriched = results.map((r: any) => {
+  const enriched = results.map(r => {
     const isEmptyProperty = r.result_type === 'property'
       && (r.review_count ?? 0) === 0
       && (r.record_count ?? 0) === 0
     return { r, isEmptyProperty }
   })
-  enriched.sort((a: { isEmptyProperty: boolean }, b: { isEmptyProperty: boolean }) => {
+  enriched.sort((a, b) => {
     if (a.isEmptyProperty !== b.isEmptyProperty) return a.isEmptyProperty ? 1 : -1
     return 0
   })
 
-  return NextResponse.json({ results: enriched.map((e: { r: unknown }) => e.r), query: q })
+  return NextResponse.json({ results: enriched.map(e => e.r), query: q })
 }
