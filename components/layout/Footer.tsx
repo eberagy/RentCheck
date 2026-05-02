@@ -25,9 +25,9 @@ const FOOTER_COLS = [
     title: 'For landlords',
     links: [
       { href: '/landlord-portal/claim', label: 'Claim your profile' },
-      { href: '/landlord-portal', label: 'Respond to reviews' },
-      { href: '/dispute', label: 'Dispute a record' },
       { href: '/landlord-portal', label: 'Landlord portal' },
+      { href: '/dispute', label: 'Dispute a record' },
+      { href: '/contact', label: 'Get verified' },
     ],
   },
   {
