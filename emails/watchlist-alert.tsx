@@ -10,6 +10,7 @@ interface WatchlistAlertEmailProps {
   landlordSlug: string
   alertType: 'new_review' | 'new_violation' | 'new_court_case'
   summary: string
+  unsubscribeToken?: string
 }
 
 const ALERT_LABELS = {
@@ -24,7 +25,7 @@ const ALERT_ICONS = {
   new_court_case: '⚖️',
 }
 
-export default function WatchlistAlertEmail({ firstName, landlordName, landlordSlug, alertType, summary }: WatchlistAlertEmailProps) {
+export default function WatchlistAlertEmail({ firstName, landlordName, landlordSlug, alertType, summary, unsubscribeToken }: WatchlistAlertEmailProps) {
   return (
     <Html>
       <Head />
@@ -45,7 +46,10 @@ export default function WatchlistAlertEmail({ firstName, landlordName, landlordS
             <Button style={button} href={`https://vettrentals.com/landlord/${landlordSlug}`}>
               View Profile →
             </Button>
-            <EmailFooter note={`You receive this because you're watching ${landlordName} on Vett.`} />
+            <EmailFooter
+              note={`You receive this because you're watching ${landlordName} on Vett.`}
+              unsubscribeToken={unsubscribeToken}
+            />
           </Section>
         </Container>
       </Body>

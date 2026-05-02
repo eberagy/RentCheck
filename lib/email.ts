@@ -67,6 +67,7 @@ export async function sendWatchlistAlertEmail(to: string, props: {
   landlordSlug: string
   alertType: 'new_review' | 'new_violation' | 'new_court_case'
   summary: string
+  unsubscribeToken?: string
 }) {
   const labels = { new_review: 'New review', new_violation: 'New violation', new_court_case: 'New court case' }
   await sendEmail(to, `${labels[props.alertType]}: ${props.landlordName}`, WatchlistAlertEmail(props) as any)

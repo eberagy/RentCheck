@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { verifyCronSecret } from '@/lib/data-sync/utils'
 import { sendWatchlistAlertEmail } from '@/lib/email'
+import { createUnsubscribeToken } from '@/lib/unsubscribe-token'
 
 export const maxDuration = 60
 
@@ -72,6 +73,7 @@ export async function GET(req: NextRequest) {
         landlordSlug: landlord.slug,
         alertType: info.type as 'new_review' | 'new_violation' | 'new_court_case',
         summary: info.summary,
+        unsubscribeToken: createUnsubscribeToken(watcher.user_id as string),
       })
       alertsSent++
     }

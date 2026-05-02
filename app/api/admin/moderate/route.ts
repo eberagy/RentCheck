@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { sendReviewApprovedEmail, sendReviewRejectedEmail, sendWatchlistAlertEmail } from '@/lib/email'
 import { logAdminAction } from '@/lib/audit'
+import { createUnsubscribeToken } from '@/lib/unsubscribe-token'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -119,6 +120,7 @@ async function fireWatchlistAlerts(
       landlordSlug,
       alertType: 'new_review',
       summary,
+      unsubscribeToken: createUnsubscribeToken(watcher.user_id as string),
     }).catch(console.error)
   }
 }
