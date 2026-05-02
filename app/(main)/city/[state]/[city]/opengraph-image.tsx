@@ -25,10 +25,14 @@ export default async function OgImage({ params }: { params: { state: string; cit
     .from('landlords')
     .select('review_count', { count: 'exact', head: true })
     .eq('state_abbr', stateAbbr)
+  const sanitize = (s: string) => s.replace(/[,()*:%"]/g, '').replace(/\s+/g, ' ').trim()
   if (aliases) {
-    landlordQuery = landlordQuery.or(aliases.map(a => `city.ilike.%${a}%`).join(','))
+    const safeAliases = aliases.map(sanitize).filter(Boolean)
+    if (safeAliases.length) {
+      landlordQuery = landlordQuery.or(safeAliases.map(a => `city.ilike.%${a}%`).join(','))
+    }
   } else {
-    landlordQuery = landlordQuery.ilike('city', `%${cityName}%`)
+    landlordQuery = landlordQuery.ilike('city', `%${sanitize(cityName)}%`)
   }
   const [{ count: landlordCount }, recordsResp] = await Promise.all([
     landlordQuery,

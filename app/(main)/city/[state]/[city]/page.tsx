@@ -56,10 +56,18 @@ export default async function CityPage({ params }: CityPageProps) {
     .select('*', { count: 'exact' })
     .eq('state_abbr', stateAbbr)
 
+  // Defense-in-depth: strip PostgREST filter metacharacters from any
+  // alias / city slug before interpolating into .or() / .ilike().
+  // Aliases come from a hardcoded lookup but the URL slug feeds into
+  // the fallback path, so sanitize both.
+  const sanitize = (s: string) => s.replace(/[,()*:%"]/g, '').replace(/\s+/g, ' ').trim()
   if (aliases) {
-    landlordQuery = landlordQuery.or(aliases.map(a => `city.ilike.%${a}%`).join(','))
+    const safeAliases = aliases.map(sanitize).filter(Boolean)
+    if (safeAliases.length) {
+      landlordQuery = landlordQuery.or(safeAliases.map(a => `city.ilike.%${a}%`).join(','))
+    }
   } else {
-    landlordQuery = landlordQuery.ilike('city', `%${cityName}%`)
+    landlordQuery = landlordQuery.ilike('city', `%${sanitize(cityName)}%`)
   }
 
   const { data: landlords, count } = await landlordQuery
