@@ -233,7 +233,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       </Script>
 
       <div className="min-h-screen bg-[#F8FAFC]">
-        <div className="mx-auto max-w-[1180px] px-8 py-7">
+        <div className="mx-auto max-w-[1180px] px-4 py-7 sm:px-8">
         {/* Breadcrumb */}
         <nav className="mb-4 flex items-center gap-1 text-xs text-slate-500">
           <Link href="/" className="transition-colors hover:text-navy-700 hover:underline">Home</Link>

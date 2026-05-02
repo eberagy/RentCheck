@@ -549,7 +549,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       </section>
 
       {/* Main grid: filters + results */}
-      <div className="mx-auto grid max-w-[1180px] gap-7 px-7 py-7 lg:grid-cols-[240px_1fr]">
+      <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-7 sm:px-7 lg:grid-cols-[240px_1fr]">
         {/* Filter sidebar */}
         <aside className="flex flex-col gap-5">
           <form method="get" className="contents">
