@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sanitizeText } from '@/lib/sanitize'
+import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { PUBLIC_REVIEW_SELECT, stripPrivateReviewFields } from '@/lib/reviews/public'
 import { z } from 'zod'
 
@@ -56,7 +57,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const { id } = await params
   const gate = await assertOwnerOfPending(id)
   if ('error' in gate) return gate.error
-  const { service } = gate
+  const { service, user } = gate
+
+  const rl = rateLimit(`review-edit:${user.id}`, 30, 3600_000)
+  if (!rl.success) return rateLimitResponse()
 
   const body = await req.json().catch(() => null)
   if (!body) return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
@@ -88,7 +92,10 @@ export async function DELETE(_req: NextRequest, { params }: { params: { id: stri
   const { id } = await params
   const gate = await assertOwnerOfPending(id)
   if ('error' in gate) return gate.error
-  const { service, review } = gate
+  const { service, review, user } = gate
+
+  const rl = rateLimit(`review-delete:${user.id}`, 10, 3600_000)
+  if (!rl.success) return rateLimitResponse()
 
   const leasePath = review.lease_doc_path
   const ownerId = review.reviewer_id

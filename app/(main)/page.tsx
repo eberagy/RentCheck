@@ -171,19 +171,19 @@ export default async function HomePage() {
           {/* Stats row — editorial magazine style. Always show all three. */}
           <ScrollReveal delay={320} direction="up">
             <div className="mt-16 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-white/[0.08] border-t border-white/[0.08] pt-8">
-              <div className="pr-6">
+              <div className="sm:pr-6">
                 <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
                   <AnimatedCounter target={stats.reviews} duration={2000} />
                 </p>
                 <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Verified reviews</p>
               </div>
-              <div className="px-6">
+              <div className="sm:px-6">
                 <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
                   <AnimatedCounter target={stats.landlords} duration={2000} />
                 </p>
                 <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Landlords tracked</p>
               </div>
-              <div className="pl-6">
+              <div className="sm:pl-6">
                 <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
                   <AnimatedCounter target={stats.records} duration={2000} />
                 </p>
