@@ -142,15 +142,39 @@ export async function upsertRecords(
 
   if (propRows.length > 0) {
     for (let i = 0; i < propRows.length; i += BATCH_SIZE) {
+      const slice = propRows.slice(i, i + BATCH_SIZE)
       const { data: created } = await supabase
         .from('properties')
-        .upsert(propRows.slice(i, i + BATCH_SIZE), {
+        .upsert(slice, {
           onConflict: 'address_normalized,city,state_abbr',
           ignoreDuplicates: true,
         })
         .select('id, address_normalized, city, state_abbr')
       for (const p of created ?? []) {
         if (p.address_normalized) propertyMap.set(`${p.address_normalized}|${p.city}|${p.state_abbr}`, p.id)
+      }
+      // Backfill IDs for already-existing rows that ignoreDuplicates suppresses.
+      // Group missing addresses by state to keep the .in() lookup indexed.
+      const missingByState = new Map<string, string[]>()
+      for (const r of slice) {
+        const norm = r.address_normalized as string | undefined
+        const st = r.state_abbr as string | undefined
+        if (!norm || !st) continue
+        const lookupKey = `${norm}|${r.city}|${st}`
+        if (propertyMap.has(lookupKey)) continue
+        if (!missingByState.has(st)) missingByState.set(st, [])
+        missingByState.get(st)!.push(norm)
+      }
+      for (const [st, addrs] of Array.from(missingByState.entries())) {
+        if (addrs.length === 0) continue
+        const { data: existing } = await supabase
+          .from('properties')
+          .select('id, address_normalized, city, state_abbr')
+          .in('address_normalized', addrs)
+          .eq('state_abbr', st)
+        for (const p of existing ?? []) {
+          if (p.address_normalized) propertyMap.set(`${p.address_normalized}|${p.city}|${p.state_abbr}`, p.id)
+        }
       }
     }
   }
