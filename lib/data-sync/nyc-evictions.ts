@@ -162,9 +162,21 @@ export async function syncNycEvictions(supabase: SupabaseClient): Promise<SyncRe
       })
     }
 
+    // Dedup within the page on (source, source_id). NYC's dataset
+    // occasionally contains the same court_index|docket|executed_date
+    // tuple twice (re-filings), which would crash Postgres upsert with
+    // "ON CONFLICT DO UPDATE command cannot affect row a second time".
+    const seenKeys = new Set<string>()
+    const dedupedInsert = toInsert.filter(r => {
+      const key = `${r.source}|${r.source_id}`
+      if (seenKeys.has(key)) return false
+      seenKeys.add(key)
+      return true
+    })
+
     // Batch-upsert records (chunked) so one bad row doesn't kill the page.
-    for (let i = 0; i < toInsert.length; i += 200) {
-      const slice = toInsert.slice(i, i + 200)
+    for (let i = 0; i < dedupedInsert.length; i += 200) {
+      const slice = dedupedInsert.slice(i, i + 200)
       const { error, count } = await supabase
         .from('public_records')
         .upsert(slice, { onConflict: 'source,source_id', count: 'exact' })

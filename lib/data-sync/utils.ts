@@ -64,8 +64,20 @@ export async function batchUpsert(
   rows: Record<string, unknown>[],
   result: SyncResult
 ): Promise<void> {
-  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-    const batch = rows.slice(i, i + BATCH_SIZE)
+  // Pre-dedupe on (source, source_id). Some upstream feeds emit duplicate
+  // tuples within a single page; without this, Postgres rejects the whole
+  // batch with "ON CONFLICT DO UPDATE command cannot affect row a second
+  // time".
+  const seen = new Set<string>()
+  const deduped = rows.filter(r => {
+    const key = `${String(r.source ?? '')}|${String(r.source_id ?? '')}`
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+
+  for (let i = 0; i < deduped.length; i += BATCH_SIZE) {
+    const batch = deduped.slice(i, i + BATCH_SIZE)
     const { error, data } = await supabase
       .from('public_records')
       .upsert(batch, { onConflict: 'source,source_id', ignoreDuplicates: true })
