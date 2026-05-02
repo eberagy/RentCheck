@@ -64,12 +64,18 @@ interface AuditRow {
   subject: { full_name: string | null; email: string | null } | null
 }
 
-export default async function AdminAuditPage({ searchParams }: { searchParams: Promise<{ limit?: string }> }) {
+export default async function AdminAuditPage({
+  searchParams,
+}: { searchParams: Promise<{ limit?: string; action?: string }> }) {
   const params = await searchParams
   const limit = Math.min(parseInt(params.limit ?? '100'), 500)
+  const action = (params.action ?? '').trim()
+  // Only allow action types we know about — anything else is treated as "all"
+  // so we don't expose a filter-injection surface.
+  const filterAction = action && action in ACTION_LABELS ? action : ''
   const service = createServiceClient()
 
-  const { data: actions, error } = await service
+  let query = service
     .from('admin_actions')
     .select(`
       id, action_type, resource_type, resource_id, subject_user_id, detail, created_at,
@@ -78,20 +84,61 @@ export default async function AdminAuditPage({ searchParams }: { searchParams: P
     `)
     .order('created_at', { ascending: false })
     .limit(limit)
+  if (filterAction) query = query.eq('action_type', filterAction)
+  const { data: actions, error } = await query
 
   const tableMissing = !!error && /does not exist|relation .* does not exist|admin_actions/.test(error.message)
   const rows = (actions ?? []) as unknown as AuditRow[]
 
   return (
     <div className="p-4 sm:p-8">
-      <div className="mb-6 flex items-center gap-3">
+      <div className="mb-6 flex flex-wrap items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white">
           <ScrollText className="h-5 w-5" />
         </div>
-        <div>
+        <div className="mr-auto">
           <h1 className="text-2xl font-bold text-gray-900">Audit log</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Every admin action — who, what, when. Last {limit} events shown.</p>
+          <p className="text-sm text-gray-500 mt-0.5">
+            Every admin action — who, what, when.{' '}
+            {filterAction
+              ? <>Filter: <span className="font-medium text-slate-700">{ACTION_LABELS[filterAction] ?? filterAction}</span></>
+              : <>Last {limit} events shown.</>}
+          </p>
         </div>
+        <form method="get" className="flex items-center gap-2">
+          <label htmlFor="action" className="text-[11.5px] uppercase tracking-[0.12em] font-bold text-slate-500">
+            Action
+          </label>
+          <select
+            id="action"
+            name="action"
+            defaultValue={filterAction}
+            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
+          >
+            <option value="">All actions</option>
+            {Object.entries(ACTION_LABELS)
+              .sort(([, a], [, b]) => a.localeCompare(b))
+              .map(([type, label]) => (
+                <option key={type} value={type}>{label}</option>
+              ))}
+          </select>
+          {/* Preserve limit across filter submits */}
+          {params.limit && <input type="hidden" name="limit" value={params.limit} />}
+          <button
+            type="submit"
+            className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800"
+          >
+            Apply
+          </button>
+          {filterAction && (
+            <a
+              href="/admin/audit"
+              className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
+            >
+              Clear
+            </a>
+          )}
+        </form>
       </div>
 
       {tableMissing && (
