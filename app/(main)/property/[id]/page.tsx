@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
@@ -32,14 +33,26 @@ interface PropertyPageProps {
 
 export const revalidate = 3600
 
+// Shared loader: generateMetadata + the page component both need the
+// property row + its landlord. React cache() dedupes within a render.
+const getProperty = cache(async (id: string) => {
+  const supabase = createServiceClient()
+  const { data } = await supabase
+    .from('properties')
+    .select('*, landlord:landlords(*)')
+    .eq('id', id)
+    .single()
+  return data
+})
+
 export async function generateMetadata({ params }: PropertyPageProps): Promise<Metadata> {
   const p = await params
-  const supabase = createServiceClient()
-  const { data: prop } = await supabase.from('properties').select('*').eq('id', p.id).single()
+  const prop = await getProperty(p.id)
   if (!prop) return { title: 'Property Not Found' }
   return {
     title: `${prop.address_line1}, ${prop.city} Reviews`,
     description: `Renter reviews and violation history for ${prop.address_line1}, ${prop.city}. ${prop.review_count} reviews.`,
+    alternates: { canonical: `/property/${p.id}` },
   }
 }
 
@@ -47,11 +60,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const p = await params
   const supabase = createServiceClient()
 
-  const { data: property } = await supabase
-    .from('properties')
-    .select('*, landlord:landlords(*)')
-    .eq('id', p.id)
-    .single()
+  const property = await getProperty(p.id)
   if (!property) notFound()
 
   const [{ data: reviews }, { data: records }] = await Promise.all([

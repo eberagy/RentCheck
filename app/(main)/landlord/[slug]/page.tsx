@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
@@ -30,14 +31,22 @@ interface LandlordPageProps {
 
 export const revalidate = 3600 // ISR: revalidate every 1 hour
 
+// Shared loader: generateMetadata + the page component both need the
+// landlord row. React's `cache()` dedupes the fetch within a single
+// render so we hit Supabase once instead of twice.
+const getLandlord = cache(async (slug: string) => {
+  const supabase = createServiceClient()
+  const { data } = await supabase
+    .from('landlords')
+    .select('*')
+    .eq('slug', slug)
+    .single()
+  return data
+})
+
 export async function generateMetadata({ params }: LandlordPageProps): Promise<Metadata> {
   const p = await params
-  const supabase = createServiceClient()
-  const { data: landlord } = await supabase
-    .from('landlords')
-    .select('display_name, city, state_abbr, avg_rating, review_count')
-    .eq('slug', p.slug)
-    .single()
+  const landlord = await getLandlord(p.slug)
   if (!landlord) return { title: 'Landlord Not Found' }
 
   const location = [landlord.city, landlord.state_abbr].filter(Boolean).join(', ')
@@ -64,12 +73,9 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
   const p = await params
   const supabase = createServiceClient()
 
-  // Fetch landlord
-  const { data: landlord } = await supabase
-    .from('landlords')
-    .select('*')
-    .eq('slug', p.slug)
-    .single()
+  // Fetch landlord — deduped via React cache() so generateMetadata's
+  // earlier call to getLandlord(p.slug) shares the same Supabase round-trip.
+  const landlord = await getLandlord(p.slug)
   if (!landlord) notFound()
 
   // Fetch all data in parallel

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { sanitizeText } from '@/lib/sanitize'
 import { sendCityAlertConfirmationEmail } from '@/lib/email'
@@ -56,6 +56,26 @@ export async function POST(req: NextRequest) {
   if (!isDuplicate && cleanCity && cleanState && process.env.RESEND_API_KEY) {
     void sendCityAlertConfirmationEmail(cleanEmail, { city: cleanCity, stateAbbr: cleanState })
       .catch(err => console.error('[email-leads] confirmation send failed:', err))
+  }
+
+  // If a signed-in user submitted a city + state, also create a saved_search
+  // row so they show up on their dashboard and the weekly digest cron picks
+  // them up. Best-effort: failures don't block the email_leads response.
+  if (cleanCity && cleanState) {
+    try {
+      const userClient = await createClient()
+      const { data: { user } } = await userClient.auth.getUser()
+      if (user) {
+        await service
+          .from('saved_searches')
+          .upsert(
+            { user_id: user.id, city: cleanCity, state_abbr: cleanState, notify_email: true },
+            { onConflict: 'user_id,city,state_abbr' },
+          )
+      }
+    } catch (err) {
+      console.error('[email-leads] saved_search upsert failed:', err)
+    }
   }
 
   return NextResponse.json({ ok: true })
