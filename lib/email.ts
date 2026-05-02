@@ -168,6 +168,7 @@ export async function sendSavedSearchDigestEmail(to: string, props: {
   firstName?: string
   city: string
   stateAbbr: string
+  cityUrl?: string
   newReviewCount: number
   newLandlords: Array<{ name: string; slug: string; rating: number | null; reviewCount: number }>
   unsubscribeToken?: string

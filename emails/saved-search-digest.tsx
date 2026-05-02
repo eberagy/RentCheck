@@ -15,6 +15,8 @@ interface SavedSearchDigestEmailProps {
   firstName?: string
   city: string
   stateAbbr: string
+  /** Pre-built absolute URL to the city page (cron computes via cityPagePath). */
+  cityUrl?: string
   newReviewCount: number
   newLandlords: DigestLandlord[]
   unsubscribeToken?: string
@@ -24,10 +26,13 @@ export default function SavedSearchDigestEmail({
   firstName,
   city,
   stateAbbr,
+  cityUrl,
   newReviewCount,
   newLandlords,
   unsubscribeToken,
 }: SavedSearchDigestEmailProps) {
+  const fallbackUrl = `https://vettrentals.com/city/${stateAbbr.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`
+  const href = cityUrl ?? fallbackUrl
   return (
     <Html>
       <Head />
@@ -63,7 +68,7 @@ export default function SavedSearchDigestEmail({
               </>
             )}
 
-            <Button style={button} href={`https://vettrentals.com/city/${stateAbbr.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`}>
+            <Button style={button} href={href}>
               See all {city} landlords →
             </Button>
 

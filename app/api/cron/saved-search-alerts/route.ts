@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { verifyCronSecret } from '@/lib/data-sync/utils'
 import { sendSavedSearchDigestEmail } from '@/lib/email'
+import { cityPagePath } from '@/lib/cities'
 import { createUnsubscribeToken } from '@/lib/unsubscribe-token'
 import { getCityAliases } from '@/lib/cities'
 
@@ -103,10 +104,12 @@ export async function GET(req: NextRequest) {
         }))
 
       const token = createUnsubscribeToken(profile.id)
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
       await sendSavedSearchDigestEmail(profile.email, {
         firstName: profile.full_name?.split(' ')[0],
         city: sub.city,
         stateAbbr: sub.state_abbr,
+        cityUrl: `${siteUrl}${cityPagePath(sub.city, sub.state_abbr)}`,
         newReviewCount: newReviewCount ?? 0,
         newLandlords,
         unsubscribeToken: token,
