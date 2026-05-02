@@ -72,6 +72,7 @@ export default function OnboardingPage() {
     setSaving(false)
 
     if (error) {
+      console.error('[onboarding] profile update failed:', error.message)
       toast.error('Could not save your preferences. Please try again.')
       return
     }

@@ -55,6 +55,55 @@ function groupByType(records: PublicRecord[]) {
   })
 }
 
+/**
+ * Per-record-type group with progressive disclosure. Shows the first 10
+ * records (sorted open-first by groupByType); a single button reveals
+ * the rest. Prevents the records panel from exploding to 200+ rows
+ * for top-violation landlords.
+ */
+function RecordGroup({ type, records }: { type: string; records: PublicRecord[] }) {
+  const [expanded, setExpanded] = useState(false)
+  const COLLAPSED = 10
+  const visible = expanded ? records : records.slice(0, COLLAPSED)
+  const hidden = records.length - visible.length
+
+  return (
+    <div>
+      <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800">
+        {RECORD_TYPE_LABELS[type as keyof typeof RECORD_TYPE_LABELS] ?? type}
+        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-normal text-slate-500">
+          {records.length}
+        </span>
+      </h3>
+      <div className="space-y-2">
+        {visible.map(record => (
+          <RecordRow key={record.id} record={record} />
+        ))}
+      </div>
+      {hidden > 0 && (
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className="mt-3 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+        >
+          Show {hidden} more
+          <ChevronDown className="h-3 w-3" aria-hidden="true" />
+        </button>
+      )}
+      {expanded && records.length > COLLAPSED && (
+        <button
+          type="button"
+          onClick={() => setExpanded(false)}
+          className="mt-3 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
+        >
+          Show fewer
+          <ChevronUp className="h-3 w-3" aria-hidden="true" />
+        </button>
+      )}
+    </div>
+  )
+}
+
 function RecordRow({ record }: { record: PublicRecord }) {
   const [expanded, setExpanded] = useState(false)
   const isClosed = record.status?.toLowerCase() === 'closed' || record.status?.toLowerCase() === 'dismissed'
@@ -176,19 +225,11 @@ export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propert
       ) : (
         <div className="space-y-5">
           {grouped.map(([type, typeRecords]) => (
-            <div key={type}>
-              <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-800">
-                {RECORD_TYPE_LABELS[type as keyof typeof RECORD_TYPE_LABELS] ?? type}
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-normal text-slate-500">
-                  {typeRecords.length}
-                </span>
-              </h3>
-              <div className="space-y-2">
-                {typeRecords.map(record => (
-                  <RecordRow key={record.id} record={record} />
-                ))}
-              </div>
-            </div>
+            <RecordGroup
+              key={type}
+              type={type}
+              records={typeRecords}
+            />
           ))}
         </div>
       )}
