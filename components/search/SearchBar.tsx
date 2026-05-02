@@ -83,12 +83,18 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
           )}
           <input
             ref={inputRef}
-            type="text"
+            type="search"
+            inputMode="search"
+            enterKeyHint="search"
+            autoComplete="off"
+            spellCheck={false}
             value={query}
             onChange={e => { handleQueryChange(e.target.value); setOpen(true) }}
             onFocus={() => query.length >= 2 && setOpen(true)}
             placeholder={placeholder ?? (size === 'lg' ? 'Search landlord, address, or city...' : 'Search landlords, addresses, cities...')}
-            autoFocus={autoFocus}
+            // Skip autoFocus on touch devices so the keyboard doesn't cover
+            // the hero on first paint. Desktops still get the focus.
+            autoFocus={autoFocus && typeof window !== 'undefined' && !window.matchMedia?.('(pointer: coarse)').matches}
             aria-label="Search landlords, properties, and cities"
             className={cn(
               'flex-1 min-w-0 bg-transparent outline-none',
@@ -97,7 +103,6 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
                 ? 'text-white placeholder:text-slate-400'
                 : 'text-slate-900 placeholder:text-slate-400'
             )}
-            autoComplete="off"
           />
           {query ? (
             <button
