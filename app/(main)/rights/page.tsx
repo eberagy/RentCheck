@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Shield, ChevronRight, Home, DollarSign, BellRing, ShieldAlert, Sparkles, ArrowRight } from 'lucide-react'
+import { Shield, ChevronRight, Home, DollarSign, BellRing, ShieldAlert } from 'lucide-react'
 import { Eyebrow } from '@/components/vett/Eyebrow'
 import { US_STATES } from '@/types'
 

@@ -3,19 +3,18 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import {
-  Shield, CheckCircle2, Clock, MessageSquare, Flag, ArrowRight,
-  Star, TrendingUp, MessageCircle, BarChart2, ChevronDown, ChevronUp, Loader2,
-  BookTemplate, Plus, Trash2, X
+  Shield, CheckCircle2, Clock, MessageSquare, Flag,
+  Star, MessageCircle, BarChart2, ChevronDown, ChevronUp, Loader2,
+  BookTemplate, Plus, Trash2, X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
-import { formatDate, formatReviewerName, gradeColor, gradeBgLight, ratingToColor } from '@/lib/utils'
+import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
-import type { Landlord, Review, LandlordClaim, LandlordGrade } from '@/types'
+import type { Landlord, Review, LandlordClaim } from '@/types'
 
 const MAX_RESPONSE_LENGTH = 1000
 
@@ -80,8 +79,8 @@ export default function LandlordPortalPage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) { setLoading(false); return }
 
-    const [{ data: profile }, { data: claimData }] = await Promise.all([
-      supabase.from('profiles').select('*').eq('id', user.id).single(),
+    const [, { data: claimData }] = await Promise.all([
+      supabase.from('profiles').select('id').eq('id', user.id).single(),
       supabase
         .from('landlord_claims')
         .select('*, landlord:landlords(*)')

@@ -6,8 +6,6 @@ import {
   Globe,
   ArrowRight,
   Star,
-  AlertTriangle,
-  CheckCircle,
   Building2,
   MapPin,
 } from 'lucide-react'

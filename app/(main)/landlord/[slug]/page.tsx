@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
 import type { Metadata } from 'next'
-import { MapPin, Globe, Phone, MessageSquare, Flag, Building2, GitCompare } from 'lucide-react'
+import { MapPin, Globe, Phone, MessageSquare, Flag, Building2 } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/server'
 import { PublicRecordsPanel } from '@/components/landlord/PublicRecordsPanel'
 import { ViolationChart } from '@/components/landlord/ViolationChart'
@@ -22,7 +22,6 @@ import { cityPagePath, getCanonicalCity } from '@/lib/cities'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PUBLIC_REVIEW_SELECT } from '@/lib/reviews/public'
 import { formatAddress } from '@/lib/utils'
-import { buildLandlordSummary } from '@/lib/summaries'
 import type { Review, PublicRecord, Property } from '@/types'
 
 interface LandlordPageProps {
@@ -162,11 +161,6 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
 
   // Most recent business registration (for the "Registered as" sidebar chip)
   const businessRegistration = landlordRecords.find(r => r.record_type === 'business_registration')
-
-  const landlordSummary = buildLandlordSummary({
-    landlord,
-    propertyCount: (properties ?? []).length,
-  })
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
   const hasRatings = (landlord.avg_rating ?? 0) > 0 && (landlord.review_count ?? 0) > 0
