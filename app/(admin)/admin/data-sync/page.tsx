@@ -167,6 +167,12 @@ export default function AdminDataSyncPage() {
   const succeeded = SYNC_SOURCES.filter(s => getLatest(s.logKey)?.status === 'success').length
   const errored = SYNC_SOURCES.filter(s => getLatest(s.logKey)?.status === 'error').length
   const partial = SYNC_SOURCES.filter(s => getLatest(s.logKey)?.status === 'partial').length
+  // Source ran successfully but added 0 records on its last run — usually
+  // means the dataset rotated or an env-var ID is missing. Worth surfacing.
+  const zeroAddedSources = SYNC_SOURCES.filter(s => {
+    const latest = getLatest(s.logKey)
+    return latest?.status === 'success' && (latest.records_added ?? 0) === 0
+  })
   const totalAdded = Object.values(syncLogs).flat().reduce((sum, l) => sum + (l.records_added ?? 0), 0)
 
   return (
@@ -194,10 +200,11 @@ export default function AdminDataSyncPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 gap-3 mb-6 md:grid-cols-5">
+      <div className="grid grid-cols-2 gap-3 mb-6 md:grid-cols-6">
         {[
           { label: 'Never run', count: neverRun, color: 'bg-gray-50 border-gray-200 text-gray-600' },
           { label: 'Succeeded', count: succeeded, color: 'bg-teal-50 border-teal-200 text-teal-700' },
+          { label: '0 records', count: zeroAddedSources.length, color: 'bg-amber-50 border-amber-200 text-amber-700' },
           { label: 'Partial', count: partial, color: 'bg-amber-50 border-amber-200 text-amber-700' },
           { label: 'Errors', count: errored, color: 'bg-red-50 border-red-200 text-red-700' },
           { label: 'Records total', count: totalAdded.toLocaleString(), color: 'bg-blue-50 border-blue-200 text-blue-700' },
@@ -235,16 +242,23 @@ export default function AdminDataSyncPage() {
                       <p className="text-xs text-gray-400 truncate">{source.description}</p>
 
                       {latest ? (
-                        <div className="flex items-center gap-3 mt-1 text-xs">
+                        <div className="flex items-center gap-3 mt-1 text-xs flex-wrap">
                           <span className="text-gray-400">{formatDate(latest.started_at)}</span>
                           {(latest.records_added ?? 0) > 0 && (
                             <span className="text-teal-600 font-medium">+{latest.records_added?.toLocaleString()} added</span>
                           )}
+                          {/* Yellow flag when a successful run added 0 records — usually
+                              means the dataset rotated or env-var ID is missing. */}
+                          {latest.status === 'success' && (latest.records_added ?? 0) === 0 && (
+                            <span className="rounded-full border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10.5px] font-medium text-amber-700">
+                              0 records — needs attention
+                            </span>
+                          )}
                           {(latest.records_skipped ?? 0) > 0 && (
                             <span className="text-gray-400">{latest.records_skipped?.toLocaleString()} skipped</span>
                           )}
-                          {latest.status === 'error' && latest.error_message && (
-                            <span className="text-red-500 truncate max-w-xs">{latest.error_message}</span>
+                          {(latest.status === 'error' || (latest.status === 'success' && latest.error_message)) && latest.error_message && (
+                            <span className="text-red-500 truncate max-w-xs" title={latest.error_message}>{latest.error_message}</span>
                           )}
                         </div>
                       ) : (
