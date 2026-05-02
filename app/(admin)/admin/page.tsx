@@ -146,7 +146,7 @@ export default async function AdminDashboardPage() {
   const hasDataErrors = dataSources.some((s: any) => s.status === 'failed' || s.error_message)
 
   return (
-    <div className="p-8 max-w-7xl">
+    <div className="p-4 sm:p-8 max-w-7xl">
       {/* Header */}
       <div className="mb-8 flex items-start justify-between">
         <div>

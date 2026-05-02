@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function AdminLoading() {
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-4 sm:p-8 space-y-6">
       <div className="flex items-center gap-3">
         <Skeleton className="h-10 w-10 rounded-xl" />
         <div className="space-y-2">

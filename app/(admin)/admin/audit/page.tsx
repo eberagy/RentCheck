@@ -83,7 +83,7 @@ export default async function AdminAuditPage({ searchParams }: { searchParams: P
   const rows = (actions ?? []) as unknown as AuditRow[]
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <div className="mb-6 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white">
           <ScrollText className="h-5 w-5" />

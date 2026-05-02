@@ -176,7 +176,7 @@ export default function AdminDataSyncPage() {
   const totalAdded = Object.values(syncLogs).flat().reduce((sum, l) => sum + (l.records_added ?? 0), 0)
 
   return (
-    <div className="p-8 max-w-5xl">
+    <div className="p-4 sm:p-8 max-w-5xl">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Data Sync</h1>

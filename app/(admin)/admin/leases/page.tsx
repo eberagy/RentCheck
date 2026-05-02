@@ -92,7 +92,7 @@ export default function AdminLeasesPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Lease Verification</h1>
         <p className="text-sm text-gray-500 mt-0.5">Review uploaded lease documents before any renter review can be approved and published</p>
