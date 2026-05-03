@@ -14,33 +14,66 @@ Verify after setting: `curl https://www.vettrentals.com/api/health | jq .env` �
 
 ## P0 — High-impact code work
 
-### Backfill the 321k unlinked records
-321,590 of 406,940 records have `property_id IS NULL` because of the historical `ignoreDuplicates: true` upsert bug (fixed in 8 sync routes this session — won't affect new inserts). Most are NYC HPD (190k), NYC DOB (101k), nyc_marshals (~19k).
+### ✅ DONE 2026-05-02: Backfilled 321k unlinked records
+All five major NYC sources are now 100% linked to property IDs (via direct
+SQL backfill against the live DB; not a migration file because it's a
+one-shot cleanup, not a schema change):
 
-**Steps:**
-1. Disable the counter trigger first: `ALTER TABLE public.public_records DISABLE TRIGGER trg_record_landlord_counts;` (without this, the trigger does an expensive COUNT subquery on every UPDATE → backfill times out).
-2. Chunk per source in 5k batches via the address-match join (see migration 110 + earlier sync code for the per-source raw_data field names).
-3. Re-enable trigger, run the one-shot count recompute from migration 107.
+| source            | total   | linked  | pct  |
+|-------------------|---------|---------|------|
+| nyc_hpd           | 192,202 | 192,202 | 100% |
+| nyc_dob           | 101,000 | 100,998 | 100% |
+| nyc_marshals      |  24,590 |  24,590 | 100% |
+| sf_housing        |   6,142 |   6,142 | 100% |
+| chicago_buildings |  11,380 |  10,263 |  90% |
+
+Process used: insert missing properties from each source's distinct
+addresses (using migration 113's `normalize_address`), then chunked
+UPDATE 5k records per call against `public.normalize_address(...)` join.
+Counter trigger disabled before chunks, re-enabled after, then ran the
+landlord aggregate recompute from migration 107. Result: landlords with
+violations went from ~0 to 8,134; total attributable violations to 71,027.
 
 ### Run "Run All Now" on /admin/data-sync
-The 8 sync routes I patched (nyc-evictions, nyc-hpd, nyc-dob, nyc-registration, chicago, dallas, seattle, nashville) plus the shared `upsertRecords` helper now correctly resolve property IDs. Trigger them so the next-day cron doesn't have to wait until 03:00 UTC.
+The 8 sync routes patched on 2026-05-01 (nyc-evictions, nyc-hpd, nyc-dob,
+nyc-registration, chicago, dallas, seattle, nashville) plus the shared
+`upsertRecords` helper now correctly resolve property IDs on insert.
+Trigger them so the next-day cron doesn't have to wait until 03:00 UTC.
 
 ### Watch mine-violation-owners run for 3-4 nights
-Daily at 01:00 UTC. With the new assessor-source coverage (17 assessors + HUD + PLUTO), it should populate `properties.landlord_id` for tens of thousands of properties — cascading 321k unlinked records into landlord-attributable ones via the trigger. If `records_updated` stays > 0 each run, the linkage flywheel is healthy.
+Daily at 01:00 UTC. With the new assessor-source coverage (17 assessors +
+HUD + PLUTO), it should populate `properties.landlord_id` for tens of
+thousands of properties. Now that the 321k backfill is done, every
+landlord_id update will cascade through the trigger and bump aggregate
+counters live. If `records_updated` stays > 0 each run, the linkage
+flywheel is healthy.
 
-### Fix the 13 broken city syncs
-`/admin/data-sync` flags them with the "0 records — needs attention" pill. Each needs a current dataset ID from its city's open-data portal:
-- Atlanta, Austin, Charlotte, Columbus, Dallas, DC, Denver, Detroit, Houston, Miami, Minneapolis, Nashville, Phoenix, Portland, Raleigh, Sacramento, San Antonio, San Jose, Seattle
+### Broken city syncs — root cause: Socrata sunset May 2025
+Probe report from this session (commits a few back):
 
-Boston (commit `3a4a3cd`) is the canonical fix — probe `https://api.us.socrata.com/api/catalog/v1?domains=data.{city}.gov&q=violation+code+enforcement&limit=8`, drop the live ID into `KNOWN_IDS` in `lib/data-sync/{city}.ts`.
+- **Migrated to ArcGIS Hub (Socrata redirect → /legacy):** Detroit,
+  Minneapolis, Nashville, Raleigh, Sacramento, Charlotte, Portland.
+  Sync code's hardcoded `/resource/{4x4}.json` IDs all redirect now.
+  Fix: rewrite each to query an ArcGIS FeatureServer (pattern lives in
+  `dc.ts` / `miami.ts` already, but those URLs ALSO drifted — needs
+  rediscovery).
+- **No public dataset:** Phoenix (`data.phoenix.gov` returns empty;
+  `phoenixopendata.com` CKAN has no code-enforcement data at all). Disable.
+- **DNS gone:** Charlotte (`opendata.charlottenc.gov`), Portland
+  (`opendata.portland.gov`). Hosts no longer resolve.
+- **Verified live this session (commit 27ac827):**
+  - Austin: `6wtj-zbtb` (82,984 rows) — code wired, awaiting next cron
+  - Seattle: `ez4a-iug7` (239,824 rows) — code wired, awaiting next cron
+  - Dallas: `yvha-at84` (712,998 rows) — code wired, awaiting next cron
 
 ## P1 — Polish
 
-- Address normalization parity. NYC HPD ingest produced ~30% mangled `address_normalized` ("AV ENUE", double spaces). New `normalizeAddress()` is consistent but legacy rows are stuck. Migration 113 candidate: re-run normalize on every property via a Postgres function.
-- Lint cleanup: 33 unused-var warnings (mostly trivial), 145 explicit-any warnings (need typing pass for raw_data shapes per sync source).
-- Property page lacks "Watch this property" button. Watchlist schema supports `property_id` already.
-- /admin/audit needs filter-by-action_type dropdown.
-- About page should pull stats from DB instead of static "values" copy.
+- ✅ Address normalization parity (migration 113 — shipped, 43k properties backfilled).
+- ✅ /admin/audit filter-by-action_type dropdown — shipped.
+- ✅ Watch button on property page — shipped.
+- ✅ About page pulls live stats from city_stats — shipped.
+- ✅ Lint: unused-var warnings 58 → 0.
+- Lint: explicit-any warnings still ~135 (10 dropped from search/route this session). Most are sync raw_data shapes — would benefit from a per-source row-type pass.
 
 ## P2 — Future features (deferred per user)
 
