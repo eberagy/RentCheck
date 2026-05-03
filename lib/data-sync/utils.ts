@@ -56,6 +56,67 @@ const STATE_ABBR_TO_FULL: Record<string, string> = {
 const BATCH_SIZE = 200
 
 /**
+ * Resolve property IDs for a slice of (address_normalized, city, state_abbr)
+ * rows. Inserts new properties for addresses not yet in the table, then looks
+ * up IDs for everything in one go.
+ *
+ * Centralizes the pattern that `upsertRecords` and the per-source NYC syncs
+ * had inlined — and crucially, surfaces any DB error into `result.errors`.
+ * The previous inlined version dropped the `error` field entirely, which is
+ * how 25k+ HPD addresses silently failed to materialize as properties.
+ *
+ * Returns a Map<address_normalized, property_id> the caller uses to wire up
+ * record.property_id on insert.
+ */
+export async function upsertPropertiesAndMap(
+  supabase: SupabaseClient,
+  rows: Array<{
+    address_line1: string
+    city: string
+    state: string
+    state_abbr: string
+    zip?: string
+    address_normalized: string
+  }>,
+  result: SyncResult,
+): Promise<Map<string, string>> {
+  const map = new Map<string, string>()
+  if (rows.length === 0) return map
+
+  // Group lookups by state_abbr so the .in() fallback hits the right index.
+  const seenStates = new Set<string>()
+  for (const r of rows) seenStates.add(r.state_abbr)
+
+  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
+    const slice = rows.slice(i, i + BATCH_SIZE)
+    const { data, error } = await supabase
+      .from('properties')
+      .upsert(slice, { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
+      .select('id, address_normalized')
+    if (error) result.errors.push(`property upsert: ${error.message}`)
+    for (const p of data ?? []) {
+      if (p.address_normalized) map.set(p.address_normalized, p.id)
+    }
+
+    // Backfill IDs for rows ignoreDuplicates suppressed (already-existing).
+    const missing = slice.map(r => r.address_normalized).filter(n => !map.has(n))
+    if (missing.length === 0) continue
+    for (const st of Array.from(seenStates)) {
+      const { data: existing, error: lookupErr } = await supabase
+        .from('properties')
+        .select('id, address_normalized')
+        .in('address_normalized', missing)
+        .eq('state_abbr', st)
+      if (lookupErr) result.errors.push(`property lookup: ${lookupErr.message}`)
+      for (const p of existing ?? []) {
+        if (p.address_normalized && !map.has(p.address_normalized)) map.set(p.address_normalized, p.id)
+      }
+    }
+  }
+  return map
+}
+
+/**
  * Batch upsert pre-built public_record rows (for syncs that build their own record objects).
  * Sends 200 rows per DB call instead of 1 — ~200x fewer round-trips.
  */

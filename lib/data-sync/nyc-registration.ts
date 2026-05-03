@@ -5,7 +5,7 @@
  * Batched to avoid Vercel timeouts — processes 1 page then exits (called daily, makes progress each run).
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, upsertPropertiesAndMap, type SyncResult } from './utils'
 import slugify from 'slugify'
 
 const ENDPOINT = 'https://data.cityofnewyork.us/resource/tesw-yqqr.json'
@@ -44,24 +44,7 @@ export async function syncNycRegistration(supabase: SupabaseClient): Promise<Syn
       address_line1: v.addr, city: 'New York City', state: 'New York',
       state_abbr: 'NY', zip: v.zip, address_normalized: norm,
     }))
-    const propIdMap = new Map<string, string>() // addrNorm → propertyId
-    for (let i = 0; i < propRows.length; i += 200) {
-      const slice = propRows.slice(i, i + 200)
-      const { data } = await supabase.from('properties')
-        .upsert(slice, { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
-        .select('id, address_normalized')
-      for (const p of data ?? []) if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
-      const missing = slice
-        .map(r => r.address_normalized)
-        .filter((norm): norm is string => typeof norm === 'string' && !propIdMap.has(norm))
-      if (missing.length) {
-        const { data: existing } = await supabase.from('properties')
-          .select('id, address_normalized')
-          .in('address_normalized', missing)
-          .eq('state_abbr', 'NY')
-        for (const p of existing ?? []) if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
-      }
-    }
+    const propIdMap = await upsertPropertiesAndMap(supabase, propRows, result)
 
     // ── Collect unique owner names ───────────────────────────────────────────
     const ownerNames = Array.from(new Set(

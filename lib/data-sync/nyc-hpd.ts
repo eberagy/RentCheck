@@ -3,7 +3,7 @@
  * API: https://data.cityofnewyork.us/resource/wvxf-dwi5.json (Socrata)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.cityofnewyork.us/resource/wvxf-dwi5.json'
 const PAGE_SIZE = 1000
@@ -40,27 +40,7 @@ export async function syncNycHpd(supabase: SupabaseClient): Promise<SyncResult> 
       address_line1: v.addr, city: 'New York City', state: 'New York',
       state_abbr: 'NY', zip: v.zip, address_normalized: norm,
     }))
-    const propertyMap = new Map<string, string>()
-    for (let i = 0; i < propRows.length; i += 200) {
-      const slice = propRows.slice(i, i + 200)
-      const { data } = await supabase.from('properties')
-        .upsert(slice, { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
-        .select('id, address_normalized')
-      for (const p of data ?? []) if (p.address_normalized) propertyMap.set(p.address_normalized, p.id)
-      // Backfill IDs for rows that already existed (ignoreDuplicates:true
-      // suppresses them from the response) so the records we're about to
-      // insert get a property_id instead of null.
-      const missing = slice
-        .map(r => r.address_normalized)
-        .filter((norm): norm is string => typeof norm === 'string' && !propertyMap.has(norm))
-      if (missing.length) {
-        const { data: existing } = await supabase.from('properties')
-          .select('id, address_normalized')
-          .in('address_normalized', missing)
-          .eq('state_abbr', 'NY')
-        for (const p of existing ?? []) if (p.address_normalized) propertyMap.set(p.address_normalized, p.id)
-      }
-    }
+    const propertyMap = await upsertPropertiesAndMap(supabase, propRows, result)
 
     // ── Build record rows (landlord linking done by mine-owners sync) ────────
     const toInsert: Record<string, unknown>[] = []

@@ -3,7 +3,7 @@
  * API: https://data.cityofnewyork.us/resource/eabe-havv.json (Socrata)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, withRetry, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, withRetry, upsertPropertiesAndMap, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.cityofnewyork.us/resource/eabe-havv.json'
 const PAGE_SIZE = 1000
@@ -36,24 +36,7 @@ export async function syncNycDob(supabase: SupabaseClient): Promise<SyncResult> 
       address_line1: v.addr, city: 'New York City', state: 'New York',
       state_abbr: 'NY', zip: v.zip, address_normalized: norm,
     }))
-    const propIdMap = new Map<string, string>()
-    for (let i = 0; i < propRows.length; i += 200) {
-      const slice = propRows.slice(i, i + 200)
-      const { data } = await supabase.from('properties')
-        .upsert(slice, { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
-        .select('id, address_normalized')
-      for (const p of data ?? []) if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
-      const missing = slice
-        .map(r => r.address_normalized)
-        .filter((norm): norm is string => typeof norm === 'string' && !propIdMap.has(norm))
-      if (missing.length) {
-        const { data: existing } = await supabase.from('properties')
-          .select('id, address_normalized')
-          .in('address_normalized', missing)
-          .eq('state_abbr', 'NY')
-        for (const p of existing ?? []) if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
-      }
-    }
+    const propIdMap = await upsertPropertiesAndMap(supabase, propRows, result)
 
     // Build record rows
     const toInsert: Record<string, unknown>[] = []
