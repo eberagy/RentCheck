@@ -95,7 +95,11 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       .from('public_records')
       .select('*')
       .eq('landlord_id', landlord.id)
-      .order('filed_date', { ascending: false }),
+      .order('filed_date', { ascending: false })
+      // Cap at 500: post-backfill, top-violation NYC landlords now have
+      // 2,400+ records each. Without this the SSR was 8+ s for those pages.
+      // The panel paginates 25/page client-side anyway.
+      .limit(500),
     supabase
       .from('properties')
       .select('*')
@@ -122,6 +126,9 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       .in('property_id', propertyIds)
       .is('landlord_id', null)
       .order('filed_date', { ascending: false })
+      // Same 500-row cap as the direct landlord_id branch — post-backfill,
+      // a single landlord can own properties holding 2k+ records.
+      .limit(500)
     propertyRecords = (propRecs ?? []) as PublicRecord[]
   }
 
