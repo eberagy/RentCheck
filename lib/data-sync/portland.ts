@@ -3,7 +3,7 @@
  * API: https://opendata.portland.gov (Socrata)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
 
 const ENDPOINTS = [
   'https://opendata.portland.gov/resource/mqgu-b77j.json', // Code enforcement cases
@@ -44,42 +44,41 @@ export async function syncPortland(supabase: SupabaseClient): Promise<SyncResult
     }
     if (rows.length === 0) break
 
+    const uniqueAddrs = new Map<string, { addr: string; zip: string }>()
     for (const row of rows) {
-      try {
-        const sourceId = String(row.case_number ?? row.record_id ?? row.objectid ?? '')
-        if (!sourceId) { result.skipped++; continue }
-
-        const addr = row.site_address ?? row.address ?? row.location ?? ''
-        const addrNorm = normalizeAddress(addr)
-        let propertyId = await resolveProperty(supabase, addrNorm, 'Portland', 'OR')
-        if (!propertyId && addr) {
-          const { data: newProp } = await supabase.from('properties').insert({
-            address_line1: addr, city: 'Portland', state: 'Oregon', state_abbr: 'OR',
-            zip: row.zip_code ?? '', address_normalized: addrNorm,
-          }).select('id').single()
-          propertyId = newProp?.id ?? null
-        }
-
-        const { error } = await supabase.from('public_records').upsert({
-          source: 'portland_bds',
-          source_id: sourceId,
-          record_type: 'portland_violation',
-          property_id: propertyId,
-          title: buildTitle(row),
-          description: row.case_type ?? row.violation_description ?? row.complaint_type ?? null,
-          severity: mapSeverity(row.priority ?? row.case_class),
-          status: mapStatus(row.status ?? row.case_status),
-          filed_date: (row.case_date ?? row.open_date) ? new Date(row.case_date ?? row.open_date).toISOString().split('T')[0] : null,
-          source_url: 'https://www.portland.gov/bds/code-enforcement',
-          raw_data: row,
-        }, { onConflict: 'source,source_id', ignoreDuplicates: false })
-
-        if (error) { result.errors.push(error.message); continue }
-        result.added++
-      } catch (e) {
-        result.errors.push(e instanceof Error ? e.message : String(e))
-      }
+      const addr = (row.site_address ?? row.address ?? row.location ?? '').trim()
+      if (!addr) continue
+      const norm = normalizeAddress(addr)
+      if (norm && !uniqueAddrs.has(norm)) uniqueAddrs.set(norm, { addr, zip: row.zip_code ?? '' })
     }
+    const propRows = Array.from(uniqueAddrs.entries()).map(([norm, v]) => ({
+      address_line1: v.addr, city: 'Portland', state: 'Oregon',
+      state_abbr: 'OR', zip: v.zip, address_normalized: norm,
+    }))
+    const propIdMap = await upsertPropertiesAndMap(supabase, propRows, result)
+
+    const toInsert: Record<string, unknown>[] = []
+    for (const row of rows) {
+      const sourceId = String(row.case_number ?? row.record_id ?? row.objectid ?? '')
+      if (!sourceId) { result.skipped++; continue }
+      const addr = row.site_address ?? row.address ?? row.location ?? ''
+      const propertyId = addr ? (propIdMap.get(normalizeAddress(addr)) ?? null) : null
+      const filedRaw = row.case_date ?? row.open_date
+      toInsert.push({
+        source: 'portland_bds',
+        source_id: sourceId,
+        record_type: 'portland_violation',
+        property_id: propertyId,
+        title: buildTitle(row),
+        description: row.case_type ?? row.violation_description ?? row.complaint_type ?? null,
+        severity: mapSeverity(row.priority ?? row.case_class),
+        status: mapStatus(row.status ?? row.case_status),
+        filed_date: filedRaw ? new Date(filedRaw).toISOString().split('T')[0] : null,
+        source_url: 'https://www.portland.gov/bds/code-enforcement',
+        raw_data: row,
+      })
+    }
+    await batchUpsert(supabase, toInsert, result)
 
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break
