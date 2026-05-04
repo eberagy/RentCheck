@@ -29,7 +29,11 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
   const p = await params
   const cityName = formatCityName(p.city)
   const stateAbbr = p.state.toUpperCase()
-  const stateName = US_STATES.find(s => s.abbr === stateAbbr)?.name ?? stateAbbr
+  const stateInfo = US_STATES.find(s => s.abbr === stateAbbr)
+  // Reject unknown state abbreviations early — keeps soft-404 garbage out
+  // of Google's index. (Two-letter state codes are a closed set.)
+  if (!stateInfo) notFound()
+  const stateName = stateInfo.name
   return {
     title: `Landlord Reviews in ${cityName}, ${stateAbbr}`,
     description: `Read lease-verified renter reviews and public records for landlords in ${cityName}, ${stateName}. Research before you rent.`,

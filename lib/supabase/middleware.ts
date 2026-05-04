@@ -31,6 +31,13 @@ function originIsAllowed(origin: string | null): boolean {
   return false
 }
 
+// /property/[id] expects a UUID; anything else is guaranteed garbage.
+// Catch it at the edge and return a real 404 — Next.js's notFound()
+// inside generateMetadata + page returns the not-found body with a 200
+// status (Vercel + App Router quirk), which soft-404s invalid URLs into
+// search engines.
+const UUID_RE = /^\/property\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(\/|$)/i
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
@@ -38,6 +45,12 @@ export async function updateSession(request: NextRequest) {
   // forged cross-origin cookie attack gets dropped at the edge.
   const method = request.method
   const pathname = request.nextUrl.pathname
+
+  // Property URLs that don't carry a UUID are 404 by construction —
+  // emit it directly so Google doesn't index the typo.
+  if (pathname.startsWith('/property/') && !UUID_RE.test(pathname)) {
+    return new NextResponse('Not Found', { status: 404 })
+  }
   const isWrite = method === 'POST' || method === 'PATCH' || method === 'DELETE' || method === 'PUT'
   const isApi = pathname.startsWith('/api/')
   const needsOriginCheck =

@@ -32,11 +32,13 @@ interface PropertyPageProps {
   params: { id: string }
 }
 
-// Note: cannot use ISR (revalidate) here — Next.js + Vercel currently serves
-// notFound() with a 200 status when the page is statically rendered, which
-// soft-404s every invalid property ID into Google's index. force-dynamic
-// trades the cache for a real 404 on unknown UUIDs.
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
+// NOTE: notFound() in generateMetadata + page does NOT return a 404 status
+// in production (Next.js 14 + Vercel quirk). The not-found.tsx body
+// renders with a 200 status header, soft-404'ing into search engines.
+// Tried `dynamic = 'force-dynamic'` — same result. Tracked in NEXT_SESSION;
+// proper fix likely requires a middleware-level UUID validator that
+// returns NextResponse with status 404 before reaching the page.
 
 // Shared loader: generateMetadata + the page component both need the
 // property row + its landlord. React cache() dedupes within a render.
