@@ -175,7 +175,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
   // Most recent business registration (for the "Registered as" sidebar chip)
   const businessRegistration = landlordRecords.find(r => r.record_type === 'business_registration')
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
   const hasRatings = (landlord.avg_rating ?? 0) > 0 && (landlord.review_count ?? 0) > 0
   type ReviewLite = {
     rating_overall: number

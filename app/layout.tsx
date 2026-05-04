@@ -21,7 +21,7 @@ const display = Instrument_Serif({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'),
   title: {
     // Homepage uses `default` as-is (no template suffix), so we don't double
     // the brand. Child pages get `| Vett` appended via the template.
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
   },
 }
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
 
 const siteJsonLd = JSON.stringify({
   '@context': 'https://schema.org',

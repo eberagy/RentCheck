@@ -1,7 +1,9 @@
 import type { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
+  // Live site serves on www.vettrentals.com; the apex redirects 307 → www.
+  // Use the canonical host so search engines don't see a redirect on every URL.
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
 
   return {
     rules: [

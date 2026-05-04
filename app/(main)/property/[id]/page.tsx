@@ -109,7 +109,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   })
 
   // Schema.org structured data — Apartment / ApartmentComplex when units > 1.
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
   const propertyJsonLd = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': (property.unit_count ?? 1) > 1 ? 'ApartmentComplex' : 'Apartment',

@@ -34,7 +34,7 @@ export default async function ScenarioPage({ params }: ScenarioPageProps) {
   const scenario = getScenario(p.scenario)
   if (!scenario) notFound()
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
 
   const articleJsonLd = {
     '@context': 'https://schema.org',

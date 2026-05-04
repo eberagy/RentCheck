@@ -104,7 +104,7 @@ export async function GET(req: NextRequest) {
         }))
 
       const token = createUnsubscribeToken(profile.id)
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
       await sendSavedSearchDigestEmail(profile.email, {
         firstName: profile.full_name?.split(' ')[0],
         city: sub.city,
