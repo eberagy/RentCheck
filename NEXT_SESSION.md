@@ -1,6 +1,19 @@
 # Vett — Next Session Punchlist
 
-Last session ended at commit `bab1ad8` on 2026-05-01. 43 commits shipped that day. Live at vettrentals.com (Vercel `iad1`). All migrations deployed (105–112).
+Last session ended at commit `1f5edc8` on 2026-05-04 (overnight 2026-05-02 → 05-04 push). Live at vettrentals.com (Vercel `iad1`). Migrations 105–114 deployed.
+
+## What landed this push (since `bab1ad8`)
+- **Migration 113** — `normalize_address(text)` + 43k legacy property rows backfilled
+- **Migration 114** — properties unique index made non-partial (the actual root cause behind the silent property upsert failure that left 188k HPD records unlinked: PostgREST's `onConflict` couldn't target the partial index)
+- **321k unlinked records → fully linked** via SQL backfill (HPD 100%, DOB 100%, marshals 100%, sf_housing 100%; chicago_buildings 90%)
+- **Landlord aggregates recomputed** post-backfill: 8,134 landlords with violations / 71,027 attributable violations (was ~0 before)
+- **Centralized `upsertPropertiesAndMap` helper** in `lib/data-sync/utils.ts` — surfaces upsert errors that were being eaten before. Migrated nyc-hpd / nyc-dob / nyc-evictions / nyc-registration / chicago / dallas / seattle / nashville / austin / boston / philly / pittsburgh
+- **City sync ID updates** — Austin (6wtj-zbtb, 82k rows), Seattle (ez4a-iug7, 239k rows), Dallas (yvha-at84, 712k rows). All confirmed live + ingesting (98k–101k records per cron now)
+- **Philly schema-drift fix** — `caseprioritydesc` → `prioritydesc`
+- **Performance**: faithful-coo-inc landlord page 8.2s → 2.6s cold / 460ms warm (capped record fetch at 500, dropped raw_data from SELECT)
+- **Vitest** wired with 29 unit tests for safe-redirect / sanitize / normalize_address
+- **Lint** unused-vars 33 → 0; explicit-any 145 → 115
+- **UX**: /admin/audit action_type filter; Watch button on property page (WatchlistButton now polymorphic); About page live "by the numbers" strip from city_stats
 
 ## 🚩 Blockers — set in Vercel env vars (no code change)
 
