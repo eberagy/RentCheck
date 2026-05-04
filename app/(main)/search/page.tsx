@@ -6,7 +6,7 @@ import { SearchBar } from '@/components/search/SearchBar'
 import { LandlordCard } from '@/components/landlord/LandlordCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { COLLEGE_CITIES, US_STATES } from '@/types'
-import type { Landlord, SearchResult } from '@/types'
+import type { Landlord, Property, SearchResult } from '@/types'
 import { buildLandlordSummary, buildPropertySummary, truncateSummary } from '@/lib/summaries'
 import { MapPin, Search, ChevronRight, Flag } from 'lucide-react'
 import { Grade } from '@/components/vett/Grade'
@@ -122,29 +122,34 @@ async function SearchResults({
             .from('landlords')
             .select('id, display_name, avg_rating, review_count, open_violation_count, total_violation_count, eviction_count, city, state_abbr, is_verified, slug, response_rate')
             .in('id', landlordIds)
-        : Promise.resolve({ data: [] as any[], error: null }),
+        : Promise.resolve({ data: [] as Record<string, unknown>[], error: null }),
       propertyIds.length
         ? supabase
             .from('properties')
             .select('id, address_line1, avg_rating, review_count, city, state_abbr, landlord:landlords(display_name, is_verified)')
             .in('id', propertyIds)
-        : Promise.resolve({ data: [] as any[], error: null }),
+        : Promise.resolve({ data: [] as Record<string, unknown>[], error: null }),
       propertyIds.length
         ? supabase
             .from('public_records')
             .select('property_id, title, status, filed_date')
             .in('property_id', propertyIds)
-        : Promise.resolve({ data: [] as any[], error: null }),
+        : Promise.resolve({ data: [] as Record<string, unknown>[], error: null }),
     ])
 
-    const landlordsById = new Map((landlords ?? []).map((landlord: any) => [landlord.id, landlord]))
-    const propertiesById = new Map((properties ?? []).map((property: any) => [property.id, property]))
+    type LandlordRow = Pick<Landlord, 'id' | 'display_name' | 'avg_rating' | 'review_count' | 'open_violation_count' | 'total_violation_count' | 'eviction_count' | 'city' | 'state_abbr' | 'is_verified' | 'slug' | 'response_rate'>
+    type PropertyRow = Pick<Property, 'id' | 'address_line1' | 'avg_rating' | 'review_count' | 'city' | 'state_abbr'> & {
+      landlord: { display_name: string | null; is_verified: boolean | null } | null
+    }
+    const landlordsById = new Map(((landlords ?? []) as unknown as LandlordRow[]).map(landlord => [landlord.id, landlord]))
+    const propertiesById = new Map(((properties ?? []) as unknown as PropertyRow[]).map(property => [property.id, property]))
+    type RecordRow = { property_id: string | null; title: string; status: string | null; filed_date: string | null }
     const recordsByPropertyId = new Map<string, Array<{ title: string; status: string | null; filed_date: string | null }>>()
 
-    for (const record of propertyRecords ?? []) {
+    for (const record of (propertyRecords ?? []) as unknown as RecordRow[]) {
       if (!record.property_id) continue
       const bucket = recordsByPropertyId.get(record.property_id) ?? []
-      bucket.push(record)
+      bucket.push({ title: record.title, status: record.status, filed_date: record.filed_date })
       recordsByPropertyId.set(record.property_id, bucket)
     }
 
