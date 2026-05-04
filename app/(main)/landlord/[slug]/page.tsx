@@ -28,7 +28,11 @@ interface LandlordPageProps {
   params: { slug: string }
 }
 
-export const revalidate = 3600 // ISR: revalidate every 1 hour
+// Switching from ISR to force-dynamic — Next.js + Vercel currently serves
+// notFound() with a 200 status when the page is statically rendered, soft-404ing
+// invalid landlord slugs into Google's index. Trade the 1-hour ISR cache for
+// real 404 status on unknown slugs.
+export const dynamic = 'force-dynamic'
 
 // Shared loader: generateMetadata + the page component both need the
 // landlord row. React's `cache()` dedupes the fetch within a single

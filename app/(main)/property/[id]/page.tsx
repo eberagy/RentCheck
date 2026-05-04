@@ -32,7 +32,11 @@ interface PropertyPageProps {
   params: { id: string }
 }
 
-export const revalidate = 3600
+// Note: cannot use ISR (revalidate) here — Next.js + Vercel currently serves
+// notFound() with a 200 status when the page is statically rendered, which
+// soft-404s every invalid property ID into Google's index. force-dynamic
+// trades the cache for a real 404 on unknown UUIDs.
+export const dynamic = 'force-dynamic'
 
 // Shared loader: generateMetadata + the page component both need the
 // property row + its landlord. React cache() dedupes within a render.
