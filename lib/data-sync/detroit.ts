@@ -88,7 +88,7 @@ export async function syncDetroit(supabase: SupabaseClient): Promise<SyncResult>
   return result
 }
 
-function buildTitle(row: any): string {
+function buildTitle(row: SocrataRow): string {
   const t = row.violation_description ?? row.ordinance_description ?? row.description ?? 'Blight Violation'
   return `Detroit: ${t}`.slice(0, 150)
 }

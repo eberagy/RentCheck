@@ -76,7 +76,7 @@ export async function syncNyc311(supabase: SupabaseClient): Promise<SyncResult> 
   return result
 }
 
-function buildTitle(row: any): string {
+function buildTitle(row: SocrataRow): string {
   const type = row.complaint_type ?? 'Complaint'
   const desc = row.descriptor ? ` — ${row.descriptor}` : ''
   return `NYC 311: ${type}${desc}`.slice(0, 150)

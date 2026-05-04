@@ -88,7 +88,7 @@ export async function syncColumbus(supabase: SupabaseClient): Promise<SyncResult
   return result
 }
 
-function buildTitle(row: any): string {
+function buildTitle(row: SocrataRow): string {
   const t = row.violation_type ?? row.case_type ?? row.description ?? 'Code Violation'
   return `Columbus: ${t}`.slice(0, 150)
 }

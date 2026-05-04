@@ -89,7 +89,7 @@ export async function syncMinneapolis(supabase: SupabaseClient): Promise<SyncRes
   return result
 }
 
-function buildTitle(row: any): string {
+function buildTitle(row: SocrataRow): string {
   const t = row.complainttype ?? row.violationdescription ?? row.statusdesc ?? 'Code Complaint'
   return `Minneapolis: ${t}`.slice(0, 150)
 }

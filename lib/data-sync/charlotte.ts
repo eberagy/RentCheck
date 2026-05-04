@@ -88,7 +88,7 @@ export async function syncCharlotte(supabase: SupabaseClient): Promise<SyncResul
   return result
 }
 
-function buildTitle(row: any): string {
+function buildTitle(row: SocrataRow): string {
   const t = row.violationdescription ?? row.casetype ?? row.description ?? 'Code Violation'
   return `Charlotte: ${t}`.slice(0, 150)
 }

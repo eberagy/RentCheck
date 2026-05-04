@@ -109,7 +109,7 @@ export async function syncSf(supabase: SupabaseClient): Promise<SyncResult> {
   return result
 }
 
-function buildSfTitle(row: any, isPermits: boolean): string {
+function buildSfTitle(row: SocrataRow, isPermits: boolean): string {
   if (isPermits) {
     const label = [row.permit_type, row.description].find(Boolean) ?? 'Building Permit'
     return `SF Building Permit: ${label}`.slice(0, 150)

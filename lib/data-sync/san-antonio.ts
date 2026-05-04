@@ -91,7 +91,7 @@ export async function syncSanAntonio(supabase: SupabaseClient): Promise<SyncResu
   return result
 }
 
-function buildTitle(row: any): string {
+function buildTitle(row: SocrataRow): string {
   const t = row.casetype ?? row.violationdescription ?? row.description ?? 'Code Enforcement'
   return `San Antonio: ${t}`.slice(0, 150)
 }

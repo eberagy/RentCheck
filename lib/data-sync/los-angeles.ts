@@ -105,7 +105,7 @@ export async function syncLosAngeles(supabase: SupabaseClient): Promise<SyncResu
   return result
 }
 
-function buildLaTitle(row: any): string {
+function buildLaTitle(row: SocrataRow): string {
   const label =
     row.violation_description ??
     row.case_type ??

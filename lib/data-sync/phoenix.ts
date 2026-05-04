@@ -89,7 +89,7 @@ export async function syncPhoenix(supabase: SupabaseClient): Promise<SyncResult>
   return result
 }
 
-function buildTitle(row: any): string {
+function buildTitle(row: SocrataRow): string {
   const t = row.case_type ?? row.violation_description ?? row.complaint_type ?? 'Code Violation'
   return `Phoenix: ${t}`.slice(0, 150)
 }
