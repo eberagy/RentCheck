@@ -17,7 +17,8 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
     .single()
 
   if (error || !data) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json({ review: stripPrivateReviewFields(data as any) })
+  type ReviewWithLandlord = { landlord_response?: string | null; landlord_response_status?: string | null }
+  return NextResponse.json({ review: stripPrivateReviewFields(data as unknown as ReviewWithLandlord) })
 }
 
 const patchSchema = z.object({

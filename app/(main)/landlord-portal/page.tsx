@@ -119,8 +119,9 @@ export default function LandlordPortalPage() {
         .from('record_disputes')
         .select('id, record:public_records(landlord_id, property_id)')
         .eq('status', 'open')
-      const ours = (disputes ?? []).filter((d: any) => {
-        const rec = d.record as { landlord_id: string | null; property_id: string | null } | null
+      type DisputeRow = { id: string; record: { landlord_id: string | null; property_id: string | null } | null }
+      const ours = ((disputes ?? []) as unknown as DisputeRow[]).filter(d => {
+        const rec = d.record
         if (!rec) return false
         if (rec.landlord_id === l.id) return true
         if (rec.property_id && propertyIds.includes(rec.property_id)) return true

@@ -84,7 +84,8 @@ export default function ClaimProfilePage() {
     try {
       const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=landlord&limit=10`)
       const data = await res.json()
-      setSearchResults(data.results?.filter((r: any) => r.result_type === 'landlord' && !r.is_claimed) ?? [])
+      type SearchHit = Landlord & { result_type?: string }
+      setSearchResults(((data.results ?? []) as SearchHit[]).filter(r => r.result_type === 'landlord' && !r.is_claimed))
     } finally {
       setSearching(false)
     }
