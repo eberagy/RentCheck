@@ -4,7 +4,7 @@
  * Tries multiple known resource IDs in order.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.boston.gov/api/3/action/datastore_search'
 // Try multiple known resource IDs — Analyze Boston may rotate these.
@@ -64,57 +64,67 @@ export async function syncBoston(supabase: SupabaseClient): Promise<SyncResult> 
     }
     if (rows.length === 0) break
 
+    // Pre-build per-page address tuples and batch-upsert properties in
+    // one go. Per-row resolveProperty + insert was timing out the
+    // Vercel function on the 2026-05-03 run.
+    type PerRow = {
+      sourceId: string
+      street: string
+      cityName: string
+      zip: string
+      addrNorm: string
+      filedDate: string | null
+      row: Record<string, unknown>
+    }
+    const built: PerRow[] = []
+    const uniqueAddrs = new Map<string, { addr: string; city: string; zip: string }>()
     for (const row of rows) {
-      try {
-        const sourceId = String(row.case_no ?? row.sam_id ?? row.case_number ?? row._id ?? '')
-        if (!sourceId) { result.skipped++; continue }
-
-        // Modern dataset fields: violation_stno + violation_street (+ suffix).
-        // Legacy resources used `address` / `stno`. Try both shapes.
-        const modernStreet = [row.violation_stno, row.violation_street, row.violation_suffix]
-          .map((s: unknown) => (typeof s === 'string' ? s.trim() : ''))
-          .filter(Boolean)
-          .join(' ')
-        const street = modernStreet || row.address || row.stno || row.contact_addr1 || ''
-        const cityName = row.violation_city || 'Boston'
-        const zip = row.violation_zip || row.zip || ''
-        const addrNorm = normalizeAddress(street)
-
-        let propertyId = await resolveProperty(supabase, addrNorm, cityName, 'MA')
-        if (!propertyId && street) {
-          const { data: newProp } = await supabase
-            .from('properties')
-            .insert({ address_line1: street, city: cityName, state: 'Massachusetts', state_abbr: 'MA', zip, address_normalized: addrNorm })
-            .select('id').single()
-          propertyId = newProp?.id ?? null
-        }
-
-        let filedDate: string | null = null
-        const dateRaw = row.status_dttm ?? row.open_dt
-        if (dateRaw) {
-          const d = new Date(dateRaw)
-          if (!isNaN(d.getTime())) filedDate = d.toISOString().split('T')[0] ?? null
-        }
-
-        const { error } = await supabase.from('public_records').upsert({
-          source: 'boston_isd',
-          source_id: sourceId,
-          record_type: 'boston_violation',
-          property_id: propertyId,
-          title: buildBostonTitle(row.description, row.code_description ?? row.code, row.status),
-          description: row.description ?? row.code_description ?? row.code ?? null,
-          severity: 'medium',
-          status: row.status?.toLowerCase().includes('close') ? 'closed' : 'open',
-          filed_date: filedDate,
-          raw_data: row,
-        }, { onConflict: 'source,source_id', ignoreDuplicates: false })
-
-        if (error) { result.errors.push(error.message); continue }
-        result.added++
-      } catch (e) {
-        result.errors.push(e instanceof Error ? e.message : String(e))
+      const sourceId = String(row.case_no ?? row.sam_id ?? row.case_number ?? row._id ?? '')
+      if (!sourceId) { result.skipped++; continue }
+      const modernStreet = [row.violation_stno, row.violation_street, row.violation_suffix]
+        .map((s: unknown) => (typeof s === 'string' ? s.trim() : ''))
+        .filter(Boolean)
+        .join(' ')
+      const street = modernStreet || row.address || row.stno || row.contact_addr1 || ''
+      const cityName = row.violation_city || 'Boston'
+      const zip = row.violation_zip || row.zip || ''
+      const addrNorm = normalizeAddress(street)
+      let filedDate: string | null = null
+      const dateRaw = row.status_dttm ?? row.open_dt
+      if (dateRaw) {
+        const d = new Date(dateRaw)
+        if (!isNaN(d.getTime())) filedDate = d.toISOString().split('T')[0] ?? null
+      }
+      built.push({ sourceId, street, cityName, zip, addrNorm, filedDate, row })
+      if (street && addrNorm && !uniqueAddrs.has(`${addrNorm}|${cityName}`)) {
+        uniqueAddrs.set(`${addrNorm}|${cityName}`, { addr: street, city: cityName, zip })
       }
     }
+
+    const propRows = Array.from(uniqueAddrs.entries()).map(([key, v]) => ({
+      address_line1: v.addr, city: v.city, state: 'Massachusetts',
+      state_abbr: 'MA', zip: v.zip, address_normalized: key.split('|')[0]!,
+    }))
+    const propIdMap = await upsertPropertiesAndMap(supabase, propRows, result)
+
+    const toInsert: Record<string, unknown>[] = []
+    for (const b of built) {
+      const propertyId = b.addrNorm ? (propIdMap.get(b.addrNorm) ?? null) : null
+      const r = b.row
+      toInsert.push({
+        source: 'boston_isd',
+        source_id: b.sourceId,
+        record_type: 'boston_violation',
+        property_id: propertyId,
+        title: buildBostonTitle(r.description as string | null, (r.code_description ?? r.code) as string | null, r.status as string | null),
+        description: r.description ?? r.code_description ?? r.code ?? null,
+        severity: 'medium',
+        status: (r.status as string | undefined)?.toLowerCase().includes('close') ? 'closed' : 'open',
+        filed_date: b.filedDate,
+        raw_data: r,
+      })
+    }
+    await batchUpsert(supabase, toInsert, result)
 
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break
