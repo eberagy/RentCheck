@@ -61,18 +61,18 @@ landlord_id update will cascade through the trigger and bump aggregate
 counters live. If `records_updated` stays > 0 each run, the linkage
 flywheel is healthy.
 
-**Reality check 2026-05-04:** Recent runs show `records_updated = 0`.
+**Reality check 2026-05-04:** mine-violation-owners shows `records_updated = 0`.
 Discovered why: nyc_hpd raw_data has NO `ownername` field (zero of 192k
 rows). HPD's violation dataset doesn't include owner — that's only in
-nyc_registration (rent-stab buildings) and assessors. The flywheel
-depends on:
-1. nyc_registration ingest creating landlord rows from `ownername`
-2. mine-violation-owners attributing those landlords to properties
+nyc_registration (rent-stab buildings) and assessors. The function relies
+on `OWNER_FIELDS_BY_SOURCE['nyc_hpd']` looking for `ownername` /
+`owner_name`, neither of which the violation dataset returns. So the
+function correctly skips every HPD-only property.
 
-But nyc_registration ALSO adds 0 records per run — `offset` resets
-to 0 each invocation, so MAX_PAGES=5 just re-walks the same 5k rows
-indefinitely. A `last_processed_offset` checkpoint table or `WHERE
-registrationid > X` cursor is the actual fix.
+Note: nyc_registration sync_log shows `records_added: 0` because that
+counter tracks public_records and registration only writes to
+landlords/properties. **Landlords grew +1,431 in last 7 days** — so
+the registration ingest is healthy; the metric is just misleading.
 
 ### Broken city syncs — root cause: Socrata sunset May 2025
 Probe report from this session (commits a few back):
