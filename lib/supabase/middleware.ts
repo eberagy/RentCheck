@@ -43,9 +43,15 @@ const UUID_RE = /^\/property\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[
 // emit 404 directly. (Probed live 2026-05-04: all 27,049 slugs match.)
 const LANDLORD_SLUG_RE = /^\/landlord\/([a-z0-9][a-z0-9-]{6,82}[a-z0-9])(\/|$)/i
 
-// City paths must use a 2-letter US state code. Reject obvious garbage
-// (numbers, longer codes, etc.) at the edge.
-const CITY_RE = /^\/city\/([a-z]{2})\/[a-z0-9-]+(\/|$)/i
+// City paths must use a real 2-letter US state code. The set is closed
+// (50 + DC), so anything else is a typo and gets 404'd at the edge.
+const US_STATE_CODES = new Set([
+  'al','ak','az','ar','ca','co','ct','de','fl','ga','hi','id','il','in','ia',
+  'ks','ky','la','me','md','ma','mi','mn','ms','mo','mt','ne','nv','nh','nj',
+  'nm','ny','nc','nd','oh','ok','or','pa','ri','sc','sd','tn','tx','ut','vt',
+  'va','wa','wv','wi','wy','dc',
+])
+const CITY_RE = /^\/city\/([a-z]{2})\/([a-z0-9-]+)(\/|$)/i
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -64,9 +70,12 @@ export async function updateSession(request: NextRequest) {
   if (pathname.startsWith('/landlord/') && !LANDLORD_SLUG_RE.test(pathname)) {
     return new NextResponse('Not Found', { status: 404 })
   }
-  // City paths must use a 2-letter state code (any case).
-  if (pathname.startsWith('/city/') && pathname !== '/city/' && !CITY_RE.test(pathname)) {
-    return new NextResponse('Not Found', { status: 404 })
+  // City paths must use a real 2-letter US state code.
+  if (pathname.startsWith('/city/') && pathname !== '/city/') {
+    const m = pathname.match(CITY_RE)
+    if (!m || !US_STATE_CODES.has(m[1]!.toLowerCase())) {
+      return new NextResponse('Not Found', { status: 404 })
+    }
   }
   const isWrite = method === 'POST' || method === 'PATCH' || method === 'DELETE' || method === 'PUT'
   const isApi = pathname.startsWith('/api/')
