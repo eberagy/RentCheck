@@ -55,9 +55,12 @@ export default async function CityPage({ params }: CityPageProps) {
 
   // Get top landlords in this city (handle metro aliases like NYC boroughs)
   const aliases = getCityAliases(cityName)
+  // count: 'planned' uses Postgres' table-row estimate (no scan), saves
+  // ~700ms on NYC (13k landlords) and the user-facing copy doesn't need
+  // an exact integer.
   let landlordQuery = supabase
     .from('landlords')
-    .select('*', { count: 'exact' })
+    .select('*', { count: 'planned' })
     .eq('state_abbr', stateAbbr)
 
   // Defense-in-depth: strip PostgREST filter metacharacters from any
