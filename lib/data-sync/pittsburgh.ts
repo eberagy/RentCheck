@@ -4,7 +4,7 @@
  * Dataset: https://data.wprdc.org/dataset/pittsburgh-pli-violations-report
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, resolveProperty, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.wprdc.org/api/3/action/datastore_search_sql'
 const RESOURCE_ID = '70c06278-92c5-4040-ab28-17671866f81c'
@@ -51,78 +51,57 @@ export async function syncPittsburgh(supabase: SupabaseClient): Promise<SyncResu
     const rows = json.result?.records ?? []
     if (rows.length === 0) break
 
+    // Batch property resolution per page.
+    const uniqueAddrs = new Map<string, { addr: string; zip: string }>()
     for (const row of rows) {
-      try {
-        if (!row.casefile_number || !row.address) {
-          result.skipped++
-          continue
-        }
-
-        const addressLine1 = extractStreetAddress(row.address)
-        if (!addressLine1) {
-          result.skipped++
-          continue
-        }
-
-        const addressNormalized = normalizeAddress(addressLine1)
-        let propertyId = await resolveProperty(supabase, addressNormalized, 'Pittsburgh', 'PA')
-
-        if (!propertyId) {
-          const { data: property } = await supabase
-            .from('properties')
-            .insert({
-              address_line1: addressLine1,
-              city: 'Pittsburgh',
-              state: 'Pennsylvania',
-              state_abbr: 'PA',
-              zip: extractZip(row.address),
-              address_normalized: addressNormalized,
-            })
-            .select('id')
-            .single()
-          propertyId = property?.id ?? null
-        }
-
-        const sourceId = [
-          row.casefile_number,
-          row.investigation_date ?? 'unknown-date',
-          row.status ?? 'unknown-status',
-          row.violation_code_section_title ?? row.violation_description ?? row.investigation_findings ?? 'record',
-        ].join(':')
-
-        const { error } = await supabase.from('public_records').upsert({
-          source: 'pittsburgh_pli',
-          source_id: sourceId,
-          source_url: 'https://data.wprdc.org/dataset/pittsburgh-pli-violations-report',
-          record_type: 'pittsburgh_violation',
-          property_id: propertyId,
-          title: buildPittsburghTitle(row),
-          description: [
-            row.case_file_type,
-            row.violation_description,
-            row.violation_code_section_title,
-            row.investigation_findings,
-            row.investigation_outcome,
-            row.court_decision,
-          ].filter(Boolean).join(' — ') || null,
-          severity: inferPittsburghSeverity(row.status, row.investigation_outcome),
-          status: normalizePittsburghStatus(row.status),
-          case_number: row.casefile_number,
-          filed_date: row.investigation_date ?? null,
-          outcome: row.court_decision ?? row.investigation_outcome ?? null,
-          raw_data: row,
-        }, { onConflict: 'source,source_id', ignoreDuplicates: false })
-
-        if (error) {
-          result.errors.push(error.message)
-          continue
-        }
-
-        result.added++
-      } catch (error) {
-        result.errors.push(error instanceof Error ? error.message : String(error))
-      }
+      if (!row.address) continue
+      const addressLine1 = extractStreetAddress(row.address)
+      if (!addressLine1) continue
+      const norm = normalizeAddress(addressLine1)
+      if (norm && !uniqueAddrs.has(norm)) uniqueAddrs.set(norm, { addr: addressLine1, zip: extractZip(row.address) })
     }
+    const propRows = Array.from(uniqueAddrs.entries()).map(([norm, v]) => ({
+      address_line1: v.addr, city: 'Pittsburgh', state: 'Pennsylvania',
+      state_abbr: 'PA', zip: v.zip, address_normalized: norm,
+    }))
+    const propIdMap = await upsertPropertiesAndMap(supabase, propRows, result)
+
+    const toInsert: Record<string, unknown>[] = []
+    for (const row of rows) {
+      if (!row.casefile_number || !row.address) { result.skipped++; continue }
+      const addressLine1 = extractStreetAddress(row.address)
+      if (!addressLine1) { result.skipped++; continue }
+      const propertyId = propIdMap.get(normalizeAddress(addressLine1)) ?? null
+      const sourceId = [
+        row.casefile_number,
+        row.investigation_date ?? 'unknown-date',
+        row.status ?? 'unknown-status',
+        row.violation_code_section_title ?? row.violation_description ?? row.investigation_findings ?? 'record',
+      ].join(':')
+      toInsert.push({
+        source: 'pittsburgh_pli',
+        source_id: sourceId,
+        source_url: 'https://data.wprdc.org/dataset/pittsburgh-pli-violations-report',
+        record_type: 'pittsburgh_violation',
+        property_id: propertyId,
+        title: buildPittsburghTitle(row),
+        description: [
+          row.case_file_type,
+          row.violation_description,
+          row.violation_code_section_title,
+          row.investigation_findings,
+          row.investigation_outcome,
+          row.court_decision,
+        ].filter(Boolean).join(' — ') || null,
+        severity: inferPittsburghSeverity(row.status, row.investigation_outcome),
+        status: normalizePittsburghStatus(row.status),
+        case_number: row.casefile_number,
+        filed_date: row.investigation_date ?? null,
+        outcome: row.court_decision ?? row.investigation_outcome ?? null,
+        raw_data: row,
+      })
+    }
+    await batchUpsert(supabase, toInsert, result)
 
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break
