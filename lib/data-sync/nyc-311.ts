@@ -4,7 +4,7 @@
  * Filters for housing-related complaint types only
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.cityofnewyork.us/resource/erm2-nwe9.json'
 const PAGE_SIZE = 1000
@@ -33,45 +33,41 @@ export async function syncNyc311(supabase: SupabaseClient): Promise<SyncResult> 
     if (rows.length === 0) break
     if (offset > 100000) break
 
+    const uniqueAddrs = new Map<string, { addr: string; zip: string }>()
     for (const row of rows) {
-      try {
-        const sourceId = String(row.unique_key ?? '')
-        if (!sourceId) { result.skipped++; continue }
-
-        const addr = [row.incident_address, row.street_address].find(Boolean) ?? ''
-        const zip = row.incident_zip ?? row.zip_code ?? ''
-        const addrNorm = normalizeAddress(addr)
-
-        let propertyId = await resolveProperty(supabase, addrNorm, 'New York', 'NY')
-        if (!propertyId && addr) {
-          const { data: newProp } = await supabase.from('properties').insert({
-            address_line1: addr, city: 'New York', state: 'New York', state_abbr: 'NY',
-            zip, address_normalized: addrNorm,
-          }).select('id').single()
-          propertyId = newProp?.id ?? null
-        }
-
-        const { error } = await supabase.from('public_records').upsert({
-          source: 'nyc_311',
-          source_id: sourceId,
-          record_type: 'nyc_311',
-          property_id: propertyId,
-          title: buildTitle(row),
-          description: row.descriptor ?? row.complaint_type ?? null,
-          severity: mapSeverity(row.complaint_type ?? ''),
-          status: mapStatus(row.status ?? ''),
-          filed_date: row.created_date ? new Date(row.created_date).toISOString().split('T')[0] : null,
-          closed_date: row.closed_date ? new Date(row.closed_date).toISOString().split('T')[0] : null,
-          source_url: `https://portal.311.nyc.gov/sr-details/?srnum=${sourceId}`,
-          raw_data: row,
-        }, { onConflict: 'source,source_id', ignoreDuplicates: false })
-
-        if (error) { result.errors.push(error.message); continue }
-        result.added++
-      } catch (e) {
-        result.errors.push(e instanceof Error ? e.message : String(e))
-      }
+      const addr = ([row.incident_address, row.street_address].find(Boolean) ?? '').trim()
+      if (!addr) continue
+      const norm = normalizeAddress(addr)
+      if (norm && !uniqueAddrs.has(norm)) uniqueAddrs.set(norm, { addr, zip: row.incident_zip ?? row.zip_code ?? '' })
     }
+    const propRows = Array.from(uniqueAddrs.entries()).map(([norm, v]) => ({
+      address_line1: v.addr, city: 'New York', state: 'New York',
+      state_abbr: 'NY', zip: v.zip, address_normalized: norm,
+    }))
+    const propIdMap = await upsertPropertiesAndMap(supabase, propRows, result)
+
+    const toInsert: Record<string, unknown>[] = []
+    for (const row of rows) {
+      const sourceId = String(row.unique_key ?? '')
+      if (!sourceId) { result.skipped++; continue }
+      const addr = [row.incident_address, row.street_address].find(Boolean) ?? ''
+      const propertyId = addr ? (propIdMap.get(normalizeAddress(addr)) ?? null) : null
+      toInsert.push({
+        source: 'nyc_311',
+        source_id: sourceId,
+        record_type: 'nyc_311',
+        property_id: propertyId,
+        title: buildTitle(row),
+        description: row.descriptor ?? row.complaint_type ?? null,
+        severity: mapSeverity(row.complaint_type ?? ''),
+        status: mapStatus(row.status ?? ''),
+        filed_date: row.created_date ? new Date(row.created_date).toISOString().split('T')[0] : null,
+        closed_date: row.closed_date ? new Date(row.closed_date).toISOString().split('T')[0] : null,
+        source_url: `https://portal.311.nyc.gov/sr-details/?srnum=${sourceId}`,
+        raw_data: row,
+      })
+    }
+    await batchUpsert(supabase, toInsert, result)
 
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break

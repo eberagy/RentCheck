@@ -8,7 +8,7 @@
  *   4w5t-sktf — General inspections
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
 
 const BASE_DOMAIN = 'https://data.houstontx.gov'
 const DATASET_IDS = [
@@ -60,52 +60,41 @@ export async function syncHouston(supabase: SupabaseClient): Promise<SyncResult>
     }
     if (rows.length === 0) break
 
+    const uniqueAddrs = new Map<string, { addr: string; zip: string }>()
     for (const row of rows) {
-      try {
-        const sourceId = String(row.id ?? row.case_number ?? row.violation_id ?? row.permit_number ?? '')
-        if (!sourceId) { result.skipped++; continue }
-
-        const addr = row.address ?? row.property_address ?? row.location ?? ''
-        const addrNorm = normalizeAddress(addr)
-
-        let propertyId = await resolveProperty(supabase, addrNorm, 'Houston', 'TX')
-        if (!propertyId && addr) {
-          const { data: newProp } = await supabase
-            .from('properties')
-            .insert({
-              address_line1: addr,
-              city: 'Houston',
-              state: 'Texas',
-              state_abbr: 'TX',
-              zip: row.zip ?? row.zip_code ?? '',
-              address_normalized: addrNorm,
-            })
-            .select('id').single()
-          propertyId = newProp?.id ?? null
-        }
-
-        const { error } = await supabase.from('public_records').upsert({
-          source: 'houston_code',
-          source_id: sourceId,
-          record_type: 'houston_violation',
-          property_id: propertyId,
-          title: `Houston Code Violation: ${row.violation_type ?? row.case_type ?? row.description ?? 'Code Violation'}`.slice(0, 150),
-          description: row.description ?? row.violation_type ?? row.case_type ?? null,
-          severity: 'medium',
-          status: mapStatus(row.status ?? row.case_status),
-          filed_date: (row.date_filed ?? row.date_opened ?? row.created_date)
-            ? new Date(row.date_filed ?? row.date_opened ?? row.created_date).toISOString().split('T')[0]
-            : null,
-          source_url: 'https://data.houstontx.gov',
-          raw_data: row,
-        }, { onConflict: 'source,source_id', ignoreDuplicates: false })
-
-        if (error) { result.errors.push(error.message); continue }
-        result.added++
-      } catch (e) {
-        result.errors.push(e instanceof Error ? e.message : String(e))
-      }
+      const addr = (row.address ?? row.property_address ?? row.location ?? '').trim()
+      if (!addr) continue
+      const norm = normalizeAddress(addr)
+      if (norm && !uniqueAddrs.has(norm)) uniqueAddrs.set(norm, { addr, zip: row.zip ?? row.zip_code ?? '' })
     }
+    const propRows = Array.from(uniqueAddrs.entries()).map(([norm, v]) => ({
+      address_line1: v.addr, city: 'Houston', state: 'Texas',
+      state_abbr: 'TX', zip: v.zip, address_normalized: norm,
+    }))
+    const propIdMap = await upsertPropertiesAndMap(supabase, propRows, result)
+
+    const toInsert: Record<string, unknown>[] = []
+    for (const row of rows) {
+      const sourceId = String(row.id ?? row.case_number ?? row.violation_id ?? row.permit_number ?? '')
+      if (!sourceId) { result.skipped++; continue }
+      const addr = row.address ?? row.property_address ?? row.location ?? ''
+      const propertyId = addr ? (propIdMap.get(normalizeAddress(addr)) ?? null) : null
+      const filedRaw = row.date_filed ?? row.date_opened ?? row.created_date
+      toInsert.push({
+        source: 'houston_code',
+        source_id: sourceId,
+        record_type: 'houston_violation',
+        property_id: propertyId,
+        title: `Houston Code Violation: ${row.violation_type ?? row.case_type ?? row.description ?? 'Code Violation'}`.slice(0, 150),
+        description: row.description ?? row.violation_type ?? row.case_type ?? null,
+        severity: 'medium',
+        status: mapStatus(row.status ?? row.case_status),
+        filed_date: filedRaw ? new Date(filedRaw).toISOString().split('T')[0] : null,
+        source_url: 'https://data.houstontx.gov',
+        raw_data: row,
+      })
+    }
+    await batchUpsert(supabase, toInsert, result)
 
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break
