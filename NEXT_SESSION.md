@@ -99,7 +99,10 @@ Probe report from this session (commits a few back):
 - ✅ Watch button on property page — shipped.
 - ✅ About page pulls live stats from city_stats — shipped.
 - ✅ Lint: unused-var warnings 58 → 0.
-- Lint: explicit-any warnings still ~135 (10 dropped from search/route this session). Most are sync raw_data shapes — would benefit from a per-source row-type pass.
+- ✅ Lint: explicit-any 145 → 49. SocrataRow alias drops ~50; rest are sync raw_data shapes that need per-source narrowing.
+- ✅ Migrated 16 sync routes to upsertPropertiesAndMap (centralized property upsert + error capture).
+- ✅ Watchlist alerts cron now notifies property-watchers (not just landlord-watchers).
+- ✅ Soft-404: /property/{non-uuid} returns 404 via middleware. STILL OPEN: /property/{valid-uuid-but-no-row}, /landlord/{nonexistent}, /city/{bad}/{bad}, /blog/{bad} all return 200 with a "Page not found" body — Next.js + Vercel quirk where notFound() inside generateMetadata + page emits a 200 status. force-dynamic didn't help. Fix likely needs a Supabase-aware middleware that pre-validates IDs/slugs (slow, adds round-trip per request) or a switch to Pages Router (huge).
 
 ## P2 — Future features (deferred per user)
 
