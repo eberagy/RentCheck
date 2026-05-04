@@ -217,15 +217,25 @@ export async function upsertRecords(
   }))
 
   if (propRows.length > 0) {
-    for (let i = 0; i < propRows.length; i += BATCH_SIZE) {
-      const slice = propRows.slice(i, i + BATCH_SIZE)
-      const { data: created } = await supabase
+    // Drop empty/whitespace address_normalized rows — partial-vs-non-partial
+    // unique-index issue would have failed the whole batch (see migration 114
+    // notes) but the cleaner long-term shape is to never send them anyway.
+    const cleanedPropRows = propRows.filter(r => typeof r.address_normalized === 'string' && (r.address_normalized as string).trim() !== '')
+    if (cleanedPropRows.length < propRows.length) {
+      result.skipped += propRows.length - cleanedPropRows.length
+    }
+    for (let i = 0; i < cleanedPropRows.length; i += BATCH_SIZE) {
+      const slice = cleanedPropRows.slice(i, i + BATCH_SIZE)
+      const { data: created, error: upsertErr } = await supabase
         .from('properties')
         .upsert(slice, {
           onConflict: 'address_normalized,city,state_abbr',
           ignoreDuplicates: true,
         })
         .select('id, address_normalized, city, state_abbr')
+      // Surface DB errors — pre-fix these were eaten and 25k+ HPD addresses
+      // failed silently before commit 985e8aa added explicit error capture.
+      if (upsertErr) result.errors.push(`upsertRecords property upsert: ${upsertErr.message}`)
       for (const p of created ?? []) {
         if (p.address_normalized) propertyMap.set(`${p.address_normalized}|${p.city}|${p.state_abbr}`, p.id)
       }
@@ -243,11 +253,12 @@ export async function upsertRecords(
       }
       for (const [st, addrs] of Array.from(missingByState.entries())) {
         if (addrs.length === 0) continue
-        const { data: existing } = await supabase
+        const { data: existing, error: lookupErr } = await supabase
           .from('properties')
           .select('id, address_normalized, city, state_abbr')
           .in('address_normalized', addrs)
           .eq('state_abbr', st)
+        if (lookupErr) result.errors.push(`upsertRecords property lookup: ${lookupErr.message}`)
         for (const p of existing ?? []) {
           if (p.address_normalized) propertyMap.set(`${p.address_normalized}|${p.city}|${p.state_abbr}`, p.id)
         }
