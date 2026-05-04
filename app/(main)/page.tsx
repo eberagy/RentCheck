@@ -61,7 +61,16 @@ async function getStats() {
   }
 }
 
-async function getRecentReviews() {
+type RecentReview = {
+  id: string
+  title: string
+  body: string
+  rating_overall: number
+  created_at: string
+  landlord: { display_name: string; city: string | null; state_abbr: string | null } | null
+}
+
+async function getRecentReviews(): Promise<RecentReview[]> {
   try {
     const supabase = createServiceClient()
     const { data } = await supabase
@@ -70,7 +79,7 @@ async function getRecentReviews() {
       .eq('status', 'approved')
       .order('created_at', { ascending: false })
       .limit(6)
-    return data ?? []
+    return (data ?? []) as unknown as RecentReview[]
   } catch {
     return []
   }
@@ -351,7 +360,7 @@ export default async function HomePage() {
               </Link>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {recentReviews.slice(0, 6).map((review: any) => (
+              {recentReviews.slice(0, 6).map(review => (
                 <div
                   key={review.id}
                   className="group border border-slate-200 bg-white p-5 rounded-lg transition-[border-color,box-shadow] duration-200 hover:border-slate-300 hover:shadow-sm"

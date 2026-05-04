@@ -62,11 +62,41 @@ export default async function DashboardPage() {
       .limit(20),
   ])
 
-  const reviewList = reviews ?? []
-  const watchList = watchlist ?? []
-  const submissionList = submissions ?? []
+  type DashboardReview = {
+    id: string
+    title: string
+    status: 'pending' | 'approved' | 'rejected' | 'flagged'
+    rating_overall: number
+    created_at: string
+    lease_verified: boolean
+    is_anonymous: boolean
+    landlord: { display_name: string; slug: string } | null
+  }
+  type DashboardWatchEntry = {
+    id: string
+    created_at: string
+    landlord: {
+      display_name: string
+      slug: string
+      avg_rating: number | null
+      review_count: number | null
+      open_violation_count: number | null
+    } | null
+  }
+  type DashboardSubmission = {
+    id: string
+    display_name: string
+    city: string | null
+    state_abbr: string | null
+    status: string
+    created_at: string
+    landlord_id: string | null
+  }
+  const reviewList = (reviews ?? []) as unknown as DashboardReview[]
+  const watchList = (watchlist ?? []) as unknown as DashboardWatchEntry[]
+  const submissionList = (submissions ?? []) as unknown as DashboardSubmission[]
   const savedSearchList = (savedSearches ?? []) as Array<{ id: string; city: string; state_abbr: string; last_notified_at: string | null; created_at: string }>
-  const verifiedCount = reviewList.filter((r: any) => r.lease_verified).length
+  const verifiedCount = reviewList.filter(r => r.lease_verified).length
   const firstName = profile?.full_name?.split(' ')[0] ?? null
 
   return (
@@ -123,8 +153,8 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <div className="grid gap-2.5">
-                {watchList.map((w: any) => {
-                  const landlord = w.landlord as any
+                {watchList.map(w => {
+                  const landlord = w.landlord
                   if (!landlord) return null
                   const grade = getGradeLetter(landlord.avg_rating, landlord.review_count ?? 0)
                   return (
@@ -140,7 +170,7 @@ export default async function DashboardPage() {
                         <div className="truncate text-[14px] font-bold text-slate-900">{landlord.display_name}</div>
                         <div className="mt-0.5 text-[12px] text-slate-500">{landlord.review_count} reviews</div>
                       </div>
-                      {landlord.open_violation_count > 0 ? (
+                      {(landlord.open_violation_count ?? 0) > 0 ? (
                         <Chip tone="rose">{landlord.open_violation_count} open violations</Chip>
                       ) : (
                         <Chip tone="neutral">No changes</Chip>
@@ -174,8 +204,8 @@ export default async function DashboardPage() {
               </div>
             ) : (
               <div className="grid gap-1">
-                {reviewList.map((r: any, i: number) => {
-                  const landlord = r.landlord as any
+                {reviewList.map((r, i) => {
+                  const landlord = r.landlord
                   return (
                     <Link
                       key={r.id}
@@ -211,7 +241,7 @@ export default async function DashboardPage() {
                 <Link href="/add-landlord" className="text-[12.5px] text-slate-500 hover:text-slate-700">Submit new &rarr;</Link>
               </div>
               <div className="grid gap-1">
-                {submissionList.map((s: any, i: number) => (
+                {submissionList.map((s, i) => (
                   <div
                     key={s.id}
                     className={`grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 px-1 ${i < submissionList.length - 1 ? 'border-b border-slate-100' : ''}`}

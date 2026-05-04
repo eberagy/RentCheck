@@ -145,7 +145,9 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
   const wouldRentAgainPct = approved.length
     ? Math.round((approved.filter(r => r.would_rent_again === true).length / approved.length) * 100)
     : null
-  const respondedCount = approved.filter((r: any) => r.landlord_response_status === 'approved').length
+  const respondedCount = approved.filter(r =>
+    (r as { landlord_response_status?: string | null }).landlord_response_status === 'approved'
+  ).length
   const responseRatePct = approved.length >= 3
     ? Math.round((respondedCount / approved.length) * 100)
     : null
@@ -171,7 +173,14 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://vettrentals.com'
   const hasRatings = (landlord.avg_rating ?? 0) > 0 && (landlord.review_count ?? 0) > 0
-  const reviewSchema = (reviews ?? []).slice(0, 5).map((r: any) => {
+  type ReviewLite = {
+    rating_overall: number
+    title?: string | null
+    body?: string | null
+    created_at: string
+    reviewer?: { full_name?: string | null } | null
+  }
+  const reviewSchema = ((reviews ?? []) as ReviewLite[]).slice(0, 5).map(r => {
     const authorName = r.reviewer?.full_name?.trim() || 'Verified renter'
     return {
       '@type': 'Review',
