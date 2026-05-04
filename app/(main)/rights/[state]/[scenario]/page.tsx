@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: ScenarioPageProps): Promise<M
   const p = await params
   const stateInfo = US_STATES.find(s => s.abbr.toLowerCase() === p.state.toLowerCase())
   const scenario = getScenario(p.scenario)
-  if (!stateInfo || !scenario) return { title: 'Not found' }
+  if (!stateInfo || !scenario) notFound()
   return {
     title: `${scenario.title} — ${stateInfo.name} tenant rights`,
     description: scenario.summary,

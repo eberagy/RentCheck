@@ -46,7 +46,9 @@ const getLandlord = cache(async (slug: string) => {
 export async function generateMetadata({ params }: LandlordPageProps): Promise<Metadata> {
   const p = await params
   const landlord = await getLandlord(p.slug)
-  if (!landlord) return { title: 'Landlord Not Found' }
+  // Trigger 404 here as well — without this Next.js sometimes serves a
+  // soft-200 with the not-found body, which hurts SEO + wastes crawl budget.
+  if (!landlord) notFound()
 
   const location = [landlord.city, landlord.state_abbr].filter(Boolean).join(', ')
   const reviewCount = landlord.review_count ?? 0

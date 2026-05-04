@@ -49,7 +49,10 @@ const getProperty = cache(async (id: string) => {
 export async function generateMetadata({ params }: PropertyPageProps): Promise<Metadata> {
   const p = await params
   const prop = await getProperty(p.id)
-  if (!prop) return { title: 'Property Not Found' }
+  // Trigger Next.js 404 from generateMetadata so the response status is 404,
+  // not 200 with a "Not Found" body. Without this, soft-404s would tell
+  // search engines the URL is valid and waste crawl budget.
+  if (!prop) notFound()
   return {
     title: `${prop.address_line1}, ${prop.city} Reviews`,
     description: `Renter reviews and violation history for ${prop.address_line1}, ${prop.city}. ${prop.review_count} reviews.`,
