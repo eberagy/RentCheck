@@ -4,7 +4,7 @@
  * Data: HUD Open Data portal (Socrata) + HUD Picture of Subsidized Households
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 // HUD open data Socrata endpoints to try
 const ENDPOINTS = [
@@ -49,7 +49,7 @@ export async function syncHudInspections(supabase: SupabaseClient): Promise<Sync
     const sep = workingEndpoint.includes('?') ? '&' : '?'
     const url = `${workingEndpoint}${sep}$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
 
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(15000) })
       if (!res.ok) { result.errors.push(`HTTP ${res.status} from HUD API`); break }

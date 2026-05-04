@@ -3,7 +3,7 @@
  * API: https://data.cityofchicago.org/resource/22u3-xenr.json (Socrata)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.cityofchicago.org/resource/22u3-xenr.json'
 const PAGE_SIZE = 1000
@@ -16,7 +16,7 @@ export async function syncChicago(supabase: SupabaseClient): Promise<SyncResult>
 
   while (true) {
     const url = `${ENDPOINT}?$where=violation_date>'${since}'&$limit=${PAGE_SIZE}&$offset=${offset}&$order=id`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, { headers: { 'X-App-Token': process.env.CHICAGO_DATA_TOKEN ?? '' } })
       if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }

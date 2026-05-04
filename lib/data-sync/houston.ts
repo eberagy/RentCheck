@@ -8,7 +8,7 @@
  *   4w5t-sktf — General inspections
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 const BASE_DOMAIN = 'https://data.houstontx.gov'
 const DATASET_IDS = [
@@ -46,7 +46,7 @@ export async function syncHouston(supabase: SupabaseClient): Promise<SyncResult>
   let offset = 0
   while (true) {
     const url = `${workingEndpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, {
         headers: { 'X-App-Token': process.env.HOUSTON_DATA_TOKEN ?? '' },

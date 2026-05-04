@@ -8,7 +8,7 @@
  * Runs weekly.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, type SocrataRow, type SyncResult } from './utils'
 import slugify from 'slugify'
 
 const ENDPOINT = 'https://data.boston.gov/resource/yu93-tymg.json'
@@ -29,7 +29,7 @@ export async function syncBostonAssessing(supabase: SupabaseClient): Promise<Syn
     u.searchParams.set('$offset', String(offset))
     u.searchParams.set('$order', 'pid')
 
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(u.toString(), { signal: AbortSignal.timeout(30000) })
       if (!res.ok) {

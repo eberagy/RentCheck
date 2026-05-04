@@ -4,7 +4,7 @@
  * Datasets: Rental property licenses + code compliance
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 const ENDPOINTS = [
   'https://opendata.minneapolismn.gov/resource/q4re-74nc.json', // Code compliance complaints
@@ -35,7 +35,7 @@ export async function syncMinneapolis(supabase: SupabaseClient): Promise<SyncRes
   let offset = 0
   while (true) {
     const url = `${workingEndpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(30000) })
       if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }

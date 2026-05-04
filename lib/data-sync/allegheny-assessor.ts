@@ -7,7 +7,7 @@
  * Covers Pittsburgh + all Allegheny County municipalities.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, type SocrataRow, type SyncResult } from './utils'
 import slugify from 'slugify'
 
 const KNOWN_IDS = [
@@ -50,7 +50,7 @@ export async function syncAlleghenyAssessor(supabase: SupabaseClient): Promise<S
       `&$select=PARID,PROPERTYHOUSENUM,PROPERTYADDRESS,PROPERTYZIP,MUNIDESC,OWNERDESC,CLASSDESC,STYLEDESC,YEARBLT,UNITCOUNT` +
       `&$limit=${PAGE_SIZE}&$offset=${offset}&$order=PARID`
 
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(30000) })
       if (!res.ok) {

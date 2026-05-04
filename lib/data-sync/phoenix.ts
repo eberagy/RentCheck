@@ -4,7 +4,7 @@
  * Dataset: wkdj-m5d4 (Code Enforcement Cases)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 const ENDPOINTS = [
   'https://data.phoenix.gov/resource/wkdj-m5d4.json', // Code Enforcement Cases
@@ -34,7 +34,7 @@ export async function syncPhoenix(supabase: SupabaseClient): Promise<SyncResult>
   let offset = 0
   while (true) {
     const url = `${workingEndpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, {
         headers: { 'X-App-Token': process.env.PHOENIX_DATA_TOKEN ?? '' },

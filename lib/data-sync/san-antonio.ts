@@ -3,7 +3,7 @@
  * API: https://data.sanantonio.gov (Socrata)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 const ENDPOINTS = [
   'https://data.sanantonio.gov/resource/sdpf-13vb.json', // Code enforcement cases
@@ -34,7 +34,7 @@ export async function syncSanAntonio(supabase: SupabaseClient): Promise<SyncResu
   let offset = 0
   while (true) {
     const url = `${workingEndpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, {
         headers: { 'X-App-Token': process.env.SAN_ANTONIO_DATA_TOKEN ?? '' },

@@ -4,7 +4,7 @@
  * Filters for housing-related complaint types only
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.cityofnewyork.us/resource/erm2-nwe9.json'
 const PAGE_SIZE = 1000
@@ -19,7 +19,7 @@ export async function syncNyc311(supabase: SupabaseClient): Promise<SyncResult> 
     // Socrata expects URL-encoded $where; an unencoded `>` and `'` returned HTTP 400.
     const where = encodeURIComponent(`created_date>'${since}' AND agency='HPD'`)
     const url = `${ENDPOINT}?$where=${where}&$limit=${PAGE_SIZE}&$offset=${offset}&$order=unique_key`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, {
         headers: { 'X-App-Token': process.env.NYC_OPEN_DATA_TOKEN ?? '' },

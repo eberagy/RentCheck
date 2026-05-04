@@ -3,7 +3,7 @@
  * API: https://data.cityofnewyork.us/resource/eabe-havv.json (Socrata)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, withRetry, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, withRetry, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.cityofnewyork.us/resource/eabe-havv.json'
 const PAGE_SIZE = 1000
@@ -15,7 +15,7 @@ export async function syncNycDob(supabase: SupabaseClient): Promise<SyncResult> 
 
   while (true) {
     const url = `${ENDPOINT}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=complaint_number`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await withRetry(() => fetch(url, {
         headers: { 'X-App-Token': process.env.NYC_OPEN_DATA_TOKEN ?? '' },

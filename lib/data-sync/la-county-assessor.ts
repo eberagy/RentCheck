@@ -5,7 +5,7 @@
  * Different from City of LA syncs — covers the entire county footprint.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, type SocrataRow, type SyncResult } from './utils'
 import slugify from 'slugify'
 
 const KNOWN_IDS = [
@@ -68,7 +68,7 @@ export async function syncLaCountyAssessor(supabase: SupabaseClient): Promise<Sy
 
   while (true) {
     const url = `${endpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(30000) })
       if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }

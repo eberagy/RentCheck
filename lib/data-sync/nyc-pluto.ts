@@ -8,7 +8,7 @@
  * Runs weekly (large dataset, ~900k records).
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, type SocrataRow, type SyncResult } from './utils'
 import slugify from 'slugify'
 
 // NYC MapPLUTO — all tax lots in NYC
@@ -42,7 +42,7 @@ export async function syncNycPluto(supabase: SupabaseClient): Promise<SyncResult
     u.searchParams.set('$offset', String(offset))
     u.searchParams.set('$order', 'bbl')
 
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(u.toString(), {
         headers: { 'X-App-Token': process.env.NYC_OPEN_DATA_TOKEN ?? '' },

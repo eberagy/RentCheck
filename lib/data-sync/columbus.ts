@@ -3,7 +3,7 @@
  * API: https://opendata.columbus.gov (Socrata)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 const ENDPOINTS = [
   'https://opendata.columbus.gov/resource/5fbu-arth.json', // Code enforcement
@@ -34,7 +34,7 @@ export async function syncColumbus(supabase: SupabaseClient): Promise<SyncResult
   let offset = 0
   while (true) {
     const url = `${workingEndpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(30000) })
       if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }

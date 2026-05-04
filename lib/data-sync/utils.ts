@@ -8,6 +8,15 @@ export interface SyncResult {
   errors: string[]
 }
 
+/**
+ * Loose row type for raw upstream API payloads (Socrata, CKAN, ArcGIS).
+ * The shape genuinely varies per dataset — every sync hand-picks fields
+ * by name. Using a single shared alias here means we declare the
+ * looseness once instead of `any` proliferating across 60+ sync files.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type SocrataRow = Record<string, any>
+
 /** Simple retry wrapper — retries up to 3x on network errors */
 export async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
   let lastError: unknown

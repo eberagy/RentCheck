@@ -4,7 +4,7 @@
  * Verified dataset: Dallas 311 Service Requests (includes code enforcement cases)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, withRetry, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, withRetry, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 const DOMAIN = 'www.dallasopendata.com'
 const KNOWN_IDS = [
@@ -66,7 +66,7 @@ export async function syncDallas(supabase: SupabaseClient): Promise<SyncResult> 
   let offset = 0
   while (true) {
     const url = `${endpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await withRetry(() => fetch(url, { signal: AbortSignal.timeout(15000) }))
       if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }

@@ -8,7 +8,7 @@
  * Runs weekly (large dataset).
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, type SocrataRow, type SyncResult } from './utils'
 import slugify from 'slugify'
 
 // Primary: CARTO SQL API (reliable). Socrata mirror is at xt3q-t474 if needed.
@@ -25,7 +25,7 @@ export async function syncPhillyOpa(supabase: SupabaseClient): Promise<SyncResul
     // Use CARTO SQL API — filter to multifamily/apartment/mixed-use with owner names
     const sql = `SELECT parcel_number, location, zip_code, owner_1, owner_2, category_code_description, number_of_rooms, year_built FROM opa_properties_public WHERE owner_1 IS NOT NULL AND (category_code_description LIKE '%MULTI%' OR category_code_description LIKE '%APARTMENT%' OR category_code_description LIKE '%MIXED%' OR category_code_description LIKE '%CONDO%') ORDER BY parcel_number LIMIT ${PAGE_SIZE} OFFSET ${offset}`
 
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(`${CARTO_BASE}?q=${encodeURIComponent(sql)}`, { signal: AbortSignal.timeout(30000) })
       if (!res.ok) { result.errors.push(`HTTP ${res.status} from Philly CARTO`); break }

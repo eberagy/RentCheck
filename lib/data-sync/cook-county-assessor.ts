@@ -7,7 +7,7 @@
  * Filtered to residential/multifamily only.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, type SocrataRow, type SyncResult } from './utils'
 import slugify from 'slugify'
 
 const ENDPOINTS = [
@@ -50,7 +50,7 @@ export async function syncCookCountyAssessor(supabase: SupabaseClient): Promise<
     u.searchParams.set('$limit', String(PAGE_SIZE))
     u.searchParams.set('$offset', String(offset))
     u.searchParams.set('$order', ':id')
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(u.toString(), { signal: AbortSignal.timeout(15000) })
       if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }

@@ -5,7 +5,7 @@
  * Batched to avoid Vercel timeouts — processes 1 page then exits (called daily, makes progress each run).
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 import slugify from 'slugify'
 
 const ENDPOINT = 'https://data.cityofnewyork.us/resource/tesw-yqqr.json'
@@ -23,7 +23,7 @@ export async function syncNycRegistration(supabase: SupabaseClient): Promise<Syn
 
   while (pagesProcessed < MAX_PAGES) {
     const url = `${ENDPOINT}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=registrationid`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, {
         headers: { 'X-App-Token': process.env.NYC_OPEN_DATA_TOKEN ?? '' },

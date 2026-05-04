@@ -4,7 +4,7 @@
  * Tries multiple known dataset IDs in order.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 const BASE_DOMAIN = 'https://data.austintexas.gov'
 const DATASET_IDS = [
@@ -45,7 +45,7 @@ export async function syncAustin(supabase: SupabaseClient): Promise<SyncResult> 
 
   while (true) {
     const url = `${workingEndpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(15000) })
       if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }

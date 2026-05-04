@@ -3,7 +3,7 @@
  * API: https://data.cityofnewyork.us/resource/wvxf-dwi5.json (Socrata)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.cityofnewyork.us/resource/wvxf-dwi5.json'
 const PAGE_SIZE = 1000
@@ -21,7 +21,7 @@ export async function syncNycHpd(supabase: SupabaseClient): Promise<SyncResult> 
     // returned HTTP 400 silently.
     const where = encodeURIComponent(`inspectiondate>'${since}'`)
     const url = `${ENDPOINT}?$where=${where}&$limit=${PAGE_SIZE}&$offset=${offset}&$order=violationid`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, { headers: { 'X-App-Token': process.env.NYC_OPEN_DATA_TOKEN ?? '' } })
       if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }

@@ -5,7 +5,7 @@
  * Both are Socrata SODA APIs on DataSF.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 const ENDPOINTS = [
   'https://data.sfgov.org/resource/kzem-gymc.json',  // SF Housing Inspections
@@ -49,7 +49,7 @@ export async function syncSf(supabase: SupabaseClient): Promise<SyncResult> {
   while (true) {
     const where = encodeURIComponent(`${dateField}>'${since}'`)
     const url = `${workingEndpoint}?$where=${where}&$limit=${PAGE_SIZE}&$offset=${offset}&$order=${idField}`
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, {
         headers: { 'X-App-Token': process.env.SF_DATA_TOKEN ?? '' },

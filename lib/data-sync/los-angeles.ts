@@ -6,7 +6,7 @@
  * Endpoint IDs may change — add LA_LAHD_DATASET env var to override.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SocrataRow, type SyncResult } from './utils'
 
 const ENDPOINTS = [
   process.env.LA_LAHD_DATASET ? `https://data.lacity.org/resource/${process.env.LA_LAHD_DATASET}.json` : null,
@@ -48,7 +48,7 @@ export async function syncLosAngeles(supabase: SupabaseClient): Promise<SyncResu
       url = `${workingEndpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$where=:created_at>'${since}'&$order=:id`
     } catch { /* use fallback url */ }
 
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(15000) })
       if (!res.ok) { result.errors.push(`HTTP ${res.status} from LA API`); break }

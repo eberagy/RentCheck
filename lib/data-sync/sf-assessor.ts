@@ -7,7 +7,7 @@
  * Primary source for SF property→landlord links.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, type SocrataRow, type SyncResult } from './utils'
 import slugify from 'slugify'
 
 const ENDPOINTS = [
@@ -70,7 +70,7 @@ export async function syncSfAssessor(supabase: SupabaseClient): Promise<SyncResu
     u.searchParams.set('$offset', String(offset))
     u.searchParams.set('$order', 'blklot')
 
-    let rows: any[]
+    let rows: SocrataRow[]
     try {
       const res = await fetch(u.toString(), {
         headers: { 'X-App-Token': process.env.NYC_OPEN_DATA_TOKEN ?? '' },
