@@ -3,7 +3,7 @@
  * Uses Socrata catalog discovery + known dataset IDs
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, withRetry, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, withRetry, upsertPropertiesAndMap, type SyncResult } from './utils'
 
 const DOMAIN = 'data.nashville.gov'
 const KNOWN_IDS = [
@@ -79,24 +79,7 @@ export async function syncNashville(supabase: SupabaseClient): Promise<SyncResul
     const propRows = Array.from(uniqueAddrs.entries()).map(([norm, addr]) => ({
       address_line1: addr, city: 'Nashville', state: 'Tennessee', state_abbr: 'TN', zip: '', address_normalized: norm,
     }))
-    const propIdMap = new Map<string, string>()
-    for (let i = 0; i < propRows.length; i += 200) {
-      const slice = propRows.slice(i, i + 200)
-      const { data } = await supabase.from('properties')
-        .upsert(slice, { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
-        .select('id, address_normalized')
-      for (const p of data ?? []) if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
-      const missing = slice
-        .map(r => r.address_normalized)
-        .filter((norm): norm is string => typeof norm === 'string' && !propIdMap.has(norm))
-      if (missing.length) {
-        const { data: existing } = await supabase.from('properties')
-          .select('id, address_normalized')
-          .in('address_normalized', missing)
-          .eq('state_abbr', 'TN')
-        for (const p of existing ?? []) if (p.address_normalized) propIdMap.set(p.address_normalized, p.id)
-      }
-    }
+    const propIdMap = await upsertPropertiesAndMap(supabase, propRows, result)
 
     const toInsert: Record<string, unknown>[] = []
     for (const row of rows) {

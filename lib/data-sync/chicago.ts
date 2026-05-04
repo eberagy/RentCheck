@@ -3,7 +3,7 @@
  * API: https://data.cityofchicago.org/resource/22u3-xenr.json (Socrata)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
 
 const ENDPOINT = 'https://data.cityofchicago.org/resource/22u3-xenr.json'
 const PAGE_SIZE = 1000
@@ -34,25 +34,7 @@ export async function syncChicago(supabase: SupabaseClient): Promise<SyncResult>
       address_line1: addr, city: 'Chicago', state: 'Illinois',
       state_abbr: 'IL', zip: '', address_normalized: norm,
     }))
-    const propertyMap = new Map<string, string>()
-    for (let i = 0; i < propRows.length; i += 200) {
-      const slice = propRows.slice(i, i + 200)
-      const { data } = await supabase.from('properties')
-        .upsert(slice, { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
-        .select('id, address_normalized')
-      for (const p of data ?? []) if (p.address_normalized) propertyMap.set(p.address_normalized, p.id)
-      // Backfill IDs for already-existing rows (ignoreDuplicates suppresses them).
-      const missing = slice
-        .map(r => r.address_normalized)
-        .filter((norm): norm is string => typeof norm === 'string' && !propertyMap.has(norm))
-      if (missing.length) {
-        const { data: existing } = await supabase.from('properties')
-          .select('id, address_normalized')
-          .in('address_normalized', missing)
-          .eq('state_abbr', 'IL')
-        for (const p of existing ?? []) if (p.address_normalized) propertyMap.set(p.address_normalized, p.id)
-      }
-    }
+    const propertyMap = await upsertPropertiesAndMap(supabase, propRows, result)
 
     const toInsert: Record<string, unknown>[] = []
     for (const row of rows) {
