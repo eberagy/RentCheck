@@ -83,12 +83,27 @@ export async function upsertPropertiesAndMap(
   const map = new Map<string, string>()
   if (rows.length === 0) return map
 
+  // Drop rows where address_normalized is empty or whitespace-only.
+  // The unique index on properties is PARTIAL (`WHERE address_normalized
+  // IS NOT NULL AND <> ''`), so a row that doesn't satisfy the predicate
+  // can't be the conflict target — and PostgREST aborts the WHOLE batch
+  // with "no unique or exclusion constraint matching the ON CONFLICT
+  // specification" if any single row in the slice violates it. That's
+  // the silent failure that left 188k HPD records unlinked: a few rows
+  // with whitespace-only addresses poisoned the entire batch.
+  const cleaned = rows.filter(r => typeof r.address_normalized === 'string' && r.address_normalized.trim() !== '')
+  const droppedCount = rows.length - cleaned.length
+  if (droppedCount > 0) {
+    result.skipped += droppedCount
+  }
+  if (cleaned.length === 0) return map
+
   // Group lookups by state_abbr so the .in() fallback hits the right index.
   const seenStates = new Set<string>()
-  for (const r of rows) seenStates.add(r.state_abbr)
+  for (const r of cleaned) seenStates.add(r.state_abbr)
 
-  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
-    const slice = rows.slice(i, i + BATCH_SIZE)
+  for (let i = 0; i < cleaned.length; i += BATCH_SIZE) {
+    const slice = cleaned.slice(i, i + BATCH_SIZE)
     const { data, error } = await supabase
       .from('properties')
       .upsert(slice, { onConflict: 'address_normalized,city,state_abbr', ignoreDuplicates: true })
