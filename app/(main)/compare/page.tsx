@@ -39,14 +39,23 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
     supabase.from('reviews').select('rating_responsiveness, rating_maintenance, rating_honesty, rating_lease_fairness, would_rent_again').eq('landlord_id', landlordB.id).eq('status', 'approved'),
   ])
 
-  function avgRating(data: any[], key: string) {
-    const vals = (data ?? []).map((r: any) => r[key]).filter((v: any): v is number => typeof v === 'number')
-    return vals.length ? vals.reduce((a: number, b: number) => a + b, 0) / vals.length : null
+  type RatingRow = {
+    rating_responsiveness: number | null
+    rating_maintenance: number | null
+    rating_honesty: number | null
+    rating_lease_fairness: number | null
+    would_rent_again: boolean | null
+  }
+  function avgRating(data: RatingRow[], key: keyof RatingRow) {
+    const vals = (data ?? [])
+      .map(r => r[key])
+      .filter((v): v is number => typeof v === 'number')
+    return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null
   }
 
-  function wouldRentPct(data: any[]) {
+  function wouldRentPct(data: RatingRow[]) {
     if (!data?.length) return null
-    return Math.round((data.filter((r: any) => r.would_rent_again === true).length / data.length) * 100)
+    return Math.round((data.filter(r => r.would_rent_again === true).length / data.length) * 100)
   }
 
   const a = {

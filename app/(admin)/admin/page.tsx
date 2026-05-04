@@ -137,13 +137,23 @@ export default async function AdminDashboardPage() {
   ]
 
   // Group syncs by source, take the latest per source
-  const latestSyncsBySource: Record<string, any> = {}
-  for (const s of (recentSyncs ?? [])) {
+  type SyncRow = {
+    id: string
+    source: string
+    started_at: string
+    finished_at: string | null
+    status: string
+    records_added: number | null
+    records_updated: number | null
+    error_message: string | null
+  }
+  const latestSyncsBySource: Record<string, SyncRow> = {}
+  for (const s of ((recentSyncs ?? []) as SyncRow[])) {
     if (!latestSyncsBySource[s.source]) latestSyncsBySource[s.source] = s
   }
   const dataSources = Object.values(latestSyncsBySource)
 
-  const hasDataErrors = dataSources.some((s: any) => s.status === 'failed' || s.error_message)
+  const hasDataErrors = dataSources.some(s => s.status === 'failed' || s.error_message)
 
   return (
     <div className="p-4 sm:p-8 max-w-7xl">
@@ -290,7 +300,16 @@ export default async function AdminDashboardPage() {
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y divide-orange-100">
-              {(recentPendingSubmissions ?? []).map((s: any) => (
+              {(recentPendingSubmissions ?? []).map((s: {
+                id: string
+                display_name: string
+                city?: string | null
+                state_abbr?: string | null
+                created_at: string
+                submitter?: { full_name?: string | null; email?: string | null } | { full_name?: string | null; email?: string | null }[] | null
+              }) => {
+                const submitter = Array.isArray(s.submitter) ? s.submitter[0] : s.submitter
+                return (
                 <div key={s.id} className="p-4 hover:bg-orange-50/50 transition-colors">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
@@ -298,7 +317,7 @@ export default async function AdminDashboardPage() {
                       <p className="text-xs text-gray-500 mt-0.5">
                         {[s.city, s.state_abbr].filter(Boolean).join(', ')}
                         {' · Submitted by '}
-                        {(s.submitter as any)?.full_name ?? (s.submitter as any)?.email ?? 'Unknown'}
+                        {submitter?.full_name ?? submitter?.email ?? 'Unknown'}
                       </p>
                       <p className="text-xs text-gray-400 mt-0.5">{formatDateRelative(s.created_at)}</p>
                     </div>
@@ -309,7 +328,8 @@ export default async function AdminDashboardPage() {
                     </Link>
                   </div>
                 </div>
-              ))}
+                )
+              })}
             </div>
           </CardContent>
         </Card>
@@ -345,7 +365,16 @@ export default async function AdminDashboardPage() {
               </div>
             ) : (
               <div className="divide-y divide-gray-100">
-                {(recentPendingReviews ?? []).map((r: any) => (
+                {(recentPendingReviews ?? []).map((r: {
+                  id: string
+                  title: string
+                  body: string
+                  rating_overall: number
+                  created_at: string
+                  reviewer?: { full_name?: string | null; email?: string | null } | { full_name?: string | null; email?: string | null }[] | null
+                }) => {
+                  const reviewer = Array.isArray(r.reviewer) ? r.reviewer[0] : r.reviewer
+                  return (
                   <div key={r.id} className="p-4 hover:bg-gray-50 transition-colors">
                     <div className="flex items-start justify-between gap-3 mb-2">
                       <div className="min-w-0 flex-1">
@@ -358,7 +387,7 @@ export default async function AdminDashboardPage() {
                         <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{r.body}</p>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-xs text-gray-400">
-                            {(r.reviewer as any)?.full_name ?? (r.reviewer as any)?.email ?? 'Anonymous'}
+                            {reviewer?.full_name ?? reviewer?.email ?? 'Anonymous'}
                           </span>
                           <span className="text-xs text-gray-300">·</span>
                           <span className="text-xs text-gray-400">{formatDateRelative(r.created_at)}</span>
@@ -380,7 +409,8 @@ export default async function AdminDashboardPage() {
                       <InlineModerateButton reviewId={r.id} action="rejected" />
                     </div>
                   </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </CardContent>
@@ -407,7 +437,7 @@ export default async function AdminDashboardPage() {
               <p className="text-sm text-gray-500 p-4">No syncs run yet</p>
             ) : (
               <div className="divide-y divide-gray-100">
-                {dataSources.map((s: any) => {
+                {dataSources.map(s => {
                   const hasError = s.status === 'failed' || !!s.error_message
                   return (
                     <div key={s.id} className="px-4 py-3 flex items-center justify-between gap-3">
