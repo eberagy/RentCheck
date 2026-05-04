@@ -17,32 +17,41 @@ export const metadata: Metadata = {
 
 async function loadStats() {
   const service = createServiceClient()
-  // city_stats is the same cache the city/admin pages use — pre-aggregated
-  // via cron (migration 112), so this is one fast index scan.
-  const [{ data: agg }, { count: reviewCount }] = await Promise.all([
+  // city_stats gives us cities + states (pre-aggregated via migration 112).
+  // Records + landlords come from a planned-count head select against the
+  // live tables — city_stats only sums records that have a landlord_id, so
+  // it under-counted by ~6x after the property-backfill (103k vs 610k actual).
+  const [
+    { data: agg },
+    { count: reviewCount },
+    { count: recordCount },
+    { count: landlordCount },
+  ] = await Promise.all([
     service
       .from('city_stats')
-      .select('record_count, landlord_count, state_abbr, city'),
+      .select('state_abbr, city'),
     service
       .from('reviews')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'approved'),
+    service
+      .from('public_records')
+      .select('*', { count: 'planned', head: true }),
+    service
+      .from('landlords')
+      .select('*', { count: 'planned', head: true }),
   ])
 
-  let totalRecords = 0
-  let totalLandlords = 0
   const states = new Set<string>()
   const cities = new Set<string>()
   for (const r of agg ?? []) {
-    totalRecords += r.record_count ?? 0
-    totalLandlords += r.landlord_count ?? 0
     if (r.state_abbr) states.add(r.state_abbr)
     if (r.city && r.state_abbr) cities.add(`${r.state_abbr}::${r.city}`)
   }
 
   return {
-    landlords: totalLandlords,
-    records: totalRecords,
+    landlords: landlordCount ?? 0,
+    records: recordCount ?? 0,
     cities: cities.size,
     states: states.size,
     reviews: reviewCount ?? 0,
