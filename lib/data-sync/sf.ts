@@ -5,7 +5,7 @@
  * Both are Socrata SODA APIs on DataSF.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
 
 const ENDPOINTS = [
   'https://data.sfgov.org/resource/kzem-gymc.json',  // SF Housing Inspections
@@ -63,51 +63,42 @@ export async function syncSf(supabase: SupabaseClient): Promise<SyncResult> {
     }
     if (rows.length === 0) break
 
+    // Batch property resolution per page (was per-row).
+    const uniqueAddrs = new Map<string, { addr: string; zip: string }>()
     for (const row of rows) {
-      try {
-        const sourceId = String(row[idField] ?? row.permit_number ?? row.inspection_id ?? row.case_id ?? '')
-        if (!sourceId) { result.skipped++; continue }
-
-        const addr = row.address ?? row.street_address ?? row.location_description ?? ''
-        const addrNorm = normalizeAddress(addr)
-
-        let propertyId = await resolveProperty(supabase, addrNorm, 'San Francisco', 'CA')
-        if (!propertyId && addr) {
-          const { data: newProp } = await supabase
-            .from('properties')
-            .insert({
-              address_line1: addr,
-              city: 'San Francisco',
-              state: 'California',
-              state_abbr: 'CA',
-              zip: row.zipcode ?? row.zip_code ?? '',
-              address_normalized: addrNorm,
-            })
-            .select('id').single()
-          propertyId = newProp?.id ?? null
-        }
-
-        const title = buildSfTitle(row, isPermits)
-        const { error } = await supabase.from('public_records').upsert({
-          source: 'sf_housing',
-          source_id: sourceId,
-          record_type: isPermits ? 'sf_violation' : 'sf_violation',
-          property_id: propertyId,
-          title,
-          description: row.description ?? row.permit_type ?? row.complaint_type ?? null,
-          severity: mapSfSeverity(row.priority ?? row.permit_type),
-          status: mapSfStatus(row.status ?? row.permit_status ?? row.inspection_result),
-          filed_date: (row[dateField] ? new Date(row[dateField]).toISOString().split('T')[0] : null),
-          source_url: `https://data.sfgov.org/resource/${(workingEndpoint!.split('/resource/')[1] ?? '').replace('.json', '')}`,
-          raw_data: row,
-        }, { onConflict: 'source,source_id', ignoreDuplicates: false })
-
-        if (error) { result.errors.push(error.message); continue }
-        result.added++
-      } catch (e) {
-        result.errors.push(e instanceof Error ? e.message : String(e))
-      }
+      const addr = (row.address ?? row.street_address ?? row.location_description ?? '').trim()
+      if (!addr) continue
+      const norm = normalizeAddress(addr)
+      if (norm && !uniqueAddrs.has(norm)) uniqueAddrs.set(norm, { addr, zip: row.zipcode ?? row.zip_code ?? '' })
     }
+    const propRows = Array.from(uniqueAddrs.entries()).map(([norm, v]) => ({
+      address_line1: v.addr, city: 'San Francisco', state: 'California',
+      state_abbr: 'CA', zip: v.zip, address_normalized: norm,
+    }))
+    const propIdMap = await upsertPropertiesAndMap(supabase, propRows, result)
+
+    const sourceUrl = `https://data.sfgov.org/resource/${(workingEndpoint!.split('/resource/')[1] ?? '').replace('.json', '')}`
+    const toInsert: Record<string, unknown>[] = []
+    for (const row of rows) {
+      const sourceId = String(row[idField] ?? row.permit_number ?? row.inspection_id ?? row.case_id ?? '')
+      if (!sourceId) { result.skipped++; continue }
+      const addr = row.address ?? row.street_address ?? row.location_description ?? ''
+      const propertyId = addr ? (propIdMap.get(normalizeAddress(addr)) ?? null) : null
+      toInsert.push({
+        source: 'sf_housing',
+        source_id: sourceId,
+        record_type: isPermits ? 'sf_violation' : 'sf_violation',
+        property_id: propertyId,
+        title: buildSfTitle(row, isPermits),
+        description: row.description ?? row.permit_type ?? row.complaint_type ?? null,
+        severity: mapSfSeverity(row.priority ?? row.permit_type),
+        status: mapSfStatus(row.status ?? row.permit_status ?? row.inspection_result),
+        filed_date: (row[dateField] ? new Date(row[dateField]).toISOString().split('T')[0] : null),
+        source_url: sourceUrl,
+        raw_data: row,
+      })
+    }
+    await batchUpsert(supabase, toInsert, result)
 
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break
