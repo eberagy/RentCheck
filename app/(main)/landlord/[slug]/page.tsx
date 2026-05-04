@@ -93,7 +93,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       .limit(20),
     supabase
       .from('public_records')
-      .select('*')
+      .select('id, record_type, status, severity, violation_class, case_number, title, description, filed_date, closed_date, source, source_url, source_id, property_id, landlord_id, last_synced_at')
       .eq('landlord_id', landlord.id)
       .order('filed_date', { ascending: false })
       // Cap at 500: post-backfill, top-violation NYC landlords now have
@@ -122,7 +122,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
   if (propertyIds.length > 0) {
     const { data: propRecs } = await supabase
       .from('public_records')
-      .select('*')
+      .select('id, record_type, status, severity, violation_class, case_number, title, description, filed_date, closed_date, source, source_url, source_id, property_id, landlord_id, last_synced_at')
       .in('property_id', propertyIds)
       .is('landlord_id', null)
       .order('filed_date', { ascending: false })
