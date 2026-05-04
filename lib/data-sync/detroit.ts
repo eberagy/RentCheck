@@ -3,7 +3,7 @@
  * API: https://data.detroitmi.gov (Socrata)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
 
 const ENDPOINTS = [
   'https://data.detroitmi.gov/resource/s2p9-16v9.json', // Blight Violations
@@ -44,42 +44,41 @@ export async function syncDetroit(supabase: SupabaseClient): Promise<SyncResult>
     }
     if (rows.length === 0) break
 
+    const uniqueAddrs = new Map<string, { addr: string; zip: string }>()
     for (const row of rows) {
-      try {
-        const sourceId = String(row.ticket_number ?? row.id ?? row.objectid ?? '')
-        if (!sourceId) { result.skipped++; continue }
-
-        const addr = row.violation_address ?? row.address ?? row.location ?? ''
-        const addrNorm = normalizeAddress(addr)
-        let propertyId = await resolveProperty(supabase, addrNorm, 'Detroit', 'MI')
-        if (!propertyId && addr) {
-          const { data: newProp } = await supabase.from('properties').insert({
-            address_line1: addr, city: 'Detroit', state: 'Michigan', state_abbr: 'MI',
-            zip: row.zip_code ?? '', address_normalized: addrNorm,
-          }).select('id').single()
-          propertyId = newProp?.id ?? null
-        }
-
-        const { error } = await supabase.from('public_records').upsert({
-          source: 'detroit_blight',
-          source_id: sourceId,
-          record_type: 'detroit_violation',
-          property_id: propertyId,
-          title: buildTitle(row),
-          description: row.violation_description ?? row.ordinance_description ?? row.description ?? null,
-          severity: mapSeverity(row.disposition ?? row.judgment),
-          status: mapStatus(row.disposition ?? row.status),
-          filed_date: (row.ticket_issued_time ?? row.violation_date) ? new Date(row.ticket_issued_time ?? row.violation_date).toISOString().split('T')[0] : null,
-          source_url: 'https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department',
-          raw_data: row,
-        }, { onConflict: 'source,source_id', ignoreDuplicates: false })
-
-        if (error) { result.errors.push(error.message); continue }
-        result.added++
-      } catch (e) {
-        result.errors.push(e instanceof Error ? e.message : String(e))
-      }
+      const addr = (row.violation_address ?? row.address ?? row.location ?? '').trim()
+      if (!addr) continue
+      const norm = normalizeAddress(addr)
+      if (norm && !uniqueAddrs.has(norm)) uniqueAddrs.set(norm, { addr, zip: row.zip_code ?? '' })
     }
+    const propRows = Array.from(uniqueAddrs.entries()).map(([norm, v]) => ({
+      address_line1: v.addr, city: 'Detroit', state: 'Michigan',
+      state_abbr: 'MI', zip: v.zip, address_normalized: norm,
+    }))
+    const propIdMap = await upsertPropertiesAndMap(supabase, propRows, result)
+
+    const toInsert: Record<string, unknown>[] = []
+    for (const row of rows) {
+      const sourceId = String(row.ticket_number ?? row.id ?? row.objectid ?? '')
+      if (!sourceId) { result.skipped++; continue }
+      const addr = row.violation_address ?? row.address ?? row.location ?? ''
+      const propertyId = addr ? (propIdMap.get(normalizeAddress(addr)) ?? null) : null
+      const filedRaw = row.ticket_issued_time ?? row.violation_date
+      toInsert.push({
+        source: 'detroit_blight',
+        source_id: sourceId,
+        record_type: 'detroit_violation',
+        property_id: propertyId,
+        title: buildTitle(row),
+        description: row.violation_description ?? row.ordinance_description ?? row.description ?? null,
+        severity: mapSeverity(row.disposition ?? row.judgment),
+        status: mapStatus(row.disposition ?? row.status),
+        filed_date: filedRaw ? new Date(filedRaw).toISOString().split('T')[0] : null,
+        source_url: 'https://detroitmi.gov/departments/buildings-safety-engineering-and-environmental-department',
+        raw_data: row,
+      })
+    }
+    await batchUpsert(supabase, toInsert, result)
 
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break

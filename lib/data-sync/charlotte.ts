@@ -3,7 +3,7 @@
  * API: https://opendata.charlottenc.gov (Socrata)
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
 
 const ENDPOINTS = [
   'https://opendata.charlottenc.gov/resource/bt3z-hwua.json', // Code enforcement
@@ -44,42 +44,41 @@ export async function syncCharlotte(supabase: SupabaseClient): Promise<SyncResul
     }
     if (rows.length === 0) break
 
+    const uniqueAddrs = new Map<string, { addr: string; zip: string }>()
     for (const row of rows) {
-      try {
-        const sourceId = String(row.casenumber ?? row.case_number ?? row.id ?? '')
-        if (!sourceId) { result.skipped++; continue }
-
-        const addr = row.address ?? row.site_address ?? row.location ?? ''
-        const addrNorm = normalizeAddress(addr)
-        let propertyId = await resolveProperty(supabase, addrNorm, 'Charlotte', 'NC')
-        if (!propertyId && addr) {
-          const { data: newProp } = await supabase.from('properties').insert({
-            address_line1: addr, city: 'Charlotte', state: 'North Carolina', state_abbr: 'NC',
-            zip: row.zip ?? row.zipcode ?? '', address_normalized: addrNorm,
-          }).select('id').single()
-          propertyId = newProp?.id ?? null
-        }
-
-        const { error } = await supabase.from('public_records').upsert({
-          source: 'charlotte_code',
-          source_id: sourceId,
-          record_type: 'charlotte_violation',
-          property_id: propertyId,
-          title: buildTitle(row),
-          description: row.violationdescription ?? row.casetype ?? row.description ?? null,
-          severity: mapSeverity(row.priority ?? row.violationclass),
-          status: mapStatus(row.status ?? row.casestatus),
-          filed_date: (row.opendate ?? row.violationdate) ? new Date(row.opendate ?? row.violationdate).toISOString().split('T')[0] : null,
-          source_url: 'https://www.charlottenc.gov/Services/Code-Enforcement',
-          raw_data: row,
-        }, { onConflict: 'source,source_id', ignoreDuplicates: false })
-
-        if (error) { result.errors.push(error.message); continue }
-        result.added++
-      } catch (e) {
-        result.errors.push(e instanceof Error ? e.message : String(e))
-      }
+      const addr = (row.address ?? row.site_address ?? row.location ?? '').trim()
+      if (!addr) continue
+      const norm = normalizeAddress(addr)
+      if (norm && !uniqueAddrs.has(norm)) uniqueAddrs.set(norm, { addr, zip: row.zip ?? row.zipcode ?? '' })
     }
+    const propRows = Array.from(uniqueAddrs.entries()).map(([norm, v]) => ({
+      address_line1: v.addr, city: 'Charlotte', state: 'North Carolina',
+      state_abbr: 'NC', zip: v.zip, address_normalized: norm,
+    }))
+    const propIdMap = await upsertPropertiesAndMap(supabase, propRows, result)
+
+    const toInsert: Record<string, unknown>[] = []
+    for (const row of rows) {
+      const sourceId = String(row.casenumber ?? row.case_number ?? row.id ?? '')
+      if (!sourceId) { result.skipped++; continue }
+      const addr = row.address ?? row.site_address ?? row.location ?? ''
+      const propertyId = addr ? (propIdMap.get(normalizeAddress(addr)) ?? null) : null
+      const filedRaw = row.opendate ?? row.violationdate
+      toInsert.push({
+        source: 'charlotte_code',
+        source_id: sourceId,
+        record_type: 'charlotte_violation',
+        property_id: propertyId,
+        title: buildTitle(row),
+        description: row.violationdescription ?? row.casetype ?? row.description ?? null,
+        severity: mapSeverity(row.priority ?? row.violationclass),
+        status: mapStatus(row.status ?? row.casestatus),
+        filed_date: filedRaw ? new Date(filedRaw).toISOString().split('T')[0] : null,
+        source_url: 'https://www.charlottenc.gov/Services/Code-Enforcement',
+        raw_data: row,
+      })
+    }
+    await batchUpsert(supabase, toInsert, result)
 
     offset += PAGE_SIZE
     if (rows.length < PAGE_SIZE) break
