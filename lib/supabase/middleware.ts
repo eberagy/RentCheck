@@ -38,6 +38,15 @@ function originIsAllowed(origin: string | null): boolean {
 // search engines.
 const UUID_RE = /^\/property\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(\/|$)/i
 
+// Landlord slugs follow `{name-parts}-{city}-{4-char-hash}` and are
+// 8–84 chars of [a-z0-9-]. Anything outside that envelope is a typo;
+// emit 404 directly. (Probed live 2026-05-04: all 27,049 slugs match.)
+const LANDLORD_SLUG_RE = /^\/landlord\/([a-z0-9][a-z0-9-]{6,82}[a-z0-9])(\/|$)/i
+
+// City paths must use a 2-letter US state code. Reject obvious garbage
+// (numbers, longer codes, etc.) at the edge.
+const CITY_RE = /^\/city\/([a-z]{2})\/[a-z0-9-]+(\/|$)/i
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
@@ -49,6 +58,14 @@ export async function updateSession(request: NextRequest) {
   // Property URLs that don't carry a UUID are 404 by construction —
   // emit it directly so Google doesn't index the typo.
   if (pathname.startsWith('/property/') && !UUID_RE.test(pathname)) {
+    return new NextResponse('Not Found', { status: 404 })
+  }
+  // Landlord slugs that don't match the canonical shape are 404.
+  if (pathname.startsWith('/landlord/') && !LANDLORD_SLUG_RE.test(pathname)) {
+    return new NextResponse('Not Found', { status: 404 })
+  }
+  // City paths must use a 2-letter state code (any case).
+  if (pathname.startsWith('/city/') && pathname !== '/city/' && !CITY_RE.test(pathname)) {
     return new NextResponse('Not Found', { status: 404 })
   }
   const isWrite = method === 'POST' || method === 'PATCH' || method === 'DELETE' || method === 'PUT'
