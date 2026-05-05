@@ -53,7 +53,7 @@ export function gradeColor(grade: LandlordGrade | null): string {
     case 'C': return 'bg-amber-500 text-white'
     case 'D': return 'bg-orange-500 text-white'
     case 'F': return 'bg-red-600 text-white'
-    default: return 'bg-gray-200 text-gray-600'
+    default: return 'bg-slate-200 text-slate-600'
   }
 }
 
@@ -64,7 +64,7 @@ export function gradeBgLight(grade: LandlordGrade | null): string {
     case 'C': return 'bg-amber-50 border-amber-200 text-amber-800'
     case 'D': return 'bg-orange-50 border-orange-200 text-orange-800'
     case 'F': return 'bg-red-50 border-red-200 text-red-800'
-    default: return 'bg-gray-50 border-gray-200 text-gray-600'
+    default: return 'bg-slate-50 border-slate-200 text-slate-600'
   }
 }
 
@@ -74,9 +74,9 @@ export function severityColor(severity: Severity | null): string {
   switch (severity) {
     case 'critical': return 'bg-red-600 text-white'
     case 'high': return 'bg-orange-500 text-white'
-    case 'medium': return 'bg-amber-400 text-gray-900'
+    case 'medium': return 'bg-amber-400 text-slate-900'
     case 'low': return 'bg-blue-100 text-blue-800'
-    default: return 'bg-gray-100 text-gray-600'
+    default: return 'bg-slate-100 text-slate-600'
   }
 }
 
