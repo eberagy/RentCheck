@@ -273,7 +273,7 @@ export default function LoginClient() {
                         onChange={(e) => setFullName(e.target.value)}
                         placeholder="Full name"
                         required
-                        className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+                        className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
                       />
                     )}
                     <input
@@ -282,7 +282,7 @@ export default function LoginClient() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="your@email.com"
                       required
-                      className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+                      className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
                     />
                     <div className="relative">
                       <input
@@ -292,7 +292,7 @@ export default function LoginClient() {
                         placeholder={passwordTab === 'signup' ? 'Create a password (8+ chars)' : 'Password'}
                         required
                         minLength={passwordTab === 'signup' ? 8 : undefined}
-                        className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 pr-10 text-sm text-slate-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+                        className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 pr-10 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
                       />
                       <button
                         type="button"
@@ -347,7 +347,7 @@ export default function LoginClient() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
                     required
-                    className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+                    className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
                   />
                   <Button
                     type="submit"
