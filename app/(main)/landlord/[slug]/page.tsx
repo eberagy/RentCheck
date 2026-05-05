@@ -472,7 +472,20 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           </div>
         )}
 
-        <Tabs defaultValue="reviews">
+        {/* Default tab: open whichever tab has content. A landlord with
+            520 records and 0 reviews shouldn't land on an empty Reviews
+            pane — keep the tab order in the UI but pick a sensible start. */}
+        <Tabs
+          defaultValue={
+            (landlord.review_count ?? 0) > 0
+              ? 'reviews'
+              : landlordRecords.length > 0
+                ? 'records'
+                : (properties ?? []).length > 0
+                  ? 'properties'
+                  : 'reviews'
+          }
+        >
           <TabsList className="mb-5 grid w-full grid-cols-3 gap-1 rounded-2xl bg-slate-100 p-1.5">
             <TabsTrigger value="reviews" className="flex items-center justify-center rounded-xl py-3 text-[12px] sm:text-[14px] font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
               <MessageSquare className="mr-1.5 sm:mr-2 h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
@@ -491,8 +504,13 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             </TabsTrigger>
           </TabsList>
 
+          {/* keepMounted on all panels so the records + properties content
+              renders to static HTML (Base UI defaults to render-on-demand,
+              which hid 520-record landlords from search engines and from
+              users on a slow first paint). */}
+
           {/* Reviews tab */}
-          <TabsContent value="reviews">
+          <TabsContent value="reviews" keepMounted>
             <ReviewsList
               reviews={(reviews as unknown as Review[]) ?? []}
               landlordId={landlord.id}
@@ -501,7 +519,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           </TabsContent>
 
           {/* Public records tab */}
-          <TabsContent value="records">
+          <TabsContent value="records" keepMounted>
             {landlordRecords.length >= 3 && (
               <div className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <ViolationChart records={landlordRecords} />
@@ -515,7 +533,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           </TabsContent>
 
           {/* Properties tab */}
-          <TabsContent value="properties">
+          <TabsContent value="properties" keepMounted>
             {(properties ?? []).length === 0 ? (
               <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-12 text-center">
                 <Building2 className="mx-auto mb-3 h-8 w-8 text-slate-300" />
