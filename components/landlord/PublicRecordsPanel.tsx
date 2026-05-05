@@ -13,6 +13,14 @@ import { formatDate } from '@/lib/utils'
 import { RECORD_TYPE_LABELS } from '@/types'
 import type { PublicRecord } from '@/types'
 import { extractRecordDetails, type RecordDetails } from '@/lib/records/extract'
+import {
+  INFORMATIONAL_RECORD_TYPES,
+  COURT_RECORD_TYPES,
+  categoryForRecordType,
+  recordIsOpen,
+  daysUntil,
+  recordGroupSortIndex,
+} from '@/lib/records/grouping'
 
 // PublicRecord rows on this page also carry the joined property address
 // (from the supabase select on the landlord page).
@@ -30,49 +38,18 @@ interface PublicRecordsPanelProps {
   chart?: React.ReactNode
 }
 
-const GROUP_ORDER = [
-  'eviction', 'eviction_filing', 'lsc_eviction', 'sf_eviction',
-  'court_case', 'court_listener',
-  'hpd_violation', 'dob_violation', 'dob_complaint',
-  'boston_violation', 'philly_violation', 'chicago_violation',
-  'pittsburgh_violation', 'baltimore_vacant_notice',
-  'austin_complaint', 'seattle_violation', 'la_violation',
-  '311_complaint', 'code_enforcement', 'nyc_311',
-  'business_registration',
-]
-
-const INFORMATIONAL_TYPES = new Set(['business_registration'])
-const COURT_TYPES = new Set([
-  'eviction', 'eviction_filing', 'lsc_eviction', 'sf_eviction',
-  'court_case', 'court_listener',
-])
-
-function categoryFor(type: string): 'eviction' | 'violation' | 'complaint' | 'info' {
-  if (INFORMATIONAL_TYPES.has(type)) return 'info'
-  if (COURT_TYPES.has(type)) return 'eviction'
-  if (type.includes('complaint') || type === 'nyc_311' || type === '311_complaint') return 'complaint'
-  return 'violation'
-}
+// Local alias so the records panel reads the renamed helpers under
+// the names the JSX below already uses.
+const isOpen = recordIsOpen
+const categoryFor = categoryForRecordType
+const INFORMATIONAL_TYPES = INFORMATIONAL_RECORD_TYPES
+const COURT_TYPES = COURT_RECORD_TYPES
 
 function iconFor(type: string) {
   if (COURT_TYPES.has(type)) return Gavel
   if (INFORMATIONAL_TYPES.has(type)) return Building2
   if (type.endsWith('_complaint') || type === 'nyc_311') return Flame
   return Hammer
-}
-
-function isOpen(record: PublicRecord, details?: RecordDetails) {
-  if (INFORMATIONAL_TYPES.has(record.record_type)) return false
-  if (typeof details?.isOpen === 'boolean') return details.isOpen
-  const status = record.status?.toLowerCase()
-  return status !== 'closed' && status !== 'dismissed'
-}
-
-function daysUntil(dateStr: string | null | undefined): number | null {
-  if (!dateStr) return null
-  const t = new Date(dateStr).getTime()
-  if (Number.isNaN(t)) return null
-  return Math.round((t - Date.now()) / 86_400_000)
 }
 
 function groupByType(records: EnrichedRecord[]) {
@@ -91,10 +68,9 @@ function groupByType(records: EnrichedRecord[]) {
       return bDate - aDate
     })
   }
-  return Object.entries(grouped).sort(([a], [b]) => {
-    const ia = GROUP_ORDER.indexOf(a), ib = GROUP_ORDER.indexOf(b)
-    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib)
-  })
+  return Object.entries(grouped).sort(([a], [b]) =>
+    recordGroupSortIndex(a) - recordGroupSortIndex(b)
+  )
 }
 
 function MetaPill({ icon, label, value, tone = 'neutral' }: {
