@@ -35,7 +35,7 @@ export function buildLandlordSummary(input: {
   }
 
   if (propertyCount > 0) {
-    parts.push(`${pluralize(propertyCount, 'linked property')}`)
+    parts.push(`${pluralize(propertyCount, 'linked property', 'linked properties')}`)
   }
 
   if (landlord.is_verified) {
