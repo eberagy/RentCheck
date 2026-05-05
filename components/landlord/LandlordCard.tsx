@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { MapPin, MessageSquare, AlertTriangle, Gavel, Reply } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
-import { VerifiedBadge } from './VerifiedBadge'
+import { VerifiedBadge } from '@/components/vett/VerifiedBadge'
 import { StarRating } from '@/components/review/StarRating'
 import { cn } from '@/lib/utils'
 import { buildLandlordSummary, truncateSummary } from '@/lib/summaries'
@@ -34,7 +34,7 @@ export function LandlordCard({ landlord, className }: LandlordCardProps) {
                 <h3 className="text-base font-semibold leading-snug text-slate-950 transition-colors group-hover:text-navy-700">
                   {landlord.display_name}
                 </h3>
-                {landlord.is_verified && <VerifiedBadge size="sm" />}
+                {landlord.is_verified && <VerifiedBadge small />}
               </div>
               {landlord.business_name && (
                 <p className="mt-1 truncate text-xs text-slate-500">{landlord.business_name}</p>
