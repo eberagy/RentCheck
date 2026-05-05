@@ -172,7 +172,7 @@ export default function AdminReviewsPage() {
               </span>
             </label>
             {selected.size > 0 && (
-              <button onClick={clearSelection} className="text-[12.5px] text-slate-500 hover:text-slate-700">
+              <button type="button" onClick={clearSelection} className="text-[12.5px] text-slate-500 hover:text-slate-700">
                 Clear
               </button>
             )}
