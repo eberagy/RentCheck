@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { SOURCE_LABELS, RECORD_TYPE_LABELS } from '@/types'
+import { SOURCE_LABELS, RECORD_TYPE_LABELS, COLLEGE_CITIES, MAJOR_CITIES, US_STATES } from '@/types'
 
 describe('SOURCE_LABELS', () => {
   it('every source string has a label', () => {
@@ -54,5 +54,58 @@ describe('RECORD_TYPE_LABELS', () => {
       if (!(t in RECORD_TYPE_LABELS)) missing.push(t)
     }
     expect(missing).toEqual([])
+  })
+})
+
+describe('COLLEGE_CITIES', () => {
+  it('every entry has city + state + at least one university', () => {
+    expect(COLLEGE_CITIES.length).toBeGreaterThan(0)
+    for (const c of COLLEGE_CITIES) {
+      expect(c.city.length).toBeGreaterThan(0)
+      expect(c.state).toMatch(/^[A-Z]{2}$/) // 2-letter uppercase state
+      expect(Array.isArray(c.universities)).toBe(true)
+      expect(c.universities.length).toBeGreaterThan(0)
+    }
+  })
+
+  it('city + state combinations are unique', () => {
+    const keys = COLLEGE_CITIES.map(c => `${c.city}|${c.state}`)
+    expect(new Set(keys).size).toBe(keys.length)
+  })
+})
+
+describe('MAJOR_CITIES', () => {
+  it('every entry has city + state + dataCoverage flag', () => {
+    expect(MAJOR_CITIES.length).toBeGreaterThan(0)
+    for (const c of MAJOR_CITIES) {
+      expect(c.city.length).toBeGreaterThan(0)
+      expect(c.state).toMatch(/^[A-Z]{2}$/)
+      expect(typeof c.dataCoverage).toBe('boolean')
+    }
+  })
+
+  it('every state code maps to a real US state in US_STATES', () => {
+    const stateCodes = new Set(US_STATES.map(s => s.abbr))
+    for (const c of MAJOR_CITIES) {
+      expect(stateCodes.has(c.state)).toBe(true)
+    }
+  })
+})
+
+describe('US_STATES', () => {
+  it('has 51 entries (50 states + DC)', () => {
+    expect(US_STATES.length).toBe(51)
+  })
+
+  it('every entry has a 2-letter abbr + non-empty name', () => {
+    for (const s of US_STATES) {
+      expect(s.abbr).toMatch(/^[A-Z]{2}$/)
+      expect(s.name.length).toBeGreaterThan(0)
+    }
+  })
+
+  it('abbreviations are unique', () => {
+    const codes = US_STATES.map(s => s.abbr)
+    expect(new Set(codes).size).toBe(codes.length)
   })
 })
