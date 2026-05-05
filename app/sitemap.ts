@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { COLLEGE_CITIES } from '@/types'
 import { getAllPosts } from '@/lib/blog'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
@@ -18,7 +18,9 @@ function citySlug(city: string) {
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = canonicalSiteUrl()
-  const supabase = await createClient()
+  // Public read-only — service client also drops the cookies() dep so the
+  // sitemap can be cached freely.
+  const supabase = createServiceClient()
 
   const [
     { data: landlords },
