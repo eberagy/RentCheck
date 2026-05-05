@@ -86,17 +86,24 @@ export default function FAQPage() {
         </a>
       </p>
 
-      <div>
-        {FAQS.map(faq => (
-          <details key={faq.id} id={faq.id} className="group border-b border-slate-100 [&_summary::-webkit-details-marker]:hidden">
-            <summary className="flex cursor-pointer items-center justify-between gap-4 py-4 text-left list-none">
-              <span className="font-semibold text-sm text-slate-900 transition-colors group-hover:text-slate-700 group-open:text-teal-700">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+        {FAQS.map((faq, i) => (
+          <details
+            key={faq.id}
+            id={faq.id}
+            className={
+              'group [&_summary::-webkit-details-marker]:hidden ' +
+              (i < FAQS.length - 1 ? 'border-b border-slate-100' : '')
+            }
+          >
+            <summary className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left list-none transition-colors hover:bg-slate-50 group-open:bg-slate-50/40">
+              <span className="font-semibold text-[14px] text-slate-900 transition-colors group-open:text-teal-700">
                 {faq.q}
               </span>
               <ChevronDown className="h-4 w-4 flex-shrink-0 text-slate-300 transition-transform group-open:rotate-180 group-open:text-teal-500" />
             </summary>
-            <div className="pb-4">
-              <p className="text-sm text-slate-700 leading-relaxed">{faq.a}</p>
+            <div className="px-5 pb-5">
+              <p className="text-[14px] text-slate-700 leading-relaxed">{faq.a}</p>
             </div>
           </details>
         ))}
