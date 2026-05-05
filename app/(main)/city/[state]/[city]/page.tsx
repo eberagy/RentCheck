@@ -226,8 +226,8 @@ export default async function CityPage({ params }: CityPageProps) {
               <div className="mt-8 grid grid-cols-2 gap-x-10 gap-y-6 sm:grid-cols-4" style={{ width: 'fit-content', maxWidth: '100%' }}>
                 {stats.map(s => (
                   <div key={s.l}>
-                    <div className={`text-[36px] font-extrabold tracking-tight tabular-nums ${s.v === '0' || s.v === '—' ? 'text-slate-500' : ''}`}>{s.v}</div>
-                    <div className="mt-0.5 text-[12px] text-slate-500">{s.l}</div>
+                    <div className={`font-display text-[clamp(1.75rem,3.5vw,2.5rem)] font-semibold leading-none tracking-[-0.02em] tabular-nums ${s.v === '0' || s.v === '—' ? 'text-slate-500' : ''}`}>{s.v}</div>
+                    <div className="mt-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500">{s.l}</div>
                   </div>
                 ))}
               </div>
