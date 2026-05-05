@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { ArrowLeft, CheckCircle2, Search } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/server'
 import { VerifiedBadge } from '@/components/vett/VerifiedBadge'
 import { StarRating } from '@/components/review/StarRating'
 import { Button } from '@/components/ui/button'
@@ -24,7 +24,9 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
     return <CompareSearch />
   }
 
-  const supabase = await createClient()
+  // Public read-only data — no auth needed. Service client also avoids
+  // a cookies() call which would prevent any future ISR caching.
+  const supabase = createServiceClient()
 
   const [{ data: landlordA }, { data: landlordB }] = await Promise.all([
     supabase.from('landlords').select('*').eq('slug', slugA).single(),
