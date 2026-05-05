@@ -35,12 +35,17 @@ interface PropertyPageProps {
 }
 
 export const revalidate = 3600
-// Typo'd /property/* URLs (anything that isn't a v4 UUID) are 404'd at
-// the edge by the middleware via lib/url-guards.ts UUID_RE. For UUIDs
-// that look valid but don't exist in the DB, notFound() below renders
-// the parent (main)/not-found.tsx body — which Next.js 14 returns with
-// a 404 status as long as the page wasn't forced into the dynamic
-// renderer. Verify by curl-checking response status, not just body.
+// Empty generateStaticParams + dynamicParams=true: same pattern as the
+// landlord page — flips the route from "fully dynamic" to "ISR with no
+// pre-rendered IDs at build time" so Vercel actually caches it.
+export const dynamicParams = true
+export async function generateStaticParams() {
+  return []
+}
+// Typo'd /property/* URLs (non-UUID) get null from getProperty via the
+// UUID_RE guard, which fires notFound() → the parent (main)/not-found.tsx
+// body. Returns a real 404 status now that the route is ISR rather than
+// fully dynamic.
 
 // Shared loader: generateMetadata + the page component both need the
 // property row + its landlord. React cache() dedupes within a render.

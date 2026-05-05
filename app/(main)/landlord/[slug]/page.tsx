@@ -31,9 +31,18 @@ interface LandlordPageProps {
 }
 
 export const revalidate = 3600 // ISR: revalidate every 1 hour
-// Typo'd /landlord/* URLs (anything outside the slug regex) are 404'd at
-// the edge by middleware via lib/url-guards.ts LANDLORD_SLUG_RE. Slugs
-// that match the regex but aren't in the DB call notFound() below.
+// Empty generateStaticParams + dynamicParams=true tells Next.js: "no
+// slugs to pre-render at build time, but treat new slugs as ISR-eligible
+// at request time." Without this, Next.js classifies the route as fully
+// dynamic (`ƒ`) and Vercel serves Cache-Control: private, no-cache —
+// which means every hit is a fresh SSR with no caching despite the
+// revalidate window.
+export const dynamicParams = true
+export async function generateStaticParams() {
+  return []
+}
+// Typo'd /landlord/* URLs (anything outside the slug regex) call
+// notFound() in getLandlord (see lib/url-guards.ts LANDLORD_SLUG_RE).
 
 // Shared loader: generateMetadata + the page component both need the
 // landlord row. React's `cache()` dedupes the fetch within a single

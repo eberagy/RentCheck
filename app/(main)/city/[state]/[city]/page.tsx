@@ -17,6 +17,13 @@ import Script from 'next/script'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 export const revalidate = 3600
+// Empty generateStaticParams + dynamicParams=true: see /landlord/[slug]
+// for the rationale — flips the route from "fully dynamic" to
+// "ISR-capable" so Vercel caches it.
+export const dynamicParams = true
+export async function generateStaticParams() {
+  return []
+}
 
 interface CityPageProps {
   params: { state: string; city: string }
