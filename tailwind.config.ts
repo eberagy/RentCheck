@@ -55,10 +55,6 @@ const config: Config = {
         sans: ['var(--font-sans)', ...fontFamily.sans],
         display: ['var(--font-display)', 'Georgia', 'serif'],
       },
-      borderRadius: {
-        card: '8px',
-        input: '4px',
-      },
       // Only `animate-blob` is referenced by the codebase (used by
       // GradientBlob). The other 8 animation utilities + their keyframes
       // were dead-code drag — pruned 2026-05-05. Re-add only when an
