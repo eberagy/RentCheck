@@ -308,10 +308,12 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           <span className="font-medium text-slate-700">{landlord.display_name}</span>
         </nav>
 
-        {/* Header Card */}
-        <div className="mb-5 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          {/* Top accent rule */}
-          <div className="h-[3px] bg-navy-500" />
+        {/* Hero card. Same chrome as the property page: rounded-2xl,
+            soft slate-tinted shadow, gradient accent rule. Identity
+            on top, flush stat strip at the bottom. The sidebar lives
+            below in a real page-level grid. */}
+        <header className="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <div className="h-[3px] bg-gradient-to-r from-navy-600 via-sky-500 to-teal-500" />
 
           {/* Identity row — full width. At-a-glance + actions now live
               in the page-level sidebar (below) so the hero reads
@@ -399,11 +401,11 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
               <p className="text-[14px] leading-6 text-slate-700">{landlord.bio}</p>
             </div>
           )}
-        </div>
+        </header>
 
         {/* Violation banner */}
         {openViolationCount > 0 && (
-          <div className="mb-5 flex items-start gap-3.5 rounded-xl border border-red-200 bg-gradient-to-r from-red-50 to-orange-50 px-5 py-4">
+          <div className="mb-6 flex items-start gap-3.5 rounded-2xl border border-red-200 bg-gradient-to-r from-red-50 to-orange-50 px-5 py-4">
             <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-red-200 bg-red-100">
               <Flag className="h-[18px] w-[18px] text-red-600" />
             </div>
