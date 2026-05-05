@@ -461,9 +461,9 @@ export default async function HomePage() {
 
           {/* City alert signup — visitor picks a city + state + email and we
               save it to email_leads for follow-up. The plain newsletter
-              fallback was removed 2026-05-05 — duplicate CTA on the same
-              page was diluting signup intent. The city picker covers the
-              "no specific city yet" case via its "Anywhere" option. */}
+              fallback was removed 2026-05-05 — two CTAs on the same page
+              were diluting signup intent, and a city signal is worth more
+              than a bare email. */}
           <div className="mt-14 max-w-2xl">
             <CityAlertSignup
               theme="light"

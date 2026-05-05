@@ -14,6 +14,7 @@ import type { Landlord } from '@/types'
 import { getCityAliases } from '@/lib/cities'
 import { CitySubscribeButton } from '@/components/city/CitySubscribeButton'
 import Script from 'next/script'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 export const revalidate = 3600
 
@@ -148,12 +149,13 @@ export default async function CityPage({ params }: CityPageProps) {
 
   // CollectionPage JSON-LD — tells Google this is a directory page for
   // a specific locale, so it ranks for "{city} landlords" queries.
+  const siteUrl = canonicalSiteUrl()
   const cityJsonLd = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: `Landlord Reviews in ${cityName}, ${stateAbbr}`,
-    url: `https://vettrentals.com/city/${stateAbbr.toLowerCase()}/${cityName.toLowerCase().replace(/\s+/g, '-')}`,
-    isPartOf: { '@id': 'https://vettrentals.com/#website' },
+    url: `${siteUrl}/city/${stateAbbr.toLowerCase()}/${cityName.toLowerCase().replace(/\s+/g, '-')}`,
+    isPartOf: { '@id': `${siteUrl}/#website` },
     about: {
       '@type': 'Place',
       name: `${cityName}, ${stateName}`,
@@ -173,7 +175,7 @@ export default async function CityPage({ params }: CityPageProps) {
         item: {
           '@type': 'LocalBusiness',
           name: l.display_name,
-          url: l.slug ? `https://vettrentals.com/landlord/${l.slug}` : undefined,
+          url: l.slug ? `${siteUrl}/landlord/${l.slug}` : undefined,
           ...(l.avg_rating && (l.review_count ?? 0) > 0
             ? {
                 aggregateRating: {

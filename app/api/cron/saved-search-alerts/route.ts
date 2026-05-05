@@ -5,6 +5,7 @@ import { sendSavedSearchDigestEmail } from '@/lib/email'
 import { cityPagePath } from '@/lib/cities'
 import { createUnsubscribeToken } from '@/lib/unsubscribe-token'
 import { getCityAliases } from '@/lib/cities'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 export const maxDuration = 300
 
@@ -121,7 +122,7 @@ export async function GET(req: NextRequest) {
         }))
 
       const token = createUnsubscribeToken(profile.id)
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
+      const siteUrl = canonicalSiteUrl()
       await sendSavedSearchDigestEmail(profile.email, {
         firstName: profile.full_name?.split(' ')[0],
         city: sub.city,
