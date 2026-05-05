@@ -116,7 +116,7 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen">
       {/* ── HERO ── */}
-      <section className="relative isolate overflow-hidden bg-[#07111f] text-white">
+      <section className="relative isolate overflow-hidden bg-ink text-white">
         {/* Layered gradient mesh for depth */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_15%_-10%,rgba(15,123,108,0.22),transparent_55%),radial-gradient(ellipse_at_85%_110%,rgba(30,58,95,0.28),transparent_55%),radial-gradient(ellipse_at_50%_50%,rgba(20,184,166,0.06),transparent_70%)]" />
         {/* Grid pattern overlay */}
@@ -397,9 +397,9 @@ export default async function HomePage() {
       )}
 
       {/* ── CTAs ── */}
-      <section className="bg-[#07111f] text-white">
+      <section className="bg-ink text-white">
         <div className="mx-auto grid max-w-[1100px] gap-px overflow-hidden bg-white/[0.06] px-0 md:grid-cols-2">
-          <div className="bg-[#07111f] p-10 lg:p-14">
+          <div className="bg-ink p-10 lg:p-14">
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-teal-400">For renters</p>
             <h2 className="mt-4 font-display text-[clamp(1.5rem,2.5vw,2rem)] leading-[1.2] tracking-tight">
               Had a landlord experience worth sharing?

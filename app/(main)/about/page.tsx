@@ -94,7 +94,7 @@ export default async function AboutPage() {
         {aboutJsonLd}
       </Script>
       {/* ── HERO ── */}
-      <section className="relative isolate overflow-hidden bg-[#07111f] text-white">
+      <section className="relative isolate overflow-hidden bg-ink text-white">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_-10%,rgba(15,123,108,0.2),transparent_55%),radial-gradient(ellipse_at_80%_110%,rgba(30,58,95,0.25),transparent_55%)]" />
         <div
           className="absolute inset-0 opacity-[0.04]"
@@ -247,7 +247,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="border-t border-slate-100 bg-[#07111f] text-white">
+      <section className="border-t border-slate-100 bg-ink text-white">
         <div className="mx-auto max-w-[1100px] px-6 py-20 lg:py-24">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div>
