@@ -4,7 +4,7 @@ export default function CityLoading() {
   return (
     <div className="min-h-screen bg-white">
       <section className="relative isolate overflow-hidden bg-[#07111f]">
-        <div className="relative mx-auto max-w-[1100px] px-6 pb-20 pt-16 lg:pb-24 lg:pt-20">
+        <div className="relative mx-auto max-w-[1320px] px-6 pb-20 pt-16 lg:pb-24 lg:pt-20">
           <Skeleton className="h-4 w-56 bg-white/10" />
           <Skeleton className="mt-5 h-14 w-2/3 bg-white/10" />
           <Skeleton className="mt-3 h-14 w-1/2 bg-white/10" />
@@ -21,7 +21,7 @@ export default function CityLoading() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1100px] px-6 py-12">
+      <div className="mx-auto max-w-[1320px] px-6 py-12">
         <Skeleton className="h-8 w-64 mb-6" />
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map((i) => (

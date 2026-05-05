@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function DashboardLoading() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="mx-auto max-w-[1320px] px-4 py-8">
       <div className="flex items-center gap-4 mb-8">
         <Skeleton className="h-14 w-14 rounded-full" />
         <div className="flex-1 space-y-2">

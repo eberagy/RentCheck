@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function SearchLoading() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="mx-auto max-w-[1320px] px-4 py-8">
       <Skeleton className="h-11 max-w-2xl w-full mb-8 rounded-xl" />
       <div className="flex flex-col lg:flex-row gap-8">
         <aside className="lg:w-56 flex-shrink-0">
