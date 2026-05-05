@@ -1,11 +1,9 @@
-// URL-shape guards used by middleware to reject typo'd URLs at the edge.
-// Pulled out of supabase/middleware.ts so the regex envelopes can be unit-
-// tested independently of the auth + origin chain.
-//
-// Why a hard 404 at the edge: Next.js's notFound() inside generateMetadata +
-// page returns the not-found body with a 200 status (App Router quirk). That
-// soft-404s every typo'd URL into search-engine indexes and burns crawl
-// budget. These guards short-circuit at the edge before any DB hit.
+// URL-shape guards for /landlord, /property, /city. Used to live inside
+// supabase/middleware.ts but moved here as pure functions; middleware now
+// excludes those paths from the matcher entirely so they remain
+// ISR-cacheable. The page-level loaders (getLandlord, getProperty,
+// CityPage) call these helpers before any Supabase round-trip — typo'd
+// URLs return null, which triggers notFound() with a 404 status.
 
 /** Property URLs must carry a v4-shaped UUID. */
 export const UUID_RE = /^\/property\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(\/|$)/i
