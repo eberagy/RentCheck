@@ -222,12 +222,12 @@ async function SearchResults({
           </div>
           <div className="px-6 py-6">
             <div className="grid gap-3 sm:grid-cols-2">
-              <a href="/search" className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
+              <Link href="/search" className="inline-flex items-center justify-center rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
                 Clear search
-              </a>
-              <a href="/add-landlord" className="inline-flex items-center justify-center rounded-xl bg-navy-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-700">
+              </Link>
+              <Link href="/add-landlord" className="inline-flex items-center justify-center rounded-xl bg-navy-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-navy-700">
                 Add a landlord
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -275,29 +275,38 @@ async function SearchResults({
             <SearchResultCard key={`${result.result_type}-${result.id}`} result={result} />
           ))}
         </div>
-        {total > pageSize && (
-          <div className="flex items-center justify-center gap-2 pt-2">
-            {page > 1 && (
-              <a
-                href={`?q=${encodeURIComponent(q)}${city ? `&city=${encodeURIComponent(city)}` : ''}${state ? `&state=${encodeURIComponent(state)}` : ''}${minRating > 0 ? `&rating=${minRating}` : ''}${verifiedOnly ? '&verified=true' : ''}${hasViolationsOnly ? '&violations=true' : ''}&page=${page - 1}`}
-                className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50"
-              >
-                ← Previous
-              </a>
-            )}
-            <span className="px-3 py-2 text-sm text-slate-500">
-              Page <span className="font-semibold text-slate-900">{page}</span> of {Math.ceil(total / pageSize)}
-            </span>
-            {page * pageSize < total && (
-              <a
-                href={`?q=${encodeURIComponent(q)}${city ? `&city=${encodeURIComponent(city)}` : ''}${state ? `&state=${encodeURIComponent(state)}` : ''}${minRating > 0 ? `&rating=${minRating}` : ''}${verifiedOnly ? '&verified=true' : ''}${hasViolationsOnly ? '&violations=true' : ''}&page=${page + 1}`}
-                className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50"
-              >
-                Next →
-              </a>
-            )}
-          </div>
-        )}
+        {total > pageSize && (() => {
+          function pageHref(p: number) {
+            const qs = new URLSearchParams()
+            if (q) qs.set('q', q)
+            if (city) qs.set('city', city)
+            if (state) qs.set('state', state)
+            if (minRating > 0) qs.set('rating', String(minRating))
+            if (verifiedOnly) qs.set('verified', 'true')
+            if (hasViolationsOnly) qs.set('violations', 'true')
+            if (sort !== 'reviewed') qs.set('sort', sort)
+            if (p > 1) qs.set('page', String(p))
+            const s = qs.toString()
+            return `/search${s ? `?${s}` : ''}`
+          }
+          return (
+            <div className="flex items-center justify-center gap-2 pt-2">
+              {page > 1 && (
+                <Link href={pageHref(page - 1)} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
+                  ← Previous
+                </Link>
+              )}
+              <span className="px-3 py-2 text-sm text-slate-500">
+                Page <span className="font-semibold text-slate-900">{page}</span> of {Math.ceil(total / pageSize)}
+              </span>
+              {page * pageSize < total && (
+                <Link href={pageHref(page + 1)} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
+                  Next →
+                </Link>
+              )}
+            </div>
+          )
+        })()}
       </div>
     )
   }
@@ -343,12 +352,12 @@ async function SearchResults({
         <p className="text-lg font-semibold text-slate-900">No landlords found</p>
         <p className="text-[14.5px] text-slate-500 mt-1.5 max-w-sm mx-auto">Try a different search term, city, or state — or help the community by adding a missing landlord.</p>
         <div className="flex gap-3 justify-center mt-6 flex-wrap">
-          <a href="/search" className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium hover:bg-slate-50 text-slate-700">
+          <Link href="/search" className="px-4 py-2 rounded-lg border border-slate-200 text-sm font-medium hover:bg-slate-50 text-slate-700">
             Clear filters
-          </a>
-          <a href="/add-landlord" className="px-4 py-2 rounded-lg bg-navy-600 hover:bg-navy-700 text-white text-sm font-semibold">
+          </Link>
+          <Link href="/add-landlord" className="px-4 py-2 rounded-lg bg-navy-600 hover:bg-navy-700 text-white text-sm font-semibold">
             Add a landlord
-          </a>
+          </Link>
         </div>
       </div>
     )
@@ -392,24 +401,41 @@ async function SearchResults({
             <LandlordCard key={landlord.id} landlord={landlord} />
           ))}
         </div>
-        {/* Pagination */}
-        {total > pageSize && (
-          <div className="flex items-center justify-center gap-2 pt-2">
-            {page > 1 && (
-              <a href={`?${city ? `city=${encodeURIComponent(city)}&` : ''}${state ? `state=${encodeURIComponent(state)}&` : ''}${minRating > 0 ? `rating=${minRating}&` : ''}${verifiedOnly ? 'verified=true&' : ''}${hasViolationsOnly ? 'violations=true&' : ''}page=${page - 1}`} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
-                ← Previous
-              </a>
-            )}
-            <span className="px-3 py-2 text-sm text-slate-500">
-              Page <span className="font-semibold text-slate-900">{page}</span> of {Math.ceil(total / pageSize)}
-            </span>
-            {page * pageSize < total && (
-              <a href={`?${city ? `city=${encodeURIComponent(city)}&` : ''}${state ? `state=${encodeURIComponent(state)}&` : ''}${minRating > 0 ? `rating=${minRating}&` : ''}${verifiedOnly ? 'verified=true&' : ''}${hasViolationsOnly ? 'violations=true&' : ''}page=${page + 1}`} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
-                Next →
-              </a>
-            )}
-        </div>
-      )}
+        {/* Pagination — preserves all active filters incl. sort. The previous
+            string-concat version dropped `sort` on page change, so a user
+            on "Highest rated, page 2" would silently fall back to "Most
+            reviewed". */}
+        {total > pageSize && (() => {
+          function pageHref(p: number) {
+            const qs = new URLSearchParams()
+            if (city) qs.set('city', city)
+            if (state) qs.set('state', state)
+            if (minRating > 0) qs.set('rating', String(minRating))
+            if (verifiedOnly) qs.set('verified', 'true')
+            if (hasViolationsOnly) qs.set('violations', 'true')
+            if (sort !== 'reviewed') qs.set('sort', sort)
+            if (p > 1) qs.set('page', String(p))
+            const s = qs.toString()
+            return `/search${s ? `?${s}` : ''}`
+          }
+          return (
+            <div className="flex items-center justify-center gap-2 pt-2">
+              {page > 1 && (
+                <Link href={pageHref(page - 1)} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
+                  ← Previous
+                </Link>
+              )}
+              <span className="px-3 py-2 text-sm text-slate-500">
+                Page <span className="font-semibold text-slate-900">{page}</span> of {Math.ceil(total / pageSize)}
+              </span>
+              {page * pageSize < total && (
+                <Link href={pageHref(page + 1)} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
+                  Next →
+                </Link>
+              )}
+            </div>
+          )
+        })()}
     </div>
   )
 }

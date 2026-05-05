@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import Link from 'next/link'
 import { useDropzone } from 'react-dropzone'
 import { Search, Upload, FileText, X, CheckCircle2, Loader2, AlertTriangle, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -177,9 +178,9 @@ export default function ClaimProfilePage() {
           </div>
 
           <Button asChild className="bg-navy-600 hover:bg-navy-700 text-white px-8">
-            <a href="/landlord-portal">
+            <Link href="/landlord-portal">
               Back to Portal <ArrowRight className="h-4 w-4 ml-2" />
-            </a>
+            </Link>
           </Button>
         </div>
       </div>
@@ -265,9 +266,9 @@ export default function ClaimProfilePage() {
           {!searching && !selectedLandlord && searchQuery.length >= 2 && searchResults.length === 0 && (
             <p className="text-xs text-slate-500 mt-2 text-center">
               No unclaimed profiles found.{' '}
-              <a href="/add-landlord" className="text-navy-600 underline hover:text-navy-800">
+              <Link href="/add-landlord" className="text-navy-600 underline hover:text-navy-800">
                 Add your profile
-              </a>
+              </Link>
             </p>
           )}
         </div>
