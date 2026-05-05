@@ -97,12 +97,13 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       .limit(20),
     supabase
       .from('public_records')
-      .select('id, record_type, status, severity, violation_class, case_number, title, description, filed_date, closed_date, source, source_url, source_id, property_id, landlord_id, last_synced_at')
+      // raw_data is needed to surface per-source detail (apartment, due
+      // dates, inspector comments, citation links). Capped at 500 rows
+      // means the payload stays under ~2 MB even for top-violation
+      // landlords.
+      .select('id, record_type, status, severity, violation_class, case_number, title, description, filed_date, closed_date, source, source_url, source_id, property_id, landlord_id, last_synced_at, raw_data, property:properties(address_line1, city, state_abbr, zip)')
       .eq('landlord_id', landlord.id)
       .order('filed_date', { ascending: false })
-      // Cap at 500: post-backfill, top-violation NYC landlords now have
-      // 2,400+ records each. Without this the SSR was 8+ s for those pages.
-      // The panel paginates 25/page client-side anyway.
       .limit(500),
     supabase
       .from('properties')
@@ -126,14 +127,12 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
   if (propertyIds.length > 0) {
     const { data: propRecs } = await supabase
       .from('public_records')
-      .select('id, record_type, status, severity, violation_class, case_number, title, description, filed_date, closed_date, source, source_url, source_id, property_id, landlord_id, last_synced_at')
+      .select('id, record_type, status, severity, violation_class, case_number, title, description, filed_date, closed_date, source, source_url, source_id, property_id, landlord_id, last_synced_at, raw_data, property:properties(address_line1, city, state_abbr, zip)')
       .in('property_id', propertyIds)
       .is('landlord_id', null)
       .order('filed_date', { ascending: false })
-      // Same 500-row cap as the direct landlord_id branch — post-backfill,
-      // a single landlord can own properties holding 2k+ records.
       .limit(500)
-    propertyRecords = (propRecs ?? []) as PublicRecord[]
+    propertyRecords = (propRecs ?? []) as unknown as PublicRecord[]
   }
 
   // Compute avg sub-ratings
@@ -159,7 +158,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
   // Merge direct records + property-linked records (deduplicate by id)
   const seenRecordIds = new Set<string>()
   const landlordRecords: PublicRecord[] = []
-  for (const r of [...(directRecords ?? []) as PublicRecord[], ...propertyRecords]) {
+  for (const r of [...((directRecords ?? []) as unknown as PublicRecord[]), ...propertyRecords]) {
     if (!seenRecordIds.has(r.id)) {
       seenRecordIds.add(r.id)
       landlordRecords.push(r)
