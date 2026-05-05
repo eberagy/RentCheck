@@ -47,9 +47,44 @@ const config: Config = {
           DEFAULT: '#07111f',
           950: '#030A13',
         },
-        background: '#F9FAFB',
-        foreground: '#111827',
-        muted: '#6B7280',
+        // Page-level tokens — also exposed as CSS vars in globals.css.
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        // shadcn surface tokens. Without these, `border-input`,
+        // `bg-popover`, `text-popover-foreground`, `ring-ring`, etc.
+        // throughout components/ui silently fail (they generate CSS
+        // referencing undefined classes).
+        border: 'var(--border)',
+        input: 'var(--input)',
+        ring: 'var(--ring)',
+        card: {
+          DEFAULT: 'var(--card)',
+          foreground: 'var(--card-foreground)',
+        },
+        popover: {
+          DEFAULT: 'var(--popover)',
+          foreground: 'var(--popover-foreground)',
+        },
+        primary: {
+          DEFAULT: 'var(--primary)',
+          foreground: 'var(--primary-foreground)',
+        },
+        secondary: {
+          DEFAULT: 'var(--secondary)',
+          foreground: 'var(--secondary-foreground)',
+        },
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
+        },
+        accent: {
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)',
+        },
+        destructive: {
+          DEFAULT: 'var(--destructive)',
+          foreground: 'var(--destructive-foreground)',
+        },
       },
       fontFamily: {
         sans: ['var(--font-sans)', ...fontFamily.sans],

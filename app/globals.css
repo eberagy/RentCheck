@@ -6,6 +6,27 @@
   --background: #F8FAFC;
   --foreground: #0F172A;
   --font-display: Georgia, serif;
+  /* shadcn token defaults (added 2026-05-05 — were missing, causing
+     border-input / bg-popover / ring-ring etc. to silently no-op on
+     shadcn primitives). Pinned to slate / navy values that match the
+     rest of the design system. */
+  --border: #e2e8f0;       /* slate-200 */
+  --input: #cbd5e1;        /* slate-300 — input borders */
+  --ring: #1e3a5f;         /* navy-500 — focus ring */
+  --card: #ffffff;
+  --card-foreground: #0F172A;
+  --popover: #ffffff;
+  --popover-foreground: #0F172A;
+  --primary: #1e3a5f;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;    /* slate-100 */
+  --secondary-foreground: #0F172A;
+  --muted: #6B7280;        /* keep prior value */
+  --muted-foreground: #6B7280;
+  --accent: #f1f5f9;
+  --accent-foreground: #0F172A;
+  --destructive: #DC2626;
+  --destructive-foreground: #ffffff;
 }
 
 body {
