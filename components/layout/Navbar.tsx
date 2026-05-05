@@ -106,7 +106,7 @@ export function Navbar() {
                   <ChevronDown className={cn('h-3 w-3', isDark ? 'text-slate-400' : 'text-slate-500')} />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <div className="px-3 py-2 text-xs text-gray-500 truncate">{user.email}</div>
+                  <div className="px-3 py-2 text-xs text-slate-500 truncate">{user.email}</div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => router.push('/dashboard')} className="flex items-center gap-2">
                     <LayoutDashboard className="h-4 w-4" /> My Dashboard

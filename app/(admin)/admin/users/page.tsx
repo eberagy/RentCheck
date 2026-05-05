@@ -185,12 +185,12 @@ export default function AdminUsersPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Users</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Manage platform users and permissions</p>
+          <h1 className="text-2xl font-bold text-slate-900">Users</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Manage platform users and permissions</p>
         </div>
-        <div className="flex items-center gap-3 text-sm text-gray-500">
-          <span><span className="font-semibold text-gray-900">{counts.total}</span> shown</span>
-          <span className="text-gray-300">|</span>
+        <div className="flex items-center gap-3 text-sm text-slate-500">
+          <span><span className="font-semibold text-slate-900">{counts.total}</span> shown</span>
+          <span className="text-slate-300">|</span>
           <span><span className="font-semibold text-purple-700">{counts.admins}</span> admins</span>
           <span><span className="font-semibold text-blue-700">{counts.landlords}</span> landlords</span>
           <span><span className="font-semibold text-teal-700">{counts.renters}</span> renters</span>
@@ -204,7 +204,7 @@ export default function AdminUsersPage() {
 
       {/* Search */}
       <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
         <Input
           className="pl-9 pr-9 bg-white"
           placeholder="Search by name or email..."
@@ -212,7 +212,7 @@ export default function AdminUsersPage() {
           onChange={e => setQuery(e.target.value)}
         />
         {searching && (
-          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
+          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-slate-400" />
         )}
       </div>
 
@@ -221,17 +221,17 @@ export default function AdminUsersPage() {
           <Loader2 className="h-8 w-8 animate-spin text-navy-500" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-20 text-gray-500">
-          <User className="h-8 w-8 text-gray-300 mx-auto mb-3" />
+        <div className="text-center py-20 text-slate-500">
+          <User className="h-8 w-8 text-slate-300 mx-auto mb-3" />
           <p className="font-medium">No users found</p>
-          {query && <p className="text-sm mt-1 text-gray-400">Try a different search term</p>}
+          {query && <p className="text-sm mt-1 text-slate-400">Try a different search term</p>}
         </div>
       ) : (
         <div className="space-y-2">
           {filtered.map(user => (
             <Card
               key={user.id}
-              className={`border-gray-200 transition-all hover:shadow-sm ${user.is_banned ? 'opacity-60' : ''}`}
+              className={`border-slate-200 transition-all hover:shadow-sm ${user.is_banned ? 'opacity-60' : ''}`}
             >
               <CardContent className="p-0">
                 {/* Main row */}
@@ -240,7 +240,7 @@ export default function AdminUsersPage() {
                     <UserAvatar user={user} />
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-gray-900 text-sm">
+                        <span className="font-semibold text-slate-900 text-sm">
                           {user.full_name ?? 'No name'}
                         </span>
                         <UserTypeBadge type={user.user_type} />
@@ -249,17 +249,17 @@ export default function AdminUsersPage() {
                         )}
                       </div>
                       <div className="flex items-center gap-3 mt-1 flex-wrap">
-                        <span className="flex items-center gap-1 text-xs text-gray-500">
+                        <span className="flex items-center gap-1 text-xs text-slate-500">
                           <Mail className="h-3 w-3" />
                           {user.email ?? '—'}
                         </span>
-                        <span className="text-gray-300 text-xs">·</span>
-                        <span className="flex items-center gap-1 text-xs text-gray-500">
+                        <span className="text-slate-300 text-xs">·</span>
+                        <span className="flex items-center gap-1 text-xs text-slate-500">
                           <Star className="h-3 w-3" />
                           {user.review_count} review{user.review_count !== 1 ? 's' : ''}
                         </span>
-                        <span className="text-gray-300 text-xs">·</span>
-                        <span className="flex items-center gap-1 text-xs text-gray-500">
+                        <span className="text-slate-300 text-xs">·</span>
+                        <span className="flex items-center gap-1 text-xs text-slate-500">
                           <Calendar className="h-3 w-3" />
                           Joined {formatDate(user.created_at)}
                         </span>
@@ -274,7 +274,7 @@ export default function AdminUsersPage() {
                         setExpanded(opening ? user.id : null)
                         if (opening) await loadUserReviews(user.id)
                       }}
-                      className="text-gray-400 hover:text-gray-600 p-1 rounded hover:bg-gray-100 transition-colors"
+                      className="text-slate-400 hover:text-slate-600 p-1 rounded hover:bg-slate-100 transition-colors"
                       title={expanded === user.id ? 'Collapse' : 'View reviews'}
                     >
                       {expanded === user.id
@@ -319,25 +319,25 @@ export default function AdminUsersPage() {
 
                 {/* Expanded review list */}
                 {expanded === user.id && (
-                  <div className="border-t border-gray-100 p-4 bg-gray-50">
-                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                  <div className="border-t border-slate-100 p-4 bg-slate-50">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
                       Review History
                     </p>
                     {(userReviews[user.id] === undefined) ? (
-                      <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <div className="flex items-center gap-2 text-sm text-slate-400">
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
                         Loading...
                       </div>
                     ) : (userReviews[user.id] ?? []).length === 0 ? (
-                      <p className="text-sm text-gray-400">No reviews submitted</p>
+                      <p className="text-sm text-slate-400">No reviews submitted</p>
                     ) : (
                       <div className="space-y-2">
                         {(userReviews[user.id] ?? []).map(r => (
                           <div
                             key={r.id}
-                            className="flex items-center justify-between py-2 px-3 bg-white rounded-lg border border-gray-200 text-sm"
+                            className="flex items-center justify-between py-2 px-3 bg-white rounded-lg border border-slate-200 text-sm"
                           >
-                            <span className="text-gray-700 truncate max-w-[260px]">{r.title}</span>
+                            <span className="text-slate-700 truncate max-w-[260px]">{r.title}</span>
                             <div className="flex items-center gap-2 flex-shrink-0 ml-3">
                               <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded font-medium">
                                 ★ {r.rating_overall}
@@ -360,7 +360,7 @@ export default function AdminUsersPage() {
                       </div>
                     )}
                     <AdminNotesEditor user={user} onSaved={next => setUsers(prev => prev.map(u => u.id === user.id ? { ...u, admin_notes: next } : u))} />
-                    <p className="text-xs text-gray-300 mt-3 font-mono">ID: {user.id}</p>
+                    <p className="text-xs text-slate-300 mt-3 font-mono">ID: {user.id}</p>
                   </div>
                 )}
               </CardContent>

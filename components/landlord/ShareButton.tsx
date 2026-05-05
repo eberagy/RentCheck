@@ -31,7 +31,7 @@ export function ShareButton({ name }: ShareButtonProps) {
       variant="outline"
       size="sm"
       onClick={handleShare}
-      className="text-gray-600 border-gray-200 hover:border-gray-300"
+      className="text-slate-600 border-slate-200 hover:border-slate-300"
     >
       {copied
         ? <><Check className="h-3.5 w-3.5 mr-1.5 text-teal-600" /> Copied!</>

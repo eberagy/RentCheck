@@ -64,14 +64,14 @@ export default function AdminResponsesPage() {
   return (
     <div className="p-4 sm:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Landlord Response Queue</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Approve or reject landlord responses to tenant reviews before they go public</p>
+        <h1 className="text-2xl font-bold text-slate-900">Landlord Response Queue</h1>
+        <p className="text-sm text-slate-500 mt-0.5">Approve or reject landlord responses to tenant reviews before they go public</p>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" /></div>
       ) : items.length === 0 ? (
-        <div className="text-center py-20 text-gray-500">
+        <div className="text-center py-20 text-slate-500">
           <CheckCircle2 className="h-10 w-10 text-teal-400 mx-auto mb-3" />
           <p className="font-medium">All caught up</p>
           <p className="text-sm mt-1">No pending landlord responses</p>
@@ -79,15 +79,15 @@ export default function AdminResponsesPage() {
       ) : (
         <div className="space-y-4">
           {items.map(item => (
-            <Card key={item.id} className="border-gray-200">
+            <Card key={item.id} className="border-slate-200">
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-2">
                       <MessageSquare className="h-4 w-4 text-navy-500" />
-                      <span className="font-semibold text-gray-900">{item.landlord?.display_name ?? 'Unknown Landlord'}</span>
-                      <span className="text-xs text-gray-400">responded to</span>
-                      <span className="text-sm text-gray-700">&ldquo;{item.title}&rdquo;</span>
+                      <span className="font-semibold text-slate-900">{item.landlord?.display_name ?? 'Unknown Landlord'}</span>
+                      <span className="text-xs text-slate-400">responded to</span>
+                      <span className="text-sm text-slate-700">&ldquo;{item.title}&rdquo;</span>
                     </div>
 
                     <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 mb-3">

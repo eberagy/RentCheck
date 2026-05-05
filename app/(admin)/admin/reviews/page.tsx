@@ -140,8 +140,8 @@ export default function AdminReviewsPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Review Queue</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Only lease-verified reviews can be approved and published</p>
+          <h1 className="text-2xl font-bold text-slate-900">Review Queue</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Only lease-verified reviews can be approved and published</p>
         </div>
         <Select value={filter} onValueChange={(v) => setFilter(v ?? 'pending')}>
           <SelectTrigger className="w-36">
@@ -207,7 +207,7 @@ export default function AdminReviewsPage() {
       {loading ? (
         <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" /></div>
       ) : reviews.length === 0 ? (
-        <div className="text-center py-20 text-gray-500">
+        <div className="text-center py-20 text-slate-500">
           <CheckCircle2 className="h-10 w-10 text-teal-400 mx-auto mb-3" />
           <p className="font-medium">Queue is empty</p>
           <p className="text-sm mt-1">No {filter} reviews</p>
@@ -217,7 +217,7 @@ export default function AdminReviewsPage() {
           {reviews.map(review => {
             const isPending = review.status === 'pending'
             return (
-              <Card key={review.id} className="border-gray-200">
+              <Card key={review.id} className="border-slate-200">
                 <CardContent className="p-0">
                   <div className="p-4 flex items-start gap-4">
                     {isPending && (
@@ -231,8 +231,8 @@ export default function AdminReviewsPage() {
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className="font-semibold text-gray-900">{review.title}</span>
-                        <span className="text-xs text-gray-500">★ {review.rating_overall}/5</span>
+                        <span className="font-semibold text-slate-900">{review.title}</span>
+                        <span className="text-xs text-slate-500">★ {review.rating_overall}/5</span>
                         <Badge variant="outline" className={
                           review.status === 'approved' ? 'text-teal-700 border-teal-300' :
                           review.status === 'rejected' ? 'text-red-700 border-red-300' :
@@ -244,11 +244,11 @@ export default function AdminReviewsPage() {
                         ) : review.lease_doc_path ? (
                           <Badge variant="outline" className="text-amber-700 border-amber-300">Lease Pending</Badge>
                         ) : (
-                          <Badge variant="outline" className="text-gray-500">No Lease</Badge>
+                          <Badge variant="outline" className="text-slate-500">No Lease</Badge>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600 line-clamp-2">{review.body}</p>
-                      <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-500 flex-wrap">
+                      <p className="text-sm text-slate-600 line-clamp-2">{review.body}</p>
+                      <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-500 flex-wrap">
                         <span>{review.reviewer?.full_name ?? review.reviewer?.email ?? 'Unknown'}</span>
                         {review.landlord && <span>→ {review.landlord.display_name}</span>}
                         {review.property_address && <span>@ {review.property_address}</span>}
@@ -258,7 +258,7 @@ export default function AdminReviewsPage() {
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <button
-                        className="text-gray-400 hover:text-gray-600"
+                        className="text-slate-400 hover:text-slate-600"
                         onClick={() => setExpanded(expanded === review.id ? null : review.id)}
                       >
                         {expanded === review.id ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -267,15 +267,15 @@ export default function AdminReviewsPage() {
                   </div>
 
                   {expanded === review.id && (
-                    <div className="border-t border-gray-100 p-4 bg-gray-50 space-y-4">
+                    <div className="border-t border-slate-100 p-4 bg-slate-50 space-y-4">
                       <div>
-                        <p className="text-sm font-medium text-gray-700 mb-1">Full Review Body</p>
-                        <p className="text-sm text-gray-600 whitespace-pre-wrap">{review.body}</p>
+                        <p className="text-sm font-medium text-slate-700 mb-1">Full Review Body</p>
+                        <p className="text-sm text-slate-600 whitespace-pre-wrap">{review.body}</p>
                       </div>
 
                       {review.lease_doc_path && (
                         <div>
-                          <p className="text-sm font-medium text-gray-700 mb-1">Uploaded Lease</p>
+                          <p className="text-sm font-medium text-slate-700 mb-1">Uploaded Lease</p>
                           <div className="flex items-center gap-2">
                             <a
                               href={`/api/admin/lease-url?reviewId=${encodeURIComponent(review.id)}`}
@@ -291,7 +291,7 @@ export default function AdminReviewsPage() {
                       )}
 
                       <div>
-                        <p className="text-sm font-medium text-gray-700 mb-1">Admin Notes (optional)</p>
+                        <p className="text-sm font-medium text-slate-700 mb-1">Admin Notes (optional)</p>
                         <Textarea
                           placeholder="Reason for rejection, or internal note..."
                           value={notes[review.id] ?? ''}

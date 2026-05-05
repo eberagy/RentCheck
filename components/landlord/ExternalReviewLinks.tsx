@@ -15,8 +15,8 @@ export function ExternalReviewLinks({ landlordName, city, stateAbbr, yelp }: Ext
     `https://www.yelp.com/search?find_desc=${encodeURIComponent(landlordName)}&find_loc=${encodeURIComponent(`${city}, ${stateAbbr}`)}`
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
-      <h3 className="text-sm font-semibold text-gray-700 mb-3">Reviews on other platforms</h3>
+    <div className="rounded-xl border border-slate-100 bg-slate-50 p-4">
+      <h3 className="text-sm font-semibold text-slate-700 mb-3">Reviews on other platforms</h3>
       <div className="flex flex-col gap-2">
 
         {/* Yelp — show rating if found, otherwise show search link */}
@@ -25,32 +25,32 @@ export function ExternalReviewLinks({ landlordName, city, stateAbbr, yelp }: Ext
             href={yelp.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between rounded-lg bg-white border border-gray-200 px-3 py-2.5 hover:border-red-300 hover:bg-red-50 transition-colors group"
+            className="flex items-center justify-between rounded-lg bg-white border border-slate-200 px-3 py-2.5 hover:border-red-300 hover:bg-red-50 transition-colors group"
           >
             <div className="flex items-center gap-2.5">
               <YelpIcon />
               <div>
-                <p className="text-xs font-medium text-gray-800">{yelp.name}</p>
+                <p className="text-xs font-medium text-slate-800">{yelp.name}</p>
                 <div className="flex items-center gap-1 mt-0.5">
                   <Star className="h-3 w-3 fill-red-400 text-red-400" />
-                  <span className="text-xs text-gray-500">{yelp.rating} · {yelp.review_count.toLocaleString()} reviews</span>
+                  <span className="text-xs text-slate-500">{yelp.rating} · {yelp.review_count.toLocaleString()} reviews</span>
                 </div>
               </div>
             </div>
-            <ExternalLink className="h-3.5 w-3.5 text-gray-400 group-hover:text-red-400" />
+            <ExternalLink className="h-3.5 w-3.5 text-slate-400 group-hover:text-red-400" />
           </a>
         ) : (
           <a
             href={yelpSearchUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between rounded-lg bg-white border border-gray-200 px-3 py-2.5 hover:border-red-300 hover:bg-red-50 transition-colors group"
+            className="flex items-center justify-between rounded-lg bg-white border border-slate-200 px-3 py-2.5 hover:border-red-300 hover:bg-red-50 transition-colors group"
           >
             <div className="flex items-center gap-2.5">
               <YelpIcon />
-              <span className="text-xs text-gray-600">Search on Yelp</span>
+              <span className="text-xs text-slate-600">Search on Yelp</span>
             </div>
-            <ExternalLink className="h-3.5 w-3.5 text-gray-400 group-hover:text-red-400" />
+            <ExternalLink className="h-3.5 w-3.5 text-slate-400 group-hover:text-red-400" />
           </a>
         )}
 
@@ -59,13 +59,13 @@ export function ExternalReviewLinks({ landlordName, city, stateAbbr, yelp }: Ext
           href={googleSearchUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-between rounded-lg bg-white border border-gray-200 px-3 py-2.5 hover:border-blue-300 hover:bg-blue-50 transition-colors group"
+          className="flex items-center justify-between rounded-lg bg-white border border-slate-200 px-3 py-2.5 hover:border-blue-300 hover:bg-blue-50 transition-colors group"
         >
           <div className="flex items-center gap-2.5">
             <GoogleIcon />
-            <span className="text-xs text-gray-600">Search reviews on Google</span>
+            <span className="text-xs text-slate-600">Search reviews on Google</span>
           </div>
-          <ExternalLink className="h-3.5 w-3.5 text-gray-400 group-hover:text-blue-400" />
+          <ExternalLink className="h-3.5 w-3.5 text-slate-400 group-hover:text-blue-400" />
         </a>
 
         {/* Apartments.com */}
@@ -73,16 +73,16 @@ export function ExternalReviewLinks({ landlordName, city, stateAbbr, yelp }: Ext
           href={`https://www.apartments.com/search/?q=${encodeURIComponent(`${landlordName} ${city}`)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-between rounded-lg bg-white border border-gray-200 px-3 py-2.5 hover:border-teal-300 hover:bg-teal-50 transition-colors group"
+          className="flex items-center justify-between rounded-lg bg-white border border-slate-200 px-3 py-2.5 hover:border-teal-300 hover:bg-teal-50 transition-colors group"
         >
           <div className="flex items-center gap-2.5">
             <ApartmentsIcon />
-            <span className="text-xs text-gray-600">Search on Apartments.com</span>
+            <span className="text-xs text-slate-600">Search on Apartments.com</span>
           </div>
-          <ExternalLink className="h-3.5 w-3.5 text-gray-400 group-hover:text-teal-400" />
+          <ExternalLink className="h-3.5 w-3.5 text-slate-400 group-hover:text-teal-400" />
         </a>
       </div>
-      <p className="text-xs text-gray-400 mt-2.5">
+      <p className="text-xs text-slate-400 mt-2.5">
         External ratings are not verified by Vett and are provided for reference only.
       </p>
     </div>

@@ -134,8 +134,8 @@ export default function AddLandlordPage() {
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-50">
           <Building2 className="h-7 w-7 text-navy-600" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Sign in to add a landlord</h1>
-        <p className="mt-2 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-slate-900">Sign in to add a landlord</h1>
+        <p className="mt-2 text-sm text-slate-500">
           You need an account to submit landlord profiles for review.
         </p>
         <div className="mt-6 flex justify-center gap-3">
@@ -156,8 +156,8 @@ export default function AddLandlordPage() {
         <div className="h-16 w-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <CheckCircle2 className="h-8 w-8 text-teal-600" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">This landlord already exists!</h1>
-        <p className="text-gray-600 mb-6">We found a matching profile. View it or leave your review directly.</p>
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">This landlord already exists!</h1>
+        <p className="text-slate-600 mb-6">We found a matching profile. View it or leave your review directly.</p>
         <div className="flex gap-3 justify-center flex-wrap">
           <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
             <Link href={`/landlord/${existingSlug}`}>View Profile</Link>
@@ -176,9 +176,9 @@ export default function AddLandlordPage() {
         <div className="h-16 w-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <CheckCircle2 className="h-8 w-8 text-teal-600" />
         </div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Submission received!</h1>
-        <p className="text-gray-600 mb-2">Our founders will review and add this landlord to Vett within 1–2 business days.</p>
-        <p className="text-sm text-gray-500 mb-8">Once approved, you&apos;ll be able to write a review.</p>
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">Submission received!</h1>
+        <p className="text-slate-600 mb-2">Our founders will review and add this landlord to Vett within 1–2 business days.</p>
+        <p className="text-sm text-slate-500 mb-8">Once approved, you&apos;ll be able to write a review.</p>
         <div className="flex gap-3 justify-center">
           <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
             <Link href="/">Back to Home</Link>
@@ -191,7 +191,7 @@ export default function AddLandlordPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6">
+      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6">
         <ArrowLeft className="h-4 w-4" /> Back
       </Link>
 
@@ -261,7 +261,7 @@ export default function AddLandlordPage() {
         <div>
           <Label className="text-sm font-medium">
             Proof of Property Ownership
-            <span className="ml-1.5 text-xs font-normal text-gray-500">(optional but speeds up approval)</span>
+            <span className="ml-1.5 text-xs font-normal text-slate-500">(optional but speeds up approval)</span>
           </Label>
           <div className="mt-1.5 flex items-start gap-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 mb-2">
             <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
@@ -272,7 +272,7 @@ export default function AddLandlordPage() {
             className={`border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-colors ${
               isDragActive ? 'border-navy-400 bg-navy-50' :
               proofFile ? 'border-teal-400 bg-teal-50' :
-              'border-gray-200 hover:border-gray-300 bg-gray-50'
+              'border-slate-200 hover:border-slate-300 bg-slate-50'
             }`}
           >
             <input {...getInputProps()} />
@@ -280,22 +280,22 @@ export default function AddLandlordPage() {
               <div className="flex items-center justify-center gap-3">
                 <FileText className="h-5 w-5 text-teal-600" />
                 <div className="text-left">
-                  <p className="font-medium text-gray-900 text-sm">{proofFile.name}</p>
-                  <p className="text-xs text-gray-500">{(proofFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                  <p className="font-medium text-slate-900 text-sm">{proofFile.name}</p>
+                  <p className="text-xs text-slate-500">{(proofFile.size / 1024 / 1024).toFixed(2)} MB</p>
                 </div>
                 <button
                   type="button"
                   onClick={e => { e.stopPropagation(); setProofFile(null) }}
-                  className="ml-2 text-gray-400 hover:text-red-500"
+                  className="ml-2 text-slate-400 hover:text-red-500"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
             ) : (
               <>
-                <Upload className="h-6 w-6 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm font-medium text-gray-700">Drag & drop or click to upload</p>
-                <p className="text-xs text-gray-400 mt-0.5">PDF, JPG, PNG · Max 10MB</p>
+                <Upload className="h-6 w-6 text-slate-400 mx-auto mb-2" />
+                <p className="text-sm font-medium text-slate-700">Drag & drop or click to upload</p>
+                <p className="text-xs text-slate-400 mt-0.5">PDF, JPG, PNG · Max 10MB</p>
               </>
             )}
           </div>
@@ -322,7 +322,7 @@ export default function AddLandlordPage() {
           >
             {loading ? 'Submitting…' : 'Submit Landlord'}
           </Button>
-          <p className="text-xs text-gray-400 text-center mt-3">
+          <p className="text-xs text-slate-400 text-center mt-3">
             Submissions are reviewed by our founders within 1–2 business days. We check for duplicates and verify basic info.
           </p>
         </div>

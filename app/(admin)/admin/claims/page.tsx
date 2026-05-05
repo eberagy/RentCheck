@@ -93,8 +93,8 @@ export default function AdminClaimsPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Landlord Claims</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Review and approve landlord profile claim requests</p>
+          <h1 className="text-2xl font-bold text-slate-900">Landlord Claims</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Review and approve landlord profile claim requests</p>
         </div>
         <Select value={filter} onValueChange={(v) => setFilter(v ?? 'pending')}>
           <SelectTrigger className="w-36">
@@ -112,20 +112,20 @@ export default function AdminClaimsPage() {
       {loading ? (
         <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" /></div>
       ) : claims.length === 0 ? (
-        <div className="text-center py-20 text-gray-500">
+        <div className="text-center py-20 text-slate-500">
           <CheckCircle2 className="h-10 w-10 text-teal-400 mx-auto mb-3" />
           <p className="font-medium">No {filter} claims</p>
         </div>
       ) : (
         <div className="space-y-4">
           {claims.map(claim => (
-            <Card key={claim.id} className="border-gray-200">
+            <Card key={claim.id} className="border-slate-200">
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <Building2 className="h-4 w-4 text-navy-500" />
-                      <span className="font-semibold text-gray-900">{claim.landlord?.display_name ?? 'Unknown Landlord'}</span>
+                      <span className="font-semibold text-slate-900">{claim.landlord?.display_name ?? 'Unknown Landlord'}</span>
                       <Badge variant="outline" className={
                         claim.status === 'approved' ? 'text-teal-700 border-teal-300' :
                         claim.status === 'rejected' ? 'text-red-700 border-red-300' :
@@ -133,21 +133,21 @@ export default function AdminClaimsPage() {
                       }>{claim.status}</Badge>
                     </div>
                     {claim.landlord?.city && (
-                      <p className="text-sm text-gray-500">{claim.landlord.city}, {claim.landlord.state_abbr} · {claim.landlord.review_count} reviews</p>
+                      <p className="text-sm text-slate-500">{claim.landlord.city}, {claim.landlord.state_abbr} · {claim.landlord.review_count} reviews</p>
                     )}
                   </div>
-                  <span className="text-xs text-gray-400 flex-shrink-0">{formatDate(claim.created_at)}</span>
+                  <span className="text-xs text-slate-400 flex-shrink-0">{formatDate(claim.created_at)}</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
                   <div>
-                    <p className="text-xs text-gray-500 font-medium mb-0.5">Claimant</p>
-                    <p className="text-gray-900">{claim.claimer?.full_name ?? 'Unknown'}</p>
-                    <p className="text-gray-500 text-xs">{claim.claimer?.email}</p>
+                    <p className="text-xs text-slate-500 font-medium mb-0.5">Claimant</p>
+                    <p className="text-slate-900">{claim.claimer?.full_name ?? 'Unknown'}</p>
+                    <p className="text-slate-500 text-xs">{claim.claimer?.email}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 font-medium mb-0.5">Document Type</p>
-                    <p className="text-gray-900">{claim.verification_type ? (DOC_TYPE_LABELS[claim.verification_type] ?? claim.verification_type) : 'Not specified'}</p>
+                    <p className="text-xs text-slate-500 font-medium mb-0.5">Document Type</p>
+                    <p className="text-slate-900">{claim.verification_type ? (DOC_TYPE_LABELS[claim.verification_type] ?? claim.verification_type) : 'Not specified'}</p>
                   </div>
                 </div>
 
@@ -162,7 +162,7 @@ export default function AdminClaimsPage() {
                 )}
 
                 {claim.admin_notes && (
-                  <div className="bg-gray-50 rounded-lg p-3 mb-3 text-sm text-gray-600">
+                  <div className="bg-slate-50 rounded-lg p-3 mb-3 text-sm text-slate-600">
                     <span className="font-medium">Admin notes: </span>{claim.admin_notes}
                   </div>
                 )}

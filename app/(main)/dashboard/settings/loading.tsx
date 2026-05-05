@@ -6,7 +6,7 @@ export default function SettingsLoading() {
       <Skeleton className="h-4 w-40" />
       <Skeleton className="h-9 w-72" />
       <Skeleton className="h-4 w-96" />
-      <div className="bg-white border border-gray-200 rounded-xl divide-y">
+      <div className="bg-white border border-slate-200 rounded-xl divide-y">
         {[0, 1, 2].map(i => (
           <div key={i} className="p-6 space-y-3">
             <Skeleton className="h-4 w-32" />

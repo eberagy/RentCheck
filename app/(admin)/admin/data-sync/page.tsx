@@ -179,8 +179,8 @@ export default function AdminDataSyncPage() {
     <div className="p-4 sm:p-8 max-w-5xl">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Data Sync</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{SYNC_SOURCES.length} sources · {totalAdded.toLocaleString()} total records ingested</p>
+          <h1 className="text-2xl font-bold text-slate-900">Data Sync</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{SYNC_SOURCES.length} sources · {totalAdded.toLocaleString()} total records ingested</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={loadLogs} disabled={loading}>
@@ -202,7 +202,7 @@ export default function AdminDataSyncPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 mb-6 md:grid-cols-6">
         {[
-          { label: 'Never run', count: neverRun, color: 'bg-gray-50 border-gray-200 text-gray-600' },
+          { label: 'Never run', count: neverRun, color: 'bg-slate-50 border-slate-200 text-slate-600' },
           { label: 'Succeeded', count: succeeded, color: 'bg-teal-50 border-teal-200 text-teal-700' },
           { label: '0 records', count: zeroAddedSources.length, color: 'bg-amber-50 border-amber-200 text-amber-700' },
           { label: 'Partial', count: partial, color: 'bg-amber-50 border-amber-200 text-amber-700' },
@@ -223,12 +223,12 @@ export default function AdminDataSyncPage() {
           const isTriggering = triggering.has(source.id)
 
           return (
-            <Card key={source.id} className="border-gray-200">
+            <Card key={source.id} className="border-slate-200">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
                     {/* Status dot */}
-                    {!latest && <Clock className="h-4 w-4 text-gray-300 flex-shrink-0" />}
+                    {!latest && <Clock className="h-4 w-4 text-slate-300 flex-shrink-0" />}
                     {latest?.status === 'success' && <CheckCircle2 className="h-4 w-4 text-teal-500 flex-shrink-0" />}
                     {latest?.status === 'error' && <XCircle className="h-4 w-4 text-red-500 flex-shrink-0" />}
                     {latest?.status === 'running' && <Loader2 className="h-4 w-4 text-blue-500 animate-spin flex-shrink-0" />}
@@ -236,14 +236,14 @@ export default function AdminDataSyncPage() {
 
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="font-medium text-gray-900 text-sm">{source.label}</p>
-                        <span className="text-xs text-gray-400 hidden sm:inline">{source.schedule}</span>
+                        <p className="font-medium text-slate-900 text-sm">{source.label}</p>
+                        <span className="text-xs text-slate-400 hidden sm:inline">{source.schedule}</span>
                       </div>
-                      <p className="text-xs text-gray-400 truncate">{source.description}</p>
+                      <p className="text-xs text-slate-400 truncate">{source.description}</p>
 
                       {latest ? (
                         <div className="flex items-center gap-3 mt-1 text-xs flex-wrap">
-                          <span className="text-gray-400">{formatDate(latest.started_at)}</span>
+                          <span className="text-slate-400">{formatDate(latest.started_at)}</span>
                           {(latest.records_added ?? 0) > 0 && (
                             <span className="text-teal-600 font-medium">+{latest.records_added?.toLocaleString()} added</span>
                           )}
@@ -255,14 +255,14 @@ export default function AdminDataSyncPage() {
                             </span>
                           )}
                           {(latest.records_skipped ?? 0) > 0 && (
-                            <span className="text-gray-400">{latest.records_skipped?.toLocaleString()} skipped</span>
+                            <span className="text-slate-400">{latest.records_skipped?.toLocaleString()} skipped</span>
                           )}
                           {(latest.status === 'error' || (latest.status === 'success' && latest.error_message)) && latest.error_message && (
                             <span className="text-red-500 truncate max-w-xs" title={latest.error_message}>{latest.error_message}</span>
                           )}
                         </div>
                       ) : (
-                        <p className="text-xs text-gray-400 mt-0.5">Never run</p>
+                        <p className="text-xs text-slate-400 mt-0.5">Never run</p>
                       )}
                     </div>
                   </div>

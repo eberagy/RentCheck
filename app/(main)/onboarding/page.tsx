@@ -82,14 +82,14 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 px-6 py-4">
+      <header className="bg-white border-b border-slate-100 px-6 py-4">
         <Logo href="/" size="md" />
       </header>
 
       {/* Progress bar */}
-      <div className="h-1 bg-gray-200">
+      <div className="h-1 bg-slate-200">
         <div
           className="h-1 bg-teal-500 transition-all duration-500"
           style={{ width: step === 'role' ? '50%' : '100%' }}
@@ -110,7 +110,7 @@ export default function OnboardingPage() {
                 <h1 className="text-3xl font-extrabold text-navy-900 tracking-tight">
                   Who are you?
                 </h1>
-                <p className="mt-2 text-gray-500 text-base">
+                <p className="mt-2 text-slate-500 text-base">
                   This helps us personalise your Vett experience.
                 </p>
               </div>
@@ -127,7 +127,7 @@ export default function OnboardingPage() {
                         'relative rounded-2xl border-2 p-6 text-left transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2',
                         isSelected
                           ? 'border-teal-500 bg-teal-50 shadow-md'
-                          : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm',
+                          : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm',
                       ].join(' ')}
                     >
                       {isSelected && (
@@ -139,7 +139,7 @@ export default function OnboardingPage() {
                       <p className={`mt-3 font-bold text-lg ${isSelected ? 'text-teal-800' : 'text-navy-900'}`}>
                         {option.label}
                       </p>
-                      <p className="mt-1 text-sm text-gray-500 leading-relaxed">
+                      <p className="mt-1 text-sm text-slate-500 leading-relaxed">
                         {option.description}
                       </p>
                     </button>
@@ -168,12 +168,12 @@ export default function OnboardingPage() {
                 <h1 className="text-3xl font-extrabold text-navy-900 tracking-tight">
                   Which city are you in?
                 </h1>
-                <p className="mt-2 text-gray-500 text-base">
+                <p className="mt-2 text-slate-500 text-base">
                   We&rsquo;ll surface landlords and reviews near you first.
                 </p>
               </div>
 
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 space-y-4">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
                 <label htmlFor="city-select" className="block text-sm font-semibold text-navy-800">
                   Select your city
                 </label>
@@ -181,7 +181,7 @@ export default function OnboardingPage() {
                   id="city-select"
                   value={selectedCity}
                   onChange={(e) => setSelectedCity(e.target.value)}
-                  className="w-full h-11 rounded-lg border border-gray-300 bg-white px-3.5 text-sm text-gray-900 transition-colors outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20 disabled:opacity-50 appearance-none"
+                  className="w-full h-11 rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 transition-colors outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20 disabled:opacity-50 appearance-none"
                   style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
                 >
                   <option value="">— Choose a city —</option>
@@ -193,7 +193,7 @@ export default function OnboardingPage() {
                 </select>
 
                 {selectedCity && (
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-slate-500">
                     Universities:{' '}
                     {COLLEGE_CITIES.find(
                       (c) => `${c.city}, ${c.state}` === selectedCity
@@ -230,11 +230,11 @@ export default function OnboardingPage() {
                 </Button>
               </div>
 
-              <p className="text-center text-xs text-gray-400">
+              <p className="text-center text-xs text-slate-400">
                 Don&rsquo;t see your city?{' '}
                 <button
                   type="button"
-                  className="underline hover:text-gray-600"
+                  className="underline hover:text-slate-600"
                   onClick={handleFinish}
                 >
                   Skip for now

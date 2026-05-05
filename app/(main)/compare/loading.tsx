@@ -7,7 +7,7 @@ export default function CompareLoading() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {[1, 2].map(i => (
-          <div key={i} className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4">
+          <div key={i} className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
             <Skeleton className="h-7 w-56" />
             <Skeleton className="h-4 w-40" />
             <div className="grid grid-cols-2 gap-3 pt-2">

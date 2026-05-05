@@ -8,9 +8,9 @@ interface FCRADisclaimerProps {
 export function FCRADisclaimer({ variant = 'short' }: FCRADisclaimerProps) {
   if (variant === 'inline') {
     return (
-      <span className="text-xs text-gray-500">
+      <span className="text-xs text-slate-500">
         Not a consumer report.{' '}
-        <Link href="/fcra-notice" className="underline hover:text-gray-700">FCRA Notice</Link>
+        <Link href="/fcra-notice" className="underline hover:text-slate-700">FCRA Notice</Link>
       </span>
     )
   }

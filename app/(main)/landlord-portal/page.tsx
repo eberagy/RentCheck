@@ -24,7 +24,7 @@ function StarRow({ rating }: { rating: number }) {
       {[1, 2, 3, 4, 5].map(i => (
         <Star
           key={i}
-          className={`h-3.5 w-3.5 ${i <= Math.round(rating) ? 'text-amber-400 fill-amber-400' : 'text-gray-200'}`}
+          className={`h-3.5 w-3.5 ${i <= Math.round(rating) ? 'text-amber-400 fill-amber-400' : 'text-slate-200'}`}
         />
       ))}
     </div>
@@ -36,14 +36,14 @@ function RatingBar({ label, value }: { label: string; value: number | null }) {
   const pct = (value / 5) * 100
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-gray-500 w-28 flex-shrink-0">{label}</span>
-      <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+      <span className="text-xs text-slate-500 w-28 flex-shrink-0">{label}</span>
+      <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
         <div
           className="h-full bg-teal-500 rounded-full"
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-xs font-medium text-gray-700 w-6 text-right">{value.toFixed(1)}</span>
+      <span className="text-xs font-medium text-slate-700 w-6 text-right">{value.toFixed(1)}</span>
     </div>
   )
 }

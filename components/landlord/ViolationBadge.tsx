@@ -18,7 +18,7 @@ export function ViolationBadge({ severity, status, violationClass, size = 'md' }
         'inline-flex items-center rounded-full font-semibold',
         size === 'sm' ? 'px-1.5 py-0.5 text-xs' : 'px-2.5 py-1 text-xs',
         isClosed
-          ? 'bg-gray-100 text-gray-500 border border-gray-200'
+          ? 'bg-slate-100 text-slate-500 border border-slate-200'
           : severityColor(severity)
       )}
     >

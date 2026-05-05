@@ -33,7 +33,7 @@ export function LandlordGrade({ grade, size = 'md' }: LandlordGradeProps) {
       </TooltipTrigger>
       <TooltipContent>
         <p className="text-xs max-w-xs font-medium">Summary of public renter reviews on Vett.</p>
-        <p className="text-xs text-gray-400 mt-1">Not a credit or background report. Not from a consumer reporting agency.</p>
+        <p className="text-xs text-slate-400 mt-1">Not a credit or background report. Not from a consumer reporting agency.</p>
       </TooltipContent>
     </Tooltip>
   )

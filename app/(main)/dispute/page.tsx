@@ -70,9 +70,9 @@ function DisputeForm() {
     return (
       <div className="text-center py-8">
         <CheckCircle2 className="h-14 w-14 text-teal-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Dispute submitted</h2>
-        <p className="text-gray-600 mb-2">Our team will review your dispute within 5–7 business days.</p>
-        <p className="text-sm text-gray-500 mb-8">
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">Dispute submitted</h2>
+        <p className="text-slate-600 mb-2">Our team will review your dispute within 5–7 business days.</p>
+        <p className="text-sm text-slate-500 mb-8">
           If the record is found to be inaccurate, we will update or remove it.
           For errors in the original government data, we will refer you to the source agency.
         </p>
@@ -98,13 +98,13 @@ function DisputeForm() {
       )}
 
       <div>
-        <Label className="text-sm font-semibold text-gray-900 block mb-3">
+        <Label className="text-sm font-semibold text-slate-900 block mb-3">
           Reason for dispute <span className="text-red-500">*</span>
         </Label>
         <div className="space-y-2">
           {REASON_OPTIONS.map(opt => (
             <label key={opt} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
-              reason === opt ? 'border-navy-400 bg-navy-50' : 'border-gray-200 hover:border-gray-300'
+              reason === opt ? 'border-navy-400 bg-navy-50' : 'border-slate-200 hover:border-slate-300'
             }`}>
               <input
                 type="radio"
@@ -114,7 +114,7 @@ function DisputeForm() {
                 onChange={() => setReason(opt)}
                 className="text-navy-500 focus:ring-navy-400"
               />
-              <span className="text-sm text-gray-700">{opt}</span>
+              <span className="text-sm text-slate-700">{opt}</span>
             </label>
           ))}
         </div>
@@ -130,9 +130,9 @@ function DisputeForm() {
       </div>
 
       <div>
-        <Label htmlFor="detail" className="text-sm font-semibold text-gray-900 block mb-1.5">
+        <Label htmlFor="detail" className="text-sm font-semibold text-slate-900 block mb-1.5">
           Additional details
-          <span className="text-gray-400 font-normal ml-1">(optional)</span>
+          <span className="text-slate-400 font-normal ml-1">(optional)</span>
         </Label>
         <Textarea
           id="detail"
@@ -143,13 +143,13 @@ function DisputeForm() {
           maxLength={2000}
           className="text-sm resize-none"
         />
-        <p className="text-xs text-gray-400 text-right mt-0.5">{detail.length}/2000</p>
+        <p className="text-xs text-slate-400 text-right mt-0.5">{detail.length}/2000</p>
       </div>
 
       <div>
-        <Label htmlFor="evidence" className="text-sm font-semibold text-gray-900 block mb-1.5">
+        <Label htmlFor="evidence" className="text-sm font-semibold text-slate-900 block mb-1.5">
           Evidence URL
-          <span className="text-gray-400 font-normal ml-1">(optional)</span>
+          <span className="text-slate-400 font-normal ml-1">(optional)</span>
         </Label>
         <Input
           id="evidence"
@@ -186,7 +186,7 @@ function BackButton() {
         if (typeof window !== 'undefined' && window.history.length > 1) router.back()
         else router.push('/')
       }}
-      className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 rounded"
+      className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 rounded"
     >
       <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back
     </button>
@@ -204,13 +204,13 @@ export default function DisputePage() {
         </div>
         <h1 className="font-display text-[clamp(1.9rem,4vw,2.75rem)] leading-[1.08] tracking-tight text-slate-900">Dispute a Public Record</h1>
       </div>
-      <p className="text-gray-500 mb-8 leading-relaxed">
+      <p className="text-slate-500 mb-8 leading-relaxed">
         If you believe a public record on Vett is inaccurate, out of date, or misattributed,
         submit a dispute below. Our team reviews all disputes within 5–7 business days.
       </p>
 
-      <div className="bg-white border border-gray-200 rounded-xl p-6">
-        <Suspense fallback={<div className="h-40 flex items-center justify-center text-gray-400 text-sm">Loading…</div>}>
+      <div className="bg-white border border-slate-200 rounded-xl p-6">
+        <Suspense fallback={<div className="h-40 flex items-center justify-center text-slate-400 text-sm">Loading…</div>}>
           <DisputeForm />
         </Suspense>
       </div>

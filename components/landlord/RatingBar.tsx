@@ -13,14 +13,14 @@ export function RatingBar({ label, value, max = 5 }: RatingBarProps) {
 
   return (
     <div className="flex items-center gap-2">
-      <span className="text-xs text-gray-500 w-28 shrink-0">{label}</span>
-      <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+      <span className="text-xs text-slate-500 w-28 shrink-0">{label}</span>
+      <div className="flex-1 h-1.5 bg-slate-200 rounded-full overflow-hidden">
         <div
           className={cn('h-full rounded-full transition-all', color)}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-xs font-semibold text-gray-700 w-6 text-right shrink-0">{value.toFixed(1)}</span>
+      <span className="text-xs font-semibold text-slate-700 w-6 text-right shrink-0">{value.toFixed(1)}</span>
     </div>
   )
 }

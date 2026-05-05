@@ -88,7 +88,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6">
+      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6">
         <ArrowLeft className="h-4 w-4" /> Back
       </Link>
 
@@ -110,7 +110,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
         {[a, b].map((landlord, i) => (
           <div
             key={landlord.id}
-            className={`bg-white rounded-xl border p-5 ${overallWinner === (i === 0 ? 'a' : 'b') ? 'border-teal-400 ring-2 ring-teal-100' : 'border-gray-200'}`}
+            className={`bg-white rounded-xl border p-5 ${overallWinner === (i === 0 ? 'a' : 'b') ? 'border-teal-400 ring-2 ring-teal-100' : 'border-slate-200'}`}
           >
             {overallWinner === (i === 0 ? 'a' : 'b') && (
               <div className="inline-flex items-center gap-1 text-xs text-teal-700 font-semibold bg-teal-50 rounded-full px-2.5 py-1 mb-2">
@@ -119,24 +119,24 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
             )}
             <div className="flex items-start justify-between gap-2">
               <div>
-                <Link href={`/landlord/${landlord.slug}`} className="font-bold text-gray-900 hover:text-navy-600 hover:underline text-lg">
+                <Link href={`/landlord/${landlord.slug}`} className="font-bold text-slate-900 hover:text-navy-600 hover:underline text-lg">
                   {landlord.display_name}
                 </Link>
                 {landlord.is_verified && <VerifiedBadge />}
                 {(landlord.city || landlord.state_abbr) && (
-                  <p className="text-sm text-gray-500 mt-0.5">{[landlord.city, landlord.state_abbr].filter(Boolean).join(', ')}</p>
+                  <p className="text-sm text-slate-500 mt-0.5">{[landlord.city, landlord.state_abbr].filter(Boolean).join(', ')}</p>
                 )}
               </div>
             </div>
             <div className="mt-3">
               {landlord.avg_rating > 0 ? (
                 <>
-                  <div className="text-3xl font-bold text-gray-900">{landlord.avg_rating.toFixed(1)}</div>
+                  <div className="text-3xl font-bold text-slate-900">{landlord.avg_rating.toFixed(1)}</div>
                   <StarRating value={landlord.avg_rating} readonly size="sm" />
-                  <p className="text-xs text-gray-500 mt-0.5">{landlord.review_count} reviews</p>
+                  <p className="text-xs text-slate-500 mt-0.5">{landlord.review_count} reviews</p>
                 </>
               ) : (
-                <p className="text-sm text-gray-400">No reviews yet</p>
+                <p className="text-sm text-slate-400">No reviews yet</p>
               )}
             </div>
           </div>
@@ -144,10 +144,10 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
       </div>
 
       {/* Comparison table */}
-      <div className="bg-white rounded-xl border border-gray-200 divide-y overflow-hidden">
+      <div className="bg-white rounded-xl border border-slate-200 divide-y overflow-hidden">
         {/* Column headers */}
-        <div className="grid grid-cols-3 items-center py-2.5 px-5 gap-4 bg-gray-50 border-b border-gray-200">
-          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide text-center">Category</div>
+        <div className="grid grid-cols-3 items-center py-2.5 px-5 gap-4 bg-slate-50 border-b border-slate-200">
+          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wide text-center">Category</div>
           <div className="text-xs font-semibold text-navy-700 text-center truncate">{a.display_name}</div>
           <div className="text-xs font-semibold text-navy-700 text-center truncate">{b.display_name}</div>
         </div>
@@ -249,13 +249,13 @@ function CompareRow({
   const isGoodA = winner === 'a' && !note
   const isGoodB = winner === 'b' && !note
   return (
-    <div className="grid grid-cols-3 items-center py-3 px-5 gap-4 hover:bg-gray-50 transition-colors">
-      <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide text-center">{label}</div>
-      <div className={`text-center text-sm font-semibold rounded-md py-1 ${isGoodA ? 'text-teal-700 bg-teal-50' : 'text-gray-700'}`}>
+    <div className="grid grid-cols-3 items-center py-3 px-5 gap-4 hover:bg-slate-50 transition-colors">
+      <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide text-center">{label}</div>
+      <div className={`text-center text-sm font-semibold rounded-md py-1 ${isGoodA ? 'text-teal-700 bg-teal-50' : 'text-slate-700'}`}>
         {isGoodA && <span className="mr-1">▲</span>}
         {valA}
       </div>
-      <div className={`text-center text-sm font-semibold rounded-md py-1 ${isGoodB ? 'text-teal-700 bg-teal-50' : 'text-gray-700'}`}>
+      <div className={`text-center text-sm font-semibold rounded-md py-1 ${isGoodB ? 'text-teal-700 bg-teal-50' : 'text-slate-700'}`}>
         {isGoodB && <span className="mr-1">▲</span>}
         {valB}
       </div>

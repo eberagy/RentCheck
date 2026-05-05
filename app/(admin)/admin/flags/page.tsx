@@ -93,14 +93,14 @@ export default function AdminFlagsPage() {
   return (
     <div className="p-4 sm:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Flagged Reviews</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Community-reported reviews that need admin review</p>
+        <h1 className="text-2xl font-bold text-slate-900">Flagged Reviews</h1>
+        <p className="text-sm text-slate-500 mt-0.5">Community-reported reviews that need admin review</p>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" /></div>
       ) : items.length === 0 ? (
-        <div className="text-center py-20 text-gray-500">
+        <div className="text-center py-20 text-slate-500">
           <CheckCircle2 className="h-10 w-10 text-teal-400 mx-auto mb-3" />
           <p className="font-medium">No flagged reviews</p>
           <p className="text-sm mt-1">No community reports to review</p>
@@ -108,7 +108,7 @@ export default function AdminFlagsPage() {
       ) : (
         <div className="space-y-4">
           {items.map(item => (
-            <Card key={item.id} className="border-gray-200">
+            <Card key={item.id} className="border-slate-200">
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
@@ -117,27 +117,27 @@ export default function AdminFlagsPage() {
                       <Badge variant="outline" className="text-red-700 border-red-300">
                         {reasonLabels[item.reason] ?? item.reason}
                       </Badge>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-slate-400">
                         Flagged by {item.flagger?.full_name ?? item.flagger?.email ?? 'Unknown'} on {formatDate(item.created_at)}
                       </span>
                     </div>
 
                     {item.note && (
-                      <p className="text-sm text-gray-600 mb-3 italic">&ldquo;{item.note}&rdquo;</p>
+                      <p className="text-sm text-slate-600 mb-3 italic">&ldquo;{item.note}&rdquo;</p>
                     )}
 
                     {item.review && (
                       <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 mb-3">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-sm text-gray-900">{item.review.title}</span>
+                          <span className="font-semibold text-sm text-slate-900">{item.review.title}</span>
                           <Badge variant="outline" className={
                             item.review.status === 'approved' ? 'text-teal-700 border-teal-300' :
                             item.review.status === 'flagged' ? 'text-red-700 border-red-300' :
                             'text-amber-700 border-amber-300'
                           }>{item.review.status}</Badge>
                         </div>
-                        <p className="text-sm text-gray-600 line-clamp-2">{item.review.body}</p>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-sm text-slate-600 line-clamp-2">{item.review.body}</p>
+                        <p className="text-xs text-slate-400 mt-1">
                           by {item.review.reviewer?.full_name ?? 'Anonymous'}
                           {item.review.landlord && ` about ${item.review.landlord.display_name}`}
                         </p>

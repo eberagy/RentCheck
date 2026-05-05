@@ -180,7 +180,7 @@ export default function LoginClient() {
             {contextMessage ? (
               <p className="mt-2 text-sm font-medium text-teal-600">{contextMessage}</p>
             ) : (
-              <p className="mt-2 text-sm text-gray-500">Protect yourself — research before you rent.</p>
+              <p className="mt-2 text-sm text-slate-500">Protect yourself — research before you rent.</p>
             )}
           </div>
 
@@ -193,7 +193,7 @@ export default function LoginClient() {
                 Click it to sign in.
               </p>
               <button
-                className="mt-4 text-xs text-gray-400 hover:text-gray-600 underline"
+                className="mt-4 text-xs text-slate-400 hover:text-slate-600 underline"
                 onClick={() => { setMagicSent(false); setEmail('') }}
               >
                 Use a different email
@@ -206,10 +206,10 @@ export default function LoginClient() {
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading}
-                className="flex w-full items-center justify-center gap-3 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:bg-gray-50 disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:opacity-60"
               >
                 {googleLoading ? (
-                  <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+                  <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
                 ) : (
                   <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" aria-hidden>
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -222,24 +222,24 @@ export default function LoginClient() {
               </button>
 
               <div className="flex items-center gap-3">
-                <div className="flex-1 border-t border-gray-200" />
-                <span className="text-xs text-gray-400 font-medium">or</span>
-                <div className="flex-1 border-t border-gray-200" />
+                <div className="flex-1 border-t border-slate-200" />
+                <span className="text-xs text-slate-400 font-medium">or</span>
+                <div className="flex-1 border-t border-slate-200" />
               </div>
 
               {/* Mode toggle */}
-              <div className="flex rounded-lg border border-gray-200 p-0.5 bg-gray-50">
+              <div className="flex rounded-lg border border-slate-200 p-0.5 bg-slate-50">
                 <button
                   type="button"
                   onClick={() => setMode('password')}
-                  className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-colors ${mode === 'password' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                  className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-colors ${mode === 'password' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
                 >
                   Email & password
                 </button>
                 <button
                   type="button"
                   onClick={() => setMode('magic')}
-                  className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-colors ${mode === 'magic' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'}`}
+                  className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-colors ${mode === 'magic' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
                 >
                   Magic link
                 </button>
@@ -248,18 +248,18 @@ export default function LoginClient() {
               {mode === 'password' ? (
                 <div>
                   {/* Sign in / Sign up tabs */}
-                  <div className="flex border-b border-gray-200 mb-4">
+                  <div className="flex border-b border-slate-200 mb-4">
                     <button
                       type="button"
                       onClick={() => setPasswordTab('signin')}
-                      className={`flex-1 pb-2 text-sm font-medium transition-colors ${passwordTab === 'signin' ? 'text-navy-700 border-b-2 border-navy-700' : 'text-gray-400 hover:text-gray-600'}`}
+                      className={`flex-1 pb-2 text-sm font-medium transition-colors ${passwordTab === 'signin' ? 'text-navy-700 border-b-2 border-navy-700' : 'text-slate-400 hover:text-slate-600'}`}
                     >
                       Sign in
                     </button>
                     <button
                       type="button"
                       onClick={() => setPasswordTab('signup')}
-                      className={`flex-1 pb-2 text-sm font-medium transition-colors ${passwordTab === 'signup' ? 'text-navy-700 border-b-2 border-navy-700' : 'text-gray-400 hover:text-gray-600'}`}
+                      className={`flex-1 pb-2 text-sm font-medium transition-colors ${passwordTab === 'signup' ? 'text-navy-700 border-b-2 border-navy-700' : 'text-slate-400 hover:text-slate-600'}`}
                     >
                       Create account
                     </button>
@@ -273,7 +273,7 @@ export default function LoginClient() {
                         onChange={(e) => setFullName(e.target.value)}
                         placeholder="Full name"
                         required
-                        className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+                        className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
                       />
                     )}
                     <input
@@ -282,7 +282,7 @@ export default function LoginClient() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="your@email.com"
                       required
-                      className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+                      className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
                     />
                     <div className="relative">
                       <input
@@ -292,12 +292,12 @@ export default function LoginClient() {
                         placeholder={passwordTab === 'signup' ? 'Create a password (8+ chars)' : 'Password'}
                         required
                         minLength={passwordTab === 'signup' ? 8 : undefined}
-                        className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3.5 pr-10 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+                        className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 pr-10 text-sm text-slate-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                         tabIndex={-1}
                       >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -318,7 +318,7 @@ export default function LoginClient() {
                       )}
                     </Button>
                     {passwordTab === 'signin' && (
-                      <p className="text-center text-xs text-gray-400">
+                      <p className="text-center text-xs text-slate-400">
                         Forgot your password?{' '}
                         <button
                           type="button"
@@ -331,7 +331,7 @@ export default function LoginClient() {
                             if (error) toast.error(error.message)
                             else toast.success('Password reset link sent — check your email.')
                           }}
-                          className="underline hover:text-gray-600"
+                          className="underline hover:text-slate-600"
                         >
                           Reset password
                         </button>
@@ -347,7 +347,7 @@ export default function LoginClient() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
                     required
-                    className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3.5 text-sm text-gray-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+                    className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder-gray-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
                   />
                   <Button
                     type="submit"
@@ -366,23 +366,23 @@ export default function LoginClient() {
                       </span>
                     )}
                   </Button>
-                  <p className="text-xs text-center text-gray-400">
+                  <p className="text-xs text-center text-slate-400">
                     We&apos;ll email you a one-click sign-in link. No password needed.
                   </p>
                 </form>
               )}
 
-              <p className="text-xs text-center text-gray-400 pt-1">
+              <p className="text-xs text-center text-slate-400 pt-1">
                 By signing in, you agree to our{' '}
-                <Link href="/terms" className="underline hover:text-gray-600">Terms</Link>
+                <Link href="/terms" className="underline hover:text-slate-600">Terms</Link>
                 {' '}and{' '}
-                <Link href="/privacy" className="underline hover:text-gray-600">Privacy Policy</Link>.
+                <Link href="/privacy" className="underline hover:text-slate-600">Privacy Policy</Link>.
               </p>
             </div>
           )}
 
           <div className="mt-6 text-center">
-            <Link href="/" className="text-sm text-gray-500 hover:text-navy-600 transition-colors underline underline-offset-2">
+            <Link href="/" className="text-sm text-slate-500 hover:text-navy-600 transition-colors underline underline-offset-2">
               Continue as guest
             </Link>
           </div>

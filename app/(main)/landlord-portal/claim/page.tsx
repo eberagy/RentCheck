@@ -35,14 +35,14 @@ function StepIndicator({ current }: { current: 1 | 2 | 3 }) {
                     ? 'bg-teal-500 text-white'
                     : isActive
                     ? 'bg-navy-600 text-white ring-4 ring-navy-100'
-                    : 'bg-gray-100 text-gray-400'
+                    : 'bg-slate-100 text-slate-400'
                 }`}
               >
                 {isDone ? <CheckCircle2 className="h-4 w-4" /> : step.n}
               </div>
               <span
                 className={`text-xs font-medium whitespace-nowrap ${
-                  isActive ? 'text-navy-700' : isDone ? 'text-teal-600' : 'text-gray-400'
+                  isActive ? 'text-navy-700' : isDone ? 'text-teal-600' : 'text-slate-400'
                 }`}
               >
                 {step.label}
@@ -51,7 +51,7 @@ function StepIndicator({ current }: { current: 1 | 2 | 3 }) {
             {i < STEPS.length - 1 && (
               <div
                 className={`h-0.5 w-16 mx-1 mb-5 transition-all ${
-                  step.n < current ? 'bg-teal-400' : 'bg-gray-200'
+                  step.n < current ? 'bg-teal-400' : 'bg-slate-200'
                 }`}
               />
             )}
@@ -152,27 +152,27 @@ export default function ClaimProfilePage() {
           <div className="h-20 w-20 bg-teal-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="h-10 w-10 text-teal-600" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-3">Claim Request Submitted!</h1>
-          <p className="text-gray-500 text-sm leading-relaxed mb-2">
-            Our founders will review your documents within <strong className="text-gray-700">48 hours</strong>.
+          <h1 className="text-2xl font-bold text-slate-900 mb-3">Claim Request Submitted!</h1>
+          <p className="text-slate-500 text-sm leading-relaxed mb-2">
+            Our founders will review your documents within <strong className="text-slate-700">48 hours</strong>.
           </p>
-          <p className="text-gray-500 text-sm mb-8">
+          <p className="text-slate-500 text-sm mb-8">
             You&apos;ll receive an email when your claim is approved or if we need more information.
           </p>
 
-          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-5 mb-8 text-left space-y-3">
-            <h3 className="text-sm font-bold text-gray-700 mb-3">What happens next?</h3>
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-8 text-left space-y-3">
+            <h3 className="text-sm font-bold text-slate-700 mb-3">What happens next?</h3>
             <div className="flex items-start gap-3">
               <div className="h-6 w-6 rounded-full bg-navy-100 text-navy-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
-              <p className="text-sm text-gray-600">A founder or moderator reviews your verification document</p>
+              <p className="text-sm text-slate-600">A founder or moderator reviews your verification document</p>
             </div>
             <div className="flex items-start gap-3">
               <div className="h-6 w-6 rounded-full bg-navy-100 text-navy-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</div>
-              <p className="text-sm text-gray-600">You receive an email with the approval decision</p>
+              <p className="text-sm text-slate-600">You receive an email with the approval decision</p>
             </div>
             <div className="flex items-start gap-3">
               <div className="h-6 w-6 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</div>
-              <p className="text-sm text-gray-600">Once approved, respond to reviews and manage your profile</p>
+              <p className="text-sm text-slate-600">Once approved, respond to reviews and manage your profile</p>
             </div>
           </div>
 
@@ -191,8 +191,8 @@ export default function ClaimProfilePage() {
     <div className="max-w-xl mx-auto px-4 py-8">
       {/* Page header */}
       <div className="mb-8 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Claim Your Landlord Profile</h1>
-        <p className="text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-slate-900 mb-2">Claim Your Landlord Profile</h1>
+        <p className="text-sm text-slate-500">
           Verify ownership to respond to reviews and manage your profile.
         </p>
       </div>
@@ -209,11 +209,11 @@ export default function ClaimProfilePage() {
             }`}>
               {selectedLandlord ? <CheckCircle2 className="h-3.5 w-3.5" /> : '1'}
             </div>
-            <Label className="text-sm font-bold text-gray-800">Find Your Profile</Label>
+            <Label className="text-sm font-bold text-slate-800">Find Your Profile</Label>
           </div>
 
           <div className="relative mb-2">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <Input
               className="pl-9 pr-9"
               placeholder="Search your name or management company..."
@@ -221,7 +221,7 @@ export default function ClaimProfilePage() {
               onChange={e => { setSearchQuery(e.target.value); searchLandlords(e.target.value) }}
             />
             {searching && (
-              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
+              <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-slate-400" />
             )}
           </div>
 
@@ -247,15 +247,15 @@ export default function ClaimProfilePage() {
             </div>
           ) : (
             searchResults.length > 0 && (
-              <div className="border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+              <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
                 {searchResults.map(l => (
                   <button
                     key={l.id}
                     className="w-full text-left px-4 py-3.5 hover:bg-navy-50 border-b last:border-0 transition-colors"
                     onClick={() => { setSelectedLandlord(l); setSearchResults([]) }}
                   >
-                    <p className="font-semibold text-gray-900 text-sm">{l.display_name}</p>
-                    {l.city && <p className="text-xs text-gray-500 mt-0.5">{l.city}, {l.state_abbr}</p>}
+                    <p className="font-semibold text-slate-900 text-sm">{l.display_name}</p>
+                    {l.city && <p className="text-xs text-slate-500 mt-0.5">{l.city}, {l.state_abbr}</p>}
                   </button>
                 ))}
               </div>
@@ -263,7 +263,7 @@ export default function ClaimProfilePage() {
           )}
 
           {!searching && !selectedLandlord && searchQuery.length >= 2 && searchResults.length === 0 && (
-            <p className="text-xs text-gray-500 mt-2 text-center">
+            <p className="text-xs text-slate-500 mt-2 text-center">
               No unclaimed profiles found.{' '}
               <a href="/add-landlord" className="text-navy-600 underline hover:text-navy-800">
                 Add your profile
@@ -282,7 +282,7 @@ export default function ClaimProfilePage() {
               }`}>
                 {docType ? <CheckCircle2 className="h-3.5 w-3.5" /> : '2'}
               </div>
-              <Label className="text-sm font-bold text-gray-800">Document Type</Label>
+              <Label className="text-sm font-bold text-slate-800">Document Type</Label>
             </div>
             <Select onValueChange={(v: string | null) => setDocType(v ?? '')} disabled={!selectedLandlord}>
               <SelectTrigger>
@@ -305,7 +305,7 @@ export default function ClaimProfilePage() {
               }`}>
                 {docFile ? <CheckCircle2 className="h-3.5 w-3.5" /> : '3'}
               </div>
-              <Label className="text-sm font-bold text-gray-800">Upload Document</Label>
+              <Label className="text-sm font-bold text-slate-800">Upload Document</Label>
             </div>
 
             <div
@@ -315,7 +315,7 @@ export default function ClaimProfilePage() {
                   ? 'border-navy-400 bg-navy-50 scale-[1.01]'
                   : docFile
                   ? 'border-teal-400 bg-teal-50'
-                  : 'border-gray-300 hover:border-navy-300 hover:bg-gray-50'
+                  : 'border-slate-300 hover:border-navy-300 hover:bg-slate-50'
               }`}
             >
               <input {...getInputProps()} />
@@ -325,8 +325,8 @@ export default function ClaimProfilePage() {
                   <div className="h-12 w-12 bg-teal-100 rounded-xl flex items-center justify-center mb-1">
                     <FileText className="h-6 w-6 text-teal-600" />
                   </div>
-                  <span className="text-sm font-semibold text-gray-900">{docFile.name}</span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-sm font-semibold text-slate-900">{docFile.name}</span>
+                  <span className="text-xs text-slate-500">
                     {(docFile.size / 1024 / 1024).toFixed(2)} MB
                   </span>
                   <button
@@ -347,16 +347,16 @@ export default function ClaimProfilePage() {
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-2">
-                  <div className="h-12 w-12 bg-gray-100 rounded-xl flex items-center justify-center mb-1">
-                    <Upload className="h-6 w-6 text-gray-400" />
+                  <div className="h-12 w-12 bg-slate-100 rounded-xl flex items-center justify-center mb-1">
+                    <Upload className="h-6 w-6 text-slate-400" />
                   </div>
-                  <p className="text-sm font-semibold text-gray-700">Drag & drop your document here</p>
-                  <p className="text-xs text-gray-400">or click to browse files</p>
+                  <p className="text-sm font-semibold text-slate-700">Drag & drop your document here</p>
+                  <p className="text-xs text-slate-400">or click to browse files</p>
                   <div className="flex items-center gap-2 mt-2">
-                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">PDF</span>
-                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">JPG</span>
-                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">PNG</span>
-                    <span className="text-xs text-gray-400">· Max 10 MB</span>
+                    <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">PDF</span>
+                    <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">JPG</span>
+                    <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">PNG</span>
+                    <span className="text-xs text-slate-400">· Max 10 MB</span>
                   </div>
                 </div>
               )}

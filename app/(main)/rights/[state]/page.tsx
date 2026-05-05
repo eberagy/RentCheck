@@ -354,16 +354,16 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1 text-xs text-gray-500 mb-6">
+      <nav className="flex items-center gap-1 text-xs text-slate-500 mb-6">
         <Link href="/" className="hover:text-navy-700 hover:underline transition-colors">
           Home
         </Link>
-        <ChevronRight className="h-3 w-3 text-gray-300" />
+        <ChevronRight className="h-3 w-3 text-slate-300" />
         <Link href="/rights" className="hover:text-navy-700 hover:underline transition-colors">
           Tenant Rights
         </Link>
-        <ChevronRight className="h-3 w-3 text-gray-300" />
-        <span className="text-gray-700 font-medium">{stateInfo.name}</span>
+        <ChevronRight className="h-3 w-3 text-slate-300" />
+        <span className="text-slate-700 font-medium">{stateInfo.name}</span>
       </nav>
 
       {/* ── Page header ── */}
@@ -373,7 +373,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
         </div>
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-2xl font-extrabold text-gray-900">
+            <h1 className="text-2xl font-extrabold text-slate-900">
               {stateInfo.name} Tenant Rights
             </h1>
             {hasFullGuide && (
@@ -382,7 +382,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
               </span>
             )}
           </div>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-slate-500 text-sm mt-1">
             Renter protections in {stateInfo.name}. General information only — consult a local
             attorney for advice on your specific situation.
           </p>
@@ -443,7 +443,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
               </CardTitle>
             </CardHeader>
             <CardContent className="px-5 pb-4">
-              <p className="text-sm text-gray-700 leading-relaxed">{content}</p>
+              <p className="text-sm text-slate-700 leading-relaxed">{content}</p>
             </CardContent>
           </Card>
         ))}
@@ -478,7 +478,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
 
       {/* ── Common scenarios ── */}
       <div className="mb-8">
-        <p className="text-sm font-semibold text-gray-700 mb-3">Common scenarios</p>
+        <p className="text-sm font-semibold text-slate-700 mb-3">Common scenarios</p>
         <div className="grid gap-2 sm:grid-cols-2">
           {getAllScenarios().map(s => (
             <Link
@@ -497,7 +497,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
 
       {/* ── Browse other states ── */}
       <div>
-        <p className="text-sm font-semibold text-gray-700 mb-3">Browse other states</p>
+        <p className="text-sm font-semibold text-slate-700 mb-3">Browse other states</p>
         <div className="flex flex-wrap gap-2">
           {US_STATES.slice(0, 20).map(s => (
             <Link
@@ -506,7 +506,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
               className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors ${
                 s.abbr === stateAbbr
                   ? 'bg-navy-700 text-white border-navy-700'
-                  : 'border-gray-200 text-gray-700 hover:border-navy-300 hover:text-navy-700 bg-white'
+                  : 'border-slate-200 text-slate-700 hover:border-navy-300 hover:text-navy-700 bg-white'
               }`}
             >
               {s.abbr}
@@ -514,7 +514,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
           ))}
           <Link
             href="/rights"
-            className="text-xs px-3 py-1.5 rounded-lg border border-gray-200 text-gray-500 hover:border-navy-300 hover:text-navy-700 bg-white font-medium transition-colors"
+            className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-500 hover:border-navy-300 hover:text-navy-700 bg-white font-medium transition-colors"
           >
             All states →
           </Link>

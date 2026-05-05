@@ -23,14 +23,14 @@ export default function FcraNoticePage() {
         <p>Please read this notice carefully before using Vett data for any purpose.</p>
       </div>
 
-      <div className="space-y-6 text-sm leading-relaxed text-gray-700">
+      <div className="space-y-6 text-sm leading-relaxed text-slate-700">
         <section>
-          <h2 className="text-base font-semibold text-gray-900 mb-2">Vett Is Not a Consumer Reporting Agency</h2>
+          <h2 className="text-base font-semibold text-slate-900 mb-2">Vett Is Not a Consumer Reporting Agency</h2>
           <p>Vett is not a &ldquo;consumer reporting agency&rdquo; as that term is defined in the Fair Credit Reporting Act (FCRA), 15 U.S.C. § 1681 et seq. The information available on Vett does not constitute a &ldquo;consumer report&rdquo; under the FCRA.</p>
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-gray-900 mb-2">Prohibited Uses</h2>
+          <h2 className="text-base font-semibold text-slate-900 mb-2">Prohibited Uses</h2>
           <p>The information on Vett <strong>may NOT be used</strong> in whole or in part as a factor in:</p>
           <ul className="mt-2 list-disc list-inside space-y-1">
             <li>Determining a consumer&apos;s eligibility for residential rental housing</li>
@@ -43,7 +43,7 @@ export default function FcraNoticePage() {
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-gray-900 mb-2">Permitted Uses</h2>
+          <h2 className="text-base font-semibold text-slate-900 mb-2">Permitted Uses</h2>
           <p>Vett is designed for use by:</p>
           <ul className="mt-2 list-disc list-inside space-y-1">
             <li>Prospective renters researching a potential landlord or property before signing a lease</li>
@@ -54,12 +54,12 @@ export default function FcraNoticePage() {
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-gray-900 mb-2">Accuracy of Public Records</h2>
+          <h2 className="text-base font-semibold text-slate-900 mb-2">Accuracy of Public Records</h2>
           <p>Public records displayed on Vett are sourced directly from official government databases (NYC HPD, Chicago Dept of Buildings, CourtListener, etc.). Vett does not guarantee the accuracy, completeness, or timeliness of this data. Government records may contain errors. To dispute inaccurate government data, contact the issuing agency. To dispute a record as it appears on Vett, use the dispute feature on the record&apos;s page.</p>
         </section>
 
         <section>
-          <h2 className="text-base font-semibold text-gray-900 mb-2">Questions</h2>
+          <h2 className="text-base font-semibold text-slate-900 mb-2">Questions</h2>
           <p>For questions about this notice, contact <a href="mailto:legal@vettrentals.com" className="text-navy-600 hover:underline">legal@vettrentals.com</a>.</p>
         </section>
       </div>

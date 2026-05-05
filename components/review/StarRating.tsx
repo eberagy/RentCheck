@@ -51,7 +51,7 @@ export function StarRating({ value, onChange, readonly = false, size = 'md', sho
                     ? 'fill-amber-400 text-amber-400'
                     : halfFilled
                     ? 'fill-amber-200 text-amber-400'
-                    : 'fill-gray-200 text-gray-300'
+                    : 'fill-slate-200 text-slate-300'
                 )}
               />
             </button>
@@ -59,8 +59,8 @@ export function StarRating({ value, onChange, readonly = false, size = 'md', sho
         })}
       </div>
       {showLabel && value > 0 && (
-        <span className="text-sm font-medium text-gray-700 ml-1">
-          {value.toFixed(1)} <span className="text-gray-400 font-normal">· {LABELS[Math.round(value)] ?? ''}</span>
+        <span className="text-sm font-medium text-slate-700 ml-1">
+          {value.toFixed(1)} <span className="text-slate-400 font-normal">· {LABELS[Math.round(value)] ?? ''}</span>
         </span>
       )}
     </div>
@@ -72,8 +72,8 @@ export function RatingDisplay({ rating, count }: { rating: number; count: number
   return (
     <div className="flex items-center gap-1.5">
       <StarRating value={rating} readonly size="sm" />
-      <span className="text-sm font-semibold text-gray-900">{rating.toFixed(1)}</span>
-      <span className="text-sm text-gray-500">({count.toLocaleString()} {count === 1 ? 'review' : 'reviews'})</span>
+      <span className="text-sm font-semibold text-slate-900">{rating.toFixed(1)}</span>
+      <span className="text-sm text-slate-500">({count.toLocaleString()} {count === 1 ? 'review' : 'reviews'})</span>
     </div>
   )
 }

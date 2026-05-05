@@ -85,8 +85,8 @@ export default async function AdminAnalyticsPage() {
           <BarChart3 className="h-5 w-5" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Last 30 days of moderation activity. Updates on page load.</p>
+          <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Last 30 days of moderation activity. Updates on page load.</p>
         </div>
       </div>
 

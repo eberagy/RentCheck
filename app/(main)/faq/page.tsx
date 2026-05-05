@@ -79,7 +79,7 @@ export default function FAQPage() {
         {faqJsonLd}
       </Script>
       <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900 mb-3">Frequently Asked Questions</h1>
-      <p className="text-gray-500 mb-10">
+      <p className="text-slate-500 mb-10">
         Can&apos;t find your answer? Email{' '}
         <a href="mailto:support@vettrentals.com" className="text-navy-600 hover:underline font-medium">
           support@vettrentals.com
@@ -88,22 +88,22 @@ export default function FAQPage() {
 
       <div>
         {FAQS.map(faq => (
-          <details key={faq.id} id={faq.id} className="group border-b border-gray-100 [&_summary::-webkit-details-marker]:hidden">
+          <details key={faq.id} id={faq.id} className="group border-b border-slate-100 [&_summary::-webkit-details-marker]:hidden">
             <summary className="flex cursor-pointer items-center justify-between gap-4 py-4 text-left list-none">
-              <span className="font-semibold text-sm text-gray-900 transition-colors group-hover:text-gray-700 group-open:text-teal-700">
+              <span className="font-semibold text-sm text-slate-900 transition-colors group-hover:text-slate-700 group-open:text-teal-700">
                 {faq.q}
               </span>
-              <ChevronDown className="h-4 w-4 flex-shrink-0 text-gray-300 transition-transform group-open:rotate-180 group-open:text-teal-500" />
+              <ChevronDown className="h-4 w-4 flex-shrink-0 text-slate-300 transition-transform group-open:rotate-180 group-open:text-teal-500" />
             </summary>
             <div className="pb-4">
-              <p className="text-sm text-gray-700 leading-relaxed">{faq.a}</p>
+              <p className="text-sm text-slate-700 leading-relaxed">{faq.a}</p>
             </div>
           </details>
         ))}
       </div>
 
-      <div className="mt-10 pt-6 border-t border-gray-100 text-sm text-gray-400">
-        <p className="font-semibold text-gray-600 mb-1">Legal Notice</p>
+      <div className="mt-10 pt-6 border-t border-slate-100 text-sm text-slate-400">
+        <p className="font-semibold text-slate-600 mb-1">Legal Notice</p>
         <p className="leading-relaxed">
           Vett&apos;s public records data is sourced from official government databases and is provided for
           informational purposes only. We are not responsible for errors in source data. Read our{' '}

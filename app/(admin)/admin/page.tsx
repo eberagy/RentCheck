@@ -160,8 +160,8 @@ export default async function AdminDashboardPage() {
       {/* Header */}
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Platform overview and moderation queue</p>
+          <h1 className="text-2xl font-bold text-slate-900">Admin Dashboard</h1>
+          <p className="text-sm text-slate-500 mt-1">Platform overview and moderation queue</p>
         </div>
         <div className="flex items-center gap-2">
           <div className={`h-2.5 w-2.5 rounded-full ${hasDataErrors ? 'bg-red-500' : 'bg-teal-500'} animate-pulse`} />
@@ -181,60 +181,60 @@ export default async function AdminDashboardPage() {
                 <BarChart3 className="h-5 w-5 text-navy-600" />
               </div>
               <div>
-                <div className="text-2xl font-bold text-gray-900">{totalReviews.toLocaleString()}</div>
-                <div className="text-xs text-gray-500">Total Reviews</div>
+                <div className="text-2xl font-bold text-slate-900">{totalReviews.toLocaleString()}</div>
+                <div className="text-xs text-slate-500">Total Reviews</div>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2 pt-3 border-t border-gray-100">
+            <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-100">
               <div className="text-center">
                 <div className="text-lg font-bold text-amber-600">{(pendingReviews ?? 0).toLocaleString()}</div>
-                <div className="text-xs text-gray-500">Pending</div>
+                <div className="text-xs text-slate-500">Pending</div>
               </div>
-              <div className="text-center border-x border-gray-100">
+              <div className="text-center border-x border-slate-100">
                 <div className="text-lg font-bold text-teal-600">{(approvedReviews ?? 0).toLocaleString()}</div>
-                <div className="text-xs text-gray-500">Approved</div>
+                <div className="text-xs text-slate-500">Approved</div>
               </div>
               <div className="text-center">
                 <div className="text-lg font-bold text-red-500">{(rejectedReviews ?? 0).toLocaleString()}</div>
-                <div className="text-xs text-gray-500">Rejected</div>
+                <div className="text-xs text-slate-500">Rejected</div>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-gray-100">
+        <Card className="border-slate-100">
           <CardContent className="p-5 flex items-center gap-3">
             <div className="h-9 w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
               <TrendingUp className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900">{(totalLandlords ?? 0).toLocaleString()}</div>
-              <div className="text-xs text-gray-500">Total Landlords</div>
+              <div className="text-2xl font-bold text-slate-900">{(totalLandlords ?? 0).toLocaleString()}</div>
+              <div className="text-xs text-slate-500">Total Landlords</div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-gray-100">
+        <Card className="border-slate-100">
           <CardContent className="p-5 flex items-center gap-3">
             <div className="h-9 w-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
               <Users className="h-5 w-5 text-purple-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900">{(totalUsers ?? 0).toLocaleString()}</div>
-              <div className="text-xs text-gray-500">Total Users</div>
+              <div className="text-2xl font-bold text-slate-900">{(totalUsers ?? 0).toLocaleString()}</div>
+              <div className="text-xs text-slate-500">Total Users</div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-gray-100">
+        <Card className="border-slate-100">
           <CardContent className="p-5">
             <div className="flex items-center gap-3 mb-2">
               <div className="h-9 w-9 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0">
                 <Activity className="h-5 w-5 text-teal-600" />
               </div>
               <div>
-                <div className="text-2xl font-bold text-gray-900">{(totalWatchlists ?? 0).toLocaleString()}</div>
-                <div className="text-xs text-gray-500">Active Watchlists</div>
+                <div className="text-2xl font-bold text-slate-900">{(totalWatchlists ?? 0).toLocaleString()}</div>
+                <div className="text-xs text-slate-500">Active Watchlists</div>
               </div>
             </div>
           </CardContent>
@@ -274,7 +274,7 @@ export default async function AdminDashboardPage() {
                   )}
                 </div>
                 <div className={`text-3xl font-bold ${color}`}>{count}</div>
-                <div className="text-sm text-gray-600 mt-1">{label}</div>
+                <div className="text-sm text-slate-600 mt-1">{label}</div>
               </CardContent>
             </Card>
           </Link>
@@ -313,13 +313,13 @@ export default async function AdminDashboardPage() {
                 <div key={s.id} className="p-4 hover:bg-orange-50/50 transition-colors">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-gray-900">{s.display_name}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">
+                      <p className="text-sm font-semibold text-slate-900">{s.display_name}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">
                         {[s.city, s.state_abbr].filter(Boolean).join(', ')}
                         {' · Submitted by '}
                         {submitter?.full_name ?? submitter?.email ?? 'Unknown'}
                       </p>
-                      <p className="text-xs text-gray-400 mt-0.5">{formatDateRelative(s.created_at)}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">{formatDateRelative(s.created_at)}</p>
                     </div>
                     <Link href="/admin/submissions">
                       <Button size="sm" variant="outline" className="h-7 text-xs border-orange-300 text-orange-700 hover:bg-orange-100">
@@ -339,8 +339,8 @@ export default async function AdminDashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* Recent Activity — Pending Reviews with inline moderation */}
-        <Card className="border-gray-200">
-          <CardHeader className="pb-3 border-b border-gray-100">
+        <Card className="border-slate-200">
+          <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
                 <Clock className="h-4 w-4 text-amber-500" />
@@ -360,8 +360,8 @@ export default async function AdminDashboardPage() {
             {(recentPendingReviews ?? []).length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center px-4">
                 <CheckCircle2 className="h-8 w-8 text-teal-400 mb-2" />
-                <p className="text-sm font-medium text-gray-700">Queue is clear</p>
-                <p className="text-xs text-gray-400 mt-1">No pending reviews right now</p>
+                <p className="text-sm font-medium text-slate-700">Queue is clear</p>
+                <p className="text-xs text-slate-400 mt-1">No pending reviews right now</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-100">
@@ -375,22 +375,22 @@ export default async function AdminDashboardPage() {
                 }) => {
                   const reviewer = Array.isArray(r.reviewer) ? r.reviewer[0] : r.reviewer
                   return (
-                  <div key={r.id} className="p-4 hover:bg-gray-50 transition-colors">
+                  <div key={r.id} className="p-4 hover:bg-slate-50 transition-colors">
                     <div className="flex items-start justify-between gap-3 mb-2">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <p className="text-sm font-semibold text-gray-900 truncate">{r.title}</p>
+                          <p className="text-sm font-semibold text-slate-900 truncate">{r.title}</p>
                           <span className="text-xs text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded font-medium">
                             ★ {r.rating_overall}/5
                           </span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{r.body}</p>
+                        <p className="text-xs text-slate-500 mt-0.5 line-clamp-1">{r.body}</p>
                         <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-slate-400">
                             {reviewer?.full_name ?? reviewer?.email ?? 'Anonymous'}
                           </span>
-                          <span className="text-xs text-gray-300">·</span>
-                          <span className="text-xs text-gray-400">{formatDateRelative(r.created_at)}</span>
+                          <span className="text-xs text-slate-300">·</span>
+                          <span className="text-xs text-slate-400">{formatDateRelative(r.created_at)}</span>
                         </div>
                       </div>
                     </div>
@@ -399,7 +399,7 @@ export default async function AdminDashboardPage() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-7 text-xs border-gray-200 text-gray-600 hover:bg-gray-100"
+                            className="h-7 text-xs border-slate-200 text-slate-600 hover:bg-slate-100"
                           >
                             <Eye className="h-3 w-3 mr-1" />
                             Review
@@ -417,8 +417,8 @@ export default async function AdminDashboardPage() {
         </Card>
 
         {/* Data Health */}
-        <Card className="border-gray-200">
-          <CardHeader className="pb-3 border-b border-gray-100">
+        <Card className="border-slate-200">
+          <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <CardTitle className="text-base flex items-center gap-2">
                 <Database className="h-4 w-4 text-navy-600" />
@@ -434,7 +434,7 @@ export default async function AdminDashboardPage() {
           </CardHeader>
           <CardContent className="p-0">
             {dataSources.length === 0 ? (
-              <p className="text-sm text-gray-500 p-4">No syncs run yet</p>
+              <p className="text-sm text-slate-500 p-4">No syncs run yet</p>
             ) : (
               <div className="divide-y divide-gray-100">
                 {dataSources.map(s => {
@@ -450,10 +450,10 @@ export default async function AdminDashboardPage() {
                           }`}
                         />
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-gray-900 capitalize">
+                          <p className="text-sm font-medium text-slate-900 capitalize">
                             {s.source?.replace(/_/g, ' ')}
                           </p>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-xs text-slate-400">
                             Last sync {formatDateRelative(s.started_at)}
                           </p>
                         </div>
@@ -466,8 +466,8 @@ export default async function AdminDashboardPage() {
                           </div>
                         ) : (
                           <>
-                            <p className="text-xs text-gray-600 font-medium">+{(s.records_added ?? 0).toLocaleString()}</p>
-                            <p className="text-xs text-gray-400">{(s.records_updated ?? 0).toLocaleString()} updated</p>
+                            <p className="text-xs text-slate-600 font-medium">+{(s.records_added ?? 0).toLocaleString()}</p>
+                            <p className="text-xs text-slate-400">{(s.records_updated ?? 0).toLocaleString()} updated</p>
                           </>
                         )}
                       </div>

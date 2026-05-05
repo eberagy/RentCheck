@@ -97,8 +97,8 @@ export default async function AdminAuditPage({
           <ScrollText className="h-5 w-5" />
         </div>
         <div className="mr-auto">
-          <h1 className="text-2xl font-bold text-gray-900">Audit log</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <h1 className="text-2xl font-bold text-slate-900">Audit log</h1>
+          <p className="text-sm text-slate-500 mt-0.5">
             Every admin action — who, what, when.{' '}
             {filterAction
               ? <>Filter: <span className="font-medium text-slate-700">{ACTION_LABELS[filterAction] ?? filterAction}</span></>

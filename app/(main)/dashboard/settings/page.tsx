@@ -128,26 +128,26 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6">
+      <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6">
         <ArrowLeft className="h-4 w-4" /> Back to Dashboard
       </Link>
 
       <h1 className="font-display text-[clamp(1.9rem,4vw,2.75rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Account Settings</h1>
       <p className="text-slate-500 text-[14.5px] mb-8">Manage your profile and notification preferences</p>
 
-      <div className="bg-white border border-gray-200 rounded-xl divide-y">
+      <div className="bg-white border border-slate-200 rounded-xl divide-y">
         {/* Profile section */}
         <div className="p-6">
           <div className="flex items-center gap-2 mb-4">
-            <User className="h-4 w-4 text-gray-500" />
-            <h2 className="font-semibold text-gray-900">Profile</h2>
+            <User className="h-4 w-4 text-slate-500" />
+            <h2 className="font-semibold text-slate-900">Profile</h2>
           </div>
 
           <div className="space-y-4">
             <div>
               <Label className="text-sm font-medium">Profile photo</Label>
               <div className="mt-2 flex items-center gap-4">
-                <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-full border border-gray-200 bg-gray-50">
+                <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-50">
                   {profile?.avatar_url ? (
                     <Image
                       src={profile.avatar_url}
@@ -158,7 +158,7 @@ export default function SettingsPage() {
                       unoptimized
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-xl font-semibold text-gray-400">
+                    <div className="flex h-full w-full items-center justify-center text-xl font-semibold text-slate-400">
                       {(name || profile?.email || '?').trim().charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -191,13 +191,13 @@ export default function SettingsPage() {
                         size="sm"
                         disabled={uploadingAvatar}
                         onClick={removeAvatar}
-                        className="text-gray-500 hover:text-red-600"
+                        className="text-slate-500 hover:text-red-600"
                       >
                         <X className="h-4 w-4 mr-1.5" /> Remove
                       </Button>
                     )}
                   </div>
-                  <p className="text-xs text-gray-400">JPEG, PNG, WebP, or HEIC. Up to 5 MB. We crop to a square.</p>
+                  <p className="text-xs text-slate-400">JPEG, PNG, WebP, or HEIC. Up to 5 MB. We crop to a square.</p>
                 </div>
               </div>
             </div>
@@ -212,7 +212,7 @@ export default function SettingsPage() {
                 className="mt-1.5"
                 maxLength={100}
               />
-              <p className="text-xs text-gray-400 mt-1">This name appears on your reviews. Leave blank to stay anonymous.</p>
+              <p className="text-xs text-slate-400 mt-1">This name appears on your reviews. Leave blank to stay anonymous.</p>
             </div>
 
             <div>
@@ -220,9 +220,9 @@ export default function SettingsPage() {
               <Input
                 value={profile?.email ?? ''}
                 disabled
-                className="mt-1.5 bg-gray-50 text-gray-500"
+                className="mt-1.5 bg-slate-50 text-slate-500"
               />
-              <p className="text-xs text-gray-400 mt-1">Email is managed through your Google account and cannot be changed here.</p>
+              <p className="text-xs text-slate-400 mt-1">Email is managed through your Google account and cannot be changed here.</p>
             </div>
           </div>
         </div>
@@ -230,15 +230,15 @@ export default function SettingsPage() {
         {/* Notifications section */}
         <div id="email-preferences" className="p-6 scroll-mt-24">
           <div className="flex items-center gap-2 mb-4">
-            <Bell className="h-4 w-4 text-gray-500" />
-            <h2 className="font-semibold text-gray-900">Email Notifications</h2>
+            <Bell className="h-4 w-4 text-slate-500" />
+            <h2 className="font-semibold text-slate-900">Email Notifications</h2>
           </div>
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-900">Review status updates</p>
-                <p className="text-xs text-gray-500">Get notified when your reviews are approved or rejected</p>
+                <p className="text-sm font-medium text-slate-900">Review status updates</p>
+                <p className="text-xs text-slate-500">Get notified when your reviews are approved or rejected</p>
               </div>
               <Switch
                 checked={emailReviews}
@@ -250,8 +250,8 @@ export default function SettingsPage() {
 
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-900">Watchlist alerts</p>
-                <p className="text-xs text-gray-500">Get notified when landlords on your watchlist get new reviews or violations</p>
+                <p className="text-sm font-medium text-slate-900">Watchlist alerts</p>
+                <p className="text-xs text-slate-500">Get notified when landlords on your watchlist get new reviews or violations</p>
               </div>
               <Switch
                 checked={emailWatchlist}
@@ -262,17 +262,17 @@ export default function SettingsPage() {
         </div>
 
         {/* Public profile toggle */}
-        <div id="public-profile" className="p-6 border-t border-gray-100 scroll-mt-24">
+        <div id="public-profile" className="p-6 border-t border-slate-100 scroll-mt-24">
           <div className="flex items-center gap-2 mb-4">
-            <User className="h-4 w-4 text-gray-500" />
-            <h2 className="font-semibold text-gray-900">Public profile</h2>
+            <User className="h-4 w-4 text-slate-500" />
+            <h2 className="font-semibold text-slate-900">Public profile</h2>
           </div>
           <div className="flex items-center justify-between">
             <div className="pr-4">
-              <p className="text-sm font-medium text-gray-900">Share my published reviews</p>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-sm font-medium text-slate-900">Share my published reviews</p>
+              <p className="text-xs text-slate-500 mt-0.5">
                 Opt-in. Turns on a public page at{' '}
-                <code className="rounded bg-gray-100 px-1 py-0.5 text-[11px] text-gray-700">
+                <code className="rounded bg-slate-100 px-1 py-0.5 text-[11px] text-slate-700">
                   /u/{profile?.id?.slice(0, 8) ?? '…'}
                 </code>{' '}
                 showing only your <strong>approved</strong> reviews. Your email is never shown.
@@ -307,10 +307,10 @@ export default function SettingsPage() {
       </div>
 
       {/* Password section */}
-      <div className="mt-6 bg-white border border-gray-200 rounded-xl p-6">
+      <div className="mt-6 bg-white border border-slate-200 rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Lock className="h-4 w-4 text-gray-500" />
-          <h2 className="font-semibold text-gray-900">Change Password</h2>
+          <Lock className="h-4 w-4 text-slate-500" />
+          <h2 className="font-semibold text-slate-900">Change Password</h2>
         </div>
         <div className="space-y-3">
           <div>
@@ -344,12 +344,12 @@ export default function SettingsPage() {
       </div>
 
       {/* Data + account control */}
-      <div className="mt-6 bg-white border border-gray-200 rounded-xl p-6">
+      <div className="mt-6 bg-white border border-slate-200 rounded-xl p-6">
         <div className="flex items-center gap-2 mb-2">
-          <Download className="h-4 w-4 text-gray-500" />
-          <h2 className="font-semibold text-gray-900">Download your data</h2>
+          <Download className="h-4 w-4 text-slate-500" />
+          <h2 className="font-semibold text-slate-900">Download your data</h2>
         </div>
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-slate-500 mb-4">
           Export every row Vett stores about you (profile, reviews, watchlist, submissions, disputes) as a JSON file.
         </p>
         <Button variant="outline" asChild>
@@ -394,7 +394,7 @@ function AccountDeleteSection() {
   return (
     <div className="mt-8 bg-white border border-red-200 rounded-xl p-6">
       <h2 className="font-semibold text-red-700 mb-1">Delete account</h2>
-      <p className="text-sm text-gray-500 mb-4">
+      <p className="text-sm text-slate-500 mb-4">
         Permanently deletes your profile, watchlist, submissions, and stored documents.
         Your published reviews stay visible but are disassociated from you.
       </p>

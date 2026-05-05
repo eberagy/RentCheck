@@ -129,7 +129,7 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
 
         <div className="flex-shrink-0 text-right">
           <StarRating value={review.rating_overall} readonly size="sm" />
-          <p className="text-xs text-gray-400 mt-0.5">{formatDate(review.created_at)}</p>
+          <p className="text-xs text-slate-400 mt-0.5">{formatDate(review.created_at)}</p>
         </div>
       </div>
 
