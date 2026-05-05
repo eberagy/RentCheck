@@ -76,6 +76,7 @@ export function Navbar() {
           ) : user ? (
             <>
               <Button
+                asChild
                 size="sm"
                 className={cn(
                   'h-9 rounded-md px-4 text-[13px] font-semibold',
@@ -83,9 +84,8 @@ export function Navbar() {
                     ? 'bg-white text-slate-900 hover:bg-slate-100'
                     : 'bg-slate-900 text-white hover:bg-slate-800'
                 )}
-                onClick={() => router.push('/review/new')}
               >
-                Write a review
+                <Link href="/review/new">Write a review</Link>
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger
@@ -133,16 +133,17 @@ export function Navbar() {
             </>
           ) : (
             <>
-              <button
-                onClick={() => router.push('/login')}
+              <Link
+                href="/login"
                 className={cn(
                   'text-[13.5px] font-medium transition-colors',
                   isDark ? 'text-slate-400 hover:text-white' : 'text-slate-500 hover:text-slate-700'
                 )}
               >
                 Sign in
-              </button>
+              </Link>
               <Button
+                asChild
                 size="sm"
                 className={cn(
                   'h-9 rounded-md px-4 text-[13px] font-semibold',
@@ -150,9 +151,8 @@ export function Navbar() {
                     ? 'bg-white text-slate-900 hover:bg-slate-100'
                     : 'bg-slate-900 text-white hover:bg-slate-800'
                 )}
-                onClick={() => router.push('/review/new')}
               >
-                Write a review
+                <Link href="/review/new">Write a review</Link>
               </Button>
             </>
           )}
