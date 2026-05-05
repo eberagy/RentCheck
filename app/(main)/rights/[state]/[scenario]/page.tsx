@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft, ArrowUpRight, Scale } from 'lucide-react'
 import { US_STATES } from '@/types'
 import { getAllScenarios, getScenario } from '@/lib/rights-scenarios'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 interface ScenarioPageProps {
   params: { state: string; scenario: string }
@@ -34,7 +35,7 @@ export default async function ScenarioPage({ params }: ScenarioPageProps) {
   const scenario = getScenario(p.scenario)
   if (!scenario) notFound()
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
+  const siteUrl = canonicalSiteUrl()
 
   const articleJsonLd = {
     '@context': 'https://schema.org',

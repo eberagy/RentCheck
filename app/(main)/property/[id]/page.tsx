@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button'
 import { WatchlistButton } from '@/components/landlord/WatchlistButton'
 import { PUBLIC_REVIEW_SELECT } from '@/lib/reviews/public'
 import { formatAddress } from '@/lib/utils'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 import { buildPropertySummary } from '@/lib/summaries'
 import { cityPagePath, getCanonicalCity } from '@/lib/cities'
 import type { Review, PublicRecord } from '@/types'
@@ -111,7 +112,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   })
 
   // Schema.org structured data — Apartment / ApartmentComplex when units > 1.
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
+  const siteUrl = canonicalSiteUrl()
   const propertyJsonLd = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': (property.unit_count ?? 1) > 1 ? 'ApartmentComplex' : 'Apartment',

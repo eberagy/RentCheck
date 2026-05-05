@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { getPost, getAllPosts } from '@/lib/blog'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 interface BlogPostPageProps {
   params: { slug: string }
@@ -91,7 +92,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   if (!post) notFound()
 
   const Content = POSTS[post.slug]
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
+  const siteUrl = canonicalSiteUrl()
 
   const articleJsonLd = {
     '@context': 'https://schema.org',
