@@ -165,7 +165,11 @@ export function extractRecordDetails(
         councilDistrict: str(raw, 'council_district') ?? str(raw, 'community_board'),
         caseId: courtIndex ?? docket,
         statusUpdatedDate: str(raw, 'executed_date'),
-        residential: resi === 'Residential',
+        // NYC's published values are 'Residential' / 'Commercial' but
+        // case may shift if Tyler ever normalizes the upstream — match
+        // case-insensitively so a one-character drift doesn't flip the
+        // chip from residential to commercial.
+        residential: resi != null ? resi.toLowerCase() === 'residential' : null,
         agent,
         isOpen: false,
       }

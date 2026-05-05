@@ -79,6 +79,19 @@ describe('extractRecordDetails', () => {
       expect(d.agent).toBe('Marshal John Doe')
       expect(d.residential).toBe(true)
     })
+
+    it('matches residential/commercial case-insensitively', () => {
+      // Upstream value drift shouldn't flip the chip
+      expect(extractRecordDetails('nyc_marshals', { residential_commercial_ind: 'RESIDENTIAL' }).residential).toBe(true)
+      expect(extractRecordDetails('nyc_marshals', { residential_commercial_ind: 'residential' }).residential).toBe(true)
+      expect(extractRecordDetails('nyc_marshals', { residential_commercial_ind: 'Commercial' }).residential).toBe(false)
+      expect(extractRecordDetails('nyc_marshals', { residential_commercial_ind: 'COMMERCIAL' }).residential).toBe(false)
+    })
+
+    it('residential is null when the field is missing', () => {
+      const d = extractRecordDetails('nyc_marshals', { docket_number: 'X' })
+      expect(d.residential).toBeNull()
+    })
   })
 
   describe('chicago_buildings', () => {
