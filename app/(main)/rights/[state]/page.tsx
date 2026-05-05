@@ -21,6 +21,14 @@ interface TenantRightsPageProps {
   params: { state: string }
 }
 
+// Pre-render all 50 + DC at build time. Tenant-rights content is a closed
+// set keyed off state code; without this the route is classified `ƒ`
+// (dynamic) and Vercel emits `Cache-Control: private, no-cache`.
+export async function generateStaticParams() {
+  return US_STATES.map(s => ({ state: s.abbr.toLowerCase() }))
+}
+export const dynamicParams = false
+
 // Tenant rights data — key state protections
 const TENANT_RIGHTS: Record<
   string,
