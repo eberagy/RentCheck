@@ -13,7 +13,8 @@ export default function OgImage() {
         style={{
           width: '1200px',
           height: '630px',
-          background: '#0f172a',
+          // ink token from tailwind.config — matches the dark hero on the site
+          background: '#07111f',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
