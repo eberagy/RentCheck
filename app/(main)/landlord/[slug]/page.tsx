@@ -292,7 +292,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       </Script>
 
       <div className="min-h-screen bg-[#F8FAFC]">
-        <div className="mx-auto max-w-[1180px] px-4 py-7 sm:px-8">
+        <div className="mx-auto max-w-[1320px] px-4 py-7 sm:px-8">
         {/* Breadcrumb */}
         <nav className="mb-4 flex items-center gap-1 text-xs text-slate-500">
           <Link href="/" className="transition-colors hover:text-navy-700 hover:underline">Home</Link>
@@ -314,7 +314,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           <div className="h-[3px] bg-navy-500" />
 
           {/* Top row: identity + at-a-glance */}
-          <div className="grid gap-6 px-4 py-7 sm:px-8 lg:grid-cols-[1fr_320px] lg:items-start">
+          <div className="grid gap-6 px-4 py-7 sm:px-8 lg:grid-cols-[1fr_340px] lg:items-start">
             <div className="min-w-0 space-y-4">
               <div className="flex flex-wrap items-center gap-3">
                 <h1 className="font-display text-[clamp(1.8rem,4vw,2.4rem)] leading-tight tracking-tight text-slate-900">
@@ -518,17 +518,21 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             />
           </TabsContent>
 
-          {/* Public records tab */}
+          {/* Public records tab — chart is rendered inside the panel's
+              sticky left aside so it scrolls with the dashboard, not
+              the records list. */}
           <TabsContent value="records" keepMounted>
-            {landlordRecords.length >= 3 && (
-              <div className="mb-4 overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                <ViolationChart records={landlordRecords} />
-              </div>
-            )}
             <PublicRecordsPanel
               records={landlordRecords as PublicRecord[]}
               landlordName={landlord.display_name}
               isUnclaimed={!landlord.is_claimed}
+              chart={
+                landlordRecords.length >= 3 ? (
+                  <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <ViolationChart records={landlordRecords} />
+                  </div>
+                ) : null
+              }
             />
           </TabsContent>
 
@@ -541,7 +545,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                 <p className="mt-1 text-xs text-slate-400">Properties get linked automatically as public records are synced from government databases.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 {(properties as Property[])
                   .map(prop => ({
                     prop,

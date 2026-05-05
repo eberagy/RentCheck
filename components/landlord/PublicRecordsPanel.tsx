@@ -24,6 +24,10 @@ interface PublicRecordsPanelProps {
   landlordName: string
   isUnclaimed?: boolean
   propertyAddress?: string
+  /** Optional chart/visualization rendered inside the sticky left aside.
+   *  The landlord page passes <ViolationChart /> here so the dashboard
+   *  travels with the user as they scroll the records list. */
+  chart?: React.ReactNode
 }
 
 const GROUP_ORDER = [
@@ -414,7 +418,7 @@ function RecordGroup({ type, records }: { type: string; records: EnrichedRecord[
 
 type StatusFilter = 'all' | 'open' | 'closed'
 
-export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propertyAddress }: PublicRecordsPanelProps) {
+export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propertyAddress, chart }: PublicRecordsPanelProps) {
   const [filter, setFilter] = useState<StatusFilter>('all')
 
   // Pre-extract details once to avoid recomputing in the open/closed filter.
@@ -450,33 +454,33 @@ export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propert
     return { open, closed, info, overdue, rentImpairing }
   }, [records])
 
-  return (
-    <section className="space-y-5">
-      {/* Header card */}
+  // The dashboard (chart + summary + filter + disclaimers) lives in a
+  // sticky left aside on lg+, so it stays in view as the user scrolls
+  // through dozens or hundreds of records on the right. On smaller
+  // screens it stacks above the records like before.
+  const dashboard = (
+    <div className="space-y-4">
+      {chart}
       <header className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
-              Public records
-            </p>
-            <h2 className="mt-1 font-display text-[22px] leading-tight tracking-tight text-slate-950">
-              {landlordName ? `${landlordName}'s record` : 'Record summary'}
-            </h2>
-            {records.length > 0 ? (
-              <p className="mt-1 text-[13px] text-slate-500">
-                {records.length.toLocaleString()} record{records.length === 1 ? '' : 's'} aggregated from city + state government databases
-              </p>
-            ) : (
-              <p className="mt-1 text-[13px] text-slate-500">
-                No public records found in our coverage area.
-              </p>
-            )}
-          </div>
-        </div>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
+          Public records
+        </p>
+        <h2 className="mt-1 font-display text-[20px] leading-tight tracking-tight text-slate-950">
+          {landlordName ? `${landlordName}'s record` : 'Record summary'}
+        </h2>
+        {records.length > 0 ? (
+          <p className="mt-1 text-[12.5px] text-slate-500">
+            {records.length.toLocaleString()} record{records.length === 1 ? '' : 's'} from city + state databases
+          </p>
+        ) : (
+          <p className="mt-1 text-[12.5px] text-slate-500">
+            No public records found in our coverage area.
+          </p>
+        )}
 
         {records.length > 0 && (
           <>
-            <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+            <div className="mt-4 grid grid-cols-2 gap-2">
               <SummaryStat
                 tone="rose"
                 label="Open"
@@ -489,14 +493,14 @@ export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propert
                 label="Overdue"
                 value={totals.overdue}
                 icon={<Clock className="h-3.5 w-3.5" />}
-                hint="Past correct-by date"
+                hint="Past due"
               />
               <SummaryStat
                 tone="slate"
                 label="Closed"
                 value={totals.closed}
                 icon={<BadgeCheck className="h-3.5 w-3.5" />}
-                hint="Resolved or dismissed"
+                hint="Resolved"
               />
               <SummaryStat
                 tone="neutral"
@@ -508,15 +512,32 @@ export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propert
             </div>
 
             {totals.rentImpairing > 0 && (
-              <div className="mt-3 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2">
-                <AlertOctagon className="h-4 w-4 flex-shrink-0 text-red-600" />
-                <span className="text-[13px] text-red-800">
+              <div className="mt-3 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-3 py-2">
+                <AlertOctagon className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600" />
+                <span className="text-[12.5px] leading-relaxed text-red-800">
                   <strong>{totals.rentImpairing.toLocaleString()} rent-impairing</strong>{' '}
-                  violation{totals.rentImpairing === 1 ? '' : 's'} on file — these directly affect habitability.
+                  violation{totals.rentImpairing === 1 ? '' : 's'} on file — directly affect habitability.
                 </span>
               </div>
             )}
           </>
+        )}
+
+        {records.length > 0 && (
+          <div className="mt-4">
+            <p className="mb-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Filter</p>
+            <div className="flex flex-wrap items-center gap-1 rounded-full border border-slate-200 bg-white p-1">
+              <FilterTab active={filter === 'all'} onClick={() => setFilter('all')} count={records.length}>
+                <Filter className="h-3 w-3" /> All
+              </FilterTab>
+              <FilterTab active={filter === 'open'} onClick={() => setFilter('open')} count={totals.open} tone="rose">
+                <AlertTriangle className="h-3 w-3" /> Open
+              </FilterTab>
+              <FilterTab active={filter === 'closed'} onClick={() => setFilter('closed')} count={totals.closed}>
+                Closed
+              </FilterTab>
+            </div>
+          </div>
         )}
 
         <div className="mt-4">
@@ -526,56 +547,51 @@ export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propert
         {isUnclaimed && records.length > 0 && (
           <div className="mt-3 flex items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-3">
             <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" />
-            <p className="text-[13px] leading-6 text-amber-900">
-              These public records are associated with{' '}
+            <p className="text-[12.5px] leading-6 text-amber-900">
+              These records are associated with{' '}
               <strong>{propertyAddress ?? 'this landlord'}</strong> but the owner hasn&apos;t claimed
-              this profile to provide context.
+              this profile.
             </p>
           </div>
         )}
       </header>
+    </div>
+  )
 
-      {records.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5 rounded-full border border-slate-200 bg-white p-1 shadow-[0_1px_2px_rgba(15,23,42,0.04)] sm:w-fit">
-          <FilterTab active={filter === 'all'} onClick={() => setFilter('all')} count={records.length}>
-            <Filter className="h-3 w-3" /> All
-          </FilterTab>
-          <FilterTab active={filter === 'open'} onClick={() => setFilter('open')} count={totals.open} tone="rose">
-            <AlertTriangle className="h-3 w-3" /> Open
-          </FilterTab>
-          <FilterTab active={filter === 'closed'} onClick={() => setFilter('closed')} count={totals.closed}>
-            Closed
-          </FilterTab>
-        </div>
-      )}
+  const body = records.length === 0 ? (
+    <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+      <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
+        <Search className="h-5 w-5 text-slate-400" aria-hidden="true" />
+      </div>
+      <p className="font-medium text-slate-700">No public records found</p>
+      <p className="mx-auto mt-1 max-w-xs text-[13px] text-slate-500">
+        Our database covers 50+ city + state governments. Coverage varies by location.
+      </p>
+    </div>
+  ) : filtered.length === 0 ? (
+    <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
+      <p className="text-[13px] text-slate-500">
+        No {filter === 'open' ? 'open' : 'closed'} records match the current filter.
+      </p>
+    </div>
+  ) : (
+    <div className="space-y-7">
+      {grouped.map(([type, typeRecords]) => (
+        <RecordGroup
+          key={type}
+          type={type}
+          records={typeRecords}
+        />
+      ))}
+    </div>
+  )
 
-      {records.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
-            <Search className="h-5 w-5 text-slate-400" aria-hidden="true" />
-          </div>
-          <p className="font-medium text-slate-700">No public records found</p>
-          <p className="mx-auto mt-1 max-w-xs text-[13px] text-slate-500">
-            Our database covers 50+ city + state governments. Coverage varies by location.
-          </p>
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
-          <p className="text-[13px] text-slate-500">
-            No {filter === 'open' ? 'open' : 'closed'} records match the current filter.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-7">
-          {grouped.map(([type, typeRecords]) => (
-            <RecordGroup
-              key={type}
-              type={type}
-              records={typeRecords}
-            />
-          ))}
-        </div>
-      )}
+  return (
+    <section className="grid gap-5 lg:grid-cols-[340px_1fr] lg:items-start lg:gap-7">
+      <aside className="lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto lg:pr-1">
+        {dashboard}
+      </aside>
+      <div className="min-w-0">{body}</div>
     </section>
   )
 }
