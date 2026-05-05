@@ -83,8 +83,10 @@ export function ReviewsList({ reviews, landlordId, landlordSlug: _landlordSlug }
         </div>
       </div>
 
-      {/* Cards */}
-      <div className="space-y-4">
+      {/* Cards — capped for line-length readability on the wider page
+          container; the toolbar above stays full-width so it spans the
+          tab pane. */}
+      <div className="mx-auto max-w-3xl space-y-4">
         {sorted.map(review => (
           <ReviewCard key={review.id} review={review} />
         ))}
