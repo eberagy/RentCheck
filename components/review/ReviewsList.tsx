@@ -19,14 +19,13 @@ const SORT_LABELS: Record<SortOption, string> = {
 interface ReviewsListProps {
   reviews: Review[]
   landlordId: string
-  landlordSlug: string
   /** Total review count from the landlord row — usually ≥ reviews.length
    * because the page caps the query at 20. Used so the toolbar copy
    * doesn't claim "showing all" when there are extras off-screen. */
   totalReviews?: number
 }
 
-export function ReviewsList({ reviews, landlordId, landlordSlug: _landlordSlug, totalReviews }: ReviewsListProps) {
+export function ReviewsList({ reviews, landlordId, totalReviews }: ReviewsListProps) {
   const [sort, setSort] = useState<SortOption>('recent')
 
   const sorted = useMemo(() => {
