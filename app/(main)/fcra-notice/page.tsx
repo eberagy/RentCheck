@@ -12,14 +12,14 @@ export default function FcraNoticePage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
       <div className="mb-6">
-        <div className="h-11 w-11 bg-amber-100 rounded-xl flex items-center justify-center mb-4">
-          <AlertTriangle className="h-5 w-5 text-amber-600" />
+        <div className="h-12 w-12 bg-amber-100 ring-1 ring-amber-200 rounded-2xl flex items-center justify-center mb-5 text-amber-600">
+          <AlertTriangle className="h-6 w-6" />
         </div>
         <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900">FCRA Notice</h1>
       </div>
 
-      <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-8 text-sm text-amber-900">
-        <p className="font-semibold mb-1">IMPORTANT NOTICE REGARDING THE FAIR CREDIT REPORTING ACT</p>
+      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-8 text-sm text-amber-900">
+        <p className="font-semibold mb-1 uppercase tracking-[0.08em]">Important notice regarding the Fair Credit Reporting Act</p>
         <p>Please read this notice carefully before using Vett data for any purpose.</p>
       </div>
 
