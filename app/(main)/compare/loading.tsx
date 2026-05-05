@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function CompareLoading() {
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-5xl mx-auto px-4 py-8">
       <Skeleton className="h-9 w-72 mb-6" />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

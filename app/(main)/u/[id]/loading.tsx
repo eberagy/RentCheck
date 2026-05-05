@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function RenterProfileLoading() {
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
+    <div className="mx-auto max-w-[820px] px-4 py-8">
       <Skeleton className="h-4 w-32 mb-6" />
 
       <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-6">
