@@ -12,7 +12,7 @@ import { DataAccuracyNote } from '@/components/compliance/DataAccuracyNote'
 import { formatDate } from '@/lib/utils'
 import { RECORD_TYPE_LABELS } from '@/types'
 import type { PublicRecord } from '@/types'
-import { extractRecordDetails, type RecordDetails } from '@/lib/records/extract'
+import { extractRecordDetails } from '@/lib/records/extract'
 import {
   INFORMATIONAL_RECORD_TYPES,
   COURT_RECORD_TYPES,
