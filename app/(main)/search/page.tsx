@@ -652,12 +652,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </form>
 
           {(state || minRating > 0 || verifiedOnly || hasViolationsOnly) && (
-            <a
-              href={q ? `?q=${q}` : '/search'}
+            <Link
+              href={q ? `/search?q=${encodeURIComponent(q)}` : '/search'}
               className="self-start rounded-full border border-slate-200 bg-white px-3.5 py-2 text-[12.5px] text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
             >
               Clear filters
-            </a>
+            </Link>
           )}
         </aside>
 
