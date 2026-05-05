@@ -359,7 +359,7 @@ export default function LandlordPortalPage() {
               ].map(s => (
                 <div key={s.l} className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
                   <div className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-slate-400">{s.l}</div>
-                  <div className={`mt-2 text-[26px] sm:text-[32px] font-extrabold tracking-tight ${s.tone === 'amber' ? 'text-amber-700' : 'text-slate-900'}`}>{s.v}</div>
+                  <div className={`mt-2 font-display text-[26px] sm:text-[32px] font-semibold leading-none tracking-[-0.02em] tabular-nums ${s.tone === 'amber' ? 'text-amber-700' : 'text-slate-900'}`}>{s.v}</div>
                   <div className={`mt-1 text-[12px] ${s.tone === 'amber' ? 'text-amber-600' : 'text-teal'}`}>{s.sub}</div>
                 </div>
               ))}
