@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { normalizeAddress, verifyCronSecret } from './utils'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { normalizeAddress, verifyCronSecret, withRetry } from './utils'
 
 describe('normalizeAddress', () => {
   it('lowercases the input', () => {
@@ -86,5 +86,34 @@ describe('verifyCronSecret', () => {
 
   it('does NOT match when bearer prefix is missing', () => {
     expect(verifyCronSecret(makeReq({ authorization: 'test-secret-do-not-ship' }))).toBe(false)
+  })
+})
+
+describe('withRetry', () => {
+  it('returns the value on first success', async () => {
+    const fn = vi.fn().mockResolvedValue('ok')
+    expect(await withRetry(fn)).toBe('ok')
+    expect(fn).toHaveBeenCalledTimes(1)
+  })
+
+  it('retries on failure up to the configured limit', async () => {
+    const fn = vi.fn()
+      .mockRejectedValueOnce(new Error('flake 1'))
+      .mockRejectedValueOnce(new Error('flake 2'))
+      .mockResolvedValue('finally')
+    expect(await withRetry(fn, 3)).toBe('finally')
+    expect(fn).toHaveBeenCalledTimes(3)
+  })
+
+  it('throws the last error after exhausting retries', async () => {
+    const fn = vi.fn().mockRejectedValue(new Error('persistent'))
+    await expect(withRetry(fn, 2)).rejects.toThrow('persistent')
+    expect(fn).toHaveBeenCalledTimes(2)
+  })
+
+  it('default retries is 3', async () => {
+    const fn = vi.fn().mockRejectedValue(new Error('bad'))
+    await expect(withRetry(fn)).rejects.toThrow('bad')
+    expect(fn).toHaveBeenCalledTimes(3)
   })
 })
