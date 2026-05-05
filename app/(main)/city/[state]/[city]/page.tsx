@@ -362,7 +362,7 @@ export default async function CityPage({ params }: CityPageProps) {
                         ) : (
                           <span>{landlord?.display_name ?? 'Unlinked landlord'}</span>
                         )}
-                        {r.filed_date && <span className="ml-2 text-slate-400">· {new Date(r.filed_date).toLocaleDateString()}</span>}
+                        {r.filed_date && <span className="ml-2 text-slate-400">· {new Date(r.filed_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>}
                       </p>
                     </div>
                     <span className={`flex-shrink-0 rounded-full border px-2.5 py-1 text-[11px] font-semibold capitalize ${tone}`}>
