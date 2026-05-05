@@ -337,7 +337,7 @@ export default function LandlordPortalPage() {
 
         {/* ── Rejected claim ── */}
         {claim && claim.status === 'rejected' && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-6">
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
             <h2 className="font-bold text-red-900">Claim Rejected</h2>
             <p className="mt-1 text-sm text-red-800">{claim.admin_notes ?? 'Your verification documents could not be confirmed. Please try again with different documents.'}</p>
             <Button asChild size="sm" variant="outline" className="mt-4 rounded-full border-red-300 text-red-700 hover:bg-red-100">
@@ -357,7 +357,7 @@ export default function LandlordPortalPage() {
                 { l: 'Response rate', v: reviews.length > 0 ? `${Math.round((respondedReviews / reviews.length) * 100)}%` : '—', sub: `${respondedReviews} responded`, tone: 'teal' },
                 { l: 'Open disputes', v: String(openDisputes), sub: openDisputes === 0 ? 'No open disputes' : `${openDisputes} in review`, tone: 'amber' },
               ].map(s => (
-                <div key={s.l} className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+                <div key={s.l} className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
                   <div className="text-[10.5px] font-bold uppercase tracking-[0.18em] text-slate-400">{s.l}</div>
                   <div className={`mt-2 font-display text-[26px] sm:text-[32px] font-semibold leading-none tracking-[-0.02em] tabular-nums ${s.tone === 'amber' ? 'text-amber-700' : 'text-slate-900'}`}>{s.v}</div>
                   <div className={`mt-1 text-[12px] ${s.tone === 'amber' ? 'text-amber-600' : 'text-teal'}`}>{s.sub}</div>
