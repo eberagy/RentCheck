@@ -173,7 +173,7 @@ export default function OnboardingPage() {
                 </p>
               </div>
 
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-[0_1px_2px_rgba(15,23,42,0.04)] p-6 space-y-4">
                 <label htmlFor="city-select" className="block text-sm font-semibold text-navy-800">
                   Select your city
                 </label>

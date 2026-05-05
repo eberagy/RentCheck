@@ -208,7 +208,7 @@ async function SearchResults({
 
     if (pageResults.length === 0) {
       return (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
           <div className="border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white px-6 py-5">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-navy-50 text-navy-600">
