@@ -174,7 +174,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
           <div className="border-t border-slate-100 bg-slate-50/50 px-4 py-2.5 rounded-b-2xl">
             <button
               type="button"
-              onClick={handleSubmit as unknown as React.MouseEventHandler}
+              onClick={e => handleSubmit(e)}
               className="text-xs font-medium text-navy-600 hover:text-navy-800"
             >
               See all results for &ldquo;{query}&rdquo; →
