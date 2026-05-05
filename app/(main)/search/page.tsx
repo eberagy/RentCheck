@@ -73,6 +73,7 @@ type SearchPageResult = SearchResult & {
   landlordIsVerified?: boolean | null
   open_violation_count?: number | null
   property_count?: number | null
+  is_claimed?: boolean
 }
 
 async function SearchResults({
@@ -122,7 +123,7 @@ async function SearchResults({
       landlordIds.length
         ? supabase
             .from('landlords')
-            .select('id, display_name, avg_rating, review_count, open_violation_count, total_violation_count, eviction_count, city, state_abbr, is_verified, slug, response_rate')
+            .select('id, display_name, avg_rating, review_count, open_violation_count, total_violation_count, eviction_count, city, state_abbr, is_verified, is_claimed, slug, response_rate')
             .in('id', landlordIds)
         : Promise.resolve({ data: [] as Record<string, unknown>[], error: null }),
       propertyIds.length
@@ -139,7 +140,7 @@ async function SearchResults({
         : Promise.resolve({ data: [] as Record<string, unknown>[], error: null }),
     ])
 
-    type LandlordRow = Pick<Landlord, 'id' | 'display_name' | 'avg_rating' | 'review_count' | 'open_violation_count' | 'total_violation_count' | 'eviction_count' | 'city' | 'state_abbr' | 'is_verified' | 'slug' | 'response_rate'>
+    type LandlordRow = Pick<Landlord, 'id' | 'display_name' | 'avg_rating' | 'review_count' | 'open_violation_count' | 'total_violation_count' | 'eviction_count' | 'city' | 'state_abbr' | 'is_verified' | 'is_claimed' | 'slug' | 'response_rate'>
     type PropertyRow = Pick<Property, 'id' | 'address_line1' | 'avg_rating' | 'review_count' | 'city' | 'state_abbr'> & {
       landlord: { display_name: string | null; is_verified: boolean | null } | null
     }
@@ -167,6 +168,7 @@ async function SearchResults({
             review_count: landlord.review_count ?? result.review_count,
             avg_rating: landlord.avg_rating ?? result.avg_rating,
             is_verified: landlord.is_verified ?? result.is_verified,
+            is_claimed: landlord.is_claimed ?? false,
             summary: truncateSummary(buildLandlordSummary({ landlord }), 140),
           }
         }
@@ -460,7 +462,7 @@ function SearchResultCard({ result }: { result: SearchPageResult }) {
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="truncate text-[16.5px] font-bold text-slate-900">{result.display_name}</span>
             {result.is_verified && result.result_type === 'landlord' && <VerifiedBadge small />}
-            {result.result_type === 'landlord' && (
+            {result.result_type === 'landlord' && result.is_claimed && (
               <Chip tone="sky" className="h-5 text-[10px]">Claimed</Chip>
             )}
           </div>
