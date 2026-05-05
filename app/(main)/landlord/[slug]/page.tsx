@@ -514,13 +514,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
               records={landlordRecords as PublicRecord[]}
               landlordName={landlord.display_name}
               isUnclaimed={!landlord.is_claimed}
-              chart={
-                landlordRecords.length >= 3 ? (
-                  <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <ViolationChart records={landlordRecords} />
-                  </div>
-                ) : null
-              }
+              chart={landlordRecords.length >= 3 ? <ViolationChart records={landlordRecords} /> : null}
             />
           </TabsContent>
 
