@@ -68,6 +68,25 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
+  // Only refresh the Supabase session on paths the middleware actually
+  // uses `user` for (admin gate, ban check, auth redirects below). For
+  // public pages (landlord, property, city, /, /search, /blog, /faq, etc.)
+  // we skip auth entirely. Otherwise every response carries a fresh
+  // Set-Cookie from the SSR session refresh, which forces
+  // `Cache-Control: private` and torpedoes Vercel's edge cache — causing
+  // the landlord page to MISS on every hit (~1.7s SSR each time).
+  const requiresSession =
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/landlord-portal') ||
+    pathname.startsWith('/review/new') ||
+    pathname.startsWith('/add-landlord') ||
+    pathname.startsWith('/dispute')
+
+  if (!requiresSession) {
+    return supabaseResponse
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
