@@ -90,21 +90,10 @@ const config: Config = {
         sans: ['var(--font-sans)', ...fontFamily.sans],
         display: ['var(--font-display)', 'Georgia', 'serif'],
       },
-      // Only `animate-blob` is referenced by the codebase (used by
-      // GradientBlob). The other 8 animation utilities + their keyframes
-      // were dead-code drag — pruned 2026-05-05. Re-add only when an
-      // actual call site needs them.
-      animation: {
-        blob: 'blob 8s ease-in-out infinite',
-      },
-      keyframes: {
-        blob: {
-          '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
-          '25%': { transform: 'translate(20px, -30px) scale(1.1)' },
-          '50%': { transform: 'translate(-10px, 20px) scale(0.95)' },
-          '75%': { transform: 'translate(15px, 10px) scale(1.05)' },
-        },
-      },
+      // No custom animations needed — the design system uses
+      // Tailwind's defaults (animate-pulse, animate-spin, animate-bounce).
+      // GradientBlob was the only consumer of `animate-blob` and it was
+      // deleted. Re-add tokens here when an actual call site needs them.
     },
   },
   plugins: [require('@tailwindcss/typography')],
