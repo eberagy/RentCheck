@@ -8,6 +8,8 @@ import {
   formatCount,
   ratingToLabel,
   severityLabel,
+  gradeColor,
+  gradeBgLight,
 } from './utils'
 
 describe('formatAddress', () => {
@@ -137,5 +139,31 @@ describe('severityLabel', () => {
 
   it('returns "Unknown" for null / unrecognized', () => {
     expect(severityLabel(null)).toBe('Unknown')
+  })
+})
+
+describe('gradeColor / gradeBgLight', () => {
+  it('returns a class string for every grade letter A-F', () => {
+    for (const letter of ['A', 'B', 'C', 'D', 'F'] as const) {
+      const c = gradeColor(letter)
+      expect(c).toMatch(/text-white/)
+      expect(c.split(' ').length).toBeGreaterThanOrEqual(2)
+
+      const lt = gradeBgLight(letter)
+      expect(lt).toMatch(/border-/)
+      expect(lt).toMatch(/text-/)
+    }
+  })
+
+  it('returns a sane fallback for null grade (no styling guess)', () => {
+    expect(gradeColor(null)).toBe('bg-slate-200 text-slate-600')
+    expect(gradeBgLight(null)).toBe('bg-slate-50 border-slate-200 text-slate-600')
+  })
+
+  it('A grade is teal (positive), F is red (negative)', () => {
+    expect(gradeColor('A')).toContain('teal')
+    expect(gradeColor('F')).toContain('red')
+    expect(gradeBgLight('A')).toContain('teal')
+    expect(gradeBgLight('F')).toContain('red')
   })
 })
