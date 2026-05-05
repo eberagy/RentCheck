@@ -60,7 +60,7 @@ export default function TenantRightsIndexPage() {
     <div className="min-h-screen bg-slate-50">
       {/* Hero */}
       <section className="border-b border-slate-200 bg-white px-7 py-16">
-        <div className="mx-auto max-w-[1180px]">
+        <div className="mx-auto max-w-[1320px]">
           <Eyebrow tone="teal"><Shield className="inline h-3 w-3" /> Tenant rights guide</Eyebrow>
           <h1 className="mt-[18px] font-display text-[clamp(2.4rem,5vw,4rem)] leading-[1.08] tracking-tight text-slate-900">
             Your rights as a renter,{' '}
@@ -78,7 +78,7 @@ export default function TenantRightsIndexPage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1180px] px-7 py-12">
+      <div className="mx-auto max-w-[1320px] px-7 py-12">
         {/* 4 Universal Rights */}
         <section className="mb-12">
           <h2 className="text-[18px] font-bold text-slate-900 mb-1">4 Rights Every Renter Has — Nationwide</h2>
