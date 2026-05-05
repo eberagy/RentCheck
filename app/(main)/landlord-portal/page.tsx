@@ -215,8 +215,7 @@ export default function LandlordPortalPage() {
         ...landlord,
         website: profileWebsite.trim() || null,
         phone: profilePhone.trim() || null,
-        // description lives on the Landlord row; cast through an extended shape.
-        ...(({ description: profileDescription.trim() || null } as unknown as Partial<Landlord>)),
+        description: profileDescription.trim() || null,
       })
       setEditingProfile(false)
     } catch (err) {
