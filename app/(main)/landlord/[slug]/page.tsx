@@ -291,7 +291,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
         {breadcrumbJsonLd}
       </Script>
 
-      <div className="min-h-screen bg-[#F8FAFC]">
+      <div className="min-h-screen bg-slate-50">
         <div className="mx-auto max-w-[1320px] px-4 py-7 sm:px-8">
         {/* Breadcrumb */}
         <nav className="mb-4 flex items-center gap-1 text-xs text-slate-500">
