@@ -313,134 +313,81 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           {/* Top accent rule */}
           <div className="h-[3px] bg-navy-500" />
 
-          {/* Top row: identity + at-a-glance */}
-          <div className="grid gap-6 px-4 py-7 sm:px-8 lg:grid-cols-[1fr_340px] lg:items-start">
-            <div className="min-w-0 space-y-4">
-              <div className="flex flex-wrap items-center gap-3">
-                <h1 className="font-display text-[clamp(1.8rem,4vw,2.4rem)] leading-tight tracking-tight text-slate-900">
-                  {landlord.display_name}
-                </h1>
-                {landlord.is_verified && <VerifiedBadge label="Verified landlord" />}
-                <Grade letter={getGradeLetter(landlord.avg_rating, landlord.review_count ?? 0)} size="md" />
+          {/* Identity row — full width. At-a-glance + actions now live
+              in the page-level sidebar (below) so the hero reads
+              cleanly instead of being a card-on-card. */}
+          <div className="px-5 py-7 sm:px-8 sm:py-8">
+            <div className="flex items-start gap-4">
+              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-navy-50 text-navy-600 ring-1 ring-navy-100">
+                <Building2 className="h-7 w-7" />
               </div>
-              {landlord.business_name && (
-                <p className="text-[13px] text-slate-500">{landlord.business_name}</p>
-              )}
-              {(landlord.city || landlord.state_abbr) && (
-                <div className="flex items-center gap-1.5 text-[13.5px] text-slate-600">
-                  <MapPin className="h-3.5 w-3.5 text-slate-400" />
-                  <span>{[landlord.city, landlord.state_abbr, landlord.zip].filter(Boolean).join(', ')}</span>
+              <div className="min-w-0 flex-1 space-y-3">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                  <h1 className="font-display text-[clamp(1.8rem,3.6vw,2.6rem)] leading-[1.05] tracking-tight text-slate-950">
+                    {landlord.display_name}
+                  </h1>
+                  {landlord.is_verified && <VerifiedBadge label="Verified landlord" />}
+                  <Grade letter={getGradeLetter(landlord.avg_rating, landlord.review_count ?? 0)} size="md" />
                 </div>
-              )}
-              <div className="flex flex-wrap gap-2">
-                {landlord.website && (
-                  <Chip icon={<Globe className="h-3 w-3" />}>
-                    <a href={landlord.website} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                      {landlord.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-                    </a>
-                  </Chip>
+                {landlord.business_name && (
+                  <p className="text-[13px] text-slate-500">{landlord.business_name}</p>
                 )}
-                {landlord.phone && (
-                  <Chip icon={<Phone className="h-3 w-3" />}>{landlord.phone}</Chip>
+                {(landlord.city || landlord.state_abbr) && (
+                  <div className="flex items-center gap-1.5 text-[13.5px] text-slate-600">
+                    <MapPin className="h-3.5 w-3.5 text-slate-400" />
+                    <span>{[landlord.city, landlord.state_abbr, landlord.zip].filter(Boolean).join(', ')}</span>
+                  </div>
                 )}
-                <Chip tone="teal" icon={<Building2 className="h-3 w-3" />}>{(properties ?? []).length} properties</Chip>
-                {businessRegistration?.filed_date && (
-                  <Chip icon={<Building2 className="h-3 w-3" />}>
-                    Filed {new Date(businessRegistration.filed_date).getFullYear()}
-                  </Chip>
-                )}
-              </div>
-            </div>
-
-            {/* At a glance sidebar */}
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">At a glance</p>
-              {landlord.avg_rating > 0 ? (
-                <div className="mt-2">
-                  <div className="text-[42px] font-extrabold leading-none tracking-[-0.03em]">{landlord.avg_rating.toFixed(1)}</div>
-                  <div className="mt-1.5"><Stars value={landlord.avg_rating} size={14} /></div>
-                  <p className="mt-1.5 text-[12px] text-slate-500">{landlord.review_count} verified reviews</p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {landlord.website && (
+                    <Chip icon={<Globe className="h-3 w-3" />}>
+                      <a href={landlord.website} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                        {landlord.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                      </a>
+                    </Chip>
+                  )}
+                  {landlord.phone && (
+                    <Chip icon={<Phone className="h-3 w-3" />}>{landlord.phone}</Chip>
+                  )}
+                  <Chip tone="teal" icon={<Building2 className="h-3 w-3" />}>{(properties ?? []).length} properties</Chip>
+                  {businessRegistration?.filed_date && (
+                    <Chip icon={<Building2 className="h-3 w-3" />}>
+                      Filed {new Date(businessRegistration.filed_date).getFullYear()}
+                    </Chip>
+                  )}
                 </div>
-              ) : (
-                <div className="mt-2">
-                  <div className="text-[42px] font-extrabold leading-none tracking-[-0.03em] text-slate-300">&mdash;</div>
-                  <p className="mt-2 text-[12px] text-slate-500">No reviews yet</p>
-                </div>
-              )}
-              <div className="mt-4 flex flex-wrap gap-2">
-                <WatchlistButton landlordId={landlord.id} />
-                <ShareButton name={landlord.display_name} />
-                <Button asChild variant="outline" size="sm" className="h-8 rounded-full border-slate-200 px-3 text-[12px] text-slate-700">
-                  <Link href={`/compare?a=${landlord.slug}`}>Compare</Link>
-                </Button>
-                {!landlord.is_claimed && (
-                  <Button asChild size="sm" className="h-8 rounded-full bg-teal-600 px-3 text-[12px] text-white hover:bg-teal-700">
-                    <Link href={`/landlord-portal/claim?landlord=${landlord.id}`}>
-                      Claim this profile
-                    </Link>
-                  </Button>
-                )}
               </div>
             </div>
           </div>
 
-          {/* Stats row — always show all four tracked dimensions for consistency */}
-          <div className="grid grid-cols-2 gap-4 border-t border-slate-100 px-4 py-5 sm:grid-cols-4 sm:px-8">
+          {/* Stat strip — flush cells separated by dividers, NOT
+              re-bordered sub-cards inside the hero. This is the
+              "non-AI" treatment the user asked for: numbers read as
+              one continuous strip instead of a 4-up grid of generic
+              white tiles. */}
+          <div className="grid grid-cols-2 divide-x divide-slate-100 border-t border-slate-100 sm:grid-cols-4">
             {[
-              { label: 'Reviews', value: landlord.review_count ?? 0, color: '', zeroColor: 'text-slate-300' },
-              { label: 'Properties', value: (properties ?? []).length, color: '', zeroColor: 'text-slate-300' },
-              { label: 'Public records', value: landlordRecords.length, color: 'text-amber-700', zeroColor: 'text-slate-300' },
-              { label: 'Open violations', value: openViolationCount, color: 'text-red-600', zeroColor: 'text-slate-300' },
+              { label: 'Reviews', value: landlord.review_count ?? 0, color: 'text-slate-900' },
+              { label: 'Properties', value: (properties ?? []).length, color: 'text-slate-900' },
+              { label: 'Public records', value: landlordRecords.length, color: 'text-amber-700' },
+              { label: 'Open violations', value: openViolationCount, color: 'text-red-600' },
             ].map(s => (
-              <div key={s.label} className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">{s.label}</p>
-                <p className={`mt-1 text-[22px] font-extrabold tracking-tight tabular-nums ${s.value > 0 ? (s.color || 'text-slate-900') : s.zeroColor}`}>
-                  {s.value}
+              <div key={s.label} className="px-5 py-4 sm:px-6 sm:py-5">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">{s.label}</p>
+                <p className={`mt-1 font-display text-[26px] font-semibold tracking-tight tabular-nums ${s.value > 0 ? s.color : 'text-slate-300'}`}>
+                  {s.value.toLocaleString()}
                 </p>
               </div>
             ))}
           </div>
 
-          {/* Rating breakdown — always shown; null values render as em-dash for consistency */}
-          <div className="border-t border-slate-100 px-4 py-6 sm:px-8">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-[14px] font-bold text-slate-900">Rating breakdown</h3>
-              {wouldRentAgainPct !== null && approved.length > 0 ? (
-                <p className="text-[13px] text-slate-500">
-                  <span className={`font-bold ${wouldRentAgainPct >= 50 ? 'text-amber-700' : 'text-red-600'}`}>
-                    {wouldRentAgainPct}%
-                  </span>{' '}
-                  would rent again
-                </p>
-              ) : (
-                <p className="text-[12px] text-slate-400">Based on {approved.length} review{approved.length === 1 ? '' : 's'}</p>
-              )}
-            </div>
-            <div className="grid max-w-[900px] gap-x-10 gap-y-3.5 sm:grid-cols-2">
-              <RatingBar label="Responsiveness" value={avgResponsiveness} />
-              <RatingBar label="Maintenance" value={avgMaintenance} />
-              <RatingBar label="Honesty" value={avgHonesty} />
-              <RatingBar label="Lease Fairness" value={avgLeaseFairness} />
-            </div>
-
-            {responseRatePct !== null && (
-              <div className="mt-5 flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5">
-                <MessageSquare className="h-4 w-4 text-slate-500" aria-hidden="true" />
-                <span className="text-[13px] text-slate-700">
-                  Responds to <span className={`font-bold ${responseRatePct >= 50 ? 'text-teal-700' : 'text-slate-900'}`}>{responseRatePct}%</span> of reviews
-                  <span className="ml-1 text-slate-400">({respondedCount} of {approved.length})</span>
-                </span>
-              </div>
-            )}
-          </div>
-
           {/* Landlord-authored description (only shown if claimant added one) */}
           {(landlord as unknown as { description?: string | null }).description && (
-            <div className="border-t border-slate-100 px-4 py-5 sm:px-8">
+            <div className="border-t border-slate-100 px-5 py-5 sm:px-8">
               <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-teal-700">
                 From the landlord
               </div>
-              <p className="whitespace-pre-wrap text-sm leading-6 text-slate-700">
+              <p className="whitespace-pre-wrap text-[14px] leading-6 text-slate-700">
                 {(landlord as unknown as { description: string }).description}
               </p>
             </div>
@@ -448,8 +395,8 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
 
           {/* Bio */}
           {landlord.bio && (
-            <div className="border-t border-slate-100 px-4 py-5 sm:px-8">
-              <p className="text-sm leading-6 text-slate-700">{landlord.bio}</p>
+            <div className="border-t border-slate-100 px-5 py-5 sm:px-8">
+              <p className="text-[14px] leading-6 text-slate-700">{landlord.bio}</p>
             </div>
           )}
         </div>
@@ -471,6 +418,47 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             </div>
           </div>
         )}
+
+        {/* Page-level main + sidebar layout. The sidebar (at-a-glance,
+            actions, claim CTA) travels with the user as they scroll —
+            sticky on lg+, stacks above the tabs on small screens. */}
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-8 lg:items-start">
+
+        <div className="min-w-0 order-2 lg:order-1">
+
+        {/* Rating breakdown — its own section in the main column above
+            the tabs. This used to be jammed inside the hero card. */}
+        <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="font-display text-[16px] font-semibold tracking-tight text-slate-900">Rating breakdown</h3>
+            {wouldRentAgainPct !== null && approved.length > 0 ? (
+              <p className="text-[13px] text-slate-500">
+                <span className={`font-bold ${wouldRentAgainPct >= 50 ? 'text-amber-700' : 'text-red-600'}`}>
+                  {wouldRentAgainPct}%
+                </span>{' '}
+                would rent again
+              </p>
+            ) : (
+              <p className="text-[12px] text-slate-400">Based on {approved.length} review{approved.length === 1 ? '' : 's'}</p>
+            )}
+          </div>
+          <div className="grid gap-x-10 gap-y-3.5 sm:grid-cols-2">
+            <RatingBar label="Responsiveness" value={avgResponsiveness} />
+            <RatingBar label="Maintenance" value={avgMaintenance} />
+            <RatingBar label="Honesty" value={avgHonesty} />
+            <RatingBar label="Lease Fairness" value={avgLeaseFairness} />
+          </div>
+
+          {responseRatePct !== null && (
+            <div className="mt-5 flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5">
+              <MessageSquare className="h-4 w-4 text-slate-500" aria-hidden="true" />
+              <span className="text-[13px] text-slate-700">
+                Responds to <span className={`font-bold ${responseRatePct >= 50 ? 'text-teal-700' : 'text-slate-900'}`}>{responseRatePct}%</span> of reviews
+                <span className="ml-1 text-slate-400">({respondedCount} of {approved.length})</span>
+              </span>
+            </div>
+          )}
+        </section>
 
         {/* Default tab: open whichever tab has content. A landlord with
             520 records and 0 reviews shouldn't land on an empty Reviews
@@ -627,6 +615,115 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             )}
           </TabsContent>
         </Tabs>
+
+        </div> {/* end main col */}
+
+        {/* Sidebar — at-a-glance, actions, claim CTA. Sticky on lg+ so
+            the primary CTAs travel with the reader. On mobile it
+            renders ABOVE the tabs (order-1) so the score and the
+            "Write a review" button are the first thing seen. */}
+        <aside className="order-1 space-y-4 lg:order-2 lg:sticky lg:top-6">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">At a glance</p>
+            {landlord.avg_rating > 0 ? (
+              <div className="mt-2">
+                <div className="flex items-baseline gap-2">
+                  <span className="font-display text-[44px] font-semibold leading-none tracking-[-0.02em] text-slate-950">
+                    {landlord.avg_rating.toFixed(1)}
+                  </span>
+                  <span className="text-[12px] text-slate-400">/ 5</span>
+                </div>
+                <div className="mt-2"><Stars value={landlord.avg_rating} size={14} /></div>
+                <p className="mt-1.5 text-[12.5px] text-slate-500">
+                  {landlord.review_count} verified review{landlord.review_count === 1 ? '' : 's'}
+                </p>
+              </div>
+            ) : (
+              <div className="mt-2">
+                <span className="font-display text-[44px] font-semibold leading-none tracking-[-0.02em] text-slate-300">—</span>
+                <p className="mt-2 text-[12.5px] text-slate-500">No reviews yet</p>
+              </div>
+            )}
+
+            <div className="mt-4 grid gap-2">
+              <Button
+                asChild
+                size="sm"
+                className="h-9 w-full rounded-full bg-slate-950 text-white hover:bg-navy-700"
+              >
+                <Link href={`/review/new?landlord=${landlord.id}`}>Write a review</Link>
+              </Button>
+              <div className="grid grid-cols-2 gap-2">
+                <WatchlistButton landlordId={landlord.id} />
+                <ShareButton name={landlord.display_name} />
+              </div>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="h-8 w-full rounded-full border-slate-200 px-3 text-[12px] text-slate-700"
+              >
+                <Link href={`/compare?a=${landlord.slug}`}>Compare landlords</Link>
+              </Button>
+            </div>
+          </div>
+
+          {!landlord.is_claimed && (
+            <div className="rounded-2xl border border-teal-200 bg-gradient-to-b from-teal-50 to-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-teal-700">For landlords</p>
+              <p className="mt-2 text-[14px] font-semibold text-slate-900">
+                Are you {landlord.display_name}?
+              </p>
+              <p className="mt-1 text-[12.5px] leading-5 text-slate-600">
+                Claim this profile to respond to reviews, add photos, and post a description.
+              </p>
+              <Button
+                asChild
+                size="sm"
+                className="mt-3 h-9 w-full rounded-full bg-teal-600 text-white hover:bg-teal-700"
+              >
+                <Link href={`/landlord-portal/claim?landlord=${landlord.id}`}>Claim this profile</Link>
+              </Button>
+            </div>
+          )}
+
+          {(openViolationCount > 0 || landlord.eviction_count > 0) && (
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">Risk signals</p>
+              <ul className="mt-3 space-y-2 text-[13px]">
+                {openViolationCount > 0 && (
+                  <li className="flex items-center justify-between gap-3">
+                    <span className="flex items-center gap-1.5 text-slate-700">
+                      <Flag className="h-3.5 w-3.5 text-red-500" />
+                      Open violations
+                    </span>
+                    <span className="font-display text-[16px] font-semibold tabular-nums text-red-600">
+                      {openViolationCount.toLocaleString()}
+                    </span>
+                  </li>
+                )}
+                {landlord.eviction_count > 0 && (
+                  <li className="flex items-center justify-between gap-3">
+                    <span className="text-slate-700">Eviction filings</span>
+                    <span className="font-display text-[16px] font-semibold tabular-nums text-slate-900">
+                      {landlord.eviction_count.toLocaleString()}
+                    </span>
+                  </li>
+                )}
+                {landlordRecords.length > 0 && (
+                  <li className="flex items-center justify-between gap-3">
+                    <span className="text-slate-700">Total records</span>
+                    <span className="font-display text-[16px] font-semibold tabular-nums text-slate-900">
+                      {landlordRecords.length.toLocaleString()}
+                    </span>
+                  </li>
+                )}
+              </ul>
+            </div>
+          )}
+        </aside>
+
+        </div> {/* end main+sidebar grid */}
         </div>
       </div>
     </>

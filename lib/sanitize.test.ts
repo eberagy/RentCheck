@@ -28,9 +28,9 @@ describe('sanitizeText', () => {
   })
 
   it('returns empty string for non-string input', () => {
-    // @ts-expect-error
+    // @ts-expect-error testing runtime guard against non-string input
     expect(sanitizeText(null)).toBe('')
-    // @ts-expect-error
+    // @ts-expect-error testing runtime guard against non-string input
     expect(sanitizeText(123)).toBe('')
   })
 

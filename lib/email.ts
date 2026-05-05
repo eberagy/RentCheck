@@ -33,7 +33,7 @@ async function sendEmail(to: string, subject: string, react: React.ReactElement)
 }
 
 export async function sendWelcomeEmail(to: string, firstName?: string) {
-  await sendEmail(to, 'Welcome to Vett', WelcomeEmail({ firstName }) as any)
+  await sendEmail(to, 'Welcome to Vett', WelcomeEmail({ firstName }) as React.ReactElement)
 }
 
 export async function sendReviewApprovedEmail(to: string, props: {
@@ -42,7 +42,7 @@ export async function sendReviewApprovedEmail(to: string, props: {
   landlordName: string
   landlordSlug: string
 }) {
-  await sendEmail(to, `Your review of ${props.landlordName} is live`, ReviewApprovedEmail(props) as any)
+  await sendEmail(to, `Your review of ${props.landlordName} is live`, ReviewApprovedEmail(props) as React.ReactElement)
 }
 
 export async function sendReviewRejectedEmail(to: string, props: {
@@ -50,7 +50,7 @@ export async function sendReviewRejectedEmail(to: string, props: {
   reviewTitle: string
   reason?: string
 }) {
-  await sendEmail(to, 'Update on your Vett review', ReviewRejectedEmail(props) as any)
+  await sendEmail(to, 'Update on your Vett review', ReviewRejectedEmail(props) as React.ReactElement)
 }
 
 export async function sendClaimApprovedEmail(to: string, props: {
@@ -58,7 +58,7 @@ export async function sendClaimApprovedEmail(to: string, props: {
   landlordName: string
   landlordSlug: string
 }) {
-  await sendEmail(to, `Your claim for ${props.landlordName} is approved`, ClaimApprovedEmail(props) as any)
+  await sendEmail(to, `Your claim for ${props.landlordName} is approved`, ClaimApprovedEmail(props) as React.ReactElement)
 }
 
 export async function sendWatchlistAlertEmail(to: string, props: {
@@ -70,7 +70,7 @@ export async function sendWatchlistAlertEmail(to: string, props: {
   unsubscribeToken?: string
 }) {
   const labels = { new_review: 'New review', new_violation: 'New violation', new_court_case: 'New court case' }
-  await sendEmail(to, `${labels[props.alertType]}: ${props.landlordName}`, WatchlistAlertEmail(props) as any)
+  await sendEmail(to, `${labels[props.alertType]}: ${props.landlordName}`, WatchlistAlertEmail(props) as React.ReactElement)
 }
 
 export async function sendSubmissionApprovedEmail(to: string, props: {
@@ -78,7 +78,7 @@ export async function sendSubmissionApprovedEmail(to: string, props: {
   landlordName: string
   landlordSlug: string
 }) {
-  await sendEmail(to, `${props.landlordName} is now on Vett — write your review!`, SubmissionApprovedEmail(props) as any)
+  await sendEmail(to, `${props.landlordName} is now on Vett — write your review!`, SubmissionApprovedEmail(props) as React.ReactElement)
 }
 
 export async function sendSubmissionRejectedEmail(to: string, props: {
@@ -90,7 +90,7 @@ export async function sendSubmissionRejectedEmail(to: string, props: {
   const subject = props.isDuplicate
     ? `${props.landlordName} is already on Vett`
     : `Update on your Vett submission`
-  await sendEmail(to, subject, SubmissionRejectedEmail(props) as any)
+  await sendEmail(to, subject, SubmissionRejectedEmail(props) as React.ReactElement)
 }
 
 export async function sendClaimRejectedEmail(to: string, props: {
@@ -98,7 +98,7 @@ export async function sendClaimRejectedEmail(to: string, props: {
   landlordName: string
   reason?: string
 }) {
-  await sendEmail(to, `Update on your claim for ${props.landlordName}`, ClaimRejectedEmail(props) as any)
+  await sendEmail(to, `Update on your claim for ${props.landlordName}`, ClaimRejectedEmail(props) as React.ReactElement)
 }
 
 export async function sendResponseApprovedEmail(to: string, props: {
@@ -107,7 +107,7 @@ export async function sendResponseApprovedEmail(to: string, props: {
   landlordSlug: string
   reviewTitle?: string
 }) {
-  await sendEmail(to, `Your response on ${props.landlordName} is live`, ResponseApprovedEmail(props) as any)
+  await sendEmail(to, `Your response on ${props.landlordName} is live`, ResponseApprovedEmail(props) as React.ReactElement)
 }
 
 export async function sendResponseRejectedEmail(to: string, props: {
@@ -115,13 +115,13 @@ export async function sendResponseRejectedEmail(to: string, props: {
   landlordName: string
   reason?: string
 }) {
-  await sendEmail(to, `Update on your response`, ResponseRejectedEmail(props) as any)
+  await sendEmail(to, `Update on your response`, ResponseRejectedEmail(props) as React.ReactElement)
 }
 
 export async function sendAdminDigestEmail(to: string, counts: AdminDigestCounts) {
   const total = Object.values(counts).reduce((a, b) => a + b, 0)
   const subject = total === 0 ? 'Vett admin: all queues empty' : `Vett admin: ${total} ${total === 1 ? 'item' : 'items'} need attention`
-  await sendEmail(to, subject, AdminDigestEmail({ counts }) as any)
+  await sendEmail(to, subject, AdminDigestEmail({ counts }) as React.ReactElement)
 }
 
 const SUBMISSION_SUBJECTS: Record<SubmissionKind, string> = {
@@ -138,7 +138,7 @@ export async function sendSubmissionReceivedEmail(to: string, props: {
   target?: string
   eta?: string
 }) {
-  await sendEmail(to, SUBMISSION_SUBJECTS[props.kind], SubmissionReceivedEmail(props) as any)
+  await sendEmail(to, SUBMISSION_SUBJECTS[props.kind], SubmissionReceivedEmail(props) as React.ReactElement)
 }
 
 const DISPUTE_SUBJECTS: Record<DisputeDecision, string> = {
@@ -154,14 +154,14 @@ export async function sendDisputeResolvedEmail(to: string, props: {
   recordLabel?: string
   adminNotes?: string
 }) {
-  await sendEmail(to, DISPUTE_SUBJECTS[props.decision], DisputeResolvedEmail(props) as any)
+  await sendEmail(to, DISPUTE_SUBJECTS[props.decision], DisputeResolvedEmail(props) as React.ReactElement)
 }
 
 export async function sendCityAlertConfirmationEmail(to: string, props: { city: string; stateAbbr: string }) {
   await sendEmail(
     to,
     `You're on the list for ${props.city}, ${props.stateAbbr}`,
-    CityAlertConfirmationEmail(props) as any,
+    CityAlertConfirmationEmail(props) as React.ReactElement,
   )
 }
 
@@ -177,6 +177,6 @@ export async function sendSavedSearchDigestEmail(to: string, props: {
   await sendEmail(
     to,
     `This week in ${props.city}: ${props.newReviewCount} new review${props.newReviewCount === 1 ? '' : 's'}`,
-    SavedSearchDigestEmail(props) as any,
+    SavedSearchDigestEmail(props) as React.ReactElement,
   )
 }

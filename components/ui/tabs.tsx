@@ -73,7 +73,11 @@ function TabsContent({ className, ...props }: TabsPrimitive.Panel.Props) {
   return (
     <TabsPrimitive.Panel
       data-slot="tabs-content"
-      className={cn("flex-1 text-sm outline-none", className)}
+      // [&[hidden]]:!hidden forces display:none on inactive panels when
+      // keepMounted is true. Without this, Base UI sets the hidden attribute
+      // but a sibling Tailwind utility's specificity can leave the panel
+      // visible — causing all three panels to stack on screen.
+      className={cn("flex-1 text-sm outline-none [&[hidden]]:!hidden", className)}
       {...props}
     />
   )
