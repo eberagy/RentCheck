@@ -511,7 +511,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     <div className="min-h-screen bg-slate-50">
       {/* Search bar band */}
       <section className="border-b border-slate-200 bg-white px-7 py-5">
-        <div className="mx-auto max-w-[1180px]">
+        <div className="mx-auto max-w-[1320px]">
           <div className="flex items-center gap-3 border-b-2 border-slate-200 pb-3 focus-within:border-navy-400 transition-[border-color] duration-200" style={{ maxWidth: 760 }}>
             <Search className="h-[17px] w-[17px] text-slate-300 flex-shrink-0" />
             <div className="flex-1">
@@ -556,7 +556,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       </section>
 
       {/* Main grid: filters + results */}
-      <div className="mx-auto grid max-w-[1180px] gap-7 px-4 py-7 sm:px-7 lg:grid-cols-[240px_1fr]">
+      <div className="mx-auto grid max-w-[1320px] gap-7 px-4 py-7 sm:px-7 lg:grid-cols-[240px_1fr]">
         {/* Filter sidebar */}
         <aside className="flex flex-col gap-5">
           <form method="get" className="contents">
