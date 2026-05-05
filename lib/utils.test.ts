@@ -6,6 +6,8 @@ import {
   titleCase,
   truncate,
   formatCount,
+  ratingToLabel,
+  severityLabel,
 } from './utils'
 
 describe('formatAddress', () => {
@@ -102,5 +104,38 @@ describe('formatCount', () => {
   it('uses M suffix for millions', () => {
     expect(formatCount(1_000_000)).toBe('1.0M')
     expect(formatCount(2_500_000)).toBe('2.5M')
+  })
+})
+
+describe('ratingToLabel', () => {
+  it('matches the cutoff bands', () => {
+    expect(ratingToLabel(5.0)).toBe('Excellent')
+    expect(ratingToLabel(4.5)).toBe('Excellent')
+    expect(ratingToLabel(4.4)).toBe('Good')
+    expect(ratingToLabel(3.5)).toBe('Good')
+    expect(ratingToLabel(3.4)).toBe('Fair')
+    expect(ratingToLabel(2.5)).toBe('Fair')
+    expect(ratingToLabel(2.4)).toBe('Poor')
+    expect(ratingToLabel(1.5)).toBe('Poor')
+    expect(ratingToLabel(1.4)).toBe('Very Poor')
+    expect(ratingToLabel(0)).toBe('Very Poor')
+  })
+})
+
+describe('severityLabel', () => {
+  it('returns "Closed" when isClosed flag is set, regardless of severity', () => {
+    expect(severityLabel('critical', true)).toBe('Closed')
+    expect(severityLabel(null, true)).toBe('Closed')
+  })
+
+  it('maps each severity level to its display label', () => {
+    expect(severityLabel('critical')).toBe('Critical')
+    expect(severityLabel('high')).toBe('Serious')
+    expect(severityLabel('medium')).toBe('Minor')
+    expect(severityLabel('low')).toBe('Informational')
+  })
+
+  it('returns "Unknown" for null / unrecognized', () => {
+    expect(severityLabel(null)).toBe('Unknown')
   })
 })
