@@ -25,7 +25,7 @@ export default function CityLoading() {
         <Skeleton className="h-8 w-64 mb-6" />
         <div className="space-y-3">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="rounded-xl border border-slate-200 bg-white p-5">
+            <div key={i} className="rounded-2xl border border-slate-200 bg-white p-5">
               <div className="flex items-center gap-4">
                 <Skeleton className="h-12 w-12 rounded-xl flex-shrink-0" />
                 <div className="flex-1 space-y-2">
