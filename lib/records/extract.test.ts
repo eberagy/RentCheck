@@ -7,6 +7,15 @@ describe('extractRecordDetails', () => {
     expect(extractRecordDetails('nyc_hpd', undefined)).toEqual({})
   })
 
+  it('returns empty object when raw_data is not an object (graceful narrowing)', () => {
+    // PublicRecord.raw_data is typed unknown. Anything that isn't a plain
+    // object should narrow to {} — never throw, never spread garbage.
+    expect(extractRecordDetails('nyc_hpd', 'a string')).toEqual({})
+    expect(extractRecordDetails('nyc_hpd', 42)).toEqual({})
+    expect(extractRecordDetails('nyc_hpd', [{ key: 'val' }])).toEqual({})
+    expect(extractRecordDetails('nyc_hpd', true)).toEqual({})
+  })
+
   it('returns empty object for unknown source with empty raw', () => {
     expect(extractRecordDetails('mars_violations', {})).toEqual({
       caseId: null,
