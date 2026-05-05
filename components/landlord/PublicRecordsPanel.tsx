@@ -121,7 +121,7 @@ function MetaPill({ icon, label, value, tone = 'neutral' }: {
 
 function RecordRow({ record }: { record: EnrichedRecord }) {
   const [expanded, setExpanded] = useState(false)
-  const details = useMemo(() => extractRecordDetails(record.source, record.raw_data as never), [record.source, record.raw_data])
+  const details = useMemo(() => extractRecordDetails(record.source, record.raw_data), [record.source, record.raw_data])
   const open = isOpen(record, details)
   const informational = INFORMATIONAL_TYPES.has(record.record_type)
   const fullAddress = record.property
@@ -344,7 +344,7 @@ function RecordGroup({ type, records }: { type: string; records: EnrichedRecord[
   const distinctAreas = useMemo(() => {
     const seen = new Set<string>()
     for (const r of records) {
-      const d = extractRecordDetails(r.source, r.raw_data as never)
+      const d = extractRecordDetails(r.source, r.raw_data)
       if (d.borough) seen.add(d.borough)
     }
     return Array.from(seen).slice(0, 3)
@@ -423,7 +423,7 @@ export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propert
 
   // Pre-extract details once to avoid recomputing in the open/closed filter.
   const enriched = useMemo(
-    () => records.map(r => ({ r, isOpen: isOpen(r, extractRecordDetails(r.source, r.raw_data as never)) })),
+    () => records.map(r => ({ r, isOpen: isOpen(r, extractRecordDetails(r.source, r.raw_data)) })),
     [records],
   )
 
@@ -442,7 +442,7 @@ export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propert
     let open = 0, closed = 0, info = 0, overdue = 0, rentImpairing = 0
     for (const r of records) {
       if (INFORMATIONAL_TYPES.has(r.record_type)) { info++; continue }
-      const d = extractRecordDetails(r.source, r.raw_data as never)
+      const d = extractRecordDetails(r.source, r.raw_data)
       const ro = isOpen(r, d)
       if (ro) {
         open++

@@ -59,6 +59,14 @@ export interface RecordDetails {
 
 type RawData = Record<string, unknown> | null | undefined
 
+/** Narrow `unknown` (the shape PublicRecord.raw_data carries) into the
+ *  Record-or-nullish shape this module works with. Anything that isn't
+ *  a plain object becomes null so callers don't need to cast. */
+function asRawData(raw: unknown): RawData {
+  if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) return null
+  return raw as Record<string, unknown>
+}
+
 const str = (raw: RawData, key: string): string | null => {
   if (!raw) return null
   const v = (raw as Record<string, unknown>)[key]
@@ -93,8 +101,9 @@ const titleCase = (s: string): string =>
  */
 export function extractRecordDetails(
   source: string | null | undefined,
-  raw: RawData,
+  rawInput: unknown,
 ): RecordDetails {
+  const raw = asRawData(rawInput)
   if (!raw) return {}
   switch (source) {
     case 'nyc_hpd': {
