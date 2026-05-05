@@ -33,11 +33,11 @@ export default function ContactPage() {
         We read every message. Expect a response within 2–3 business days.
       </p>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {CONTACTS.map(({ label, email, description }) => (
-          <div key={email} className="flex items-start gap-4 p-5 rounded-xl border border-slate-200 bg-white hover:border-navy-300 transition-colors">
-            <div className="h-10 w-10 rounded-lg bg-navy-50 flex items-center justify-center flex-shrink-0">
-              <Mail className="h-5 w-5 text-navy-600" />
+          <div key={email} className="flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:border-navy-300">
+            <div className="h-10 w-10 rounded-2xl bg-navy-50 ring-1 ring-navy-100 flex items-center justify-center flex-shrink-0 text-navy-600">
+              <Mail className="h-5 w-5" />
             </div>
             <div>
               <p className="font-semibold text-slate-900 text-sm">{label}</p>
@@ -50,7 +50,7 @@ export default function ContactPage() {
         ))}
       </div>
 
-      <div className="mt-10 flex items-start gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200 text-sm text-slate-600">
+      <div className="mt-10 flex items-start gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-sm text-slate-600">
         <Shield className="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" />
         <p>
           Vett is not a consumer reporting agency under the FCRA. For review disputes or removal requests,
