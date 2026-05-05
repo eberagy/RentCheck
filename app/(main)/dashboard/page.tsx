@@ -112,7 +112,7 @@ export default async function DashboardPage() {
             maskImage: 'radial-gradient(ellipse 60% 50% at 50% 40%, black 40%, transparent 80%)',
           }}
         />
-        <div className="relative mx-auto flex max-w-[1180px] flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative mx-auto flex max-w-[1320px] flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-[11px] font-mono uppercase tracking-widest text-teal-300/80">§ Your dashboard</p>
             <h1 className="mt-3 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.02] tracking-tight">
@@ -130,7 +130,7 @@ export default async function DashboardPage() {
         </div>
       </section>
 
-      <div className="mx-auto grid max-w-[1180px] gap-6 px-4 py-7 sm:px-7 lg:grid-cols-[1fr_320px]">
+      <div className="mx-auto grid max-w-[1320px] gap-6 px-4 py-7 sm:px-7 lg:grid-cols-[1fr_320px]">
         <div className="grid gap-5">
           {/* Watchlist panel */}
           <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">

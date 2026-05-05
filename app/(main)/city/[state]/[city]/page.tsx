@@ -202,7 +202,7 @@ export default async function CityPage({ params }: CityPageProps) {
           background: 'radial-gradient(ellipse at 20% 30%, rgba(94,148,255,0.18), transparent 45%), radial-gradient(ellipse at 80% 20%, rgba(45,212,191,0.18), transparent 40%), #07111f',
         }}
       >
-        <div className="relative mx-auto max-w-[1180px]">
+        <div className="relative mx-auto max-w-[1320px]">
           <Eyebrow dark dot>{stateAbbr} &middot; {cityName} &middot; {stateName}</Eyebrow>
           <h1 className="mt-[18px] font-display text-[clamp(2.4rem,5vw,4.5rem)] leading-[1.05] tracking-tight">
             {cityName} landlords.{' '}
@@ -252,7 +252,7 @@ export default async function CityPage({ params }: CityPageProps) {
       </section>
 
       {topRated.length > 0 && (
-        <div className="mx-auto max-w-[1180px] px-4 sm:px-7 py-12">
+        <div className="mx-auto max-w-[1320px] px-4 sm:px-7 py-12">
           <div className="rounded-[24px] border border-slate-200 bg-white p-6">
             <div className="mb-[18px] flex items-center gap-2.5">
               <div className="h-7 w-2 rounded bg-gradient-to-b from-teal to-teal-300" />
@@ -290,7 +290,7 @@ export default async function CityPage({ params }: CityPageProps) {
       )}
 
       {/* All landlords */}
-      <div className="mx-auto max-w-[1180px] px-4 sm:px-7 pb-12">
+      <div className="mx-auto max-w-[1320px] px-4 sm:px-7 pb-12">
         {landlords.length === 0 ? (
           <div className="rounded-[24px] border border-dashed border-slate-300 bg-white py-16 text-center">
             <Building2 className="mx-auto mb-4 h-12 w-12 text-slate-300" />
@@ -315,7 +315,7 @@ export default async function CityPage({ params }: CityPageProps) {
 
       {/* Recent public-records activity */}
       {recentRecords.length > 0 && (
-        <div className="mx-auto max-w-[1180px] px-4 sm:px-7 pb-12">
+        <div className="mx-auto max-w-[1320px] px-4 sm:px-7 pb-12">
           <div className="rounded-[24px] border border-slate-200 bg-white p-6">
             <div className="mb-[18px] flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">
@@ -363,7 +363,7 @@ export default async function CityPage({ params }: CityPageProps) {
       )}
 
       {/* CTA */}
-      <div className="mx-auto max-w-[1180px] px-4 sm:px-7 pb-20">
+      <div className="mx-auto max-w-[1320px] px-4 sm:px-7 pb-20">
         <div className="overflow-hidden rounded-[24px] bg-gradient-to-r from-navy-600 to-teal px-6 py-10 text-center text-white sm:px-10">
           <h2 className="text-2xl font-extrabold tracking-tight">Know a landlord in {cityName}?</h2>
           <p className="mt-2 text-sm text-white/80">Help fellow renters by sharing your lease-verified experience.</p>
