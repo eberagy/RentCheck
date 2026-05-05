@@ -132,4 +132,98 @@ describe('extractRecordDetails', () => {
       expect(d.citationLink).toBe('https://li.phila.gov/violations/CV-2026-1')
     })
   })
+
+  describe('nyc_dob', () => {
+    it('builds the BIS portal link from the complaint number', () => {
+      const d = extractRecordDetails('nyc_dob', {
+        complaint_number: '4567890',
+        bin: '1010101',
+        status: 'OPEN',
+      })
+      expect(d.caseId).toBe('4567890')
+      expect(d.citationLink).toBe('https://a810-bisweb.nyc.gov/bisweb/OverviewForComplaintServlet?complaintno=4567890')
+      expect(d.isOpen).toBe(true)
+    })
+
+    it('falls back to BIN-based link when complaint_number missing', () => {
+      const d = extractRecordDetails('nyc_dob', { bin: '1010101' })
+      expect(d.citationLink).toBe('https://a810-bisweb.nyc.gov/bisweb/PropertyProfileOverviewServlet?bin=1010101')
+    })
+  })
+
+  describe('pittsburgh_pli', () => {
+    it('reports court_decision through agent', () => {
+      const d = extractRecordDetails('pittsburgh_pli', {
+        docket_number: 'D-2026-1',
+        court_decision: 'GUILTY',
+        status: 'OPEN',
+      })
+      expect(d.borough).toBe('Pittsburgh')
+      expect(d.caseId).toBe('D-2026-1')
+      expect(d.agent).toBe('Court: GUILTY')
+    })
+
+    it('treats SATISFIED as closed', () => {
+      const d = extractRecordDetails('pittsburgh_pli', { status: 'SATISFIED' })
+      expect(d.isOpen).toBe(false)
+    })
+  })
+
+  describe('austin_code', () => {
+    it('uses the violationcaselink for the citation link', () => {
+      const d = extractRecordDetails('austin_code', {
+        case_id: 'A-1',
+        violationcaselink: 'https://austin/case/A-1',
+        status: 'OPEN',
+      })
+      expect(d.citationLink).toBe('https://austin/case/A-1')
+      expect(d.caseId).toBe('A-1')
+    })
+  })
+
+  describe('seattle_sdci', () => {
+    it('extracts open record + citation link', () => {
+      const d = extractRecordDetails('seattle_sdci', {
+        recordnum: 'S-1',
+        statuscurrent: 'In Progress',
+        link: 'https://sdci/S-1',
+      })
+      expect(d.borough).toBe('Seattle')
+      expect(d.isOpen).toBe(true)
+      expect(d.citationLink).toBe('https://sdci/S-1')
+    })
+  })
+
+  describe('dallas_code', () => {
+    it('uses type as ordinanceCode', () => {
+      const d = extractRecordDetails('dallas_code', { type: 'TALL_GRASS', status: 'OPEN' })
+      expect(d.borough).toBe('Dallas')
+      expect(d.ordinanceCode).toBe('TALL_GRASS')
+      expect(d.isOpen).toBe(true)
+    })
+  })
+
+  describe('kansas_city_code', () => {
+    it('parses days_open as a number', () => {
+      const d = extractRecordDetails('kansas_city_code', {
+        case_id: 'KC-1',
+        days_open: '42',
+        status: 'OPEN',
+      })
+      expect(d.daysOpen).toBe(42)
+      expect(d.borough).toBe('Kansas City')
+    })
+  })
+
+  describe('sf_housing', () => {
+    it('uses permit_number as case id and matches "issued" as closed', () => {
+      const open = extractRecordDetails('sf_housing', { permit_number: 'P-1', status: 'IN PROGRESS' })
+      expect(open.caseId).toBe('P-1')
+      expect(open.borough).toBe('San Francisco')
+      expect(open.isOpen).toBe(true)
+
+      const issued = extractRecordDetails('sf_housing', { permit_number: 'P-2', status: 'ISSUED' })
+      expect(issued.isOpen).toBe(false)
+    })
+  })
 })
