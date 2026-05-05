@@ -649,7 +649,7 @@ export default function LandlordPortalPage() {
                                     <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
                                       <div className="mb-1.5 flex items-center justify-between">
                                         <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Insert a template</span>
-                                        <button type="button" onClick={() => setShowTemplatePicker(false)} className="text-slate-400 hover:text-slate-600">
+                                        <button type="button" aria-label="Close template picker" onClick={() => setShowTemplatePicker(false)} className="text-slate-400 hover:text-slate-600">
                                           <X className="h-3.5 w-3.5" />
                                         </button>
                                       </div>

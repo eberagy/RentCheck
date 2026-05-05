@@ -400,7 +400,7 @@ export default function ReviewForm() {
                   <p className="font-bold text-[14px] text-slate-900">{leaseFile.name}</p>
                   <p className="text-[12.5px] text-slate-500">{(leaseFile.size / 1024 / 1024).toFixed(2)} MB</p>
                 </div>
-                <button type="button" onClick={e => { e.stopPropagation(); setLeaseFile(null) }} className="ml-2 text-slate-400 hover:text-red-500">
+                <button type="button" aria-label="Remove uploaded file" onClick={e => { e.stopPropagation(); setLeaseFile(null) }} className="ml-2 text-slate-400 hover:text-red-500">
                   <X className="h-4 w-4" />
                 </button>
               </div>
