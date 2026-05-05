@@ -21,6 +21,9 @@ type LeaseReview = {
   reviewer: { full_name: string | null; email: string | null } | null
   landlord: { display_name: string } | null
   property: { address_line1: string; city: string; state_abbr: string } | null
+  /** Materialized address (set during lease verification flow) — when
+   *  present we prefer it over the joined property row. */
+  property_address?: string | null
 }
 
 export default function AdminLeasesPage() {
@@ -120,8 +123,8 @@ export default function AdminLeasesPage() {
                     <div className="text-sm text-gray-600 space-y-0.5 mb-3">
                       <p>Reviewer: <span className="font-medium">{item.reviewer?.full_name ?? item.reviewer?.email ?? 'Unknown'}</span></p>
                       {item.landlord && <p>Landlord: <span className="font-medium">{item.landlord.display_name}</span></p>}
-                      {(item as any).property_address && <p>Address: <span className="font-medium">{(item as any).property_address}</span></p>}
-                      {!(item as any).property_address && item.property && <p>Property: {item.property.address_line1}, {item.property.city}, {item.property.state_abbr}</p>}
+                      {item.property_address && <p>Address: <span className="font-medium">{item.property_address}</span></p>}
+                      {!item.property_address && item.property && <p>Property: {item.property.address_line1}, {item.property.city}, {item.property.state_abbr}</p>}
                       <p className="text-xs text-gray-400">Submitted {formatDate(item.created_at)} {item.lease_file_size ? `· ${formatBytes(item.lease_file_size)}` : ''}</p>
                     </div>
 

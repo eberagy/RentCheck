@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { Search, User, Shield, Ban, Loader2, ChevronDown, ChevronUp, Star, Calendar, Mail } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -44,13 +45,23 @@ function UserTypeBadge({ type }: { type: string }) {
   )
 }
 
+type UserReviewSummary = {
+  id: string
+  title: string
+  rating_overall: number
+  status: 'pending' | 'approved' | 'rejected'
+}
+
 function UserAvatar({ user }: { user: UserProfile }) {
   if (user.avatar_url) {
     return (
-      <img
+      <Image
         src={user.avatar_url}
         alt={user.full_name ?? ''}
+        width={40}
+        height={40}
         loading="lazy"
+        unoptimized
         className="h-10 w-10 rounded-full object-cover flex-shrink-0 ring-2 ring-white shadow-sm"
       />
     )
@@ -72,7 +83,7 @@ export default function AdminUsersPage() {
   const [searching, setSearching] = useState(false)
   const [processing, setProcessing] = useState<string | null>(null)
   const [expanded, setExpanded] = useState<string | null>(null)
-  const [userReviews, setUserReviews] = useState<Record<string, any[]>>({})
+  const [userReviews, setUserReviews] = useState<Record<string, UserReviewSummary[]>>({})
   const supabase = createClient()
 
   useEffect(() => { loadUsers() }, []) // eslint-disable-line
@@ -321,7 +332,7 @@ export default function AdminUsersPage() {
                       <p className="text-sm text-gray-400">No reviews submitted</p>
                     ) : (
                       <div className="space-y-2">
-                        {(userReviews[user.id] ?? []).map((r: any) => (
+                        {(userReviews[user.id] ?? []).map(r => (
                           <div
                             key={r.id}
                             className="flex items-center justify-between py-2 px-3 bg-white rounded-lg border border-gray-200 text-sm"

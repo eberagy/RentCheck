@@ -97,8 +97,8 @@ export default function ReviewForm() {
     setSearching(true)
     try {
       const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=landlord&limit=10`)
-      const data = await res.json()
-      setSearchResults(data.results?.filter((r: any) => r.result_type === 'landlord') ?? [])
+      const data = await res.json() as { results?: Array<Landlord & { result_type: string }> }
+      setSearchResults(data.results?.filter(r => r.result_type === 'landlord') ?? [])
     } finally {
       setSearching(false)
     }

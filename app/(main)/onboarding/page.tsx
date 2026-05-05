@@ -169,7 +169,7 @@ export default function OnboardingPage() {
                   Which city are you in?
                 </h1>
                 <p className="mt-2 text-gray-500 text-base">
-                  We'll surface landlords and reviews near you first.
+                  We&rsquo;ll surface landlords and reviews near you first.
                 </p>
               </div>
 
@@ -231,7 +231,7 @@ export default function OnboardingPage() {
               </div>
 
               <p className="text-center text-xs text-gray-400">
-                Don't see your city?{' '}
+                Don&rsquo;t see your city?{' '}
                 <button
                   type="button"
                   className="underline hover:text-gray-600"

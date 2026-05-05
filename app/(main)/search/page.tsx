@@ -71,6 +71,8 @@ type SearchPageResult = SearchResult & {
   summary?: string
   landlordName?: string | null
   landlordIsVerified?: boolean | null
+  open_violation_count?: number | null
+  property_count?: number | null
 }
 
 async function SearchResults({
@@ -190,7 +192,7 @@ async function SearchResults({
         if (city && result.city?.toLowerCase() !== city.toLowerCase()) return false
         if (state && result.state_abbr?.toLowerCase() !== state.toLowerCase()) return false
         if (minRating > 0 && (result.avg_rating ?? 0) < minRating) return false
-        if (hasViolationsOnly && ((result as any).open_violation_count ?? 0) === 0) return false
+        if (hasViolationsOnly && (result.open_violation_count ?? 0) === 0) return false
         if (verifiedOnly) {
           if (result.result_type === 'landlord') return result.is_verified
           if (result.result_type === 'property') return result.landlordIsVerified === true
@@ -198,7 +200,7 @@ async function SearchResults({
         return true
       })
 
-    const sortedResults = applySort(results as any, sort) as typeof results
+    const sortedResults = applySort(results, sort)
     const total = sortedResults.length
     const pageResults = sortedResults.slice(offset, offset + pageSize)
     const landlordCount = sortedResults.filter((result) => result.result_type === 'landlord').length
@@ -417,7 +419,7 @@ function SearchResultCard({ result }: { result: SearchPageResult }) {
     ? (result.slug ? `/landlord/${result.slug}` : '/search')
     : `/property/${result.id}`
   const grade = getGradeLetter(result.avg_rating ?? null, result.review_count ?? 0)
-  const violationCount = (result as any).open_violation_count ?? 0
+  const violationCount = result.open_violation_count ?? 0
 
   return (
     <Link href={href} className="group block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 rounded-xl">
@@ -449,7 +451,7 @@ function SearchResultCard({ result }: { result: SearchPageResult }) {
             {result.result_type === 'landlord' && (
               <>
                 <span className="text-slate-300">&middot;</span>
-                <span>{(result as any).property_count ?? 0} properties</span>
+                <span>{result.property_count ?? 0} properties</span>
                 <span className="text-slate-300">&middot;</span>
                 <span>{result.review_count ?? 0} reviews</span>
               </>
