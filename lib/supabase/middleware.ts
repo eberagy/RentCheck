@@ -1,6 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { isValidPropertyPath, isValidLandlordPath, isValidCityPath } from '@/lib/url-guards'
 
 // Routes that legitimately accept cross-origin POSTs:
 // - Stripe webhook verifies its own signature
@@ -36,20 +35,11 @@ export async function updateSession(request: NextRequest) {
   const method = request.method
   const pathname = request.nextUrl.pathname
 
-  // Reject typo'd URLs at the edge so Google doesn't index soft-404s.
-  // See lib/url-guards.ts for the regex envelopes.
-  if (pathname.startsWith('/property/') && !isValidPropertyPath(pathname)) {
-    return new NextResponse('Not Found', { status: 404 })
-  }
-  if (pathname.startsWith('/landlord/') && !isValidLandlordPath(pathname)) {
-    return new NextResponse('Not Found', { status: 404 })
-  }
-  if (pathname.startsWith('/city/') && pathname !== '/city/' && !isValidCityPath(pathname)) {
-    return new NextResponse('Not Found', { status: 404 })
-  }
-
   // Origin check for state-changing API requests. Runs BEFORE auth so a
   // forged cross-origin cookie attack gets dropped at the edge.
+  // (URL-shape guards for /landlord, /property, /city moved to
+  // page-level loaders — see lib/url-guards.ts. The matcher in
+  // middleware.ts excludes those paths so they remain ISR-cacheable.)
   const isWrite = method === 'POST' || method === 'PATCH' || method === 'DELETE' || method === 'PUT'
   const isApi = pathname.startsWith('/api/')
   const needsOriginCheck =
