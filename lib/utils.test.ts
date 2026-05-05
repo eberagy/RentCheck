@@ -10,6 +10,8 @@ import {
   severityLabel,
   gradeColor,
   gradeBgLight,
+  formatDate,
+  formatRentalPeriod,
 } from './utils'
 
 describe('formatAddress', () => {
@@ -165,5 +167,37 @@ describe('gradeColor / gradeBgLight', () => {
     expect(gradeColor('F')).toContain('red')
     expect(gradeBgLight('A')).toContain('teal')
     expect(gradeBgLight('F')).toContain('red')
+  })
+})
+
+describe('formatDate', () => {
+  it('formats an ISO date as "MMM d, yyyy"', () => {
+    expect(formatDate('2026-04-15T00:00:00.000Z')).toMatch(/Apr (14|15), 2026/) // tz-tolerant
+    expect(formatDate('2026-01-01')).toMatch(/Jan|Dec/)
+  })
+
+  it('returns "Unknown" for empty / null input', () => {
+    expect(formatDate(null)).toBe('Unknown')
+    expect(formatDate(undefined)).toBe('Unknown')
+    expect(formatDate('')).toBe('Unknown')
+  })
+})
+
+describe('formatRentalPeriod', () => {
+  it('formats start–end as "MMM yyyy – MMM yyyy"', () => {
+    expect(formatRentalPeriod('2024-06-01', '2025-08-15')).toMatch(/^(May|Jun) 2024 – (Jul|Aug) 2025$/)
+  })
+
+  it('returns "Unknown period" when start is missing', () => {
+    expect(formatRentalPeriod()).toBe('Unknown period')
+    expect(formatRentalPeriod(null, '2025-01-01')).toBe('Unknown period')
+  })
+
+  it('shows "Present" for current tenants', () => {
+    expect(formatRentalPeriod('2024-06-01', null, true)).toMatch(/^(May|Jun) 2024 – Present$/)
+  })
+
+  it('shows "Present" when end is missing even without isCurrent', () => {
+    expect(formatRentalPeriod('2024-06-01')).toMatch(/^(May|Jun) 2024 – Present$/)
   })
 })
