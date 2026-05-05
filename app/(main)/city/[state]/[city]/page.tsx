@@ -50,7 +50,12 @@ export default async function CityPage({ params }: CityPageProps) {
   const p = await params
   const cityName = formatCityName(p.city)
   const stateAbbr = p.state.toUpperCase()
-  const stateName = US_STATES.find(s => s.abbr === stateAbbr)?.name ?? stateAbbr
+  // URL-shape guard. Used to live in middleware but moved here so the
+  // /city/* matcher can be excluded — middleware running on a path
+  // disqualifies it from full ISR caching on Vercel.
+  const stateInfo = US_STATES.find(s => s.abbr === stateAbbr)
+  if (!stateInfo) notFound()
+  const stateName = stateInfo.name
 
   const supabase = createServiceClient()
 

@@ -23,6 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PUBLIC_REVIEW_SELECT } from '@/lib/reviews/public'
 import { formatAddress } from '@/lib/utils'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
+import { isValidLandlordSlug } from '@/lib/url-guards'
 import type { Review, PublicRecord, Property } from '@/types'
 
 interface LandlordPageProps {
@@ -38,6 +39,10 @@ export const revalidate = 3600 // ISR: revalidate every 1 hour
 // landlord row. React's `cache()` dedupes the fetch within a single
 // render so we hit Supabase once instead of twice.
 const getLandlord = cache(async (slug: string) => {
+  // URL-shape guard. Used to live in middleware but moved here so the
+  // /landlord/* matcher can be excluded — middleware running on a path
+  // disqualifies it from full ISR caching on Vercel.
+  if (!isValidLandlordSlug(slug)) return null
   const supabase = createServiceClient()
   const { data } = await supabase
     .from('landlords')

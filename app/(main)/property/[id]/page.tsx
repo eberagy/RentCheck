@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button'
 import { WatchlistButton } from '@/components/landlord/WatchlistButton'
 import { PUBLIC_REVIEW_SELECT } from '@/lib/reviews/public'
 import { formatAddress } from '@/lib/utils'
+import { isValidPropertyId } from '@/lib/url-guards'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
 import { buildPropertySummary } from '@/lib/summaries'
 import { cityPagePath, getCanonicalCity } from '@/lib/cities'
@@ -44,6 +45,10 @@ export const revalidate = 3600
 // Shared loader: generateMetadata + the page component both need the
 // property row + its landlord. React cache() dedupes within a render.
 const getProperty = cache(async (id: string) => {
+  // URL-shape guard. Used to live in middleware but moved here so the
+  // /property/* matcher can be excluded — middleware running on a path
+  // disqualifies it from full ISR caching on Vercel.
+  if (!isValidPropertyId(id)) return null
   const supabase = createServiceClient()
   const { data } = await supabase
     .from('properties')

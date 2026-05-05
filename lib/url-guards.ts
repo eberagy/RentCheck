@@ -38,6 +38,17 @@ export function isValidLandlordPath(pathname: string): boolean {
   return LANDLORD_SLUG_RE.test(pathname)
 }
 
+/** Bare-slug variant for use inside [slug] page handlers, where you only
+ * have the segment value, not the full pathname. */
+export function isValidLandlordSlug(slug: string): boolean {
+  return isValidLandlordPath(`/landlord/${slug}`)
+}
+
+/** Bare-id variant for /property/[id] page handlers. */
+export function isValidPropertyId(id: string): boolean {
+  return isValidPropertyPath(`/property/${id}`)
+}
+
 /** True when a /city/<state>/<city> URL should pass through. */
 export function isValidCityPath(pathname: string): boolean {
   const m = pathname.match(CITY_RE)
