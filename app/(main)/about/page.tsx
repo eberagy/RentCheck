@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import Script from 'next/script'
 import { Shield, Search, BarChart3, Scale, ArrowRight } from 'lucide-react'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 
 // Refresh once per hour. The numbers come from the city_stats cache,
 // which is itself refreshed nightly via cron, so anything tighter would

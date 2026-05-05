@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 
 export const runtime = 'nodejs'
 export const size = { width: 1200, height: 630 }

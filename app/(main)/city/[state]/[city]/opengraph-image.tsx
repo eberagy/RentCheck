@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { US_STATES } from '@/types'
 import { getCityAliases } from '@/lib/cities'
 

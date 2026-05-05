@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { SearchBar } from '@/components/search/SearchBar'
 import { LandlordCard } from '@/components/landlord/LandlordCard'
 import { Skeleton } from '@/components/ui/skeleton'

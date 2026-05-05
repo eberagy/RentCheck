@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { Star, MapPin, BadgeCheck } from 'lucide-react'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { formatDate } from '@/lib/utils'
 
 interface RenterProfilePageProps {

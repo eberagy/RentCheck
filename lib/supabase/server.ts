@@ -1,6 +1,11 @@
 import { createServerClient } from '@supabase/ssr'
-import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
+
+// Re-export so existing `from '@/lib/supabase/server'` imports of
+// createServiceClient still work. New call sites should import from
+// '@/lib/supabase/service' directly to keep `cookies()` out of their
+// module graph.
+export { createServiceClient } from './service'
 
 // Server component / route handler client (respects RLS via user session)
 export async function createClient() {
@@ -27,13 +32,3 @@ export async function createClient() {
   )
 }
 
-// Service role client — bypasses RLS (use ONLY in sync jobs and admin actions)
-export function createServiceClient() {
-  return createSupabaseClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      auth: { autoRefreshToken: false, persistSession: false },
-    }
-  )
-}

@@ -14,7 +14,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal'
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter'
 import { CityAlertSignup } from '@/components/marketing/CityAlertSignup'
 import { Button } from '@/components/ui/button'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { COLLEGE_CITIES } from '@/types'
 
 export const revalidate = 60

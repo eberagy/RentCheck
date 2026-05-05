@@ -15,7 +15,7 @@ import {
   ExternalLink,
   Phone,
 } from 'lucide-react'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { PublicRecordsPanel } from '@/components/landlord/PublicRecordsPanel'
 import { ReviewCard } from '@/components/review/ReviewCard'
 import { StarRating } from '@/components/review/StarRating'
