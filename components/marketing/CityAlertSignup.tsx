@@ -64,7 +64,7 @@ export function CityAlertSignup({
   if (status === 'success') {
     return (
       <div
-        className={`mt-6 flex items-center gap-3 rounded-xl border px-5 py-4 ${
+        className={`mt-6 flex items-center gap-3 rounded-2xl border px-5 py-4 ${
           dark ? 'border-white/15 bg-white/[0.04] text-white' : 'border-teal-200 bg-teal-50 text-teal-900'
         }`}
       >
