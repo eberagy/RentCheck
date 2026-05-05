@@ -18,7 +18,15 @@ export async function GET(req: NextRequest) {
   }
 
   const service = createServiceClient()
+  const startedAt = Date.now()
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+
+  const { data: log } = await service
+    .from('sync_log')
+    .insert({ source: 'purge_leases', status: 'running', started_at: new Date().toISOString() })
+    .select('id')
+    .single()
+  const logId = log?.id
 
   // 1000 per run is more than enough headroom; we run daily so the queue
   // never builds up. If the queue ever does hit the cap, the next run
@@ -31,10 +39,25 @@ export async function GET(req: NextRequest) {
     .limit(1000)
 
   if (error) {
-    { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+    console.error("[db]", error)
+    if (logId) {
+      await service.from('sync_log').update({
+        status: 'error',
+        finished_at: new Date().toISOString(),
+        error_message: error.message,
+      }).eq('id', logId)
+    }
+    return NextResponse.json({ error: "Database error" }, { status: 500 })
   }
 
   if (!rows || rows.length === 0) {
+    if (logId) {
+      await service.from('sync_log').update({
+        status: 'success',
+        finished_at: new Date().toISOString(),
+        records_updated: 0,
+      }).eq('id', logId)
+    }
     return NextResponse.json({ ok: true, purged: 0 })
   }
 
@@ -61,8 +84,28 @@ export async function GET(req: NextRequest) {
 
   if (updateErr) {
     console.error('[cron/purge-leases] update failed:', updateErr.message)
+    if (logId) {
+      await service.from('sync_log').update({
+        status: 'error',
+        finished_at: new Date().toISOString(),
+        error_message: updateErr.message,
+      }).eq('id', logId)
+    }
     return NextResponse.json({ error: 'Database error', purged: 0 }, { status: 500 })
   }
 
-  return NextResponse.json({ ok: true, purged: rows.length, batch_cap: 1000 })
+  if (logId) {
+    await service.from('sync_log').update({
+      status: 'success',
+      finished_at: new Date().toISOString(),
+      records_updated: rows.length,
+    }).eq('id', logId)
+  }
+
+  return NextResponse.json({
+    ok: true,
+    purged: rows.length,
+    batch_cap: 1000,
+    duration_ms: Date.now() - startedAt,
+  })
 }

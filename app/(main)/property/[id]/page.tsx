@@ -141,7 +141,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       <Script id={`property-jsonld-${property.id}`} type="application/ld+json" strategy="beforeInteractive">
         {propertyJsonLd}
       </Script>
-      <div className="mx-auto max-w-4xl px-4 py-8">
+      <div className="mx-auto max-w-[1320px] px-4 py-8 sm:px-8">
         <nav className="mb-6 flex items-center gap-1 text-xs text-slate-500">
           <Link href="/" className="transition-colors hover:text-navy-700 hover:underline">
             Home

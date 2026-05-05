@@ -25,6 +25,14 @@ export async function GET(req: NextRequest) {
   }
 
   const supabase = createServiceClient()
+  const startedAt = Date.now()
+
+  const { data: log } = await supabase
+    .from('sync_log')
+    .insert({ source: 'saved_search_alerts', status: 'running', started_at: new Date().toISOString() })
+    .select('id')
+    .single()
+  const logId = log?.id
 
   // 7-day window, falling back to 8d when a user hasn't been notified yet
   const defaultSince = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
@@ -35,7 +43,16 @@ export async function GET(req: NextRequest) {
     .eq('notify_email', true)
     .returns<Subscription[]>()
 
-  if (!subs?.length) return NextResponse.json({ ok: true, subscriptions: 0, emailed: 0 })
+  if (!subs?.length) {
+    if (logId) {
+      await supabase.from('sync_log').update({
+        status: 'success',
+        finished_at: new Date().toISOString(),
+        records_updated: 0,
+      }).eq('id', logId)
+    }
+    return NextResponse.json({ ok: true, subscriptions: 0, emailed: 0 })
+  }
 
   let emailed = 0
   const now = new Date().toISOString()
@@ -126,5 +143,18 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true, subscriptions: subs.length, emailed })
+  if (logId) {
+    await supabase.from('sync_log').update({
+      status: 'success',
+      finished_at: new Date().toISOString(),
+      records_updated: emailed,
+    }).eq('id', logId)
+  }
+
+  return NextResponse.json({
+    ok: true,
+    subscriptions: subs.length,
+    emailed,
+    duration_ms: Date.now() - startedAt,
+  })
 }
