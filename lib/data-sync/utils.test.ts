@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { normalizeAddress } from './utils'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { normalizeAddress, verifyCronSecret } from './utils'
 
 describe('normalizeAddress', () => {
   it('lowercases the input', () => {
@@ -44,5 +44,47 @@ describe('normalizeAddress', () => {
 
   it('handles empty string input', () => {
     expect(normalizeAddress('')).toBe('')
+  })
+})
+
+describe('verifyCronSecret', () => {
+  const ORIGINAL = process.env.CRON_SECRET
+
+  beforeEach(() => {
+    process.env.CRON_SECRET = 'test-secret-do-not-ship'
+  })
+
+  afterEach(() => {
+    if (ORIGINAL === undefined) delete process.env.CRON_SECRET
+    else process.env.CRON_SECRET = ORIGINAL
+  })
+
+  function makeReq(headers: Record<string, string>): Request {
+    return new Request('https://x.test/api/cron/x', { headers })
+  }
+
+  it('accepts the Authorization: Bearer <secret> header (Vercel default)', () => {
+    expect(verifyCronSecret(makeReq({ authorization: 'Bearer test-secret-do-not-ship' }))).toBe(true)
+  })
+
+  it('accepts the x-cron-secret header (custom triggers)', () => {
+    expect(verifyCronSecret(makeReq({ 'x-cron-secret': 'test-secret-do-not-ship' }))).toBe(true)
+  })
+
+  it('rejects requests with no auth header', () => {
+    expect(verifyCronSecret(makeReq({}))).toBe(false)
+  })
+
+  it('rejects a wrong bearer secret', () => {
+    expect(verifyCronSecret(makeReq({ authorization: 'Bearer wrong' }))).toBe(false)
+  })
+
+  it('rejects when CRON_SECRET env is missing (fails closed)', () => {
+    delete process.env.CRON_SECRET
+    expect(verifyCronSecret(makeReq({ authorization: 'Bearer anything' }))).toBe(false)
+  })
+
+  it('does NOT match when bearer prefix is missing', () => {
+    expect(verifyCronSecret(makeReq({ authorization: 'test-secret-do-not-ship' }))).toBe(false)
   })
 })
