@@ -16,9 +16,11 @@ function citySlug(city: string) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // www is the canonical host (apex 307s to www). Match it here so the
-  // sitemap doesn't give Google a redirect-per-URL.
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
+  // www is the canonical host (apex 307s to www). Force www even when
+  // NEXT_PUBLIC_SITE_URL is set to the bare apex (a known prod
+  // misconfiguration) so Google doesn't see a redirect on every URL.
+  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
+  const baseUrl = raw.replace(/^(https?:\/\/)(?!www\.)vettrentals\.com/, '$1www.vettrentals.com')
   const supabase = await createClient()
 
   const [
