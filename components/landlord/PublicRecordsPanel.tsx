@@ -540,7 +540,7 @@ export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propert
       )}
 
       {records.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100">
             <Search className="h-5 w-5 text-slate-400" aria-hidden="true" />
           </div>
@@ -550,7 +550,7 @@ export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propert
           </p>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
+        <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
           <p className="text-[13px] text-slate-500">
             No {filter === 'open' ? 'open' : 'closed'} records match the current filter.
           </p>

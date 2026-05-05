@@ -257,7 +257,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </div>
 
           {reviewList.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-slate-300 bg-white py-16 text-center">
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-16 text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
                 <MessageSquare className="h-7 w-7 text-slate-400" />
               </div>
@@ -283,7 +283,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           )}
         </section>
 
-        <div className="mt-10 flex flex-col items-start justify-between gap-4 rounded-3xl border border-slate-200 bg-slate-50 p-6 sm:flex-row sm:items-center">
+        <div className="mt-10 flex flex-col items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:flex-row sm:items-center">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-red-100">
               <Phone className="h-5 w-5 text-red-600" />
