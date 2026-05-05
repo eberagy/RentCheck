@@ -645,7 +645,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
               </div>
             )}
 
-            <div className="mt-4 grid gap-2">
+            <div className="mt-4 space-y-2">
               <Button
                 asChild
                 size="sm"
@@ -653,18 +653,18 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
               >
                 <Link href={`/review/new?landlord=${landlord.id}`}>Write a review</Link>
               </Button>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
                 <WatchlistButton landlordId={landlord.id} />
                 <ShareButton name={landlord.display_name} />
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="h-8 rounded-full border-slate-200 px-3 text-[12px] text-slate-600"
+                >
+                  <Link href={`/compare?a=${landlord.slug}`}>Compare</Link>
+                </Button>
               </div>
-              <Button
-                asChild
-                variant="outline"
-                size="sm"
-                className="h-8 w-full rounded-full border-slate-200 px-3 text-[12px] text-slate-700"
-              >
-                <Link href={`/compare?a=${landlord.slug}`}>Compare landlords</Link>
-              </Button>
             </div>
           </div>
 
