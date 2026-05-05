@@ -1,9 +1,10 @@
 import { Resend } from 'resend'
+import { canonicalSiteUrl } from './canonical-host'
 
 export const resend = new Resend(process.env.RESEND_API_KEY)
 
 export const FROM_EMAIL = process.env.RESEND_FROM_EMAIL ?? 'hello@vettrentals.com'
-export const APP_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
+export const APP_URL = canonicalSiteUrl()
 
 export async function sendEmail({
   to,
