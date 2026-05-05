@@ -365,7 +365,7 @@ export default async function CityPage({ params }: CityPageProps) {
       {/* CTA */}
       <div className="mx-auto max-w-[1320px] px-4 sm:px-8 pb-20">
         <div className="overflow-hidden rounded-[24px] bg-gradient-to-r from-navy-600 to-teal px-6 py-10 text-center text-white sm:px-10">
-          <h2 className="text-2xl font-extrabold tracking-tight">Know a landlord in {cityName}?</h2>
+          <h2 className="font-display text-[clamp(1.5rem,3vw,2rem)] font-semibold leading-[1.1] tracking-tight">Know a landlord in {cityName}?</h2>
           <p className="mt-2 text-sm text-white/80">Help fellow renters by sharing your lease-verified experience.</p>
           <div className="mt-6 flex justify-center gap-3">
             <Button asChild className="rounded-full bg-white text-navy-700 font-semibold hover:bg-slate-100">

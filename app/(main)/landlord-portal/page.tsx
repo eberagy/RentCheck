@@ -273,7 +273,7 @@ export default function LandlordPortalPage() {
             {landlord ? (
               <>
                 <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-teal-300">Landlord portal</div>
-                <h1 className="mt-3.5 text-[clamp(28px,6vw,36px)] font-extrabold tracking-tight">{landlord.display_name}</h1>
+                <h1 className="mt-3.5 font-display text-[clamp(28px,6vw,36px)] font-semibold leading-[1.05] tracking-tight">{landlord.display_name}</h1>
                 <div className="mt-1 text-[13.5px] text-slate-400">
                   {landlord.is_verified ? 'Verified' : 'Claimed'} &middot; {landlord.review_count ?? 0} reviews
                   {landlord.city && ` · ${landlord.city}, ${landlord.state_abbr}`}
@@ -282,7 +282,7 @@ export default function LandlordPortalPage() {
             ) : (
               <>
                 <div className="text-[11px] font-bold uppercase tracking-[0.22em] text-teal-300">Landlord portal</div>
-                <h1 className="mt-3.5 text-[clamp(28px,6vw,36px)] font-extrabold tracking-tight">Manage your profile</h1>
+                <h1 className="mt-3.5 font-display text-[clamp(28px,6vw,36px)] font-semibold leading-[1.05] tracking-tight">Manage your profile</h1>
               </>
             )}
           </div>
@@ -306,7 +306,7 @@ export default function LandlordPortalPage() {
             <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-navy-50">
               <Shield className="h-8 w-8 text-navy-400" />
             </div>
-            <h2 className="text-xl font-extrabold text-slate-900">Claim Your Landlord Profile</h2>
+            <h2 className="font-display text-[22px] font-semibold tracking-tight text-slate-900">Claim your landlord profile</h2>
             <p className="mx-auto mt-2 max-w-sm text-[14px] leading-relaxed text-slate-500">
               Search for your profile and submit verification documents. Once approved, you can respond to reviews and update your profile.
             </p>
