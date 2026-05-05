@@ -67,6 +67,9 @@ export interface Landlord {
   response_rate?: number | null
   responded_review_count?: number
   ai_summary?: string | null
+  /** Landlord-authored bio shown on the profile page once they claim it.
+   *  Optional because rows pre-claim don't have it. */
+  description?: string | null
   opencorporates_id: string | null
   created_at: string
   updated_at: string

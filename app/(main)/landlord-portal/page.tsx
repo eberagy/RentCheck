@@ -96,7 +96,7 @@ export default function LandlordPortalPage() {
       setClaim(claimData as unknown as LandlordClaim)
       setProfileWebsite(l.website ?? '')
       setProfilePhone(l.phone ?? '')
-      setProfileDescription((l as unknown as { description?: string | null }).description ?? '')
+      setProfileDescription(l.description ?? '')
       const [{ data: r }, { data: propIds }] = await Promise.all([
         supabase
           .from('reviews')
@@ -377,7 +377,7 @@ export default function LandlordPortalPage() {
                       setEditingProfile(false)
                       setProfileWebsite(landlord.website ?? '')
                       setProfilePhone(landlord.phone ?? '')
-                      setProfileDescription((landlord as unknown as { description?: string | null }).description ?? '')
+                      setProfileDescription(landlord.description ?? '')
                     }} disabled={savingProfile}>Cancel</Button>
                     <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white" onClick={saveProfile} disabled={savingProfile}>
                       {savingProfile ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
@@ -404,8 +404,8 @@ export default function LandlordPortalPage() {
                   <div className="sm:col-span-2">
                     <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">About / description</dt>
                     <dd className="mt-1 text-[14px] text-slate-800 whitespace-pre-wrap">
-                      {(landlord as unknown as { description?: string | null }).description
-                        ? (landlord as unknown as { description: string }).description
+                      {landlord.description
+                        ? landlord.description
                         : <span className="text-slate-400 italic">Not set — add a short bio so renters know who they&apos;re leasing from.</span>}
                     </dd>
                   </div>

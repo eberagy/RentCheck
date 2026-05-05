@@ -384,13 +384,13 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           </div>
 
           {/* Landlord-authored description (only shown if claimant added one) */}
-          {(landlord as unknown as { description?: string | null }).description && (
+          {landlord.description && (
             <div className="border-t border-slate-100 px-5 py-5 sm:px-8">
               <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-2.5 py-0.5 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-teal-700">
                 From the landlord
               </div>
               <p className="whitespace-pre-wrap text-[14px] leading-6 text-slate-700">
-                {(landlord as unknown as { description: string }).description}
+                {landlord.description}
               </p>
             </div>
           )}
