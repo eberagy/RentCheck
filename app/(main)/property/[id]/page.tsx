@@ -60,9 +60,17 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
   // not 200 with a "Not Found" body. Without this, soft-404s would tell
   // search engines the URL is valid and waste crawl budget.
   if (!prop) notFound()
+  const reviewCount = prop.review_count ?? 0
+  const hasReviews = reviewCount > 0
+  // Title varies by whether we have reviews — saying "X Reviews" when
+  // the page has 0 reviews misrepresents the page to crawlers and users.
   return {
-    title: `${prop.address_line1}, ${prop.city} Reviews`,
-    description: `Renter reviews and violation history for ${prop.address_line1}, ${prop.city}. ${prop.review_count} reviews.`,
+    title: hasReviews
+      ? `${prop.address_line1}, ${prop.city} Reviews`
+      : `${prop.address_line1}, ${prop.city}`,
+    description: hasReviews
+      ? `Renter reviews and violation history for ${prop.address_line1}, ${prop.city}. ${reviewCount} review${reviewCount === 1 ? '' : 's'}.`
+      : `Public records and rental history for ${prop.address_line1}, ${prop.city}. Be the first to write a lease-verified review.`,
     alternates: { canonical: `/property/${p.id}` },
   }
 }

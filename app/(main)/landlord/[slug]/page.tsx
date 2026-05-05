@@ -62,12 +62,15 @@ export async function generateMetadata({ params }: LandlordPageProps): Promise<M
   const ogDescription = hasReviews
     ? `${reviewCount} renter review${reviewCount === 1 ? '' : 's'} · ${(landlord.avg_rating ?? 0).toFixed(1)} avg rating`
     : `Research ${landlord.display_name}${location ? ` in ${location}` : ''} on Vett. Lease-verified reviews + public records.`
+  // Title varies by whether we have reviews — saying "X Reviews" when
+  // the page has 0 reviews misrepresents the page to crawlers and users.
+  const titleNoun = hasReviews ? 'Reviews' : 'Public Records'
   return {
-    title: `${landlord.display_name} Reviews${location ? ` — ${location}` : ''}`,
+    title: `${landlord.display_name} ${titleNoun}${location ? ` — ${location}` : ''}`,
     description,
     alternates: { canonical: `/landlord/${p.slug}` },
     openGraph: {
-      title: `${landlord.display_name} Reviews | Vett`,
+      title: `${landlord.display_name} ${titleNoun} | Vett`,
       description: ogDescription,
     },
   }
