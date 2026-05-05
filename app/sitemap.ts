@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { COLLEGE_CITIES } from '@/types'
 import { getAllPosts } from '@/lib/blog'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 export const revalidate = 3600
 
@@ -16,11 +17,7 @@ function citySlug(city: string) {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // www is the canonical host (apex 307s to www). Force www even when
-  // NEXT_PUBLIC_SITE_URL is set to the bare apex (a known prod
-  // misconfiguration) so Google doesn't see a redirect on every URL.
-  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
-  const baseUrl = raw.replace(/^(https?:\/\/)(?!www\.)vettrentals\.com/, '$1www.vettrentals.com')
+  const baseUrl = canonicalSiteUrl()
   const supabase = await createClient()
 
   const [

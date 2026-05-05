@@ -1,12 +1,8 @@
 import type { MetadataRoute } from 'next'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 export default function robots(): MetadataRoute.Robots {
-  // Live site serves on www.vettrentals.com; the apex redirects 307 → www.
-  // Force www even when NEXT_PUBLIC_SITE_URL is set to the bare apex
-  // (a known prod misconfiguration) so search engines don't see a
-  // redirect on every URL and we don't burn crawl budget.
-  const raw = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
-  const baseUrl = raw.replace(/^(https?:\/\/)(?!www\.)vettrentals\.com/, '$1www.vettrentals.com')
+  const baseUrl = canonicalSiteUrl()
 
   return {
     rules: [

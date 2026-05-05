@@ -5,6 +5,7 @@ import Script from 'next/script'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { Toaster } from 'sonner'
 import { PostHogProvider } from '@/components/PostHogProvider'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 import './globals.css'
 
 const sans = localFont({
@@ -21,7 +22,7 @@ const display = Instrument_Serif({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'),
+  metadataBase: new URL(canonicalSiteUrl()),
   title: {
     // Homepage uses `default` as-is (no template suffix), so we don't double
     // the brand. Child pages get `| Vett` appended via the template.
@@ -56,7 +57,7 @@ export const metadata: Metadata = {
   },
 }
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.vettrentals.com'
+const siteUrl = canonicalSiteUrl()
 
 const siteJsonLd = JSON.stringify({
   '@context': 'https://schema.org',
