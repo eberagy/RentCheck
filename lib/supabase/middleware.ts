@@ -33,10 +33,6 @@ function originIsAllowed(origin: string | null): boolean {
 }
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
-
-  // Origin check for state-changing API requests. Runs BEFORE auth so a
-  // forged cross-origin cookie attack gets dropped at the edge.
   const method = request.method
   const pathname = request.nextUrl.pathname
 
@@ -51,6 +47,9 @@ export async function updateSession(request: NextRequest) {
   if (pathname.startsWith('/city/') && pathname !== '/city/' && !isValidCityPath(pathname)) {
     return new NextResponse('Not Found', { status: 404 })
   }
+
+  // Origin check for state-changing API requests. Runs BEFORE auth so a
+  // forged cross-origin cookie attack gets dropped at the edge.
   const isWrite = method === 'POST' || method === 'PATCH' || method === 'DELETE' || method === 'PUT'
   const isApi = pathname.startsWith('/api/')
   const needsOriginCheck =
@@ -71,10 +70,9 @@ export async function updateSession(request: NextRequest) {
   // Only refresh the Supabase session on paths the middleware actually
   // uses `user` for (admin gate, ban check, auth redirects below). For
   // public pages (landlord, property, city, /, /search, /blog, /faq, etc.)
-  // we skip auth entirely. Otherwise every response carries a fresh
-  // Set-Cookie from the SSR session refresh, which forces
-  // `Cache-Control: private` and torpedoes Vercel's edge cache — causing
-  // the landlord page to MISS on every hit (~1.7s SSR each time).
+  // we return a clean NextResponse with no `{ request }` argument so
+  // Next.js doesn't classify the response as "middleware-modified" and
+  // downgrade ISR caching.
   const requiresSession =
     pathname.startsWith('/admin') ||
     pathname.startsWith('/dashboard') ||
@@ -84,8 +82,10 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith('/dispute')
 
   if (!requiresSession) {
-    return supabaseResponse
+    return NextResponse.next()
   }
+
+  let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

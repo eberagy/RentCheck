@@ -510,6 +510,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
               reviews={(reviews as unknown as Review[]) ?? []}
               landlordId={landlord.id}
               landlordSlug={landlord.slug}
+              totalReviews={landlord.review_count ?? undefined}
             />
           </TabsContent>
 

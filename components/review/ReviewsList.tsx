@@ -20,9 +20,13 @@ interface ReviewsListProps {
   reviews: Review[]
   landlordId: string
   landlordSlug: string
+  /** Total review count from the landlord row — usually ≥ reviews.length
+   * because the page caps the query at 20. Used so the toolbar copy
+   * doesn't claim "showing all" when there are extras off-screen. */
+  totalReviews?: number
 }
 
-export function ReviewsList({ reviews, landlordId, landlordSlug: _landlordSlug }: ReviewsListProps) {
+export function ReviewsList({ reviews, landlordId, landlordSlug: _landlordSlug, totalReviews }: ReviewsListProps) {
   const [sort, setSort] = useState<SortOption>('recent')
 
   const sorted = useMemo(() => {
@@ -57,7 +61,9 @@ export function ReviewsList({ reviews, landlordId, landlordSlug: _landlordSlug }
       {/* Toolbar */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
         <p className="text-xs text-slate-500">
-          {reviews.length} verified review{reviews.length !== 1 ? 's' : ''} · showing all
+          {totalReviews && totalReviews > reviews.length
+            ? `Showing ${reviews.length} of ${totalReviews} verified reviews`
+            : `${reviews.length} verified review${reviews.length !== 1 ? 's' : ''} · showing all`}
         </p>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
