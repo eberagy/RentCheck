@@ -10,7 +10,7 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
       <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Privacy Policy</h1>
-      <p className="text-sm text-slate-500 mb-8">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+      <p className="text-sm text-slate-500 mb-8">Last updated: April 16, 2026</p>
 
       <div className="space-y-6 text-sm leading-relaxed">
         <section>
