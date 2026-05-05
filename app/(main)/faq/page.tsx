@@ -92,7 +92,7 @@ export default function FAQPage() {
             key={faq.id}
             id={faq.id}
             className={
-              'group [&_summary::-webkit-details-marker]:hidden ' +
+              'group scroll-mt-24 [&_summary::-webkit-details-marker]:hidden ' +
               (i < FAQS.length - 1 ? 'border-b border-slate-100' : '')
             }
           >
