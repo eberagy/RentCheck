@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { z } from 'zod'
 import { sanitizeText } from '@/lib/sanitize'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
@@ -31,7 +32,9 @@ const createSchema = z.object({
 })
 
 export async function GET(req: NextRequest) {
-  const supabase = await createClient()
+  // Public list — only approved reviews are surfaced. No user-scoped
+  // filter, so service client is fine.
+  const supabase = createServiceClient()
   const { searchParams } = req.nextUrl
   const landlordId = searchParams.get('landlordId')
   const propertyId = searchParams.get('propertyId')

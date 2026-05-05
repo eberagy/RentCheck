@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { sanitizeText } from '@/lib/sanitize'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { PUBLIC_REVIEW_SELECT, stripPrivateReviewFields } from '@/lib/reviews/public'
@@ -7,7 +8,9 @@ import { z } from 'zod'
 
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
   const { id } = await params
-  const supabase = await createClient()
+  // Public read — only `status='approved'` rows are returned. No
+  // user-scoped logic, so service client.
+  const supabase = createServiceClient()
 
   const { data, error } = await supabase
     .from('reviews')

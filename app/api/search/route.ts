@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { buildLandlordSummary, buildPropertySummary, truncateSummary } from '@/lib/summaries'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { z } from 'zod'
@@ -22,7 +22,8 @@ export async function GET(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: 'Invalid query' }, { status: 400 })
 
   const { q, type, limit } = parsed.data
-  const supabase = await createClient()
+  // Public search RPC — no user-scoped logic.
+  const supabase = createServiceClient()
 
   type SearchHit = {
     id: string

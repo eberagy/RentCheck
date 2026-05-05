@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { z } from 'zod'
 
 const querySchema = z.object({
@@ -17,7 +17,9 @@ export async function GET(req: NextRequest) {
 
   const { landlordId, city, state, zip, page, limit } = parsed.data
   const offset = (page - 1) * limit
-  const supabase = await createClient()
+  // Public read — no user-scoped logic. Service client avoids the cookies()
+  // dependency.
+  const supabase = createServiceClient()
 
   let q = supabase
     .from('properties')

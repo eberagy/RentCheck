@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { z } from 'zod'
 
 const querySchema = z.object({
@@ -18,7 +18,9 @@ export async function GET(req: NextRequest) {
 
   const { id, city, state, minRating, verified, page, limit } = parsed.data
   const offset = (page - 1) * limit
-  const supabase = await createClient()
+  // Public list endpoint — same data as the search page surfaces. No
+  // user-scoped filtering, so service client is appropriate.
+  const supabase = createServiceClient()
 
   if (id) {
     const { data, error } = await supabase
