@@ -292,7 +292,7 @@ export default async function CityPage({ params }: CityPageProps) {
       {/* All landlords */}
       <div className="mx-auto max-w-[1320px] px-4 sm:px-8 pb-12">
         {landlords.length === 0 ? (
-          <div className="rounded-[24px] border border-dashed border-slate-300 bg-white py-16 text-center">
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-16 text-center">
             <Building2 className="mx-auto mb-4 h-12 w-12 text-slate-300" />
             <p className="text-base font-semibold text-slate-700">No landlords listed yet in {cityName}</p>
             <p className="mt-1 text-sm text-slate-400">Be the first to add one and help fellow renters.</p>

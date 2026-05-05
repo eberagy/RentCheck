@@ -523,7 +523,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           {/* Properties tab */}
           <TabsContent value="properties" keepMounted>
             {(properties ?? []).length === 0 ? (
-              <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-12 text-center">
+              <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 py-12 text-center">
                 <Building2 className="mx-auto mb-3 h-8 w-8 text-slate-300" />
                 <p className="text-sm font-medium text-slate-600">No properties linked yet</p>
                 <p className="mt-1 text-xs text-slate-400">Properties get linked automatically as public records are synced from government databases.</p>
