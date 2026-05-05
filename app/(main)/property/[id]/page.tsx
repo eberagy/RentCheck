@@ -34,12 +34,12 @@ interface PropertyPageProps {
 }
 
 export const revalidate = 3600
-// NOTE: notFound() in generateMetadata + page does NOT return a 404 status
-// in production (Next.js 14 + Vercel quirk). The not-found.tsx body
-// renders with a 200 status header, soft-404'ing into search engines.
-// Tried `dynamic = 'force-dynamic'` — same result. Tracked in NEXT_SESSION;
-// proper fix likely requires a middleware-level UUID validator that
-// returns NextResponse with status 404 before reaching the page.
+// Typo'd /property/* URLs (anything that isn't a v4 UUID) are 404'd at
+// the edge by the middleware via lib/url-guards.ts UUID_RE. For UUIDs
+// that look valid but don't exist in the DB, notFound() below renders
+// the parent (main)/not-found.tsx body — which Next.js 14 returns with
+// a 404 status as long as the page wasn't forced into the dynamic
+// renderer. Verify by curl-checking response status, not just body.
 
 // Shared loader: generateMetadata + the page component both need the
 // property row + its landlord. React cache() dedupes within a render.

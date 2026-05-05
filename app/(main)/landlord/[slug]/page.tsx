@@ -30,8 +30,9 @@ interface LandlordPageProps {
 }
 
 export const revalidate = 3600 // ISR: revalidate every 1 hour
-// NOTE: same soft-404 caveat as /property/[id] — notFound() returns the
-// not-found body with a 200 status. force-dynamic didn't help.
+// Typo'd /landlord/* URLs (anything outside the slug regex) are 404'd at
+// the edge by middleware via lib/url-guards.ts LANDLORD_SLUG_RE. Slugs
+// that match the regex but aren't in the DB call notFound() below.
 
 // Shared loader: generateMetadata + the page component both need the
 // landlord row. React's `cache()` dedupes the fetch within a single
