@@ -3,7 +3,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { ArrowLeft, CheckCircle2, Search } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
-import { VerifiedBadge } from '@/components/landlord/VerifiedBadge'
+import { VerifiedBadge } from '@/components/vett/VerifiedBadge'
 import { StarRating } from '@/components/review/StarRating'
 import { Button } from '@/components/ui/button'
 

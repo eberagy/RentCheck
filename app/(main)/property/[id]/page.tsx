@@ -19,7 +19,7 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { PublicRecordsPanel } from '@/components/landlord/PublicRecordsPanel'
 import { ReviewCard } from '@/components/review/ReviewCard'
 import { StarRating } from '@/components/review/StarRating'
-import { VerifiedBadge } from '@/components/landlord/VerifiedBadge'
+import { VerifiedBadge } from '@/components/vett/VerifiedBadge'
 import { Button } from '@/components/ui/button'
 import { WatchlistButton } from '@/components/landlord/WatchlistButton'
 import { PUBLIC_REVIEW_SELECT } from '@/lib/reviews/public'
@@ -364,7 +364,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                       <span className="text-[14px] font-semibold text-slate-900 group-hover:text-navy-700">
                         {landlord.display_name}
                       </span>
-                      {landlord.is_verified && <VerifiedBadge size="sm" />}
+                      {landlord.is_verified && <VerifiedBadge small />}
                     </div>
                     {landlord.city && (
                       <p className="text-[12px] text-slate-400">
