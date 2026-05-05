@@ -267,7 +267,7 @@ export default function LandlordPortalPage() {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header strip */}
-      <section className="relative overflow-hidden bg-ink px-4 py-10 sm:px-7 text-white">
+      <section className="relative overflow-hidden bg-ink px-4 py-10 sm:px-8 text-white">
         <div className="absolute right-0 top-[-40px] h-[200px] w-[200px] rounded-full bg-teal/30 blur-[80px]" />
         <div className="relative mx-auto flex max-w-[1320px] flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -300,7 +300,7 @@ export default function LandlordPortalPage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1320px] px-4 py-7 sm:px-7">
+      <div className="mx-auto max-w-[1320px] px-4 py-7 sm:px-8">
         {/* ── No claim yet ── */}
         {!claim && (
           <div className="rounded-[24px] border border-slate-200 bg-white p-10 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04)]">

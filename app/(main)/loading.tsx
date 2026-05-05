@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 export default function MainLoading() {
   return (
     <div className="min-h-screen bg-ink">
-      <section className="relative overflow-hidden px-4 py-20 sm:px-7 sm:py-24 text-white">
+      <section className="relative overflow-hidden px-4 py-20 sm:px-8 sm:py-24 text-white">
         <div className="mx-auto max-w-[1100px] space-y-6">
           <Skeleton className="h-4 w-44 bg-white/10" />
           <Skeleton className="h-16 w-full max-w-[640px] bg-white/10" />
@@ -22,7 +22,7 @@ export default function MainLoading() {
           </div>
         </div>
       </section>
-      <section className="bg-white px-4 py-20 sm:px-7">
+      <section className="bg-white px-4 py-20 sm:px-8">
         <div className="mx-auto max-w-[1100px]">
           <Skeleton className="h-4 w-32 mb-3" />
           <Skeleton className="h-10 w-2/3 max-w-[480px] mb-10" />
