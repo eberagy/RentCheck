@@ -7,7 +7,9 @@ import {
   truncate,
   formatCount,
   ratingToLabel,
+  ratingToColor,
   severityLabel,
+  severityColor,
   gradeColor,
   gradeBgLight,
   formatDate,
@@ -180,6 +182,36 @@ describe('formatDate', () => {
     expect(formatDate(null)).toBe('Unknown')
     expect(formatDate(undefined)).toBe('Unknown')
     expect(formatDate('')).toBe('Unknown')
+  })
+})
+
+describe('ratingToColor', () => {
+  it('teal for 4+, amber for 3+, orange for 2+, red below', () => {
+    expect(ratingToColor(5)).toMatch(/teal/)
+    expect(ratingToColor(4)).toMatch(/teal/)
+    expect(ratingToColor(3.9)).toMatch(/amber/)
+    expect(ratingToColor(3)).toMatch(/amber/)
+    expect(ratingToColor(2.9)).toMatch(/orange/)
+    expect(ratingToColor(2)).toMatch(/orange/)
+    expect(ratingToColor(1.9)).toMatch(/red/)
+    expect(ratingToColor(0)).toMatch(/red/)
+  })
+})
+
+describe('severityColor', () => {
+  it('returns class strings for every level + null fallback', () => {
+    for (const sev of ['critical', 'high', 'medium', 'low'] as const) {
+      const c = severityColor(sev)
+      expect(c).toMatch(/text-/)
+      expect(c.split(' ').length).toBeGreaterThanOrEqual(2)
+    }
+    // null should still produce something — not empty/undefined
+    expect(severityColor(null).length).toBeGreaterThan(0)
+  })
+
+  it('critical is red, low is blue (semantic colors)', () => {
+    expect(severityColor('critical')).toContain('red')
+    expect(severityColor('low')).toContain('blue')
   })
 })
 
