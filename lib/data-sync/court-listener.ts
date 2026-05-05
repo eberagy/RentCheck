@@ -4,7 +4,7 @@
  * Searches for eviction-related federal cases
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveOrQueueLandlord, type SyncResult } from './utils'
+import { resolveOrQueueLandlord, type SyncResult, type SocrataRow } from './utils'
 
 const BASE_URL = 'https://www.courtlistener.com/api/rest/v4'
 
@@ -46,8 +46,8 @@ export async function syncCourtListener(supabase: SupabaseClient): Promise<SyncR
       const res: Response = await fetch(url, { headers })
       if (!res.ok) { result.errors.push(`CourtListener HTTP ${res.status} for "${q}"`); break }
 
-      const data = await res.json()
-      const results: any[] = data.results ?? []
+      const data = await res.json() as { results?: SocrataRow[]; next?: string | null }
+      const results: SocrataRow[] = data.results ?? []
 
       for (const item of results) {
         try {

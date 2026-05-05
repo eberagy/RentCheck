@@ -5,7 +5,7 @@
  * https://evictionlab.org/get-the-data/
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { SyncResult } from './utils'
+import type { SyncResult, SocrataRow } from './utils'
 
 // States with reliable eviction lab data coverage
 const STATES = ['MD', 'PA', 'SC', 'WA', 'CA', 'IL', 'TX', 'NY', 'MA']
@@ -33,8 +33,10 @@ export async function syncLscEvictions(supabase: SupabaseClient): Promise<SyncRe
           continue
         }
 
-        const data = await res.json()
-        const rows: any[] = Array.isArray(data) ? data : (data.data ?? data.features ?? [])
+        const data = await res.json() as SocrataRow | SocrataRow[]
+        const rows: SocrataRow[] = Array.isArray(data)
+          ? data
+          : ((data.data as SocrataRow[]) ?? (data.features as SocrataRow[]) ?? [])
 
         for (const row of rows) {
           try {

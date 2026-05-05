@@ -13,7 +13,7 @@
  * Run weekly — picks up newly imported violation records and back-fills linkages.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { SyncResult } from './utils'
+import type { SyncResult, SocrataRow } from './utils'
 import slugify from 'slugify'
 
 // Known owner field names in raw_data by source prefix
@@ -157,11 +157,11 @@ export async function syncMineViolationOwners(supabase: SupabaseClient): Promise
     if (recErr) { result.errors.push(recErr.message); break }
 
     // Group by property_id, take the first record per property
-    const recordByProperty = new Map<string, { source: string; raw_data: Record<string, any> }>()
+    const recordByProperty = new Map<string, { source: string; raw_data: SocrataRow }>()
     for (const r of records ?? []) {
       const pid = r.property_id as string
       if (!pid || recordByProperty.has(pid)) continue
-      recordByProperty.set(pid, { source: r.source as string, raw_data: r.raw_data as Record<string, any> })
+      recordByProperty.set(pid, { source: r.source as string, raw_data: r.raw_data as SocrataRow })
     }
 
     // Build a unified iterable that mirrors the old `unlinked` shape
@@ -175,17 +175,17 @@ export async function syncMineViolationOwners(supabase: SupabaseClient): Promise
           properties: { id: p.id, city: p.city, state_abbr: p.state_abbr, address_line1: p.address_line1, landlord_id: null as string | null },
         }
       })
-      .filter(Boolean) as Array<{ source: string; raw_data: Record<string, any>; properties: { id: string; city: string | null; state_abbr: string | null; address_line1: string | null; landlord_id: string | null } }>
+      .filter(Boolean) as Array<{ source: string; raw_data: SocrataRow; properties: { id: string; city: string | null; state_abbr: string | null; address_line1: string | null; landlord_id: string | null } }>
 
     for (const rec of unlinked) {
       try {
-        const rawData = rec.raw_data as Record<string, any>
+        const rawData = rec.raw_data as SocrataRow
         if (!rawData) { result.skipped++; continue }
 
         const ownerName = extractOwnerName(rawData, rec.source)
         if (!ownerName) { result.skipped++; continue }
 
-        const prop = rec.properties as any
+        const prop = rec.properties
         const city = prop.city ?? ''
         const stateAbbr = prop.state_abbr ?? (STATE_FROM_SOURCE[rec.source]?.stateAbbr ?? 'US')
         const stateFull = STATE_FROM_SOURCE[rec.source]?.state ?? stateAbbr
@@ -246,7 +246,7 @@ export async function syncMineViolationOwners(supabase: SupabaseClient): Promise
 }
 
 /** Extract best owner name from raw_data given the source */
-function extractOwnerName(raw: Record<string, any>, source: string): string | null {
+function extractOwnerName(raw: SocrataRow, source: string): string | null {
   const sourceFields: string[] = OWNER_FIELDS_BY_SOURCE[source] ?? []
   const defaultFields: string[] = OWNER_FIELDS_BY_SOURCE.default ?? []
   const fields = [...sourceFields, ...defaultFields]

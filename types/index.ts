@@ -126,12 +126,16 @@ export interface Review {
   landlord_response_status: 'pending' | 'approved' | 'rejected' | null
   helpful_count: number
   flag_count: number
+  is_anonymous: boolean
   created_at: string
   updated_at: string
-  // Joined fields
+  // Joined / computed fields
   reviewer?: Pick<Profile, 'full_name' | 'email' | 'avatar_url'>
   property?: Pick<Property, 'address_line1' | 'city' | 'state_abbr'>
   evidence?: ReviewEvidence[]
+  /** Materialized address string baked in by the public-review SELECT
+   *  so we don't need to join properties on every render. */
+  property_address?: string | null
 }
 
 export interface ReviewEvidence {

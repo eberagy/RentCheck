@@ -17,6 +17,16 @@ export interface SyncResult {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SocrataRow = Record<string, any>
 
+/**
+ * ArcGIS Hub `/query` response feature: the upstream wraps the actual
+ * row inside `attributes`. Geometry is sometimes returned, sometimes
+ * not, so it's typed as unknown — sync routes only read `attributes`.
+ */
+export interface ArcGISFeature {
+  attributes: SocrataRow
+  geometry?: unknown
+}
+
 /** Simple retry wrapper — retries up to 3x on network errors */
 export async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
   let lastError: unknown
@@ -395,7 +405,7 @@ export async function resolveOrQueueLandlord(
     .limit(1)
     .single()
 
-  if (fuzzy) return (fuzzy as any).id
+  if (fuzzy) return (fuzzy as { id: string }).id
 
   return null
 }

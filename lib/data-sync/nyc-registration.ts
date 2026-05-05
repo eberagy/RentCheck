@@ -44,11 +44,15 @@ export async function syncNycRegistration(supabase: SupabaseClient): Promise<Syn
       address_line1: v.addr, city: 'New York City', state: 'New York',
       state_abbr: 'NY', zip: v.zip, address_normalized: norm,
     }))
-    const propIdMap = await upsertPropertiesAndMap(supabase, propRows, result)
+    // propIdMap is intentionally unused here — this sync resolves
+    // landlords by name, not properties. Calling upsertPropertiesAndMap
+    // is what populates the properties row + creates address_normalized
+    // entries for downstream syncs (HPD/DOB) to link against.
+    await upsertPropertiesAndMap(supabase, propRows, result)
 
     // ── Collect unique owner names ───────────────────────────────────────────
     const ownerNames = Array.from(new Set(
-      rows.map((r: any) => (r.ownername ?? '').trim()).filter((n: string) => n.length > 1)
+      rows.map((r: SocrataRow) => (r.ownername ?? '').trim()).filter((n: string) => n.length > 1)
     ))
 
     // Check which owners already exist (batch)

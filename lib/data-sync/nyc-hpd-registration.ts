@@ -112,7 +112,7 @@ export async function syncNycHpdRegistration(supabase: SupabaseClient): Promise<
   return result
 }
 
-function pickOwnerName(row: any): string | null {
+function pickOwnerName(row: SocrataRow): string | null {
   // Company name is most reliable identifier
   if (row.companyname?.trim() && row.companyname.trim().length > 1) {
     return toTitleCase(row.companyname.trim())

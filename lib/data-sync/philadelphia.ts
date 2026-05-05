@@ -4,7 +4,7 @@
  * Dataset: https://opendataphilly.org/datasets/licenses-and-inspections-code-violations
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult } from './utils'
+import { normalizeAddress, batchUpsert, upsertPropertiesAndMap, type SyncResult, type SocrataRow } from './utils'
 
 const CARTO_ENDPOINT = 'https://phl.carto.com/api/v2/sql'
 const PAGE_SIZE = 1000
@@ -28,7 +28,7 @@ export async function syncPhiladelphia(supabase: SupabaseClient): Promise<SyncRe
     const res = await fetch(url)
     if (!res.ok) { result.errors.push(`HTTP ${res.status}: ${await res.text()}`); break }
 
-    const json: { rows: any[] } = await res.json()
+    const json: { rows: SocrataRow[] } = await res.json()
     const rows = json.rows ?? []
     if (rows.length === 0) break
 

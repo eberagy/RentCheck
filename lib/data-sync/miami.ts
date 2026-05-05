@@ -10,7 +10,7 @@
  * Default tries the Miami-Dade building violations feature service.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
+import { resolveProperty, normalizeAddress, type SyncResult, type ArcGISFeature } from './utils'
 
 // Miami-Dade ArcGIS Feature Service for code violations
 const FEATURE_SERVICES = [
@@ -48,7 +48,7 @@ export async function syncMiami(supabase: SupabaseClient): Promise<SyncResult> {
   let offset = 0
   while (true) {
     const url = `${workingService}/query?where=1%3D1&outFields=*&f=json&resultRecordCount=${PAGE_SIZE}&resultOffset=${offset}&orderByFields=OBJECTID`
-    let features: any[]
+    let features: ArcGISFeature[]
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(15000) })
       if (!res.ok) { result.errors.push(`HTTP ${res.status} from Miami API`); break }

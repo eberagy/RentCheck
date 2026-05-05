@@ -89,7 +89,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       .limit(200),
   ])
 
-  const landlord = property.landlord as any
+  const landlord = property.landlord as
+    | { id: string; display_name: string; slug: string; city: string | null; state_abbr: string | null; is_claimed: boolean; is_verified: boolean }
+    | null
   const isUnclaimed = !landlord?.is_claimed
   // Match landlord-page logic: court / informational records aren't violations.
   const PROPERTY_OPEN_EXCLUDE = ['court_case', 'lsc_eviction', 'court_listener', 'business_registration']

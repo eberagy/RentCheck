@@ -6,7 +6,7 @@
  * Set ATLANTA_ARCGIS_SERVICE env var to override.
  */
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { resolveProperty, normalizeAddress, type SyncResult } from './utils'
+import { resolveProperty, normalizeAddress, type SyncResult, type ArcGISFeature } from './utils'
 
 const FEATURE_SERVICES = [
   process.env.ATLANTA_ARCGIS_SERVICE,
@@ -43,7 +43,7 @@ export async function syncAtlanta(supabase: SupabaseClient): Promise<SyncResult>
   let offset = 0
   while (true) {
     const url = `${workingService}/query?where=1%3D1&outFields=*&f=json&resultRecordCount=${PAGE_SIZE}&resultOffset=${offset}&orderByFields=OBJECTID`
-    let features: any[]
+    let features: ArcGISFeature[]
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(15000) })
       if (!res.ok) { result.errors.push(`HTTP ${res.status} from Atlanta API`); break }

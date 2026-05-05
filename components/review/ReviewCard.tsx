@@ -69,7 +69,7 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
         <Avatar className="mt-0.5 h-10 w-10 flex-shrink-0">
           {/* Hide reviewer photo when the review is anonymous so the avatar
               + display name read as a single privacy unit. */}
-          {!(review as any).is_anonymous && (
+          {!review.is_anonymous && (
             <AvatarImage src={review.reviewer?.avatar_url ?? undefined} />
           )}
           <AvatarFallback className="bg-navy-100 text-xs font-semibold text-navy-700">
@@ -80,7 +80,7 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-sm font-semibold text-slate-950">
-              {(review as any).is_anonymous
+              {review.is_anonymous
                 ? 'Anonymous renter'
                 : formatReviewerName(review.reviewer?.full_name, review.reviewer?.email)}
             </span>
@@ -115,12 +115,12 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
             <p className="text-xs text-slate-400">
               {formatRentalPeriod(review.rental_period_start, review.rental_period_end, review.is_current_tenant)}
             </p>
-            {!((review as any).is_anonymous) && ((review as any).property_address || review.property) && (
+            {!(review.is_anonymous) && (review.property_address || review.property) && (
               <>
                 <span className="text-xs text-slate-300">·</span>
                 <span className="flex items-center gap-0.5 text-xs text-slate-400">
                   <Home className="h-3 w-3" />
-                  {(review as any).property_address ?? `${review.property?.address_line1}${review.property?.city ? `, ${review.property.city}` : ''}`}
+                  {review.property_address ?? `${review.property?.address_line1}${review.property?.city ? `, ${review.property.city}` : ''}`}
                 </span>
               </>
             )}
