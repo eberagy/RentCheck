@@ -164,6 +164,52 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       landlordRecords.push(r)
     }
   }
+
+  // Per-property record summary so the Properties tab can show real
+  // counts + most-recent activity instead of a single "open" pill.
+  type PropertyStats = {
+    total: number
+    open: number
+    latestFiledDate: string | null
+    topType: string | null
+  }
+  const PROPERTY_STATS_EXCLUDE = new Set(['business_registration', 'court_case', 'lsc_eviction', 'court_listener'])
+  const propertyStats = new Map<string, PropertyStats>()
+  for (const rec of landlordRecords) {
+    if (!rec.property_id) continue
+    const cur = propertyStats.get(rec.property_id) ?? {
+      total: 0, open: 0, latestFiledDate: null as string | null, topType: null as string | null,
+    }
+    cur.total++
+    if (
+      !PROPERTY_STATS_EXCLUDE.has(rec.record_type ?? '') &&
+      rec.status?.toLowerCase() !== 'closed' &&
+      rec.status?.toLowerCase() !== 'dismissed'
+    ) cur.open++
+    if (rec.filed_date && (!cur.latestFiledDate || rec.filed_date > cur.latestFiledDate)) {
+      cur.latestFiledDate = rec.filed_date
+    }
+    propertyStats.set(rec.property_id, cur)
+  }
+  // Pick the dominant record_type per property (so cards can label "HPD" vs "Eviction").
+  const typeTallies = new Map<string, Map<string, number>>()
+  for (const rec of landlordRecords) {
+    if (!rec.property_id) continue
+    if (PROPERTY_STATS_EXCLUDE.has(rec.record_type ?? '')) continue
+    const inner = typeTallies.get(rec.property_id) ?? new Map<string, number>()
+    inner.set(rec.record_type ?? '', (inner.get(rec.record_type ?? '') ?? 0) + 1)
+    typeTallies.set(rec.property_id, inner)
+  }
+  for (const [pid, types] of Array.from(typeTallies.entries())) {
+    const cur = propertyStats.get(pid)
+    if (!cur) continue
+    let best = ''
+    let bestN = 0
+    for (const [t, n] of Array.from(types.entries())) {
+      if (n > bestN) { best = t; bestN = n }
+    }
+    cur.topType = best || null
+  }
   // Compute actual open violation count from merged records (includes property-linked ones).
   // Exclude court / informational records — only true open violations belong in this count.
   const EXCLUDED_TYPES = ['court_case', 'lsc_eviction', 'court_listener', 'business_registration']
@@ -478,32 +524,83 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {(properties as Property[]).map(prop => (
-                  <Link key={prop.id} href={`/property/${prop.id}`} className="group block rounded-xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0">
-                        <p className="text-[15px] font-bold text-slate-900 group-hover:text-navy-700">
-                          {formatAddress(prop.address_line1, prop.city, prop.state_abbr, prop.zip ?? undefined)}
-                        </p>
-                        <p className="mt-1 text-[12.5px] text-slate-500">
-                          {prop.property_type} {prop.unit_count ? `\u00b7 ${prop.unit_count} units` : ''}
-                        </p>
-                        {prop.review_count > 0 && (
-                          <div className="mt-2.5 flex items-center gap-2.5">
-                            <Stars value={prop.avg_rating} size={13} />
-                            <span className="text-[13px] font-bold text-slate-900">{prop.avg_rating.toFixed(1)}</span>
-                            <span className="text-[12px] text-slate-400">\u00b7 {prop.review_count} reviews</span>
+                {(properties as Property[])
+                  .map(prop => ({
+                    prop,
+                    stats: propertyStats.get(prop.id) ?? { total: 0, open: 0, latestFiledDate: null as string | null, topType: null as string | null },
+                  }))
+                  .sort((a, b) => b.stats.open - a.stats.open || b.stats.total - a.stats.total)
+                  .map(({ prop, stats }) => {
+                    const tone = stats.open > 0 ? 'red' : stats.total > 0 ? 'amber' : 'neutral'
+                    return (
+                      <Link
+                        key={prop.id}
+                        href={`/property/${prop.id}`}
+                        className="group relative block rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
+                      >
+                        <span aria-hidden="true" className={
+                          'absolute inset-y-3 left-0 w-[3px] rounded-r ' +
+                          (tone === 'red' ? 'bg-red-500' : tone === 'amber' ? 'bg-amber-400' : 'bg-slate-200')
+                        } />
+                        <div className="ml-2 flex items-start justify-between gap-4">
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[15px] font-bold text-slate-900 group-hover:text-navy-700">
+                              {formatAddress(prop.address_line1, prop.city, prop.state_abbr, prop.zip ?? undefined)}
+                            </p>
+                            <p className="mt-1 text-[12.5px] text-slate-500 capitalize">
+                              {prop.property_type ?? 'Property'}
+                              {prop.unit_count ? ` \u00b7 ${prop.unit_count} units` : ''}
+                              {prop.year_built ? ` \u00b7 Built ${prop.year_built}` : ''}
+                            </p>
+                            {prop.review_count > 0 && (
+                              <div className="mt-2 flex items-center gap-2">
+                                <Stars value={prop.avg_rating} size={12} />
+                                <span className="text-[12.5px] font-semibold text-slate-900">{prop.avg_rating.toFixed(1)}</span>
+                                <span className="text-[11.5px] text-slate-400">{`\u00b7 ${prop.review_count} reviews`}</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex flex-shrink-0 flex-col items-end gap-1.5">
+                            {stats.open > 0 ? (
+                              <span className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-700">
+                                <Flag className="h-2.5 w-2.5" /> {stats.open.toLocaleString()} open
+                              </span>
+                            ) : stats.total > 0 ? (
+                              <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600">
+                                Closed
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-500">
+                                No records
+                              </span>
+                            )}
+                            {stats.total > 0 && (
+                              <span className="text-[10.5px] font-medium text-slate-500 tabular-nums">
+                                {stats.total.toLocaleString()} total
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {(stats.topType || stats.latestFiledDate) && (
+                          <div className="ml-2 mt-3 flex flex-wrap items-center gap-1.5 border-t border-slate-100 pt-2.5 text-[11px] text-slate-500">
+                            {stats.topType && (
+                              <span className="rounded-full bg-slate-50 px-2 py-0.5 font-medium text-slate-600 capitalize">
+                                {(stats.topType ?? '').replace(/_/g, ' ')}
+                              </span>
+                            )}
+                            {stats.latestFiledDate && (
+                              <span>
+                                Latest activity{' '}
+                                <time dateTime={stats.latestFiledDate} className="font-semibold text-slate-700">
+                                  {new Date(stats.latestFiledDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </time>
+                              </span>
+                            )}
                           </div>
                         )}
-                      </div>
-                      {((prop as any).open_violation_count ?? 0) > 0 && (
-                        <span className="flex-shrink-0 inline-flex items-center gap-1 rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-800">
-                          <Flag className="h-2.5 w-2.5" /> {(prop as any).open_violation_count} open
-                        </span>
-                      )}
-                    </div>
-                  </Link>
-                ))}
+                      </Link>
+                    )
+                  })}
               </div>
             )}
           </TabsContent>
