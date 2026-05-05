@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
+  cn,
   formatAddress,
   formatReviewerName,
   slugify,
@@ -15,6 +16,32 @@ import {
   formatDate,
   formatRentalPeriod,
 } from './utils'
+
+describe('cn', () => {
+  it('joins multiple class strings', () => {
+    expect(cn('foo', 'bar')).toBe('foo bar')
+  })
+
+  it('drops falsy entries (clsx behavior)', () => {
+    expect(cn('foo', false, null, undefined, 'bar')).toBe('foo bar')
+  })
+
+  it('merges conflicting Tailwind classes (later wins via tailwind-merge)', () => {
+    // The whole reason we use twMerge — so a callsite can override
+    // a default like `p-4` with `p-2` without both ending up in the DOM.
+    expect(cn('p-4', 'p-2')).toBe('p-2')
+    expect(cn('text-red-500', 'text-blue-500')).toBe('text-blue-500')
+  })
+
+  it('handles arrays of class values', () => {
+    expect(cn(['foo', 'bar'])).toBe('foo bar')
+    expect(cn('a', ['b', 'c'])).toBe('a b c')
+  })
+
+  it('handles conditional objects', () => {
+    expect(cn('a', { b: true, c: false })).toBe('a b')
+  })
+})
 
 describe('formatAddress', () => {
   it('joins line1 + city + state with commas', () => {
