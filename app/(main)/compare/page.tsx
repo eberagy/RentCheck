@@ -96,7 +96,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
       <p className="text-[15px] text-slate-500 mb-8">Side-by-side comparison of public records and renter ratings</p>
 
       {(a.review_count ?? 0) === 0 && (b.review_count ?? 0) === 0 && (
-        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
+        <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
           Neither landlord has renter reviews yet. Comparison is limited to public records.
           {' '}
           <Link href="/review/new" className="font-semibold underline underline-offset-2 hover:text-amber-950">
