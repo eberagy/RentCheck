@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { isValidPropertyPath, isValidLandlordPath, isValidCityPath } from '@/lib/url-guards'
 
 // Routes that legitimately accept cross-origin POSTs:
 // - Stripe webhook verifies its own signature
@@ -31,28 +32,6 @@ function originIsAllowed(origin: string | null): boolean {
   return false
 }
 
-// /property/[id] expects a UUID; anything else is guaranteed garbage.
-// Catch it at the edge and return a real 404 — Next.js's notFound()
-// inside generateMetadata + page returns the not-found body with a 200
-// status (Vercel + App Router quirk), which soft-404s invalid URLs into
-// search engines.
-const UUID_RE = /^\/property\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(\/|$)/i
-
-// Landlord slugs follow `{name-parts}-{city}-{4-char-hash}` and are
-// 8–84 chars of [a-z0-9-]. Anything outside that envelope is a typo;
-// emit 404 directly. (Probed live 2026-05-04: all 27,049 slugs match.)
-const LANDLORD_SLUG_RE = /^\/landlord\/([a-z0-9][a-z0-9-]{6,82}[a-z0-9])(\/|$)/i
-
-// City paths must use a real 2-letter US state code. The set is closed
-// (50 + DC), so anything else is a typo and gets 404'd at the edge.
-const US_STATE_CODES = new Set([
-  'al','ak','az','ar','ca','co','ct','de','fl','ga','hi','id','il','in','ia',
-  'ks','ky','la','me','md','ma','mi','mn','ms','mo','mt','ne','nv','nh','nj',
-  'nm','ny','nc','nd','oh','ok','or','pa','ri','sc','sd','tn','tx','ut','vt',
-  'va','wa','wv','wi','wy','dc',
-])
-const CITY_RE = /^\/city\/([a-z]{2})\/([a-z0-9-]+)(\/|$)/i
-
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
@@ -61,21 +40,16 @@ export async function updateSession(request: NextRequest) {
   const method = request.method
   const pathname = request.nextUrl.pathname
 
-  // Property URLs that don't carry a UUID are 404 by construction —
-  // emit it directly so Google doesn't index the typo.
-  if (pathname.startsWith('/property/') && !UUID_RE.test(pathname)) {
+  // Reject typo'd URLs at the edge so Google doesn't index soft-404s.
+  // See lib/url-guards.ts for the regex envelopes.
+  if (pathname.startsWith('/property/') && !isValidPropertyPath(pathname)) {
     return new NextResponse('Not Found', { status: 404 })
   }
-  // Landlord slugs that don't match the canonical shape are 404.
-  if (pathname.startsWith('/landlord/') && !LANDLORD_SLUG_RE.test(pathname)) {
+  if (pathname.startsWith('/landlord/') && !isValidLandlordPath(pathname)) {
     return new NextResponse('Not Found', { status: 404 })
   }
-  // City paths must use a real 2-letter US state code.
-  if (pathname.startsWith('/city/') && pathname !== '/city/') {
-    const m = pathname.match(CITY_RE)
-    if (!m || !US_STATE_CODES.has(m[1]!.toLowerCase())) {
-      return new NextResponse('Not Found', { status: 404 })
-    }
+  if (pathname.startsWith('/city/') && pathname !== '/city/' && !isValidCityPath(pathname)) {
+    return new NextResponse('Not Found', { status: 404 })
   }
   const isWrite = method === 'POST' || method === 'PATCH' || method === 'DELETE' || method === 'PUT'
   const isApi = pathname.startsWith('/api/')
