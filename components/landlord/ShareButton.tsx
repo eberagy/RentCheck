@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Share2, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -10,6 +10,14 @@ interface ShareButtonProps {
 
 export function ShareButton({ name }: ShareButtonProps) {
   const [copied, setCopied] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Clear the "Copied!" timer on unmount so we don't try to setState
+  // on a component that's gone (and so navigating away within 2s
+  // doesn't leak the timer).
+  useEffect(() => () => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+  }, [])
 
   async function handleShare() {
     const url = window.location.href
@@ -23,7 +31,8 @@ export function ShareButton({ name }: ShareButtonProps) {
     }
     await navigator.clipboard.writeText(url)
     setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => setCopied(false), 2000)
   }
 
   return (
