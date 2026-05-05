@@ -14,6 +14,15 @@ export async function GET(req: NextRequest) {
   const supabase = createServiceClient()
   const since = new Date(Date.now() - 25 * 60 * 60 * 1000).toISOString() // last 25h to avoid gaps
 
+  // Log this run into sync_log so /admin/data-sync surfaces watchlist-alerts
+  // health alongside the data sources.
+  const { data: log } = await supabase
+    .from('sync_log')
+    .insert({ source: 'watchlist_alerts', status: 'running', started_at: new Date().toISOString() })
+    .select('id')
+    .single()
+  const logId = log?.id
+
   // Get public records added since last run, grouped by landlord.
   // Two paths: (1) records with landlord_id set directly, (2) records
   // linked via a property whose landlord_id is set. Most of our 400k+
@@ -70,6 +79,13 @@ export async function GET(req: NextRequest) {
   }
 
   if (!newByLandlord.size && !newByProperty.size) {
+    if (logId) {
+      await supabase.from('sync_log').update({
+        status: 'success',
+        finished_at: new Date().toISOString(),
+        records_added: 0,
+      }).eq('id', logId)
+    }
     return NextResponse.json({ ok: true, alerts: 0 })
   }
 
@@ -163,6 +179,14 @@ export async function GET(req: NextRequest) {
       })
       alertsSent++
     }
+  }
+
+  if (logId) {
+    await supabase.from('sync_log').update({
+      status: 'success',
+      finished_at: new Date().toISOString(),
+      records_added: alertsSent,
+    }).eq('id', logId)
   }
 
   return NextResponse.json({

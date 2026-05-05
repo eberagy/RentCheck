@@ -18,15 +18,37 @@ export async function GET(req: NextRequest) {
   const startedAt = Date.now()
   const service = createServiceClient()
 
+  const { data: log } = await service
+    .from('sync_log')
+    .insert({ source: 'refresh_city_stats', status: 'running', started_at: new Date().toISOString() })
+    .select('id')
+    .single()
+  const logId = log?.id
+
   const { error } = await service.rpc('refresh_city_stats')
   if (error) {
     console.error('[refresh-city-stats] failed:', error.message)
+    if (logId) {
+      await service.from('sync_log').update({
+        status: 'error',
+        finished_at: new Date().toISOString(),
+        error_message: error.message,
+      }).eq('id', logId)
+    }
     return NextResponse.json({ error: 'Refresh failed' }, { status: 500 })
   }
 
   const { count } = await service
     .from('city_stats')
     .select('city', { count: 'exact', head: true })
+
+  if (logId) {
+    await service.from('sync_log').update({
+      status: 'success',
+      finished_at: new Date().toISOString(),
+      records_updated: count ?? 0,
+    }).eq('id', logId)
+  }
 
   return NextResponse.json({
     ok: true,

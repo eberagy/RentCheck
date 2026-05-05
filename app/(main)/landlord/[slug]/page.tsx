@@ -328,6 +328,13 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                 <Button asChild variant="outline" size="sm" className="h-8 rounded-full border-slate-200 px-3 text-[12px] text-slate-700">
                   <Link href={`/compare?a=${landlord.slug}`}>Compare</Link>
                 </Button>
+                {!landlord.is_claimed && (
+                  <Button asChild size="sm" className="h-8 rounded-full bg-teal-600 px-3 text-[12px] text-white hover:bg-teal-700">
+                    <Link href={`/landlord-portal/claim?landlord=${landlord.id}`}>
+                      Claim this profile
+                    </Link>
+                  </Button>
+                )}
               </div>
             </div>
           </div>
