@@ -163,139 +163,68 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           <span className="font-medium text-slate-700">{property.address_line1}</span>
         </nav>
 
-        <div className="mb-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-          <div className="h-1.5 bg-gradient-to-r from-navy-600 via-sky-500 to-teal-500" />
-          <div className="grid gap-6 px-4 py-6 sm:px-7 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
-            <div className="min-w-0 space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-navy-50 text-navy-600 ring-1 ring-navy-100">
-                  <Building2 className="h-6 w-6" />
-                </div>
-                <div className="min-w-0">
-                  <h1 className="text-3xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-                    {property.address_line1}
-                  </h1>
-                  <p className="mt-1 flex items-center gap-1 text-sm text-slate-500">
-                    <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
-                    {property.city}, {property.state_abbr} {property.zip}
-                  </p>
-                </div>
+        <header className="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <div className="h-[3px] bg-gradient-to-r from-navy-600 via-sky-500 to-teal-500" />
+          <div className="px-5 py-7 sm:px-8 sm:py-8">
+            <div className="flex items-start gap-4">
+              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-navy-50 text-navy-600 ring-1 ring-navy-100">
+                <Building2 className="h-7 w-7" />
               </div>
-
-              <div className="flex flex-wrap gap-2">
-                {property.property_type && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-navy-50 px-3 py-1.5 text-xs font-medium text-navy-700 capitalize">
-                    <Building2 className="h-3 w-3" />
-                    {property.property_type}
-                  </span>
-                )}
-                {property.unit_count && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600">
-                    <Hash className="h-3 w-3" />
-                    {property.unit_count} units
-                  </span>
-                )}
-                {property.year_built && (
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600">
-                    <Calendar className="h-3 w-3" />
-                    Built {property.year_built}
-                  </span>
-                )}
-              </div>
-
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-                  Summary
+              <div className="min-w-0 flex-1 space-y-3">
+                <h1 className="font-display text-[clamp(1.8rem,3.6vw,2.6rem)] leading-[1.05] tracking-tight text-slate-950">
+                  {property.address_line1}
+                </h1>
+                <p className="flex items-center gap-1.5 text-[13.5px] text-slate-600">
+                  <MapPin className="h-3.5 w-3.5 text-slate-400" />
+                  {property.city}, {property.state_abbr} {property.zip}
                 </p>
-                <p className="mt-2 text-sm leading-6 text-slate-700">{propertySummary}</p>
-              </div>
-            </div>
-
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-              <div className="space-y-4">
-                {property.review_count > 0 ? (
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-                      Rating
-                    </p>
-                    <div className="mt-2 text-4xl font-semibold tracking-tight text-slate-950">
-                      {property.avg_rating.toFixed(1)}
-                    </div>
-                    <div className="mt-1">
-                      <StarRating value={property.avg_rating} readonly size="sm" />
-                    </div>
-                    <p className="mt-1 text-xs text-slate-500">
-                      {property.review_count} review{property.review_count !== 1 ? 's' : ''}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="rounded-2xl border border-slate-200 bg-white px-4 py-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
-                      Rating
-                    </p>
-                    <p className="mt-2 text-sm text-slate-500">No reviews yet</p>
-                  </div>
-                )}
-
-                <div className="flex flex-wrap gap-2">
-                  <WatchlistButton
-                    propertyId={property.id}
-                    successMessage="You'll be notified when new violations or reviews land at this address."
-                  />
-                </div>
-
-                <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">
-                    Managed by
-                  </p>
-                  {landlord ? (
-                    <Link
-                      href={`/landlord/${landlord.slug}`}
-                      className="group mt-2 inline-flex items-center gap-2"
-                    >
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-navy-50 text-navy-600 ring-1 ring-navy-100">
-                        <User className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-semibold text-slate-900 group-hover:text-navy-700">
-                            {landlord.display_name}
-                          </span>
-                          {landlord.is_verified && <VerifiedBadge size="sm" />}
-                        </div>
-                        {landlord.city && (
-                          <p className="text-xs text-slate-400">
-                            {landlord.city}, {landlord.state_abbr}
-                          </p>
-                        )}
-                      </div>
-                      <ExternalLink className="h-3.5 w-3.5 text-slate-400 transition-colors group-hover:text-navy-600" />
-                    </Link>
-                  ) : (
-                    <p className="mt-2 text-sm text-slate-500">No landlord on record</p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {property.property_type && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-navy-50 px-3 py-1 text-[12px] font-medium text-navy-700 capitalize">
+                      <Building2 className="h-3 w-3" />
+                      {property.property_type}
+                    </span>
+                  )}
+                  {property.unit_count && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[12px] font-medium text-slate-600">
+                      <Hash className="h-3 w-3" />
+                      {property.unit_count} units
+                    </span>
+                  )}
+                  {property.year_built && (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[12px] font-medium text-slate-600">
+                      <Calendar className="h-3 w-3" />
+                      Built {property.year_built}
+                    </span>
                   )}
                 </div>
               </div>
             </div>
+
+            <div className="mt-5 border-t border-slate-100 pt-5">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-400">Summary</p>
+              <p className="mt-2 text-[14px] leading-6 text-slate-700">{propertySummary}</p>
+            </div>
           </div>
 
           {openViolations > 0 && (
-            <div className="border-t border-slate-100 px-4 py-5 sm:px-7">
-              <div className="flex items-start gap-2.5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3">
-                <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600" />
-                <div>
-                  <p className="text-sm font-semibold text-red-700">
-                    {openViolations} open violation{openViolations !== 1 ? 's' : ''}
-                  </p>
-                  <p className="mt-0.5 text-xs text-red-600">
-                    This property has unresolved housing code violations on record. Review the
-                    public records below for details.
-                  </p>
-                </div>
+            <div className="flex items-start gap-2.5 border-t border-slate-100 bg-red-50/50 px-5 py-4 sm:px-8">
+              <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600" />
+              <div>
+                <p className="text-[14px] font-semibold text-red-700">
+                  {openViolations} open violation{openViolations !== 1 ? 's' : ''}
+                </p>
+                <p className="mt-0.5 text-[12.5px] text-red-700/80">
+                  Unresolved housing code violations on record — see public records below.
+                </p>
               </div>
             </div>
           )}
-        </div>
+        </header>
+
+        {/* Page-level main + sidebar — same pattern as the landlord page. */}
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-8 lg:items-start">
+          <div className="min-w-0 order-2 lg:order-1">
 
         <div className="mb-8">
           <PublicRecordsPanel
@@ -376,6 +305,98 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             <Link href="/contact">Report an Issue</Link>
           </Button>
         </div>
+
+          </div> {/* end main col */}
+
+          {/* Sidebar — at-a-glance + watch + landlord chip. Sticky on
+              lg+; on mobile renders ABOVE the records (order-1) so the
+              rating + watchlist CTA are first thing seen. */}
+          <aside className="order-1 space-y-4 lg:order-2 lg:sticky lg:top-6">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">At a glance</p>
+              {property.review_count > 0 ? (
+                <div className="mt-2">
+                  <div className="flex items-baseline gap-2">
+                    <span className="font-display text-[44px] font-semibold leading-none tracking-[-0.02em] text-slate-950">
+                      {property.avg_rating.toFixed(1)}
+                    </span>
+                    <span className="text-[12px] text-slate-400">/ 5</span>
+                  </div>
+                  <div className="mt-2"><StarRating value={property.avg_rating} readonly size="sm" /></div>
+                  <p className="mt-1.5 text-[12.5px] text-slate-500">
+                    {property.review_count} review{property.review_count === 1 ? '' : 's'}
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-2">
+                  <span className="font-display text-[44px] font-semibold leading-none tracking-[-0.02em] text-slate-300">—</span>
+                  <p className="mt-2 text-[12.5px] text-slate-500">No reviews yet</p>
+                </div>
+              )}
+
+              <div className="mt-4 space-y-2">
+                <Button
+                  asChild
+                  size="sm"
+                  className="h-9 w-full rounded-full bg-slate-950 text-white hover:bg-navy-700"
+                >
+                  <Link href={`/review/new?property=${property.id}`}>Write a review</Link>
+                </Button>
+                <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
+                  <WatchlistButton
+                    propertyId={property.id}
+                    successMessage="You'll be notified when new violations or reviews land at this address."
+                  />
+                </div>
+              </div>
+            </div>
+
+            {landlord && (
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">Managed by</p>
+                <Link href={`/landlord/${landlord.slug}`} className="group mt-3 flex items-center gap-3">
+                  <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-navy-50 text-navy-600 ring-1 ring-navy-100">
+                    <User className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[14px] font-semibold text-slate-900 group-hover:text-navy-700">
+                        {landlord.display_name}
+                      </span>
+                      {landlord.is_verified && <VerifiedBadge size="sm" />}
+                    </div>
+                    {landlord.city && (
+                      <p className="text-[12px] text-slate-400">
+                        {landlord.city}, {landlord.state_abbr}
+                      </p>
+                    )}
+                  </div>
+                  <ExternalLink className="h-3.5 w-3.5 text-slate-400 transition-colors group-hover:text-navy-600" />
+                </Link>
+              </div>
+            )}
+
+            {openViolations > 0 && (
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">Risk signals</p>
+                <ul className="mt-3 space-y-2 text-[13px]">
+                  <li className="flex items-center justify-between gap-3">
+                    <span className="text-slate-700">Open violations</span>
+                    <span className="font-display text-[16px] font-semibold tabular-nums text-red-600">
+                      {openViolations.toLocaleString()}
+                    </span>
+                  </li>
+                  <li className="flex items-center justify-between gap-3">
+                    <span className="text-slate-700">Total records</span>
+                    <span className="font-display text-[16px] font-semibold tabular-nums text-slate-900">
+                      {recordList.length.toLocaleString()}
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            )}
+          </aside>
+        </div> {/* end main+sidebar grid */}
       </div>
     </div>
   )
