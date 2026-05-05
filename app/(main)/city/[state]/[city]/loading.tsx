@@ -15,22 +15,21 @@ export default function CityLoading() {
           <Skeleton className="mt-5 h-14 w-2/3 bg-white/10" />
           <Skeleton className="mt-3 h-14 w-1/2 bg-white/10" />
           <Skeleton className="mt-6 h-5 w-full max-w-md bg-white/10" />
-          <Skeleton className="mt-10 h-12 w-full max-w-[560px] rounded-lg bg-white/10" />
-          <div className="mt-14 flex flex-wrap gap-x-10 gap-y-3 border-t border-white/10 pt-7">
-            {[1, 2, 3].map((i) => (
+          <div className="mt-8 grid grid-cols-2 gap-x-10 gap-y-6 sm:grid-cols-4" style={{ width: 'fit-content', maxWidth: '100%' }}>
+            {[1, 2, 3, 4].map((i) => (
               <div key={i} className="space-y-2">
-                <Skeleton className="h-7 w-20 bg-white/10" />
-                <Skeleton className="h-4 w-32 bg-white/10" />
+                <Skeleton className="h-9 w-24 bg-white/10" />
+                <Skeleton className="h-3 w-28 bg-white/10" />
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <div className="mx-auto max-w-[1320px] px-6 py-12">
+      <div className="mx-auto max-w-[1320px] px-4 sm:px-8 py-12">
         <Skeleton className="h-8 w-64 mb-6" />
-        <div className="space-y-3">
-          {[1, 2, 3, 4, 5].map((i) => (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="rounded-2xl border border-slate-200 bg-white p-5">
               <div className="flex items-center gap-4">
                 <Skeleton className="h-12 w-12 rounded-xl flex-shrink-0" />
