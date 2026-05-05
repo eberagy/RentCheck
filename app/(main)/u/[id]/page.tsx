@@ -73,7 +73,6 @@ export default async function RenterProfilePage({ params }: RenterProfilePagePro
             aria-hidden="true"
           >
             {profile.avatar_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <Image
                 src={profile.avatar_url}
                 alt=""
