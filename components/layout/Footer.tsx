@@ -44,7 +44,7 @@ const FOOTER_COLS = [
 export function Footer() {
   return (
     <footer className="border-t border-white/[0.08] bg-[#07111f] text-slate-400">
-      <div className="mx-auto max-w-[1200px] px-4 pt-16 pb-10 sm:px-7">
+      <div className="mx-auto max-w-[1320px] px-4 pt-16 pb-10 sm:px-8">
         {/* Main grid */}
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 md:grid-cols-[1.2fr_repeat(4,1fr)]">
           {/* Brand */}

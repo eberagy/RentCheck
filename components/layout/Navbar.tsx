@@ -40,7 +40,7 @@ export function Navbar() {
           : 'border-b border-slate-200 bg-white/85 backdrop-blur-xl'
       )}
     >
-      <div className="mx-auto grid max-w-[1200px] grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-[18px] sm:gap-6 sm:px-7">
+      <div className="mx-auto grid max-w-[1320px] grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-[18px] sm:gap-6 sm:px-8">
         {/* Logo */}
         <Logo size="md" inverted={isDark} />
 
