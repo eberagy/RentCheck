@@ -304,7 +304,7 @@ export default async function CityPage({ params }: CityPageProps) {
         ) : (
           <>
             <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">All landlords in {cityName}</div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {landlords.map((landlord: Landlord) => (
                 <LandlordCard key={landlord.id} landlord={landlord} />
               ))}
