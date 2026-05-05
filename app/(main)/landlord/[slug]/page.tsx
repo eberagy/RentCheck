@@ -478,17 +478,17 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           }
         >
           <TabsList className="mb-5 grid w-full grid-cols-3 gap-1 rounded-2xl bg-slate-100 p-1.5">
-            <TabsTrigger value="reviews" className="flex items-center justify-center rounded-xl py-3 text-[12px] sm:text-[14px] font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsTrigger value="reviews" className="flex items-center justify-center rounded-xl py-3 text-[12px] sm:text-[14px] font-semibold data-[active]:bg-white data-[active]:shadow-sm">
               <MessageSquare className="mr-1.5 sm:mr-2 h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
               <span className="truncate">Reviews</span>
               <span className="ml-1 text-slate-400 hidden sm:inline">({landlord.review_count})</span>
             </TabsTrigger>
-            <TabsTrigger value="records" className="flex items-center justify-center rounded-xl py-3 text-[12px] sm:text-[14px] font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsTrigger value="records" className="flex items-center justify-center rounded-xl py-3 text-[12px] sm:text-[14px] font-semibold data-[active]:bg-white data-[active]:shadow-sm">
               <Flag className="mr-1.5 sm:mr-2 h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
               <span className="truncate">Records</span>
               <span className="ml-1 text-slate-400 hidden sm:inline">({landlordRecords.length})</span>
             </TabsTrigger>
-            <TabsTrigger value="properties" className="flex items-center justify-center rounded-xl py-3 text-[12px] sm:text-[14px] font-semibold data-[state=active]:bg-white data-[state=active]:shadow-sm">
+            <TabsTrigger value="properties" className="flex items-center justify-center rounded-xl py-3 text-[12px] sm:text-[14px] font-semibold data-[active]:bg-white data-[active]:shadow-sm">
               <Building2 className="mr-1.5 sm:mr-2 h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
               <span className="truncate">Properties</span>
               <span className="ml-1 text-slate-400 hidden sm:inline">({(properties ?? []).length})</span>
