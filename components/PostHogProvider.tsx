@@ -4,6 +4,7 @@ import { Suspense, useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { identifyUser } from '@/lib/posthog'
+import { setUser as setSentryUser } from '@/lib/sentry'
 
 function PostHogPageview() {
   const pathname = usePathname()
@@ -31,9 +32,15 @@ function PostHogPageview() {
   return null
 }
 
-// Identify the user to PostHog once auth resolves. Stitches anonymous
-// pre-signin events (search_performed, landlord_viewed) to the same
-// person record after they sign in. No-op when PostHog isn't loaded.
+// Identify the user to PostHog + Sentry once auth resolves. Two purposes:
+//
+//  - PostHog: stitches anonymous pre-signin events (search_performed,
+//    landlord_viewed) to the same person record after they sign in.
+//  - Sentry: tags any client-side error capture with { id, email } so
+//    the Issues view can show "X users impacted" instead of "anonymous".
+//
+// Both helpers are no-ops when their respective SDKs aren't loaded
+// (NEXT_PUBLIC_POSTHOG_KEY / NEXT_PUBLIC_SENTRY_DSN gates).
 function PostHogIdentify() {
   const { user, profile } = useAuth()
   useEffect(() => {
@@ -42,6 +49,7 @@ function PostHogIdentify() {
       email: user.email ?? undefined,
       name: profile?.full_name ?? undefined,
     })
+    setSentryUser(user.id, user.email ?? undefined)
   }, [user, profile])
   return null
 }
