@@ -46,7 +46,7 @@ export default function SubmissionRejectedEmail({
                 ? 'Search Vett for the landlord — you can leave a review directly on their existing profile.'
                 : 'Common reasons include insufficient info to identify the landlord, a name that matches a person rather than a rental business, or a listing outside the areas we currently cover.'}
             </Text>
-            <Button style={button} href={isDuplicate ? 'https://vettrentals.com/search' : 'https://vettrentals.com/submit'}>
+            <Button style={button} href={isDuplicate ? 'https://www.vettrentals.com/search' : 'https://www.vettrentals.com/submit'}>
               {isDuplicate ? 'Search Vett →' : 'Submit Again →'}
             </Button>
             <EmailFooter note="You received this because you submitted a landlord to Vett." />

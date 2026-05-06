@@ -31,7 +31,7 @@ export default function SavedSearchDigestEmail({
   newLandlords,
   unsubscribeToken,
 }: SavedSearchDigestEmailProps) {
-  const fallbackUrl = `https://vettrentals.com/city/${stateAbbr.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`
+  const fallbackUrl = `https://www.vettrentals.com/city/${stateAbbr.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`
   const href = cityUrl ?? fallbackUrl
   return (
     <Html>

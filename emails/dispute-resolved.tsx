@@ -67,7 +67,7 @@ export default function DisputeResolvedEmail({ firstName, decision, recordLabel,
             )}
 
             <Section style={ctaSection}>
-              <Link href="https://vettrentals.com/dashboard" style={primaryButton}>
+              <Link href="https://www.vettrentals.com/dashboard" style={primaryButton}>
                 View your dashboard
               </Link>
             </Section>
@@ -76,7 +76,7 @@ export default function DisputeResolvedEmail({ firstName, decision, recordLabel,
             <Text style={footer}>
               You received this because you submitted a record dispute on Vett.
               <br />
-              <Link href="https://vettrentals.com/unsubscribe" style={footerLink}>Manage emails</Link>
+              <Link href="https://www.vettrentals.com/unsubscribe" style={footerLink}>Manage emails</Link>
             </Text>
           </Section>
         </Container>

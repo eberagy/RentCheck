@@ -31,7 +31,7 @@ export default function ClaimApprovedEmail({ firstName, landlordName, landlordSl
               <Text style={feature}>✏️ Update your business name, contact info, and bio</Text>
               <Text style={feature}>📊 View your rating breakdown and trends</Text>
             </Section>
-            <Button style={button} href="https://vettrentals.com/landlord-portal">
+            <Button style={button} href="https://www.vettrentals.com/landlord-portal">
               Open Landlord Portal →
             </Button>
             <EmailFooter note="You received this because your landlord claim on Vett was approved." />

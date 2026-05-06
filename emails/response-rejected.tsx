@@ -35,7 +35,7 @@ export default function ResponseRejectedEmail({ firstName, landlordName, reason 
               You&apos;re welcome to submit a new response that sticks to the facts of the rental and avoids
               personal attacks, private details, or unverifiable claims.
             </Text>
-            <Button style={button} href="https://vettrentals.com/landlord-portal">
+            <Button style={button} href="https://www.vettrentals.com/landlord-portal">
               Back to Landlord Portal →
             </Button>
             <EmailFooter note="You received this because you submitted a landlord response on Vett." />

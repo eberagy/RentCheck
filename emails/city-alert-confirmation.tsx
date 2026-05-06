@@ -37,7 +37,7 @@ export default function CityAlertConfirmationEmail({ city, stateAbbr }: CityAler
 
             <Button
               style={button}
-              href={`https://vettrentals.com/city/${stateAbbr.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`}
+              href={`https://www.vettrentals.com/city/${stateAbbr.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`}
             >
               See {city} on Vett →
             </Button>
@@ -45,7 +45,7 @@ export default function CityAlertConfirmationEmail({ city, stateAbbr }: CityAler
             <Text style={smallNote}>
               Want a richer alert flow? Create a free account to follow specific
               landlords and get a weekly digest of new reviews:&nbsp;
-              <a href="https://vettrentals.com/login?mode=signup" style={inlineLink}>Sign up</a>.
+              <a href="https://www.vettrentals.com/login?mode=signup" style={inlineLink}>Sign up</a>.
             </Text>
 
             <EmailFooter

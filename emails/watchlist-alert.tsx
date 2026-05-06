@@ -43,7 +43,7 @@ export default function WatchlistAlertEmail({ firstName, landlordName, landlordS
               <Text style={alertLandlord}><strong>{landlordName}</strong></Text>
               <Text style={alertSummary}>{summary}</Text>
             </Section>
-            <Button style={button} href={`https://vettrentals.com/landlord/${landlordSlug}`}>
+            <Button style={button} href={`https://www.vettrentals.com/landlord/${landlordSlug}`}>
               View Profile →
             </Button>
             <EmailFooter

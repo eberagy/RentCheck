@@ -38,7 +38,7 @@ export default function ClaimRejectedEmail({ firstName, landlordName, reason }: 
             <Text style={text}>
               You&apos;re welcome to resubmit with additional documentation and we&apos;ll take another look.
             </Text>
-            <Button style={button} href="https://vettrentals.com/landlord-portal">
+            <Button style={button} href="https://www.vettrentals.com/landlord-portal">
               Resubmit Your Claim →
             </Button>
             <EmailFooter note="You received this because you submitted a landlord claim on Vett." />

@@ -33,7 +33,7 @@ export default function ReviewRejectedEmail({ firstName, reviewTitle, reason }: 
             <Text style={text}>
               Common reasons include: content that violates our guidelines, inability to verify the rental, or content that does not meet our minimum standards. You&apos;re welcome to submit a revised review once you have a lease or other supporting documentation ready.
             </Text>
-            <Button style={button} href="https://vettrentals.com/review/new">
+            <Button style={button} href="https://www.vettrentals.com/review/new">
               Submit a New Review
             </Button>
             <EmailFooter note="You received this because you submitted a review on Vett." />

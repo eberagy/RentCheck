@@ -29,11 +29,11 @@ export default function SubmissionApprovedEmail({ firstName, landlordName, landl
             <Text style={text}>
               You can now write a review to help other renters know what to expect.
             </Text>
-            <Button style={button} href={`https://vettrentals.com/review/new`}>
+            <Button style={button} href={`https://www.vettrentals.com/review/new`}>
               Write Your Review →
             </Button>
             <Text style={secondaryText}>
-              Or <a href={`https://vettrentals.com/landlord/${landlordSlug}`} style={link}>view the landlord profile</a>.
+              Or <a href={`https://www.vettrentals.com/landlord/${landlordSlug}`} style={link}>view the landlord profile</a>.
             </Text>
             <EmailFooter note="You received this because you submitted a landlord to Vett." />
           </Section>

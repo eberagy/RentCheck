@@ -27,13 +27,13 @@ interface AdminDigestEmailProps {
 }
 
 const LINKS: { key: keyof AdminDigestCounts; label: string; href: string }[] = [
-  { key: 'pendingReviews',     label: 'Reviews awaiting moderation',  href: 'https://vettrentals.com/admin/reviews' },
-  { key: 'pendingLeases',      label: 'Leases awaiting verification', href: 'https://vettrentals.com/admin/leases' },
-  { key: 'pendingClaims',      label: 'Landlord claims to review',    href: 'https://vettrentals.com/admin/claims' },
-  { key: 'pendingSubmissions', label: 'Landlord submissions pending', href: 'https://vettrentals.com/admin/submissions' },
-  { key: 'pendingResponses',   label: 'Landlord responses to review', href: 'https://vettrentals.com/admin/responses' },
-  { key: 'openFlags',          label: 'Open review flags',            href: 'https://vettrentals.com/admin/flags' },
-  { key: 'openDisputes',       label: 'Open record disputes',         href: 'https://vettrentals.com/admin/disputes' },
+  { key: 'pendingReviews',     label: 'Reviews awaiting moderation',  href: 'https://www.vettrentals.com/admin/reviews' },
+  { key: 'pendingLeases',      label: 'Leases awaiting verification', href: 'https://www.vettrentals.com/admin/leases' },
+  { key: 'pendingClaims',      label: 'Landlord claims to review',    href: 'https://www.vettrentals.com/admin/claims' },
+  { key: 'pendingSubmissions', label: 'Landlord submissions pending', href: 'https://www.vettrentals.com/admin/submissions' },
+  { key: 'pendingResponses',   label: 'Landlord responses to review', href: 'https://www.vettrentals.com/admin/responses' },
+  { key: 'openFlags',          label: 'Open review flags',            href: 'https://www.vettrentals.com/admin/flags' },
+  { key: 'openDisputes',       label: 'Open record disputes',         href: 'https://www.vettrentals.com/admin/disputes' },
 ]
 
 export default function AdminDigestEmail({ counts }: AdminDigestEmailProps) {
@@ -73,7 +73,7 @@ export default function AdminDigestEmail({ counts }: AdminDigestEmailProps) {
             )}
 
             <Section style={ctaSection}>
-              <Button style={primaryButton} href="https://vettrentals.com/admin">
+              <Button style={primaryButton} href="https://www.vettrentals.com/admin">
                 Open admin dashboard
               </Button>
             </Section>

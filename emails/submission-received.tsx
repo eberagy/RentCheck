@@ -26,35 +26,35 @@ const COPY: Record<SubmissionKind, { label: string; heading: string; body: (targ
     heading: 'We got your review.',
     body: (target) => `Thanks for taking the time to write up your experience${target ? ` with ${target}` : ''}. We'll verify your lease document and publish your review once it checks out — usually within 48 hours. You'll get another email the moment it goes live.`,
     eta: '48 hours',
-    cta: { href: 'https://vettrentals.com/dashboard', text: 'View your dashboard' },
+    cta: { href: 'https://www.vettrentals.com/dashboard', text: 'View your dashboard' },
   },
   landlord: {
     label: 'Landlord submission',
     heading: 'Thanks — we\'ll add this landlord.',
     body: (target) => `${target ? `Your submission for ${target}` : 'Your submission'} is in our review queue. We verify every landlord before publishing to keep the database accurate. Most submissions are reviewed within 1–2 business days. You'll hear from us when it's live.`,
     eta: '1–2 business days',
-    cta: { href: 'https://vettrentals.com/dashboard', text: 'View your dashboard' },
+    cta: { href: 'https://www.vettrentals.com/dashboard', text: 'View your dashboard' },
   },
   claim: {
     label: 'Landlord claim',
     heading: 'We received your claim request.',
     body: (target) => `Your claim${target ? ` for ${target}` : ''} is being reviewed. Our team typically responds within 48 hours. Once approved, you'll be able to respond to reviews and update your public profile.`,
     eta: '48 hours',
-    cta: { href: 'https://vettrentals.com/landlord-portal', text: 'Open the landlord portal' },
+    cta: { href: 'https://www.vettrentals.com/landlord-portal', text: 'Open the landlord portal' },
   },
   dispute: {
     label: 'Record dispute',
     heading: 'Your dispute is in review.',
     body: (target) => `We received your dispute${target ? ` regarding ${target}` : ''}. Our team reviews disputes within 5–7 business days. If we find the record is inaccurate, we'll update or remove it. For source-data errors, we'll refer you to the government agency that owns the record.`,
     eta: '5–7 business days',
-    cta: { href: 'https://vettrentals.com/dashboard', text: 'View your dashboard' },
+    cta: { href: 'https://www.vettrentals.com/dashboard', text: 'View your dashboard' },
   },
   response: {
     label: 'Landlord response',
     heading: 'We received your response.',
     body: (target) => `Your response${target ? ` on ${target}` : ''} is pending admin review. Once approved, it will appear publicly under the original review.`,
     eta: '48 hours',
-    cta: { href: 'https://vettrentals.com/landlord-portal', text: 'Open the landlord portal' },
+    cta: { href: 'https://www.vettrentals.com/landlord-portal', text: 'Open the landlord portal' },
   },
 }
 
@@ -97,8 +97,8 @@ export default function SubmissionReceivedEmail({ firstName, kind, target, eta }
             <Text style={footer}>
               You received this because you submitted a {copy.label.toLowerCase()} on Vett.
               <br />
-              <Link href="https://vettrentals.com/unsubscribe" style={footerLink}>Manage emails</Link>{' '}·{' '}
-              <Link href="https://vettrentals.com/privacy" style={footerLink}>Privacy</Link>
+              <Link href="https://www.vettrentals.com/unsubscribe" style={footerLink}>Manage emails</Link>{' '}·{' '}
+              <Link href="https://www.vettrentals.com/privacy" style={footerLink}>Privacy</Link>
             </Text>
           </Section>
         </Container>

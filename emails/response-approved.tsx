@@ -17,7 +17,7 @@ export default function ResponseApprovedEmail({
   landlordSlug,
   reviewTitle,
 }: ResponseApprovedEmailProps) {
-  const landlordUrl = `https://vettrentals.com/landlord/${landlordSlug}`
+  const landlordUrl = `https://www.vettrentals.com/landlord/${landlordSlug}`
 
   return (
     <Html>

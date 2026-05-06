@@ -16,8 +16,8 @@ interface EmailFooterProps {
 
 export function EmailFooter({ note, unsubscribeToken }: EmailFooterProps) {
   const unsubscribeHref = unsubscribeToken
-    ? `https://vettrentals.com/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`
-    : 'https://vettrentals.com/unsubscribe'
+    ? `https://www.vettrentals.com/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`
+    : 'https://www.vettrentals.com/unsubscribe'
   return (
     <>
       <Hr style={hr} />
@@ -28,10 +28,10 @@ export function EmailFooter({ note, unsubscribeToken }: EmailFooterProps) {
         <Link href={unsubscribeHref} style={link}>
           {unsubscribeToken ? 'Unsubscribe' : 'Manage emails'}
         </Link>{' '}·{' '}
-        <Link href="https://vettrentals.com/privacy" style={link}>
+        <Link href="https://www.vettrentals.com/privacy" style={link}>
           Privacy
         </Link>{' '}·{' '}
-        <Link href="https://vettrentals.com/terms" style={link}>
+        <Link href="https://www.vettrentals.com/terms" style={link}>
           Terms
         </Link>
       </Text>
