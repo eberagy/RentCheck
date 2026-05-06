@@ -35,7 +35,7 @@ export default function BlogIndex() {
       description: p.description,
       url: `${siteUrl}/blog/${p.slug}`,
       datePublished: p.publishedAt,
-      author: { '@type': 'Person', name: p.author },
+      author: { '@type': 'Organization', name: p.author },
     })),
   })
   return (
