@@ -39,11 +39,11 @@ export async function POST(req: NextRequest) {
 
   logAdminAction({
     adminId: admin.id,
-    actionType: 'user.promoted', // no dedicated "note edited" type — re-using closest; next migration adds 'user.note_updated'
+    actionType: 'user.note_updated',
     resourceType: 'profile',
     resourceId: parsed.data.userId,
     subjectUserId: parsed.data.userId,
-    detail: { action: 'admin_notes_updated', length: clean.length },
+    detail: { length: clean.length },
   })
 
   return NextResponse.json({ ok: true })
