@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { z } from 'zod'
@@ -149,10 +150,7 @@ export async function POST(req: NextRequest) {
     .select('id')
     .single()
 
-  if (error) {
-    console.error('Review insert failed:', error.message, error.details, error.hint)
-    return NextResponse.json({ error: 'Database error' }, { status: 500 })
-  }
+  if (error) return dbError('reviews:insert', error)
 
   // Non-blocking acknowledgment email
   void (async () => {

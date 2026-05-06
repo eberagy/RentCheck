@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { sanitizeText } from '@/lib/sanitize'
@@ -67,6 +68,6 @@ export async function POST(req: NextRequest) {
     status: 'open',
   })
 
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('dispute:insert', error)
   return NextResponse.json({ ok: true, message: 'Dispute submitted. We will review within 5-7 business days.' }, { status: 201 })
 }

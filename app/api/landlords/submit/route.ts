@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { sanitizeStrings } from '@/lib/sanitize'
@@ -78,6 +79,6 @@ export async function POST(req: NextRequest) {
     proof_doc_url: proof_doc_url || null,
   })
 
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('landlords/submit:insert', error)
   return NextResponse.json({ ok: true })
 }
