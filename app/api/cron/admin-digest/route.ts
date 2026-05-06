@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { verifyCronSecret } from '@/lib/data-sync/utils'
 import { sendAdminDigestEmail } from '@/lib/email'
 import type { AdminDigestCounts } from '@/emails/admin-digest'

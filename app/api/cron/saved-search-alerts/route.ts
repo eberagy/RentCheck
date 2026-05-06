@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 import { verifyCronSecret } from '@/lib/data-sync/utils'
 import { sendSavedSearchDigestEmail } from '@/lib/email'
 import { cityPagePath } from '@/lib/cities'

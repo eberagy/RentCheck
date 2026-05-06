@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceClient } from '@/lib/supabase/service'
 
 export type AdminActionType =
   | 'review.approved'     | 'review.rejected'     | 'review.flagged'
