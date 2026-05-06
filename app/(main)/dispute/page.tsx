@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
+import { track } from '@/lib/posthog'
 
 const REASON_OPTIONS = [
   'This record does not belong to this landlord or property',
@@ -60,6 +61,7 @@ function DisputeForm() {
       }
       if (res.status === 409) { toast.info('You already have an open dispute for this record'); return }
       if (!res.ok) { toast.error(data.error ?? 'Submission failed'); return }
+      track('dispute_submitted', { record_id: recordId, reason: finalReason })
       setDone(true)
     } finally {
       setSubmitting(false)

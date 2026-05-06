@@ -14,6 +14,7 @@ import { Stars } from '@/components/vett/Stars'
 import { VerifiedBadge } from '@/components/vett/VerifiedBadge'
 import { Chip } from '@/components/vett/Chip'
 import { getGradeLetter } from '@/lib/grade'
+import { TrackPageView } from '@/components/analytics/TrackPageView'
 
 type SortKey = 'reviewed' | 'highest' | 'lowest' | 'violations'
 
@@ -535,8 +536,29 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     ['Baltimore', 'Pittsburgh', 'State College', 'Philadelphia', 'New York', 'Chicago'].includes(city.city)
   )
 
+  // Fire search_performed only when the user has actually searched —
+  // not on a bare /search visit. PostHogProvider already captures
+  // generic $pageview for every navigation, so the typed event is
+  // reserved for "this page resulted from a query."
+  const hasSearched = !!(q || city || state || minRating > 0 || verifiedOnly || hasViolationsOnly)
+
   return (
     <div className="min-h-screen bg-slate-50">
+      {hasSearched && (
+        <TrackPageView
+          event="search_performed"
+          properties={{
+            q: q || undefined,
+            city: city || undefined,
+            state: state || undefined,
+            min_rating: minRating > 0 ? minRating : undefined,
+            verified_only: verifiedOnly || undefined,
+            violations_only: hasViolationsOnly || undefined,
+            sort,
+            page,
+          }}
+        />
+      )}
       {/* Search bar band */}
       <section className="border-b border-slate-200 bg-white px-7 py-5">
         <div className="mx-auto max-w-[1320px]">

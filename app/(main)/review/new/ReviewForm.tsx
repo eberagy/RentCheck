@@ -204,6 +204,7 @@ export default function ReviewForm() {
       })
       setLeaseStatus('uploaded')
       toast.success('Lease received. Keep writing — verification happens in the background (usually 24–48h).')
+      track('lease_uploaded', selectedLandlord ? { landlord_id: selectedLandlord.id } : undefined)
       setStep(2)
     } catch (err) {
       setLeaseStatus('idle')
