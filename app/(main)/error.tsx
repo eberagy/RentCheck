@@ -8,7 +8,7 @@ import { captureException } from '@/lib/sentry'
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => {
-    captureException(error)
+    captureException(error, { where: 'main', digest: error.digest })
   }, [error])
 
   return (
