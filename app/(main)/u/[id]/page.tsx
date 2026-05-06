@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Image from 'next/image'
+import Script from 'next/script'
 import { notFound } from 'next/navigation'
 import { Star, MapPin, BadgeCheck } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/service'
 import { formatDate } from '@/lib/utils'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 interface RenterProfilePageProps {
   params: { id: string }
@@ -68,8 +70,28 @@ export default async function RenterProfilePage({ params }: RenterProfilePagePro
   const joinYear = new Date(profile.created_at).getFullYear()
   const verifiedCount = approvedReviews.filter(r => r.lease_verified).length
 
+  // ProfilePage JSON-LD — only emitted for public profiles (filtered
+  // above). Surfaces the user as a Person with their published reviews
+  // as ItemList. Helps Google understand who's authoring reviews
+  // elsewhere on the site (LocalBusiness review.author entries reference
+  // the same Person via consistent name).
+  const siteUrl = canonicalSiteUrl()
+  const profileJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'ProfilePage',
+    url: `${siteUrl}/u/${profile.id}`,
+    mainEntity: {
+      '@type': 'Person',
+      name: firstName,
+      ...(profile.bio && { description: profile.bio }),
+    },
+  })
+
   return (
     <div className="min-h-screen bg-slate-50">
+      <Script id={`profile-jsonld-${profile.id}`} type="application/ld+json" strategy="beforeInteractive">
+        {profileJsonLd}
+      </Script>
       <section className="border-b border-slate-200 bg-white px-7 py-12">
         <div className="mx-auto max-w-[820px] flex items-center gap-5">
           <div
