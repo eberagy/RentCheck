@@ -22,6 +22,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { detectFileType, ALLOWED_LEASE_TYPES, MAX_LEASE_SIZE } from '@/lib/utils'
 import { toast } from 'sonner'
 import { captureException } from '@/lib/sentry'
+import { track } from '@/lib/posthog'
 import type { Landlord } from '@/types'
 
 // Plain z.object — NO .refine(). Refine wraps the schema in ZodEffects which
@@ -250,6 +251,11 @@ export default function ReviewForm() {
         return
       }
       toast.success('Review submitted — we\'ll email you when it\'s approved.')
+      track('review_submitted', {
+        landlord_id: selectedLandlord.id,
+        rating_overall: data.ratingOverall,
+        lease_verified: leaseStatus === 'uploaded',
+      })
       setStep(4)
     } catch (err) {
       toast.error('Failed to submit review. Please try again.')

@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { captureException } from '@/lib/sentry'
+import { track } from '@/lib/posthog'
 import type { Landlord } from '@/types'
 
 // ── Step indicator ────────────────────────────────────────────
@@ -135,6 +136,10 @@ export default function ClaimProfilePage() {
       })
       if (!res.ok) throw new Error('Submission failed')
       toast.success('Claim submitted — we review within 48 hours.')
+      track('claim_submitted', {
+        landlord_id: selectedLandlord.id,
+        verification_type: docType,
+      })
       setSubmitted(true)
     } catch (err) {
       toast.error('Submission failed. Please try again.')

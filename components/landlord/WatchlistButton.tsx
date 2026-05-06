@@ -5,6 +5,7 @@ import { Bell, BellOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { track } from '@/lib/posthog'
 
 interface WatchlistButtonProps {
   landlordId?: string
@@ -67,6 +68,7 @@ export function WatchlistButton({
           .eq(target.col, target.id)
         setWatching(false)
         toast.success('Alert removed')
+        track('watchlist_removed', { [target.col]: target.id })
       } else {
         await supabase
           .from('watchlist')
@@ -76,6 +78,7 @@ export function WatchlistButton({
           )
         setWatching(true)
         toast.success(successMessage ?? 'You\'ll be notified of new violations or reviews')
+        track('watchlist_added', { [target.col]: target.id })
       }
     } finally {
       setLoading(false)
