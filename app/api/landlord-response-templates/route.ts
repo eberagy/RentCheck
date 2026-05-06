@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sanitizeText } from '@/lib/sanitize'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
@@ -52,7 +53,7 @@ export async function GET(req: NextRequest) {
     .eq('landlord_id', landlordId)
     .order('updated_at', { ascending: false })
 
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('landlord-response-templates:db', error)
   return NextResponse.json({ templates: data ?? [] })
 }
 
@@ -98,7 +99,7 @@ export async function POST(req: NextRequest) {
     .select('id, label, body, created_at, updated_at')
     .single()
 
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('landlord-response-templates:db', error)
   return NextResponse.json({ template: data })
 }
 
@@ -127,6 +128,6 @@ export async function DELETE(req: NextRequest) {
   if ('error' in gate) return NextResponse.json({ error: gate.error }, { status: gate.status })
 
   const { error } = await service.from('response_templates').delete().eq('id', id)
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('landlord-response-templates:db', error)
   return NextResponse.json({ ok: true })
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient } from '@/lib/supabase/server'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { z } from 'zod'
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
     notify_email: notifyEmail,
   }, { onConflict })
 
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('watchlist:db', error)
   return NextResponse.json({ ok: true }, { status: 201 })
 }
 
@@ -70,6 +71,6 @@ export async function DELETE(req: NextRequest) {
   if (propertyId) q = q.eq('property_id', propertyId)
 
   const { error } = await q
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('watchlist:db', error)
   return NextResponse.json({ ok: true })
 }

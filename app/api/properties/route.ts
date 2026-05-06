@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { dbError } from '@/lib/api-errors'
 import { createServiceClient } from '@/lib/supabase/service'
 import { z } from 'zod'
 
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
   if (zip) q = q.eq('zip', zip)
 
   const { data, error, count } = await q
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('properties:list', error)
 
   return NextResponse.json({ properties: data ?? [], total: count ?? 0, page, limit })
 }

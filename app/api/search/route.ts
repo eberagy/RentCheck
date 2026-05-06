@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { dbError } from '@/lib/api-errors'
 import { createServiceClient } from '@/lib/supabase/service'
 import { buildLandlordSummary, buildPropertySummary, truncateSummary } from '@/lib/summaries'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
@@ -44,7 +45,7 @@ export async function GET(req: NextRequest) {
   type RecordRow = { property_id: string | null; title: string; status: string | null; filed_date: string | null }
 
   const { data, error } = await supabase.rpc('search_all', { query: q, limit_n: limit })
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('search:rpc', error)
 
   const allHits = (data ?? []) as SearchHit[]
   const rawResults = allHits.filter(r => type === 'all' || r.result_type === type)

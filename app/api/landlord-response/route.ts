@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sanitizeText } from '@/lib/sanitize'
 import { sendSubmissionReceivedEmail } from '@/lib/email'
@@ -60,7 +61,7 @@ export async function POST(req: NextRequest) {
     })
     .eq('id', reviewId)
 
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('landlord-response:update', error)
 
   void (async () => {
     try {

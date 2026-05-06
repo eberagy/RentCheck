@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { z } from 'zod'
@@ -37,7 +38,7 @@ export async function GET() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('saved-searches:db', error)
   return NextResponse.json({ searches: data ?? [] })
 }
 
@@ -85,7 +86,7 @@ export async function POST(req: NextRequest) {
     .select('id, city, state_abbr, notify_email, created_at')
     .single()
 
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('saved-searches:db', error)
   return NextResponse.json({ search: data })
 }
 
@@ -109,6 +110,6 @@ export async function DELETE(req: NextRequest) {
     .eq('id', id)
     .eq('user_id', user.id)
 
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('saved-searches:db', error)
   return NextResponse.json({ ok: true })
 }

@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
   if (propertyId) q = q.eq('property_id', propertyId)
 
   const { data, error, count } = await q
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('reviews:list', error)
 
   type RawPublicReviewRow = { landlord_response?: string | null; landlord_response_status?: string | null }
   const safe = ((data ?? []) as unknown as RawPublicReviewRow[]).map(r => stripPrivateReviewFields(r))

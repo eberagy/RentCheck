@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import sharp from 'sharp'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
@@ -106,6 +107,6 @@ export async function DELETE(req: NextRequest) {
     .update({ avatar_url: null, updated_at: new Date().toISOString() })
     .eq('id', user.id)
 
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('me/avatar:delete', error)
   return NextResponse.json({ ok: true })
 }

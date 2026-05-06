@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { sanitizeText } from '@/lib/sanitize'
@@ -92,7 +93,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   const { error } = await service.from('reviews').update(updates).eq('id', id)
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('reviews/[id]:db', error)
   return NextResponse.json({ ok: true })
 }
 
@@ -112,7 +113,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const ownerId = review.reviewer_id
 
   const { error } = await service.from('reviews').delete().eq('id', id)
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('reviews/[id]:db', error)
 
   // Best-effort: remove the stored lease doc since it was never verified.
   void (async () => {
