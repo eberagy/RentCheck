@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
 
   // Rate limit: 5 review submissions per hour per user
   const rl = rateLimit(`reviews:${user.id}`, 5, 3600_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const body = await req.json()
   const parsed = createSchema.safeParse(body)

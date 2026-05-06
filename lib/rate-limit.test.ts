@@ -26,6 +26,31 @@ describe('rateLimit', () => {
     expect(blocked.remaining).toBe(0)
   })
 
+  it('reports retryAfter approximately equal to the window when blocked', () => {
+    const key = `test:${Math.random()}`
+    rateLimit(key, 1, 60_000)
+    const blocked = rateLimit(key, 1, 60_000)
+    expect(blocked.success).toBe(false)
+    // First slot fired at t=0, frees up at t=60. Right after, retryAfter
+    // is at most 60 (rounded up). Should never be 0 when blocked.
+    expect(blocked.retryAfter).toBeGreaterThan(0)
+    expect(blocked.retryAfter).toBeLessThanOrEqual(60)
+  })
+
+  it('retryAfter shrinks as the window approaches expiry', () => {
+    const key = `test:${Math.random()}`
+    rateLimit(key, 1, 60_000)
+    const at5s = rateLimit(key, 1, 60_000)
+    vi.advanceTimersByTime(50_000)
+    const at55s = rateLimit(key, 1, 60_000)
+    expect(at55s.retryAfter).toBeLessThan(at5s.retryAfter)
+  })
+
+  it('returns retryAfter: 0 on a successful (non-blocked) call', () => {
+    const key = `test:${Math.random()}`
+    expect(rateLimit(key, 5).retryAfter).toBe(0)
+  })
+
   it('reports decreasing remaining count', () => {
     const key = `test:${Math.random()}`
     expect(rateLimit(key, 3).remaining).toBe(2)

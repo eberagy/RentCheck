@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
   // Rate limit: 10 flags per hour per user
   const rl = rateLimit(`flags:${user.id}`, 10, 3600_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const { reviewId, reason, note: rawNote } = parsed.data
   const note = rawNote ? sanitizeText(rawNote) : undefined

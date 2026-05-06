@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 
   // Rate limit: 5 submissions per hour per user
   const rl = rateLimit(`submissions:${user.id}`, 5, 3600_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const sanitized = sanitizeStrings(parsed.data)
   const { display_name, business_name, city, state_abbr, zip, website, phone, notes, proof_doc_url } = sanitized

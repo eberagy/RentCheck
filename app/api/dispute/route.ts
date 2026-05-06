@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
   // Rate limit: 5 disputes per hour per user
   const rl = rateLimit(`disputes:${user.id}`, 5, 3600_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const { recordId, reason: rawReason, detail: rawDetail, evidenceUrl } = parsed.data
   const reason = sanitizeText(rawReason)

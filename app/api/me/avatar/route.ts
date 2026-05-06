@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Not signed in' }, { status: 401 })
 
   const rl = rateLimit(`avatar:${user.id}`, 10, 3600_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   let form: FormData
   try {

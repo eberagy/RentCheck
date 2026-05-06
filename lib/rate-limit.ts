@@ -21,6 +21,9 @@ setInterval(() => {
 interface RateLimitResult {
   success: boolean
   remaining: number
+  /** Seconds until the oldest in-window timestamp expires. Use to set
+   * a tight Retry-After when surfacing a 429. */
+  retryAfter: number
 }
 
 /**
@@ -36,20 +39,36 @@ export function rateLimit(key: string, limit: number, windowMs = 60_000): RateLi
   const recent = timestamps.filter(t => t > windowStart)
 
   if (recent.length >= limit) {
-    return { success: false, remaining: 0 }
+    // Oldest timestamp + windowMs = when one slot frees up. Round up so
+    // the client doesn't retry one second too early.
+    const oldest = recent[0] ?? now
+    const retryAfter = Math.max(1, Math.ceil((oldest + windowMs - now) / 1000))
+    return { success: false, remaining: 0, retryAfter }
   }
 
   recent.push(now)
   store.set(key, recent)
-  return { success: true, remaining: limit - recent.length }
+  return { success: true, remaining: limit - recent.length, retryAfter: 0 }
 }
 
 /**
  * Returns a 429 JSON response for rate-limited requests.
+ *
+ * Pass the RateLimitResult so the Retry-After header is calibrated to the
+ * caller's window — e.g. a 1-hour window where 5 requests are spent should
+ * tell the client to wait closer to 3600s, not the legacy default of 60s.
+ * If no result is passed (older call sites), defaults to 60s.
  */
-export function rateLimitResponse() {
+export function rateLimitResponse(result?: RateLimitResult) {
+  const retryAfterSeconds = result?.retryAfter ?? 60
   return new Response(
     JSON.stringify({ error: 'Too many requests. Please try again later.' }),
-    { status: 429, headers: { 'Content-Type': 'application/json', 'Retry-After': '60' } }
+    {
+      status: 429,
+      headers: {
+        'Content-Type': 'application/json',
+        'Retry-After': String(retryAfterSeconds),
+      },
+    }
   )
 }

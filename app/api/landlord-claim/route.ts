@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
 
   // Rate limit: 3 claims per hour per user
   const rl = rateLimit(`claims:${user.id}`, 3, 3600_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const { landlordId, docUrl, docFilename, verificationType } = parsed.data
 

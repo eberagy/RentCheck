@@ -12,7 +12,7 @@ export async function GET(_req: NextRequest) {
 
   // 3 per hour — export is cheap but shouldn't be used as a scraping vector
   const rl = rateLimit(`export:${user.id}`, 3, 3600_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const service = createServiceClient()
 
