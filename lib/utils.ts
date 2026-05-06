@@ -145,20 +145,6 @@ export function pluralize(n: number, singular: string, plural?: string): string 
   return `${n} ${n === 1 ? singular : (plural ?? singular + 's')}`
 }
 
-// ─── VALIDATION HELPERS ──────────────────────────────────────
-
-export function isValidEmail(email: string): boolean {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-}
-
-export function isValidUrl(url: string): boolean {
-  try {
-    new URL(url)
-    return true
-  } catch {
-    return false
-  }
-}
 
 // File magic bytes — check actual file type, not just extension
 export async function detectFileType(file: File): Promise<string | null> {
