@@ -9,7 +9,14 @@ export const metadata: Metadata = {
   title: 'Blog',
   description:
     'Notes on renting, landlord reputation, tenant rights, and public-records research from the Vett team.',
-  alternates: { canonical: '/blog' },
+  alternates: {
+    canonical: '/blog',
+    types: {
+      // RSS auto-discovery — feed readers (Inoreader, Feedly, NetNewsWire)
+      // pick this up from the page <head>.
+      'application/rss+xml': '/blog/feed.xml',
+    },
+  },
 }
 
 function formatDate(iso: string) {
