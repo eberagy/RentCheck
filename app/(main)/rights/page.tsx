@@ -1,8 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Script from 'next/script'
 import { Shield, ChevronRight, Home, DollarSign, BellRing, ShieldAlert } from 'lucide-react'
 import { Eyebrow } from '@/components/vett/Eyebrow'
 import { US_STATES } from '@/types'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 export const metadata: Metadata = {
   title: 'Tenant Rights by State',
@@ -56,8 +58,32 @@ export default function TenantRightsIndexPage() {
   const featuredStates = US_STATES.filter(s => STATES_WITH_GUIDES.includes(s.abbr))
   const otherStates = US_STATES.filter(s => !STATES_WITH_GUIDES.includes(s.abbr))
 
+  // CollectionPage JSON-LD — surfaces the per-state guides as an
+  // ItemList for Google's "Things to know" panels and breadcrumb hint.
+  const siteUrl = canonicalSiteUrl()
+  const rightsJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Tenant Rights by State',
+    url: `${siteUrl}/rights`,
+    isPartOf: { '@id': `${siteUrl}/#website` },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: US_STATES.length,
+      itemListElement: US_STATES.map((s, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: `Tenant rights in ${s.name}`,
+        url: `${siteUrl}/rights/${s.abbr.toLowerCase()}`,
+      })),
+    },
+  })
+
   return (
     <div className="min-h-screen bg-slate-50">
+      <Script id="rights-jsonld" type="application/ld+json" strategy="beforeInteractive">
+        {rightsJsonLd}
+      </Script>
       {/* Hero */}
       <section className="border-b border-slate-200 bg-white px-7 py-16">
         <div className="mx-auto max-w-[1320px]">
