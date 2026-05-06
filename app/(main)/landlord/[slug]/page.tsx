@@ -527,9 +527,11 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             />
           </TabsContent>
 
-          {/* Public records tab — chart is rendered inside the panel's
-              sticky left aside so it scrolls with the dashboard, not
-              the records list. */}
+          {/* Public records tab. ViolationChart renders full-width above
+              the records list, with a 4-up summary stat strip + filter
+              toolbar in between. Earlier iteration tried a sticky left
+              aside inside the panel — felt cramped on small screens; the
+              page-level sidebar already lives outside the tabs. */}
           <TabsContent value="records" keepMounted>
             <PublicRecordsPanel
               records={landlordRecords as PublicRecord[]}
