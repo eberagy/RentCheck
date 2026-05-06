@@ -157,10 +157,38 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     } : {}),
   })
 
+  // Breadcrumb: Home → {city}, {state} → {address}. Mirrors the
+  // landlord page's pattern. Drops the city segment if state/city are
+  // missing so the trail still validates.
+  const breadcrumbJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+      ...(property.city && property.state_abbr
+        ? [{
+            '@type': 'ListItem',
+            position: 2,
+            name: `${getCanonicalCity(property.city)}, ${property.state_abbr}`,
+            item: `${siteUrl}${cityPagePath(property.city, property.state_abbr)}`,
+          }]
+        : []),
+      {
+        '@type': 'ListItem',
+        position: property.city && property.state_abbr ? 3 : 2,
+        name: property.address_line1,
+        item: `${siteUrl}/property/${property.id}`,
+      },
+    ],
+  })
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Script id={`property-jsonld-${property.id}`} type="application/ld+json" strategy="beforeInteractive">
         {propertyJsonLd}
+      </Script>
+      <Script id={`property-breadcrumb-${property.id}`} type="application/ld+json" strategy="beforeInteractive">
+        {breadcrumbJsonLd}
       </Script>
       <div className="mx-auto max-w-[1320px] px-4 py-8 sm:px-8">
         <nav className="mb-6 flex items-center gap-1 text-xs text-slate-500">
