@@ -1,20 +1,30 @@
 import { Skeleton } from '@/components/ui/skeleton'
 
+// Match the live search layout: 1320px container, 240px filter sidebar
+// on lg+, single-column results list with 24px row gaps. Avoids a
+// sidebar-width snap when the page hydrates.
 export default function SearchLoading() {
   return (
-    <div className="mx-auto max-w-[1320px] px-4 py-8">
-      <Skeleton className="h-11 max-w-2xl w-full mb-8 rounded-xl" />
-      <div className="flex flex-col lg:flex-row gap-8">
-        <aside className="lg:w-56 flex-shrink-0">
-          <Skeleton className="h-64 w-full rounded-xl" />
-        </aside>
-        <div className="flex-1">
-          <Skeleton className="h-4 w-32 mb-4" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Skeleton key={i} className="h-32 rounded-xl" />
+    <div className="mx-auto grid max-w-[1320px] gap-7 px-4 py-7 sm:px-8 lg:grid-cols-[240px_1fr]">
+      <aside className="flex flex-col gap-5">
+        {[1, 2, 3, 4].map(i => (
+          <Skeleton key={i} className="h-28 w-full rounded-xl" />
+        ))}
+      </aside>
+      <div>
+        <Skeleton className="h-12 w-full mb-4 rounded-xl" />
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 px-1">
+          <div className="flex gap-1.5">
+            {[1, 2, 3, 4].map(i => (
+              <Skeleton key={i} className="h-8 w-24 rounded-full" />
             ))}
           </div>
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <div className="grid gap-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="h-24 w-full rounded-2xl" />
+          ))}
         </div>
       </div>
     </div>
