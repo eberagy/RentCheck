@@ -131,6 +131,29 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
   // Schema.org structured data — Apartment / ApartmentComplex when units > 1.
   const siteUrl = canonicalSiteUrl()
+  type ReviewLite = {
+    rating_overall: number
+    title?: string | null
+    body?: string | null
+    created_at: string
+    reviewer?: { full_name?: string | null } | null
+  }
+  const propertyReviewSchema = (reviewList as unknown as ReviewLite[]).slice(0, 5).map(r => {
+    const authorName = r.reviewer?.full_name?.trim() || 'Verified renter'
+    return {
+      '@type': 'Review',
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: r.rating_overall,
+        bestRating: 5,
+        worstRating: 1,
+      },
+      author: { '@type': 'Person', name: authorName },
+      datePublished: r.created_at,
+      name: r.title ?? undefined,
+      reviewBody: r.body ?? undefined,
+    }
+  })
   const propertyJsonLd = JSON.stringify({
     '@context': 'https://schema.org',
     '@type': (property.unit_count ?? 1) > 1 ? 'ApartmentComplex' : 'Apartment',
@@ -155,6 +178,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         worstRating: 1,
       },
     } : {}),
+    ...(propertyReviewSchema.length > 0 && { review: propertyReviewSchema }),
   })
 
   // Breadcrumb: Home → {city}, {state} → {address}. Mirrors the
