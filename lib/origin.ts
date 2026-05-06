@@ -28,6 +28,14 @@ function isAllowed(origin: string): boolean {
   return false
 }
 
+function safeReferrerOrigin(referer: string): string | null {
+  try {
+    return new URL(referer).origin
+  } catch {
+    return null
+  }
+}
+
 /**
  * Same-origin gate for state-changing requests. Returns a 403 NextResponse if
  * the request's Origin header isn't in our allowlist, otherwise returns null
@@ -41,7 +49,11 @@ function isAllowed(origin: string): boolean {
 export function assertSameOrigin(req: NextRequest): NextResponse | null {
   const origin = req.headers.get('origin')
   const referer = req.headers.get('referer')
-  const candidate = origin ?? (referer ? new URL(referer).origin : null)
+  // Wrap the URL parse — a malformed Referer header used to crash this helper
+  // with a TypeError, which Next.js surfaced as a 500 to the caller (and a
+  // noisy Sentry event). Now the malformed value is treated as 'no candidate'
+  // and returns a clean 403.
+  const candidate = origin ?? (referer ? safeReferrerOrigin(referer) : null)
 
   if (!candidate) {
     return NextResponse.json({ error: 'Missing Origin header' }, { status: 403 })

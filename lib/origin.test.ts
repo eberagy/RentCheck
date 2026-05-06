@@ -55,4 +55,16 @@ describe('assertSameOrigin', () => {
   it('rejects when origin is not a URL', async () => {
     expect(assertSameOrigin(makeReq({ origin: 'not-a-url' }))?.status).toBe(403)
   })
+
+  it('returns 403 (not 500) when Referer is malformed and no Origin', async () => {
+    // Some proxies / weird browsers send `Referer: about:blank` or empty
+    // strings that break new URL(). Pre-fix this would throw a TypeError
+    // and surface as a 500 to the caller. Should be a clean 403 instead.
+    const res = assertSameOrigin(makeReq({ referer: 'about:blank' }))
+    expect(res?.status).toBe(403)
+  })
+
+  it('returns 403 when Referer is just garbage', async () => {
+    expect(assertSameOrigin(makeReq({ referer: 'random-garbage' }))?.status).toBe(403)
+  })
 })
