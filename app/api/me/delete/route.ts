@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { captureException } from '@/lib/sentry'
 import { z } from 'zod'
 
 // POST /api/me/delete
@@ -62,6 +63,7 @@ export async function POST(req: NextRequest) {
       }
     } catch (err) {
       console.error(`[me/delete] failed to purge ${bucket}:`, err)
+      captureException(err, { where: 'me/delete:purge-bucket', bucket })
     }
   }
 
@@ -110,7 +112,12 @@ export async function POST(req: NextRequest) {
   try {
     await service.auth.admin.deleteUser(user.id)
   } catch (err) {
+    // High-stakes failure — the profile row + storage are already gone, so
+    // the user's data is purged, but the auth.users row lingers. Without
+    // Sentry visibility we'd only learn about it via "I deleted my account
+    // but I can still sign in" support emails.
     console.error('[me/delete] auth admin delete failed:', err)
+    captureException(err, { where: 'me/delete:auth-admin-delete' })
   }
 
   // 7. Sign out any active session on this device.

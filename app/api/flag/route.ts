@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { sanitizeText } from '@/lib/sanitize'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { logAdminAction } from '@/lib/audit'
+import { captureException } from '@/lib/sentry'
 
 // Three independent users flagging the same review auto-hides it from the
 // public feed (status → 'flagged') while it waits for human moderation.
@@ -108,7 +109,12 @@ export async function POST(req: NextRequest) {
         }
       }
     } catch (err) {
+      // Escalation runs in a void IIFE so an exception here never reaches
+      // the route handler. Without Sentry capture it would only surface
+      // in Vercel logs, where it's easy to miss until enough flagged
+      // reviews leak through that someone notices the auto-hide is broken.
       console.error('[flag] escalation check failed:', err)
+      captureException(err, { where: 'flag:escalation' })
     }
   })()
 
