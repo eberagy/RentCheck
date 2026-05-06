@@ -37,7 +37,9 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
     try {
       const res = await fetch(`/api/reviews/${review.id}/helpful`, { method: 'PATCH' })
       if (res.status === 401) {
-        const here = typeof window !== 'undefined' ? window.location.pathname : '/'
+        const here = typeof window !== 'undefined'
+          ? window.location.pathname + window.location.search
+          : '/'
         toast.message('Sign in to mark reviews helpful', {
           action: { label: 'Sign in', onClick: () => { window.location.href = `/login?redirectTo=${encodeURIComponent(here)}` } },
         })

@@ -51,7 +51,9 @@ export function WatchlistButton({
     if (!target) return
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
-      const here = typeof window !== 'undefined' ? window.location.pathname : '/'
+      const here = typeof window !== 'undefined'
+        ? window.location.pathname + window.location.search
+        : '/'
       toast.message('Sign in to set alerts', {
         action: { label: 'Sign in', onClick: () => { window.location.href = `/login?redirectTo=${encodeURIComponent(here)}` } },
       })
