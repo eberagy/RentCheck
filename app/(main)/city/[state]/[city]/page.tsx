@@ -204,10 +204,31 @@ export default async function CityPage({ params }: CityPageProps) {
     },
   })
 
+  // Breadcrumb: Home → {city}, {state}. Two-level since city is the
+  // top of the city hierarchy. Mirrors landlord/property breadcrumb
+  // shape so Google's sitelink heuristics see one consistent pattern
+  // across the site.
+  const breadcrumbJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: `${cityName}, ${stateAbbr}`,
+        item: `${siteUrl}/city/${stateAbbr.toLowerCase()}/${cityName.toLowerCase().replace(/\s+/g, '-')}`,
+      },
+    ],
+  })
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Script id={`city-jsonld-${stateAbbr}-${cityName}`} type="application/ld+json" strategy="beforeInteractive">
         {cityJsonLd}
+      </Script>
+      <Script id={`city-breadcrumb-${stateAbbr}-${cityName}`} type="application/ld+json" strategy="beforeInteractive">
+        {breadcrumbJsonLd}
       </Script>
       {/* Hero */}
       <section
