@@ -371,13 +371,29 @@ export async function withSyncLog(
   }
 }
 
-/** Verify the request is from Vercel cron or an admin manual trigger */
+/** Constant-time string comparison. Prevents secrets from leaking via
+ *  `===` early-return timing differences. Returns false for any
+ *  mismatched length or whenever either side is empty. */
+function constantTimeEqual(a: string, b: string): boolean {
+  if (!a || !b || a.length !== b.length) return false
+  let mismatch = 0
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i)
+  }
+  return mismatch === 0
+}
+
+/** Verify the request is from Vercel cron or an admin manual trigger.
+ *  Uses constant-time comparison so we don't leak the secret one
+ *  character at a time via response-time profiling. */
 export function verifyCronSecret(req: Request): boolean {
   const secret = process.env.CRON_SECRET
   if (!secret) return false
   const authHeader = req.headers.get('authorization')
   const cronHeader = req.headers.get('x-cron-secret')
-  return authHeader === `Bearer ${secret}` || cronHeader === secret
+  if (authHeader && constantTimeEqual(authHeader, `Bearer ${secret}`)) return true
+  if (cronHeader && constantTimeEqual(cronHeader, secret)) return true
+  return false
 }
 
 /** Resolve a landlord by name using fuzzy matching. Returns id or null. */

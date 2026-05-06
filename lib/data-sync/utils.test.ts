@@ -87,6 +87,16 @@ describe('verifyCronSecret', () => {
   it('does NOT match when bearer prefix is missing', () => {
     expect(verifyCronSecret(makeReq({ authorization: 'test-secret-do-not-ship' }))).toBe(false)
   })
+
+  it('rejects partial-prefix attacks (constant-time guard)', () => {
+    // A timing-attacker shortens the candidate to probe character-by-character.
+    // The constant-time check inside verifyCronSecret should reject any
+    // length-mismatched candidate without a length-discriminating early return.
+    expect(verifyCronSecret(makeReq({ authorization: 'Bearer test' }))).toBe(false)
+    expect(verifyCronSecret(makeReq({ authorization: 'Bearer test-secret' }))).toBe(false)
+    expect(verifyCronSecret(makeReq({ 'x-cron-secret': 't' }))).toBe(false)
+    expect(verifyCronSecret(makeReq({ 'x-cron-secret': 'test-secret-do-not-ship-but-longer' }))).toBe(false)
+  })
 })
 
 describe('withRetry', () => {
