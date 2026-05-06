@@ -72,7 +72,7 @@ function DisputeForm() {
     return (
       <div className="text-center py-8">
         <CheckCircle2 className="h-14 w-14 text-teal-500 mx-auto mb-4" />
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Dispute submitted</h2>
+        <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Dispute submitted</h1>
         <p className="text-slate-600 mb-2">Our team will review your dispute within 5–7 business days.</p>
         <p className="text-sm text-slate-500 mb-8">
           If the record is found to be inaccurate, we will update or remove it.
