@@ -5,6 +5,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { sanitizeText } from '@/lib/sanitize'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { logAdminAction } from '@/lib/audit'
 
 // Three independent users flagging the same review auto-hides it from the
 // public feed (status → 'flagged') while it waits for human moderation.
@@ -79,7 +80,11 @@ export async function POST(req: NextRequest) {
         .select('flagged_by', { count: 'exact', head: true })
         .eq('review_id', reviewId)
       if ((count ?? 0) >= AUTO_HIDE_FLAG_THRESHOLD) {
-        await service
+        // .select('id') so the result tells us whether the update actually
+        // ran (only flips approved→flagged; if the review was already
+        // flagged by an admin we get 0 rows). Audit log only fires on
+        // an actual transition to avoid duplicate flagged events.
+        const { data: flipped } = await service
           .from('reviews')
           .update({
             status: 'flagged',
@@ -87,6 +92,20 @@ export async function POST(req: NextRequest) {
           })
           .eq('id', reviewId)
           .eq('status', 'approved')
+          .select('id')
+
+        if (flipped && flipped.length > 0) {
+          // Auto-hide is technically a system action, but the audit table
+          // requires an actor; using the user who crossed the threshold
+          // keeps the trail honest about who tipped it over.
+          logAdminAction({
+            adminId: user.id,
+            actionType: 'review.flagged',
+            resourceType: 'review',
+            resourceId: reviewId,
+            detail: { auto: true, flagCount: count, threshold: AUTO_HIDE_FLAG_THRESHOLD },
+          })
+        }
       }
     } catch (err) {
       console.error('[flag] escalation check failed:', err)
