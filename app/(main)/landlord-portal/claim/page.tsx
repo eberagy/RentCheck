@@ -166,7 +166,7 @@ export default function ClaimProfilePage() {
           <div className="h-20 w-20 bg-teal-100 rounded-3xl flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="h-10 w-10 text-teal-600" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-3">Claim Request Submitted!</h1>
+          <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-[1.08] tracking-tight text-slate-900 mb-3">Claim request submitted</h1>
           <p className="text-slate-500 text-sm leading-relaxed mb-2">
             Our founders will review your documents within <strong className="text-slate-700">48 hours</strong>.
           </p>
@@ -205,7 +205,7 @@ export default function ClaimProfilePage() {
     <div className="max-w-xl mx-auto px-4 py-8">
       {/* Page header */}
       <div className="mb-8 text-center">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Claim Your Landlord Profile</h1>
+        <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Claim your landlord profile</h1>
         <p className="text-sm text-slate-500">
           Verify ownership to respond to reviews and manage your profile.
         </p>
