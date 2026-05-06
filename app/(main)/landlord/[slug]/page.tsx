@@ -281,12 +281,15 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
     name: landlord.display_name,
     url: `${siteUrl}/landlord/${landlord.slug}`,
     ...(landlord.business_name && { legalName: landlord.business_name }),
+    ...(landlord.phone && { telephone: landlord.phone }),
+    ...(landlord.website && { sameAs: [landlord.website] }),
     ...(landlord.city && {
       address: {
         '@type': 'PostalAddress',
         addressLocality: landlord.city,
         ...(landlord.state_abbr && { addressRegion: landlord.state_abbr }),
         ...(landlord.zip && { postalCode: landlord.zip }),
+        addressCountry: 'US',
       },
     }),
     ...(hasRatings && {
