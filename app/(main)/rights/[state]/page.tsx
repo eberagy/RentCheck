@@ -16,6 +16,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { US_STATES } from '@/types'
 import { getAllScenarios } from '@/lib/rights-scenarios'
+import { TrackPageView } from '@/components/analytics/TrackPageView'
 
 interface TenantRightsPageProps {
   params: { state: string }
@@ -362,6 +363,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
+      <TrackPageView event="rights_page_viewed" properties={{ state: stateAbbr }} />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1 text-xs text-slate-500 mb-6">
         <Link href="/" className="hover:text-navy-700 hover:underline transition-colors">

@@ -24,6 +24,7 @@ import { PUBLIC_REVIEW_SELECT } from '@/lib/reviews/public'
 import { formatAddress } from '@/lib/utils'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
 import { isValidLandlordSlug } from '@/lib/url-guards'
+import { TrackPageView } from '@/components/analytics/TrackPageView'
 import type { Review, PublicRecord, Property } from '@/types'
 
 interface LandlordPageProps {
@@ -306,6 +307,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
 
   return (
     <>
+      <TrackPageView event="landlord_viewed" properties={{ landlord_id: landlord.id, slug: landlord.slug }} />
       <Script id={`landlord-jsonld-${landlord.slug}`} type="application/ld+json" strategy="beforeInteractive">
         {jsonLd}
       </Script>

@@ -26,6 +26,7 @@ import { PUBLIC_REVIEW_SELECT } from '@/lib/reviews/public'
 import { formatAddress } from '@/lib/utils'
 import { isValidPropertyId } from '@/lib/url-guards'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
+import { TrackPageView } from '@/components/analytics/TrackPageView'
 import { buildPropertySummary } from '@/lib/summaries'
 import { cityPagePath, getCanonicalCity } from '@/lib/cities'
 import type { Review, PublicRecord } from '@/types'
@@ -208,6 +209,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <TrackPageView event="property_viewed" properties={{ property_id: property.id }} />
       <Script id={`property-jsonld-${property.id}`} type="application/ld+json" strategy="beforeInteractive">
         {propertyJsonLd}
       </Script>
