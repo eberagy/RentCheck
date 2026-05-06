@@ -2,6 +2,8 @@
 
 import { Suspense, useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
+import { useAuth } from '@/hooks/useAuth'
+import { identifyUser } from '@/lib/posthog'
 
 function PostHogPageview() {
   const pathname = usePathname()
@@ -29,12 +31,28 @@ function PostHogPageview() {
   return null
 }
 
+// Identify the user to PostHog once auth resolves. Stitches anonymous
+// pre-signin events (search_performed, landlord_viewed) to the same
+// person record after they sign in. No-op when PostHog isn't loaded.
+function PostHogIdentify() {
+  const { user, profile } = useAuth()
+  useEffect(() => {
+    if (!user) return
+    identifyUser(user.id, {
+      email: user.email ?? undefined,
+      name: profile?.full_name ?? undefined,
+    })
+  }, [user, profile])
+  return null
+}
+
 export function PostHogProvider({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Suspense fallback={null}>
         <PostHogPageview />
       </Suspense>
+      <PostHogIdentify />
       {children}
     </>
   )
