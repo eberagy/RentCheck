@@ -16,10 +16,10 @@ describe('AdminActionType', () => {
       'flag.dismissed', 'flag.review_removed',
       'dispute.resolved', 'dispute.record_removed',
       'user.banned', 'user.unbanned',
-      'user.promoted',
+      'user.promoted', 'user.note_updated',
     ]
-    // 19 entries (sanity)
-    expect(ALL_TYPES).toHaveLength(19)
+    // 20 entries (sanity)
+    expect(ALL_TYPES).toHaveLength(20)
     // Every entry is unique
     expect(new Set(ALL_TYPES).size).toBe(ALL_TYPES.length)
     // Every entry follows the `<resource>.<action>` shape

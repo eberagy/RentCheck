@@ -9,7 +9,7 @@ export type AdminActionType =
   | 'flag.dismissed'      | 'flag.review_removed'
   | 'dispute.resolved'    | 'dispute.record_removed'
   | 'user.banned'         | 'user.unbanned'
-  | 'user.promoted'
+  | 'user.promoted'       | 'user.note_updated'
 
 export interface LogAdminActionArgs {
   adminId: string
