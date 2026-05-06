@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import { useDropzone } from 'react-dropzone'
 import { Search, Upload, FileText, X, CheckCircle2, Loader2, AlertTriangle, ArrowRight } from 'lucide-react'
@@ -79,6 +79,14 @@ export default function ClaimProfilePage() {
 
   // Determine current step for the indicator
   const currentStep: 1 | 2 | 3 = submitted ? 3 : selectedLandlord ? 2 : 1
+
+  // Top-of-funnel signal — paired with claim_submitted to compute the
+  // claim form drop-off rate.
+  useEffect(() => {
+    track('claim_started')
+    // Only on first mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function searchLandlords(q: string) {
     if (q.length < 2) { setSearchResults([]); return }
