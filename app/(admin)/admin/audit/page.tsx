@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { createServiceClient } from '@/lib/supabase/server'
 import { formatDate } from '@/lib/utils'
 import { ScrollText } from 'lucide-react'
@@ -131,12 +132,12 @@ export default async function AdminAuditPage({
             Apply
           </button>
           {filterAction && (
-            <a
+            <Link
               href="/admin/audit"
               className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50"
             >
               Clear
-            </a>
+            </Link>
           )}
         </form>
       </div>

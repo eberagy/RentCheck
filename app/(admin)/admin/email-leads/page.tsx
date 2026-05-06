@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { Mail, MapPin } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/server'
 import { formatDate } from '@/lib/utils'
@@ -125,9 +126,9 @@ export default async function AdminEmailLeadsPage({
           Apply
         </button>
         {(params.city || params.source) && (
-          <a href="/admin/email-leads" className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-700">
+          <Link href="/admin/email-leads" className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-700">
             Clear
-          </a>
+          </Link>
         )}
       </form>
 
