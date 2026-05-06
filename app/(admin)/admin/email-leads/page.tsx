@@ -136,10 +136,10 @@ export default async function AdminEmailLeadsPage({
         <table className="w-full">
           <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
             <tr>
-              <th className="px-4 py-3 text-left">Email</th>
-              <th className="px-4 py-3 text-left">City</th>
-              <th className="px-4 py-3 text-left">Source</th>
-              <th className="px-4 py-3 text-left">Captured</th>
+              <th scope="col" className="px-4 py-3 text-left">Email</th>
+              <th scope="col" className="px-4 py-3 text-left">City</th>
+              <th scope="col" className="px-4 py-3 text-left">Source</th>
+              <th scope="col" className="px-4 py-3 text-left">Captured</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-sm">

@@ -267,36 +267,49 @@ export default function LoginClient() {
 
                   <form onSubmit={handlePasswordAuth} className="space-y-3">
                     {passwordTab === 'signup' && (
-                      <input
-                        type="text"
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Full name"
-                        required
-                        className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
-                      />
+                      <>
+                        <label htmlFor="login-full-name" className="sr-only">Full name</label>
+                        <input
+                          id="login-full-name"
+                          type="text"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          placeholder="Full name"
+                          required
+                          autoComplete="name"
+                          className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
+                        />
+                      </>
                     )}
+                    <label htmlFor="login-email" className="sr-only">Email</label>
                     <input
+                      id="login-email"
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="your@email.com"
                       required
+                      autoComplete="email"
                       className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
                     />
                     <div className="relative">
+                      <label htmlFor="login-password" className="sr-only">Password</label>
                       <input
+                        id="login-password"
                         type={showPassword ? 'text' : 'password'}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder={passwordTab === 'signup' ? 'Create a password (8+ chars)' : 'Password'}
                         required
                         minLength={passwordTab === 'signup' ? 8 : undefined}
+                        autoComplete={passwordTab === 'signup' ? 'new-password' : 'current-password'}
                         className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 pr-10 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
                       />
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
+                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                        aria-pressed={showPassword}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                         tabIndex={-1}
                       >

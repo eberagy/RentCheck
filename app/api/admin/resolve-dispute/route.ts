@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { assertSameOrigin } from '@/lib/origin'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendDisputeResolvedEmail } from '@/lib/email'
 import { logAdminAction } from '@/lib/audit'
@@ -19,6 +20,9 @@ async function requireAdmin(supabase: Awaited<ReturnType<typeof createClient>>) 
 }
 
 export async function POST(req: NextRequest) {
+  const csrf = assertSameOrigin(req)
+  if (csrf) return csrf
+
   const supabase = await createClient()
   const admin = await requireAdmin(supabase)
   if (!admin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })

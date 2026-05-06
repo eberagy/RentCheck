@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Flag, X, Loader2, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
@@ -26,6 +26,27 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
   const [note, setNote] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState(false)
+  const dialogRef = useRef<HTMLDivElement>(null)
+
+  // Close on Escape and lock body scroll while open. The previous modal had
+  // neither — keyboard users could not dismiss it without clicking the
+  // backdrop, and on mobile the page scrolled behind the overlay.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    // Move focus into the dialog so screen readers announce its content
+    // and Tab cycles within it (browsers handle the inertness of the
+    // backdrop given role=dialog + aria-modal).
+    dialogRef.current?.focus()
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [onClose])
 
   async function handleSubmit() {
     if (!reason) return
@@ -63,7 +84,14 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={e => { if (e.target === e.currentTarget) onClose() }}>
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="flag-review-title"
+        tabIndex={-1}
+        className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative outline-none"
+      >
         <button
           type="button"
           aria-label="Close flag review dialog"
@@ -86,7 +114,7 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
               <div className="h-8 w-8 bg-red-50 rounded-lg flex items-center justify-center">
                 <Flag className="h-4 w-4 text-red-500" />
               </div>
-              <h2 className="text-lg font-bold text-slate-900">Flag this review</h2>
+              <h2 id="flag-review-title" className="text-lg font-bold text-slate-900">Flag this review</h2>
             </div>
             <p className="text-sm text-slate-500 mb-4">
               Select why you think this review violates our guidelines. We review all flags within 48 hours.

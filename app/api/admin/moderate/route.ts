@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { assertSameOrigin } from '@/lib/origin'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { sendReviewApprovedEmail, sendReviewRejectedEmail, sendWatchlistAlertEmail } from '@/lib/email'
@@ -20,6 +21,9 @@ async function requireAdmin(supabase: Awaited<ReturnType<typeof createClient>>) 
 }
 
 export async function POST(req: NextRequest) {
+  const csrf = assertSameOrigin(req)
+  if (csrf) return csrf
+
   const supabase = await createClient()
   const user = await requireAdmin(supabase)
   if (!user) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })

@@ -158,11 +158,11 @@ export default async function AdminAuditPage({
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-slate-200 bg-slate-50 text-left text-[11px] font-bold uppercase tracking-[0.12em] text-slate-500">
-                <th className="px-4 py-2.5">When</th>
-                <th className="px-4 py-2.5">Admin</th>
-                <th className="px-4 py-2.5">Action</th>
-                <th className="px-4 py-2.5">Subject</th>
-                <th className="px-4 py-2.5">Detail</th>
+                <th scope="col" className="px-4 py-2.5">When</th>
+                <th scope="col" className="px-4 py-2.5">Admin</th>
+                <th scope="col" className="px-4 py-2.5">Action</th>
+                <th scope="col" className="px-4 py-2.5">Subject</th>
+                <th scope="col" className="px-4 py-2.5">Detail</th>
               </tr>
             </thead>
             <tbody>
