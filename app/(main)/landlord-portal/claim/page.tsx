@@ -175,7 +175,7 @@ export default function ClaimProfilePage() {
           </p>
 
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 mb-8 text-left space-y-3">
-            <h3 className="text-sm font-bold text-slate-700 mb-3">What happens next?</h3>
+            <h2 className="text-sm font-bold text-slate-700 mb-3">What happens next?</h2>
             <div className="flex items-start gap-3">
               <div className="h-6 w-6 rounded-full bg-navy-100 text-navy-600 flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</div>
               <p className="text-sm text-slate-600">A founder or moderator reviews your verification document</p>
