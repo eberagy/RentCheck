@@ -92,6 +92,15 @@ export default function ReviewForm() {
     loadPreselectedLandlord().catch(err => captureException(err, { where: 'review:preselect-landlord' }))
   }, [preselectedLandlordId, selectedLandlord])
 
+  // Fire \`review_started\` once when the form mounts. Captures the
+  // top-of-funnel signal — distinct from \`review_submitted\` which
+  // only fires on success. Lets PostHog compute drop-off rate.
+  useEffect(() => {
+    track('review_started', preselectedLandlordId ? { landlord_id: preselectedLandlordId } : undefined)
+    // Only on first mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   // Step 0: search for landlord
   async function searchLandlords(q: string) {
     if (q.length < 2) { setSearchResults([]); return }
