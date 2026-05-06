@@ -119,9 +119,30 @@ export default function SettingsPage() {
   }
 
   if (loading) {
+    // Match the post-load shape (max-w-2xl, back link, h1, subtitle, then
+    // a divided card stack) so the page doesn't snap from a tiny centered
+    // spinner to the full settings layout when profile data resolves.
+    // Same idea as the landlord-portal loading state — Next.js loading.tsx
+    // covers the server fetch, but useEffect-driven client fetches need
+    // their own structured fallback.
     return (
-      <div className="max-w-2xl mx-auto px-4 py-16 flex items-center justify-center">
-        <Loader2 className="h-6 w-6 animate-spin text-navy-500" />
+      <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+        <div className="h-4 w-40 rounded bg-slate-200" />
+        <div className="space-y-2">
+          <div className="h-9 w-72 rounded bg-slate-200" />
+          <div className="h-4 w-96 rounded bg-slate-200" />
+        </div>
+        <div className="bg-white border border-slate-200 rounded-xl divide-y">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="p-6 space-y-3">
+              <div className="h-4 w-32 rounded bg-slate-100" />
+              <div className="h-10 w-full rounded bg-slate-100" />
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-center pt-2">
+          <Loader2 className="h-5 w-5 animate-spin text-slate-300" />
+        </div>
       </div>
     )
   }
