@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { assertSameOrigin } from '@/lib/origin'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { sanitizeText } from '@/lib/sanitize'
@@ -58,6 +59,9 @@ async function assertOwnerOfPending(reviewId: string) {
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  const csrf = assertSameOrigin(req)
+  if (csrf) return csrf
+
   const { id } = await params
   const gate = await assertOwnerOfPending(id)
   if ('error' in gate) return gate.error
@@ -92,7 +96,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   return NextResponse.json({ ok: true })
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const csrf = assertSameOrigin(req)
+  if (csrf) return csrf
+
   const { id } = await params
   const gate = await assertOwnerOfPending(id)
   if ('error' in gate) return gate.error

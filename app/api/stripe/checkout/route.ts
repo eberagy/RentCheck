@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { assertSameOrigin } from '@/lib/origin'
 import { createClient } from '@/lib/supabase/server'
 
 // SCAFFOLD: Stripe checkout not yet active — landlord badge $99/month (Phase 2)
-export async function POST(_req: NextRequest) {
+export async function POST(req: NextRequest) {
+  const csrf = assertSameOrigin(req)
+  if (csrf) return csrf
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

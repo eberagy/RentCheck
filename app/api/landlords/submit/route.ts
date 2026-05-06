@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { assertSameOrigin } from '@/lib/origin'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { sanitizeStrings } from '@/lib/sanitize'
@@ -17,6 +18,9 @@ const schema = z.object({
 })
 
 export async function POST(req: NextRequest) {
+  const csrf = assertSameOrigin(req)
+  if (csrf) return csrf
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Sign in to submit a landlord' }, { status: 401 })

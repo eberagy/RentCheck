@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { assertSameOrigin } from '@/lib/origin'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { z } from 'zod'
@@ -11,6 +12,9 @@ import { z } from 'zod'
 const schema = z.object({ isAnonymous: z.boolean() })
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  const csrf = assertSameOrigin(req)
+  if (csrf) return csrf
+
   const { id } = await params
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

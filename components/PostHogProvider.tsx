@@ -49,7 +49,7 @@ function PostHogIdentify() {
       email: user.email ?? undefined,
       name: profile?.full_name ?? undefined,
     })
-    setSentryUser(user.id, user.email ?? undefined)
+    setSentryUser(user.id)
   }, [user, profile])
   return null
 }

@@ -12,8 +12,13 @@ export function captureException(error: unknown, context?: Record<string, unknow
   }).catch(() => {})
 }
 
-export function setUser(id: string, email?: string) {
+// Email is intentionally omitted from Sentry's user context. Sentry retains
+// breadcrumbs + events for 90 days and is shared with whoever has Sentry
+// access — passing email here would leak renter PII into a third-party
+// retention window. The id alone is enough to count "users impacted" on
+// any issue; cross-reference with Supabase if a specific report needs it.
+export function setUser(id: string) {
   import('@sentry/nextjs').then(({ setUser: set }) => {
-    set({ id, email })
+    set({ id })
   }).catch(() => {})
 }
