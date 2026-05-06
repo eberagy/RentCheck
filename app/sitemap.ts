@@ -2,6 +2,7 @@ import type { MetadataRoute } from 'next'
 import { createServiceClient } from '@/lib/supabase/service'
 import { COLLEGE_CITIES, US_STATES } from '@/types'
 import { getAllPosts } from '@/lib/blog'
+import { getAllScenarios } from '@/lib/rights-scenarios'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 export const revalidate = 3600
@@ -63,6 +64,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'monthly' as const,
   }))
 
+  // Per-state-per-scenario pages — same prerender set as
+  // /rights/[state]/[scenario]/page.tsx generateStaticParams.
+  const scenarioPages: MetadataRoute.Sitemap = US_STATES.flatMap(s =>
+    getAllScenarios().map(sc => ({
+      url: `${baseUrl}/rights/${s.abbr.toLowerCase()}/${sc.slug}`,
+      changeFrequency: 'monthly' as const,
+    }))
+  )
+
   // Combine: COLLEGE_CITIES (curated, always include) + cities the RPC returns.
   const cityKeyToEntry = new Map<string, { city: string; state: string }>()
   for (const entry of COLLEGE_CITIES) {
@@ -91,5 +101,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'weekly' as const,
   }))
 
-  return [...staticPages, ...blogPages, ...statePages, ...cityPages, ...landlordPages, ...propertyPages]
+  return [...staticPages, ...blogPages, ...statePages, ...scenarioPages, ...cityPages, ...landlordPages, ...propertyPages]
 }
