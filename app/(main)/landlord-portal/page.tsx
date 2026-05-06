@@ -251,9 +251,36 @@ export default function LandlordPortalPage() {
   }
 
   if (loading) {
+    // Match the post-load layout (dark hero strip + 1320px content area)
+    // so the page doesn't snap from a tiny centered spinner to a full
+    // hero+grid on data resolution. Pure CSS, no Skeleton component
+    // needed — the bands are already darker/lighter than the body so
+    // a low-opacity overlay reads as "loading."
     return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="h-8 w-8 border-2 border-navy-500 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-slate-50">
+        <section className="relative overflow-hidden bg-ink px-4 py-10 sm:px-8 text-white">
+          <div className="relative mx-auto flex max-w-[1320px] flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-3">
+              <div className="h-3 w-32 rounded bg-white/10" />
+              <div className="h-9 w-72 rounded bg-white/10" />
+              <div className="h-4 w-56 rounded bg-white/10" />
+            </div>
+            <div className="h-10 w-44 rounded-md bg-white/15" />
+          </div>
+        </section>
+        <div className="mx-auto max-w-[1320px] px-4 py-7 sm:px-8">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 mb-6">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="rounded-xl border border-slate-200 bg-white p-4 space-y-2">
+                <div className="h-3 w-20 rounded bg-slate-100" />
+                <div className="h-7 w-12 rounded bg-slate-100" />
+              </div>
+            ))}
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 flex items-center justify-center min-h-48">
+            <div className="h-8 w-8 border-2 border-navy-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        </div>
       </div>
     )
   }
