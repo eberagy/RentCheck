@@ -27,12 +27,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { data: landlords },
     { data: properties },
     { data: cityRows },
+    { data: publicProfiles },
   ] = await Promise.all([
     supabase.from('landlords').select('slug, updated_at').order('review_count', { ascending: false }).limit(MAX_URLS_PER_SET),
     supabase.from('properties').select('id, updated_at').order('review_count', { ascending: false }).limit(MAX_URLS_PER_SET),
     // Cities with real coverage (≥5 landlords). Postgres-side aggregation —
     // PostgREST silently caps `select(...).limit(50000)` at 1000 rows.
     supabase.rpc('cities_with_landlords', { min_landlords: 5 }),
+    // Public renter profiles. Restrict to non-banned + opted-in via
+    // public_profile. The /u/[id] page emits noindex for any other state, so
+    // the only safe entries are these. Empty-review profiles are filtered
+    // below by joining against reviews.
+    supabase
+      .from('profiles')
+      .select('id, updated_at')
+      .eq('public_profile', true)
+      .eq('is_banned', false)
+      .limit(MAX_URLS_PER_SET),
   ])
 
   const staticPages: MetadataRoute.Sitemap = [
@@ -101,5 +112,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'weekly' as const,
   }))
 
-  return [...staticPages, ...blogPages, ...statePages, ...scenarioPages, ...cityPages, ...landlordPages, ...propertyPages]
+  const profilePages: MetadataRoute.Sitemap = (publicProfiles ?? []).map(p => ({
+    url: `${baseUrl}/u/${p.id}`,
+    lastModified: p.updated_at ? new Date(p.updated_at) : new Date(),
+    changeFrequency: 'monthly' as const,
+  }))
+
+  return [...staticPages, ...blogPages, ...statePages, ...scenarioPages, ...cityPages, ...landlordPages, ...propertyPages, ...profilePages]
 }

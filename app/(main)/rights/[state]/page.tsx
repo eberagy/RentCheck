@@ -14,9 +14,11 @@ import {
   Info,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import Script from 'next/script'
 import { US_STATES } from '@/types'
 import { getAllScenarios } from '@/lib/rights-scenarios'
 import { TrackPageView } from '@/components/analytics/TrackPageView'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 interface TenantRightsPageProps {
   params: { state: string }
@@ -361,8 +363,51 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
     },
   ]
 
+  // Schema.org JSON-LD: WebPage tagged as a tenant-rights guide for this
+  // specific state, plus a BreadcrumbList. Keeping the schema lean — every
+  // attempt to model the rights as `LegalService` ended up looking spammy
+  // (we're not the legal service, we're an editorial summary) so plain
+  // WebPage + breadcrumbs is the honest framing.
+  const siteUrl = canonicalSiteUrl()
+  const pagePath = `/rights/${stateAbbr.toLowerCase()}`
+  const webPageJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${siteUrl}${pagePath}#webpage`,
+    url: `${siteUrl}${pagePath}`,
+    name: `${stateInfo.name} Tenant Rights`,
+    description: `Renter rights and protections in ${stateInfo.name}: security deposits, notice to enter, repairs, eviction, and habitability.`,
+    inLanguage: 'en-US',
+    isPartOf: { '@type': 'WebSite', name: 'Vett', url: siteUrl },
+    about: { '@type': 'Thing', name: `${stateInfo.name} landlord-tenant law` },
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: getAllScenarios().map((s, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${siteUrl}/rights/${stateAbbr.toLowerCase()}/${s.slug}`,
+        name: s.title,
+      })),
+    },
+  })
+  const breadcrumbJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+      { '@type': 'ListItem', position: 2, name: 'Tenant Rights', item: `${siteUrl}/rights` },
+      { '@type': 'ListItem', position: 3, name: stateInfo.name, item: `${siteUrl}${pagePath}` },
+    ],
+  })
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
+      <Script id={`rights-${stateAbbr}-jsonld`} type="application/ld+json" strategy="beforeInteractive">
+        {webPageJsonLd}
+      </Script>
+      <Script id={`rights-${stateAbbr}-breadcrumb-jsonld`} type="application/ld+json" strategy="beforeInteractive">
+        {breadcrumbJsonLd}
+      </Script>
       <TrackPageView event="rights_page_viewed" properties={{ state: stateAbbr }} />
       {/* Breadcrumb */}
       <nav className="flex items-center gap-1 text-xs text-slate-500 mb-6">

@@ -10,6 +10,11 @@ interface ScenarioPageProps {
   params: { state: string; scenario: string }
 }
 
+// Scenario content is statically authored in lib/rights-scenarios; same
+// rationale as the parent /rights/[state] page — daily revalidate so an
+// edit doesn't require a redeploy to propagate.
+export const revalidate = 86400
+
 // Pre-render every scenario × every state (~7 × 51 = 357 pages). The
 // scenarios are deliberately generic so they apply to all 50+DC; the
 // per-state stylebar comes from the layout, not the body. Aligning with

@@ -34,16 +34,23 @@ export function WatchlistButton({
 
   useEffect(() => {
     if (!target) return
+    let cancelled = false
     supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) return
+      if (cancelled || !user) return
       const { data } = await supabase
         .from('watchlist')
         .select('id')
         .eq('user_id', user.id)
         .eq(target.col, target.id)
         .maybeSingle()
-      setWatching(!!data)
+      if (!cancelled) setWatching(!!data)
+    }).catch(() => {
+      // Network or auth lookup failed — leave the button in its default
+      // (unwatched) state. We deliberately don't toast here because this
+      // runs on every render of a public page; a network blip shouldn't
+      // surface noise to anonymous viewers who weren't trying to act.
     })
+    return () => { cancelled = true }
   }, [target?.col, target?.id]) // eslint-disable-line
 
   if (!target) return null
@@ -63,23 +70,27 @@ export function WatchlistButton({
     setLoading(true)
     try {
       if (watching) {
-        await supabase.from('watchlist').delete()
+        const { error } = await supabase.from('watchlist').delete()
           .eq('user_id', user.id)
           .eq(target.col, target.id)
+        if (error) throw error
         setWatching(false)
         toast.success('Alert removed')
         track('watchlist_removed', { [target.col]: target.id })
       } else {
-        await supabase
+        const { error } = await supabase
           .from('watchlist')
           .upsert(
             { user_id: user.id, [target.col]: target.id },
             { onConflict: target.conflict, ignoreDuplicates: true },
           )
+        if (error) throw error
         setWatching(true)
         toast.success(successMessage ?? 'You\'ll be notified of new violations or reviews')
         track('watchlist_added', { [target.col]: target.id })
       }
+    } catch {
+      toast.error("Couldn't update your alerts. Try again in a moment.")
     } finally {
       setLoading(false)
     }

@@ -9,6 +9,12 @@ interface BlogPostPageProps {
   params: { slug: string }
 }
 
+// Posts are file-system backed (lib/blog reads MDX from /content), so the
+// set is closed at build. revalidate guards against late edits / new posts
+// landing without a redeploy — the daily refresh picks them up on the next
+// hit after 24h.
+export const revalidate = 86400
+
 export async function generateStaticParams() {
   return getAllPosts().map(p => ({ slug: p.slug }))
 }
