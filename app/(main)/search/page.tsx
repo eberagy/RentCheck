@@ -588,7 +588,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             {priorityCities.map((priorityCity) => {
               const active = priorityCity.city === city && priorityCity.state === state && !q
               return (
-                <a
+                <Link
                   key={`${priorityCity.city}-${priorityCity.state}`}
                   href={`/search?city=${encodeURIComponent(priorityCity.city)}&state=${priorityCity.state}`}
                   className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
@@ -598,7 +598,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   }`}
                 >
                   {priorityCity.city}, {priorityCity.state}
-                </a>
+                </Link>
               )
             })}
           </div>
