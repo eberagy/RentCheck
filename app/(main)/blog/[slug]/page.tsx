@@ -103,16 +103,33 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     author: { '@type': 'Organization', name: post.author },
     publisher: {
       '@type': 'Organization',
+      '@id': `${siteUrl}/#organization`,
       name: 'Vett',
       url: siteUrl,
     },
     mainEntityOfPage: `${siteUrl}/blog/${post.slug}`,
   }
 
+  // Breadcrumb: Home → Blog → {post title}. Matches the same shape as
+  // /property/[id] and /landlord/[slug] so Google's sitelink heuristics
+  // see one consistent breadcrumb pattern across the site.
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${siteUrl}/blog` },
+      { '@type': 'ListItem', position: 3, name: post.title, item: `${siteUrl}/blog/${post.slug}` },
+    ],
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <script type="application/ld+json" suppressHydrationWarning>
         {JSON.stringify(articleJsonLd)}
+      </script>
+      <script type="application/ld+json" suppressHydrationWarning>
+        {JSON.stringify(breadcrumbJsonLd)}
       </script>
       <article className="mx-auto max-w-[720px] px-7 py-14">
         <Link href="/blog" className="mb-6 inline-flex items-center gap-1.5 text-[13px] text-slate-500 hover:text-slate-700">
