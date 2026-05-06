@@ -1,16 +1,23 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { dbError } from './api-errors'
 
-// captureException is dynamically imported inside lib/sentry.ts, so we don't
-// need to mock @sentry/nextjs here — the module's internal try/catch swallows
-// any failure when the Sentry SDK isn't loaded. We just exercise the helper's
-// public surface (status code, body, console hit, where-tag passthrough).
+// Mock lib/sentry BEFORE importing the helper under test, so dbError picks
+// up the spy when it imports captureException. vi.hoisted is required
+// because vi.mock factories are hoisted above all top-level code, so a
+// plain const declared above wouldn't be initialized yet at factory time.
+const { captureExceptionMock } = vi.hoisted(() => ({ captureExceptionMock: vi.fn() }))
+vi.mock('./sentry', () => ({
+  captureException: captureExceptionMock,
+  setUser: vi.fn(),
+}))
+
+import { dbError } from './api-errors'
 
 describe('dbError', () => {
   let consoleSpy: ReturnType<typeof vi.spyOn>
 
   beforeEach(() => {
     consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    captureExceptionMock.mockClear()
   })
 
   afterEach(() => {
@@ -28,6 +35,13 @@ describe('dbError', () => {
     const err = new Error('connection refused')
     dbError('flag:insert', err)
     expect(consoleSpy).toHaveBeenCalledWith('[db]', err)
+  })
+
+  it('forwards the error to Sentry with the where-tag (suffixed :db)', () => {
+    const err = new Error('insert failed')
+    dbError('reviews:insert', err)
+    expect(captureExceptionMock).toHaveBeenCalledTimes(1)
+    expect(captureExceptionMock).toHaveBeenCalledWith(err, { where: 'reviews:insert:db' })
   })
 
   it('does not leak the where-tag or original error message into the response body', async () => {
