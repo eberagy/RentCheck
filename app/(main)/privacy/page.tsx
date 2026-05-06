@@ -10,7 +10,7 @@ export default function PrivacyPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-12">
       <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Privacy Policy</h1>
-      <p className="text-sm text-slate-500 mb-8">Last updated: April 16, 2026</p>
+      <p className="text-sm text-slate-500 mb-8">Last updated: May 6, 2026</p>
 
       <div className="space-y-6 text-sm leading-relaxed">
         <section>
@@ -46,12 +46,17 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="text-lg font-semibold text-slate-900">Data Retention</h2>
-          <p className="text-slate-600">Account data is retained while your account is active. Reviews remain on the platform after account deletion unless a removal request is submitted. Contact <a href="mailto:privacy@vettrentals.com" className="text-navy-600 hover:underline">privacy@vettrentals.com</a> to request data deletion.</p>
+          <p className="text-slate-600">Account data is retained while your account is active. Reviews remain on the platform after account deletion unless a removal request is submitted. Lease verification documents are deleted within 30 days of upload (the underlying SHA-256 hash is retained for dedup; the document itself is purged).</p>
         </section>
 
         <section>
           <h2 className="text-lg font-semibold text-slate-900">Your Rights</h2>
-          <p className="text-slate-600">Depending on your jurisdiction, you may have rights to access, correct, or delete your personal data. Email <a href="mailto:privacy@vettrentals.com" className="text-navy-600 hover:underline">privacy@vettrentals.com</a> with your request. We will respond within 30 days.</p>
+          <p className="text-slate-600">Depending on your jurisdiction (CCPA, GDPR, and similar regimes), you have the right to access, correct, or delete your personal data.</p>
+          <ul className="mt-2 space-y-1 text-slate-600 list-disc list-inside">
+            <li><strong>Access:</strong> Sign in and visit your <a href="/dashboard/settings" className="text-navy-600 hover:underline">account settings</a> &rarr; <em>Download data</em>. Returns a JSON file with every row Vett stores about you (profile, reviews, watchlist, submissions, disputes, flags, saved searches, response templates, email leads).</li>
+            <li><strong>Delete:</strong> Same page &rarr; <em>Delete account</em>. Wipes your profile, watchlist, saved searches, and templates immediately. Reviews stay public unless you flag specific ones for removal.</li>
+            <li><strong>Correct or escalate:</strong> Email <a href="mailto:privacy@vettrentals.com" className="text-navy-600 hover:underline">privacy@vettrentals.com</a>. We respond within 30 days.</li>
+          </ul>
         </section>
 
         <section>
