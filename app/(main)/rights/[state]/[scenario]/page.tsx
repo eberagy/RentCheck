@@ -10,10 +10,15 @@ interface ScenarioPageProps {
   params: { state: string; scenario: string }
 }
 
+// Pre-render every scenario × every state (~7 × 51 = 357 pages). The
+// scenarios are deliberately generic so they apply to all 50+DC; the
+// per-state stylebar comes from the layout, not the body. Aligning with
+// /rights/[state]'s full state coverage so a Maryland-renter who lands
+// on /rights/wy/security-deposit-not-returned still gets a baked page.
 export async function generateStaticParams() {
-  // For now, pre-render the scenarios × the 19 states we actively curate.
-  const states = ['md', 'pa', 'sc', 'ny', 'ca', 'il', 'tx', 'wa', 'ma', 'fl', 'ga', 'nc', 'va', 'oh', 'mi', 'co', 'az', 'nv', 'or']
-  return states.flatMap(state => getAllScenarios().map(s => ({ state, scenario: s.slug })))
+  return US_STATES.flatMap(s =>
+    getAllScenarios().map(scenario => ({ state: s.abbr.toLowerCase(), scenario: scenario.slug }))
+  )
 }
 
 export async function generateMetadata({ params }: ScenarioPageProps): Promise<Metadata> {
