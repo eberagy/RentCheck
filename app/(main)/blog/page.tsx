@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Script from 'next/script'
 import { ArrowRight } from 'lucide-react'
 import { getAllPosts } from '@/lib/blog'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 export const metadata: Metadata = {
   title: 'Blog',
@@ -17,8 +19,30 @@ function formatDate(iso: string) {
 
 export default function BlogIndex() {
   const posts = getAllPosts()
+  const siteUrl = canonicalSiteUrl()
+  // Blog index JSON-LD — declares this as a Blog page with each post
+  // surfaced as a BlogPosting. Helps Google's article carousels pick up
+  // posts and link them with consistent date metadata.
+  const blogJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Blog',
+    name: 'Vett Blog',
+    url: `${siteUrl}/blog`,
+    publisher: { '@id': `${siteUrl}/#organization` },
+    blogPost: posts.map(p => ({
+      '@type': 'BlogPosting',
+      headline: p.title,
+      description: p.description,
+      url: `${siteUrl}/blog/${p.slug}`,
+      datePublished: p.publishedAt,
+      author: { '@type': 'Person', name: p.author },
+    })),
+  })
   return (
     <div className="min-h-screen bg-slate-50">
+      <Script id="blog-jsonld" type="application/ld+json" strategy="beforeInteractive">
+        {blogJsonLd}
+      </Script>
       <section className="border-b border-slate-200 bg-white px-7 py-16">
         <div className="mx-auto max-w-[820px]">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-teal-600">Blog</p>
