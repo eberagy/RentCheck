@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Script from 'next/script'
 import { Shield, Search, BarChart3, Scale, ArrowRight } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/service'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 // Refresh once per hour. The numbers come from the city_stats cache,
 // which is itself refreshed nightly via cron, so anything tighter would
@@ -64,16 +65,17 @@ function formatCount(n: number): string {
   return String(n)
 }
 
+const aboutSiteUrl = canonicalSiteUrl()
 const aboutJsonLd = JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'AboutPage',
   name: 'About Vett',
-  url: 'https://www.vettrentals.com/about',
+  url: `${aboutSiteUrl}/about`,
   mainEntity: {
     '@type': 'Organization',
-    '@id': 'https://www.vettrentals.com/#organization',
+    '@id': `${aboutSiteUrl}/#organization`,
     name: 'Vett',
-    url: 'https://www.vettrentals.com',
+    url: aboutSiteUrl,
     slogan: 'Know before you rent',
     description: 'Lease-verified renter reviews and public records on landlords nationwide.',
   },

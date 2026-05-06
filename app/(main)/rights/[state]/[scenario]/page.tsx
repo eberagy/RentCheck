@@ -42,14 +42,35 @@ export default async function ScenarioPage({ params }: ScenarioPageProps) {
     '@type': 'Article',
     headline: `${scenario.title} — ${stateInfo.name}`,
     description: scenario.summary,
-    publisher: { '@type': 'Organization', name: 'Vett', url: siteUrl },
+    publisher: {
+      '@type': 'Organization',
+      '@id': `${siteUrl}/#organization`,
+      name: 'Vett',
+      url: siteUrl,
+    },
     mainEntityOfPage: `${siteUrl}/rights/${p.state.toLowerCase()}/${p.scenario}`,
+  }
+
+  // Breadcrumb: Home → Rights → {state} → {scenario}. Mirrors the
+  // breadcrumb shape across the rest of the dynamic-route surface.
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: siteUrl },
+      { '@type': 'ListItem', position: 2, name: 'Tenant Rights', item: `${siteUrl}/rights` },
+      { '@type': 'ListItem', position: 3, name: stateInfo.name, item: `${siteUrl}/rights/${p.state.toLowerCase()}` },
+      { '@type': 'ListItem', position: 4, name: scenario.title, item: `${siteUrl}/rights/${p.state.toLowerCase()}/${p.scenario}` },
+    ],
   }
 
   return (
     <div className="min-h-screen bg-slate-50">
       <script type="application/ld+json" suppressHydrationWarning>
         {JSON.stringify(articleJsonLd)}
+      </script>
+      <script type="application/ld+json" suppressHydrationWarning>
+        {JSON.stringify(breadcrumbJsonLd)}
       </script>
 
       <article className="mx-auto max-w-[720px] px-7 py-12">
