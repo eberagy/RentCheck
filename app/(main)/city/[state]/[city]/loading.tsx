@@ -15,7 +15,7 @@ export default function CityLoading() {
           <Skeleton className="mt-5 h-14 w-2/3 bg-white/10" />
           <Skeleton className="mt-3 h-14 w-1/2 bg-white/10" />
           <Skeleton className="mt-6 h-5 w-full max-w-md bg-white/10" />
-          <div className="mt-8 grid grid-cols-2 gap-x-10 gap-y-6 sm:grid-cols-4" style={{ width: 'fit-content', maxWidth: '100%' }}>
+          <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4 sm:gap-x-10" style={{ width: 'fit-content', maxWidth: '100%' }}>
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="h-9 w-24 bg-white/10" />
