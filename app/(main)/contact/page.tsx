@@ -1,5 +1,7 @@
 import { Mail, Shield } from 'lucide-react'
 import type { Metadata } from 'next'
+import Script from 'next/script'
+import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 export const metadata: Metadata = {
   title: 'Contact — Vett',
@@ -26,8 +28,33 @@ const CONTACTS = [
 ]
 
 export default function ContactPage() {
+  const siteUrl = canonicalSiteUrl()
+  // ContactPage schema — tells Google this is the canonical contact
+  // surface for the Vett organization, with each routing email surfaced
+  // as a ContactPoint. Helps the org card in SERPs show real contacts
+  // instead of "no info available".
+  const contactJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'ContactPage',
+    url: `${siteUrl}/contact`,
+    mainEntity: {
+      '@type': 'Organization',
+      '@id': `${siteUrl}/#organization`,
+      name: 'Vett',
+      url: siteUrl,
+      contactPoint: CONTACTS.map(c => ({
+        '@type': 'ContactPoint',
+        contactType: c.label,
+        email: c.email,
+        availableLanguage: 'English',
+      })),
+    },
+  })
   return (
     <div className="max-w-2xl mx-auto px-4 py-16">
+      <Script id="contact-jsonld" type="application/ld+json" strategy="beforeInteractive">
+        {contactJsonLd}
+      </Script>
       <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Contact Us</h1>
       <p className="text-slate-600 mb-10">
         We read every message. Expect a response within 2–3 business days.
