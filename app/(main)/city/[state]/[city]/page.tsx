@@ -258,7 +258,7 @@ export default async function CityPage({ params }: CityPageProps) {
               { v: medianRating != null ? medianRating.toFixed(1) : '—', l: 'Median rating' },
             ]
             return (
-              <div className="mt-8 grid grid-cols-2 gap-x-10 gap-y-6 sm:grid-cols-4" style={{ width: 'fit-content', maxWidth: '100%' }}>
+              <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4 sm:gap-x-10" style={{ width: 'fit-content', maxWidth: '100%' }}>
                 {stats.map(s => (
                   <div key={s.l}>
                     <div className={`font-display text-[clamp(1.75rem,3.5vw,2.5rem)] font-semibold leading-none tracking-[-0.02em] tabular-nums ${s.v === '0' || s.v === '—' ? 'text-slate-500' : ''}`}>{s.v}</div>

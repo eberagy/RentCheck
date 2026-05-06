@@ -15,6 +15,8 @@ import {
   gradeBgLight,
   formatDate,
   formatRentalPeriod,
+  detectFileType,
+  pluralize,
 } from './utils'
 
 describe('cn', () => {
@@ -258,5 +260,69 @@ describe('formatRentalPeriod', () => {
 
   it('shows "Present" when end is missing even without isCurrent', () => {
     expect(formatRentalPeriod('2024-06-01')).toMatch(/^(May|Jun) 2024 – Present$/)
+  })
+})
+
+describe('detectFileType', () => {
+  // Helper: build a File with the given magic-byte prefix + a few junk bytes
+  // so we exercise the slice(0, 4) read path realistically.
+  function fileFrom(prefix: number[], padding: number = 8): File {
+    const bytes = new Uint8Array([...prefix, ...Array(padding).fill(0x00)])
+    return new File([bytes], 'check')
+  }
+
+  it('detects PDF (%PDF magic)', async () => {
+    expect(await detectFileType(fileFrom([0x25, 0x50, 0x44, 0x46]))).toBe('application/pdf')
+  })
+
+  it('detects JPEG (FFD8FF magic)', async () => {
+    expect(await detectFileType(fileFrom([0xff, 0xd8, 0xff, 0xe0]))).toBe('image/jpeg')
+    expect(await detectFileType(fileFrom([0xff, 0xd8, 0xff, 0xe1]))).toBe('image/jpeg')
+  })
+
+  it('detects PNG (\\x89PNG magic)', async () => {
+    expect(await detectFileType(fileFrom([0x89, 0x50, 0x4e, 0x47]))).toBe('image/png')
+  })
+
+  it('detects DOCX (PK\\x03\\x04 ZIP magic — used for OOXML)', async () => {
+    expect(await detectFileType(fileFrom([0x50, 0x4b, 0x03, 0x04]))).toBe(
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    )
+  })
+
+  it('returns null for unknown magic bytes', async () => {
+    // GIF89a — recognized format but not in our allowlist
+    expect(await detectFileType(fileFrom([0x47, 0x49, 0x46, 0x38]))).toBeNull()
+    // Plain text "abc" — no magic
+    expect(await detectFileType(fileFrom([0x61, 0x62, 0x63, 0x64]))).toBeNull()
+  })
+
+  it('returns null for empty file', async () => {
+    expect(await detectFileType(new File([new Uint8Array()], 'empty'))).toBeNull()
+  })
+
+  it('does not trust file extension — magic bytes win', async () => {
+    // A renamed-to-pdf file whose contents are a JPEG should detect as JPEG.
+    // The point of this helper is to prevent extension-spoofed uploads.
+    const lying = new File([new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00])], 'evil.pdf')
+    expect(await detectFileType(lying)).toBe('image/jpeg')
+  })
+})
+
+describe('pluralize', () => {
+  it('uses singular for 1', () => {
+    expect(pluralize(1, 'review')).toBe('1 review')
+    expect(pluralize(1, 'item', 'things')).toBe('1 item')
+  })
+
+  it('appends "s" by default for non-1 counts', () => {
+    expect(pluralize(0, 'review')).toBe('0 reviews')
+    expect(pluralize(2, 'review')).toBe('2 reviews')
+  })
+
+  it('uses the provided plural form when given (irregular plurals)', () => {
+    expect(pluralize(0, 'property', 'properties')).toBe('0 properties')
+    expect(pluralize(2, 'property', 'properties')).toBe('2 properties')
+    expect(pluralize(1, 'property', 'properties')).toBe('1 property')
   })
 })

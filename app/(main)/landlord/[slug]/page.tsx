@@ -555,7 +555,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                 <p className="mt-1 text-xs text-slate-400">Properties get linked automatically as public records are synced from government databases.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {(properties as Property[])
                   .map(prop => ({
                     prop,
