@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sendDisputeResolvedEmail } from '@/lib/email'
 import { logAdminAction } from '@/lib/audit'
@@ -50,7 +51,7 @@ export async function POST(req: NextRequest) {
       resolved_at: new Date().toISOString(),
     })
     .eq('id', disputeId)
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('admin/resolve-dispute:update', error)
 
   if (decision === 'record_removed' && recordId) {
     const { error: delErr } = await service.from('public_records').delete().eq('id', recordId)

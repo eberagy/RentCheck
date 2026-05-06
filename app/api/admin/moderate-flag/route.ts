@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { logAdminAction } from '@/lib/audit'
 import { z } from 'zod'
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
   if (action === 'dismiss') {
     if (!flagId) return NextResponse.json({ error: 'flagId required' }, { status: 422 })
     const { error } = await service.from('review_flags').delete().eq('id', flagId)
-    if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+    if (error) return dbError('admin/moderate-flag:dismiss', error)
     logAdminAction({
       adminId: admin.id,
       actionType: 'flag.dismissed',

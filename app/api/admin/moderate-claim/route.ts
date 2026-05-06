@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient } from '@/lib/supabase/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { sendClaimApprovedEmail, sendClaimRejectedEmail } from '@/lib/email'
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
     })
     .eq('id', claimId)
 
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('admin/moderate-claim:update', error)
 
   const landlord = (claim.landlord as unknown) as { id: string; display_name: string; slug: string } | null
   const claimer = (claim.claimer as unknown) as { full_name: string | null; email: string | null } | null

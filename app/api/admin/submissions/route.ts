@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 
 export async function GET(req: NextRequest) {
@@ -26,7 +27,7 @@ export async function GET(req: NextRequest) {
   if (filter !== 'all') q.eq('status', filter)
 
   const { data, error } = await q.limit(50)
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('admin/submissions:list', error)
 
   return NextResponse.json({ submissions: data ?? [] })
 }

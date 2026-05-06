@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sanitizeText } from '@/lib/sanitize'
 import { logAdminAction } from '@/lib/audit'
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
     .from('profiles')
     .update({ admin_notes: clean || null })
     .eq('id', parsed.data.userId)
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('admin/user-notes:update', error)
 
   logAdminAction({
     adminId: admin.id,

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { logAdminAction } from '@/lib/audit'
 import { z } from 'zod'
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
     .update({ is_banned: banned })
     .eq('id', userId)
 
-  if (error) { console.error("[db]", error); return NextResponse.json({ error: "Database error" }, { status: 500 }) }
+  if (error) return dbError('admin/ban-user:update', error)
 
   logAdminAction({
     adminId: admin.id,
