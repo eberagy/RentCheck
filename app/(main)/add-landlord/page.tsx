@@ -121,7 +121,7 @@ export default function AddLandlordPage() {
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-50">
           <Building2 className="h-7 w-7 text-navy-600" />
         </div>
-        <h1 className="text-2xl font-bold text-slate-900">Sign in to add a landlord</h1>
+        <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-[1.08] tracking-tight text-slate-900">Sign in to add a landlord</h1>
         <p className="mt-2 text-sm text-slate-500">
           You need an account to submit landlord profiles for review.
         </p>
@@ -143,7 +143,7 @@ export default function AddLandlordPage() {
         <div className="h-16 w-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <CheckCircle2 className="h-8 w-8 text-teal-600" />
         </div>
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">This landlord already exists!</h1>
+        <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">This landlord already exists</h1>
         <p className="text-slate-600 mb-6">We found a matching profile. View it or leave your review directly.</p>
         <div className="flex gap-3 justify-center flex-wrap">
           <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
@@ -163,7 +163,7 @@ export default function AddLandlordPage() {
         <div className="h-16 w-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <CheckCircle2 className="h-8 w-8 text-teal-600" />
         </div>
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Submission received!</h1>
+        <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Submission received</h1>
         <p className="text-slate-600 mb-2">Our founders will review and add this landlord to Vett within 1–2 business days.</p>
         <p className="text-sm text-slate-500 mb-8">Once approved, you&apos;ll be able to write a review.</p>
         <div className="flex gap-3 justify-center">
