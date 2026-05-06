@@ -6,7 +6,7 @@ export default function PropertyLoading() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="mx-auto max-w-[1320px] px-4 py-8 sm:px-8">
-        <Skeleton className="h-3.5 w-64 mb-4" />
+        <Skeleton className="h-3.5 w-64 mb-6" />
 
         <div className="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
           <div className="h-[3px] bg-gradient-to-r from-navy-600 via-sky-500 to-teal-500" />
