@@ -296,6 +296,7 @@ export async function generateMetadata({
   return {
     title: `${stateInfo.name} Tenant Rights`,
     description: `Know your rights as a renter in ${stateInfo.name}. Security deposits, notice to enter, repairs, eviction protections, and legal resources.`,
+    alternates: { canonical: `/rights/${stateInfo.abbr.toLowerCase()}` },
   }
 }
 
