@@ -29,6 +29,7 @@ const ACTION_LABELS: Record<string, string> = {
   'user.banned':            'Banned user',
   'user.unbanned':          'Unbanned user',
   'user.promoted':          'Changed user role',
+  'user.note_updated':      'Edited internal note',
 }
 
 const TONE: Record<string, string> = {
@@ -51,6 +52,7 @@ const TONE: Record<string, string> = {
   'user.banned':            'bg-red-50 text-red-700 border-red-200',
   'user.unbanned':          'bg-teal-50 text-teal-700 border-teal-200',
   'user.promoted':          'bg-purple-50 text-purple-700 border-purple-200',
+  'user.note_updated':      'bg-slate-50 text-slate-700 border-slate-200',
 }
 
 interface AuditRow {
