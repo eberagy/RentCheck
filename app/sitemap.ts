@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { createServiceClient } from '@/lib/supabase/service'
-import { COLLEGE_CITIES } from '@/types'
+import { COLLEGE_CITIES, US_STATES } from '@/types'
 import { getAllPosts } from '@/lib/blog'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
 
@@ -55,11 +55,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'monthly' as const,
   }))
 
-  const statePages: MetadataRoute.Sitemap = [
-    'md', 'pa', 'sc', 'ny', 'ca', 'il', 'tx', 'wa', 'ma',
-    'fl', 'ga', 'nc', 'va', 'oh', 'mi', 'co', 'az', 'nv', 'or',
-  ].map(state => ({
-    url: `${baseUrl}/rights/${state}`,
+  // Tenant-rights state pages — every US_STATES entry gets prerendered
+  // by /rights/[state] (see generateStaticParams there). Surface all 50+DC
+  // in the sitemap so Google indexes the full per-state corpus.
+  const statePages: MetadataRoute.Sitemap = US_STATES.map(s => ({
+    url: `${baseUrl}/rights/${s.abbr.toLowerCase()}`,
     changeFrequency: 'monthly' as const,
   }))
 
