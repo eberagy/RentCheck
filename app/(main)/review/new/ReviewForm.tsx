@@ -491,7 +491,7 @@ export default function ReviewForm() {
                   <span className="text-[13px] font-semibold text-slate-900">Overall rating <span className="text-red-600" aria-hidden="true">*</span></span>
                 </div>
                 <StarRating value={ratingOverall} onChange={v => setValue('ratingOverall', v)} size="lg" showLabel />
-                {errors.ratingOverall && <p className="text-xs text-red-600 mt-1">Please select a rating</p>}
+                {errors.ratingOverall && <p role="alert" className="text-xs text-red-600 mt-1">Please select a rating</p>}
               </div>
 
               {/* Property address */}
@@ -501,7 +501,7 @@ export default function ReviewForm() {
                   <span className="text-[11.5px] text-slate-400">The address you rented at</span>
                 </div>
                 <Input {...register('propertyAddress')} placeholder="123 Main St, Apt 4B, Pittsburgh, PA" autoComplete="street-address" aria-label="Property address" className="h-11 rounded-xl border-slate-200 text-[14px]" />
-                {errors.propertyAddress && <p className="text-xs text-red-600 mt-1">{errors.propertyAddress.message}</p>}
+                {errors.propertyAddress && <p role="alert" className="text-xs text-red-600 mt-1">{errors.propertyAddress.message}</p>}
               </div>
 
               {/* Title */}
@@ -512,7 +512,7 @@ export default function ReviewForm() {
                 </div>
                 <Input {...register('title')} placeholder="Summarize your experience" autoComplete="off" aria-label="Review headline" className="h-11 rounded-xl border-slate-200 text-[14px]" />
                 <div className="mt-1.5 text-[11.5px] text-slate-400">{watch('title')?.length ?? 0} / 150 characters</div>
-                {errors.title && <p className="text-xs text-red-600 mt-1">{errors.title.message}</p>}
+                {errors.title && <p role="alert" className="text-xs text-red-600 mt-1">{errors.title.message}</p>}
               </div>
 
               {/* Body */}
@@ -530,7 +530,7 @@ export default function ReviewForm() {
                   className="rounded-xl border-slate-200 text-[14px] leading-relaxed resize-y"
                 />
                 <div className="mt-1.5 text-[11.5px] text-slate-400">{watch('body')?.length ?? 0} / 2000 characters</div>
-                {errors.body && <p className="text-xs text-red-600 mt-1">{errors.body.message}</p>}
+                {errors.body && <p role="alert" className="text-xs text-red-600 mt-1">{errors.body.message}</p>}
               </div>
 
               {/* Tenancy dates */}
@@ -541,7 +541,7 @@ export default function ReviewForm() {
                     <span className="sr-only"> (required)</span>
                   </label>
                   <Input id="rental-start" type="month" {...register('rentalPeriodStart')} className="h-11 rounded-xl border-slate-200 text-[14px]" />
-                  {errors.rentalPeriodStart && <p className="text-xs text-red-600 mt-1">{errors.rentalPeriodStart.message}</p>}
+                  {errors.rentalPeriodStart && <p role="alert" className="text-xs text-red-600 mt-1">{errors.rentalPeriodStart.message}</p>}
                 </div>
                 <div>
                   <label htmlFor="rental-end" className="text-[13px] font-semibold text-slate-900 mb-2 block">
@@ -549,7 +549,7 @@ export default function ReviewForm() {
                     <span className="sr-only"> (required)</span>
                   </label>
                   <Input id="rental-end" type="month" {...register('rentalPeriodEnd')} className="h-11 rounded-xl border-slate-200 text-[14px]" disabled={watch('isCurrentTenant')} />
-                  {errors.rentalPeriodEnd && <p className="text-xs text-red-600 mt-1">{errors.rentalPeriodEnd.message}</p>}
+                  {errors.rentalPeriodEnd && <p role="alert" className="text-xs text-red-600 mt-1">{errors.rentalPeriodEnd.message}</p>}
                 </div>
                 <div className="flex items-end pb-2">
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -586,7 +586,7 @@ export default function ReviewForm() {
                     )
                   })}
                 </div>
-                {errors.wouldRentAgain && <p className="text-xs text-red-600 mt-1">{errors.wouldRentAgain.message}</p>}
+                {errors.wouldRentAgain && <p role="alert" className="text-xs text-red-600 mt-1">{errors.wouldRentAgain.message}</p>}
               </div>
 
               {/* Sub-ratings */}
@@ -604,7 +604,7 @@ export default function ReviewForm() {
                       onChange={v => setValue(key as keyof ReviewFormData, v as never)}
                       size="sm"
                     />
-                    {errors[key as keyof ReviewFormData] && <p className="text-xs text-red-600 mt-1">Please select a rating</p>}
+                    {errors[key as keyof ReviewFormData] && <p role="alert" className="text-xs text-red-600 mt-1">Please select a rating</p>}
                   </div>
                 ))}
               </div>
@@ -683,14 +683,14 @@ export default function ReviewForm() {
                   I confirm this review is based on my genuine experience as a tenant or former tenant of this landlord.
                 </span>
               </label>
-              {errors.confirmedGenuine && <p className="text-xs text-red-600 ml-6">{errors.confirmedGenuine.message}</p>}
+              {errors.confirmedGenuine && <p role="alert" className="text-xs text-red-600 ml-6">{errors.confirmedGenuine.message}</p>}
               <label className="flex items-start gap-3 cursor-pointer">
                 <input type="checkbox" {...register('confirmedLiability')} className="mt-0.5 rounded accent-teal" />
                 <span className="text-[13px] text-slate-700 leading-relaxed">
                   I understand that submitting a false or defamatory review may result in removal of my account and potential legal liability.
                 </span>
               </label>
-              {errors.confirmedLiability && <p className="text-xs text-red-600 ml-6">{errors.confirmedLiability.message}</p>}
+              {errors.confirmedLiability && <p role="alert" className="text-xs text-red-600 ml-6">{errors.confirmedLiability.message}</p>}
             </div>
 
             <p className="text-[12px] text-slate-400 mb-7">

@@ -261,7 +261,7 @@ export default function AdminDataSyncPage() {
                             <span className="text-slate-400">{latest.records_skipped?.toLocaleString()} skipped</span>
                           )}
                           {(latest.status === 'error' || (latest.status === 'success' && latest.error_message)) && latest.error_message && (
-                            <span className="text-red-500 truncate max-w-xs" title={latest.error_message}>{latest.error_message}</span>
+                            <span role="alert" className="text-red-500 truncate max-w-xs" title={latest.error_message}>{latest.error_message}</span>
                           )}
                         </div>
                       ) : (
