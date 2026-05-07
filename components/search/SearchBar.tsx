@@ -149,8 +149,8 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
                 result.result_type === 'landlord' ? 'bg-navy-50' : 'bg-teal-50'
               )}>
                 {result.result_type === 'landlord'
-                  ? <Building2 className="h-3.5 w-3.5 text-navy-600" />
-                  : <MapPin className="h-3.5 w-3.5 text-teal-600" />
+                  ? <Building2 className="h-3.5 w-3.5 text-navy-600" aria-hidden="true" />
+                  : <MapPin className="h-3.5 w-3.5 text-teal-600" aria-hidden="true" />
                 }
               </div>
               <div className="flex-1 min-w-0">

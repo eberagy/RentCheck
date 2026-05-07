@@ -216,7 +216,7 @@ function RecordRow({ record }: { record: EnrichedRecord }) {
       <div className="ml-2 mt-2.5 flex flex-wrap gap-1.5">
         {record.filed_date && (
           <MetaPill
-            icon={<Calendar className="h-3 w-3" />}
+            icon={<Calendar className="h-3 w-3" aria-hidden="true" />}
             label="Filed"
             value={formatDate(record.filed_date)}
           />
@@ -230,7 +230,7 @@ function RecordRow({ record }: { record: EnrichedRecord }) {
         )}
         {details.correctByDate && (
           <MetaPill
-            icon={<Clock className="h-3 w-3" />}
+            icon={<Clock className="h-3 w-3" aria-hidden="true" />}
             label="Correct by"
             value={formatDate(details.correctByDate)}
             tone={overdue ? 'red' : open ? 'amber' : 'neutral'}
@@ -238,7 +238,7 @@ function RecordRow({ record }: { record: EnrichedRecord }) {
         )}
         {record.closed_date && (
           <MetaPill
-            icon={<Calendar className="h-3 w-3" />}
+            icon={<Calendar className="h-3 w-3" aria-hidden="true" />}
             label="Closed"
             value={formatDate(record.closed_date)}
             tone="teal"
@@ -246,7 +246,7 @@ function RecordRow({ record }: { record: EnrichedRecord }) {
         )}
         {details.daysOpen !== null && details.daysOpen !== undefined && open && (
           <MetaPill
-            icon={<Clock className="h-3 w-3" />}
+            icon={<Clock className="h-3 w-3" aria-hidden="true" />}
             label="Open"
             value={`${details.daysOpen}d`}
             tone="amber"
@@ -443,14 +443,14 @@ export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propert
             tone="rose"
             label="Open"
             value={totals.open}
-            icon={<AlertTriangle className="h-3.5 w-3.5" />}
+            icon={<AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />}
             hint="Active issues"
           />
           <SummaryStat
             tone="amber"
             label="Overdue"
             value={totals.overdue}
-            icon={<Clock className="h-3.5 w-3.5" />}
+            icon={<Clock className="h-3.5 w-3.5" aria-hidden="true" />}
             hint="Past correct-by date"
           />
           <SummaryStat
@@ -464,7 +464,7 @@ export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propert
             tone="neutral"
             label="Total"
             value={records.length}
-            icon={<FileText className="h-3.5 w-3.5" />}
+            icon={<FileText className="h-3.5 w-3.5" aria-hidden="true" />}
             hint="On file"
           />
         </div>
@@ -509,7 +509,7 @@ export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propert
 
       {isUnclaimed && records.length > 0 && (
         <div className="flex items-start gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-3">
-          <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" />
+          <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" aria-hidden="true" />
           <p className="text-[13px] leading-6 text-amber-900">
             These public records are associated with{' '}
             <strong>{propertyAddress ?? 'this landlord'}</strong> but the owner hasn&apos;t claimed

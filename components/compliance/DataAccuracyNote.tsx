@@ -13,7 +13,7 @@ export function DataAccuracyNote({ source, lastSynced, recordId }: DataAccuracyN
   const sourceLabel = SOURCE_LABELS[source] ?? source
   return (
     <span className="flex items-start gap-1 text-xs text-slate-400 mt-1">
-      <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" />
+      <AlertCircle className="h-3 w-3 mt-0.5 flex-shrink-0" aria-hidden="true" />
       <span>
         Source: {sourceLabel}. Last updated: {formatDate(lastSynced)}. Data may not reflect recent changes.{' '}
         {recordId && (

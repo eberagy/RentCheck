@@ -509,7 +509,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
       <Card className="border-navy-200 bg-navy-50 mb-8 shadow-none">
         <CardHeader className="pb-3 px-5 pt-5">
           <CardTitle as="h2" className="text-sm font-bold text-navy-900 flex items-center gap-2">
-            <ExternalLink className="h-4 w-4" />
+            <ExternalLink className="h-4 w-4" aria-hidden="true" />
             Legal Resources in {stateInfo.name}
           </CardTitle>
         </CardHeader>

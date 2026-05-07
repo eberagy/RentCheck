@@ -186,7 +186,7 @@ export default function LoginClient() {
 
           {magicSent ? (
             <div className="rounded-xl border border-teal-200 bg-teal-50 p-6 text-center">
-              <Mail className="mx-auto mb-3 h-8 w-8 text-teal-600" />
+              <Mail className="mx-auto mb-3 h-8 w-8 text-teal-600" aria-hidden="true" />
               <p className="font-semibold text-teal-800">Check your inbox</p>
               <p className="mt-1 text-sm text-teal-700">
                 We sent a magic link to <span className="font-medium">{email}</span>.

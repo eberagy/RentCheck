@@ -18,13 +18,13 @@ const ROLE_OPTIONS: { value: Extract<UserType, 'renter' | 'landlord'>; label: st
     value: 'renter',
     label: 'Renter',
     description: 'I want to research landlords and read reviews before signing a lease.',
-    icon: <User className="h-8 w-8" />,
+    icon: <User className="h-8 w-8" aria-hidden="true" />,
   },
   {
     value: 'landlord',
     label: 'Landlord',
     description: 'I manage rental properties and want to build my verified reputation.',
-    icon: <Building2 className="h-8 w-8" />,
+    icon: <Building2 className="h-8 w-8" aria-hidden="true" />,
   },
 ]
 
@@ -162,7 +162,7 @@ export default function OnboardingPage() {
                 className="w-full h-12 bg-navy-700 hover:bg-navy-800 text-white font-semibold text-base flex items-center justify-center gap-2"
               >
                 Continue
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Button>
             </div>
           )}
@@ -172,7 +172,7 @@ export default function OnboardingPage() {
             <div className="space-y-8">
               <div className="text-center">
                 <div className="inline-flex items-center justify-center h-14 w-14 rounded-full bg-navy-100 mb-4">
-                  <MapPin className="h-7 w-7 text-navy-700" />
+                  <MapPin className="h-7 w-7 text-navy-700" aria-hidden="true" />
                 </div>
                 <h1 className="text-3xl font-extrabold text-navy-900 tracking-tight">
                   Which city are you in?
@@ -233,7 +233,7 @@ export default function OnboardingPage() {
                   ) : (
                     <>
                       Finish setup
-                      <ArrowRight className="h-4 w-4" />
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
                     </>
                   )}
                 </Button>

@@ -107,7 +107,7 @@ export function Navbar() {
                       {(profile?.full_name ?? user.email ?? 'U')[0]?.toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <ChevronDown className={cn('h-3 w-3', isDark ? 'text-slate-400' : 'text-slate-500')} />
+                  <ChevronDown className={cn('h-3 w-3', isDark ? 'text-slate-400' : 'text-slate-500')} aria-hidden="true" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
                   <div className="px-3 py-2 text-xs text-slate-500 truncate">{user.email}</div>

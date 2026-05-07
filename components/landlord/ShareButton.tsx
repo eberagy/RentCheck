@@ -57,8 +57,8 @@ export function ShareButton({ name }: ShareButtonProps) {
       className="text-slate-600 border-slate-200 hover:border-slate-300"
     >
       {copied
-        ? <><Check className="h-3.5 w-3.5 mr-1.5 text-teal-600" /> Copied!</>
-        : <><Share2 className="h-3.5 w-3.5 mr-1.5" /> Share</>
+        ? <><Check className="h-3.5 w-3.5 mr-1.5 text-teal-600" aria-hidden="true" /> Copied!</>
+        : <><Share2 className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" /> Share</>
       }
     </Button>
   )
