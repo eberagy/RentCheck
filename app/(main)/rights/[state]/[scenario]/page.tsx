@@ -131,9 +131,10 @@ export default async function ScenarioPage({ params }: ScenarioPageProps) {
                     href={r.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[14px] text-teal-700 hover:underline"
+                    aria-label={`${r.label} (opens in new tab)`}
+                    className="inline-flex items-center gap-1 text-[14px] text-teal-700 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
                   >
-                    {r.label} <ArrowUpRight className="h-3.5 w-3.5" />
+                    {r.label} <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
                   </a>
                 </li>
               ))}

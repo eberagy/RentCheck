@@ -521,9 +521,10 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
                   href={r.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-sm text-navy-700 hover:text-navy-900 hover:underline transition-colors"
+                  aria-label={`${r.label} (opens in new tab)`}
+                  className="flex items-center gap-2 text-sm text-navy-700 hover:text-navy-900 hover:underline transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                 >
-                  <ExternalLink className="h-3.5 w-3.5 flex-shrink-0" />
+                  <ExternalLink className="h-3.5 w-3.5 flex-shrink-0" aria-hidden="true" />
                   {r.label}
                 </a>
               </li>
