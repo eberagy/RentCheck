@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Share2, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 
 interface ShareButtonProps {
   name: string
@@ -29,10 +30,23 @@ export function ShareButton({ name }: ShareButtonProps) {
         // User cancelled share or not supported — fall through to clipboard
       }
     }
-    await navigator.clipboard.writeText(url)
-    setCopied(true)
-    if (timerRef.current) clearTimeout(timerRef.current)
-    timerRef.current = setTimeout(() => setCopied(false), 2000)
+    // navigator.clipboard requires a secure context (HTTPS or localhost) and
+    // can reject on permission denial or older browsers. Without this guard
+    // the click handler would throw an unhandled rejection and the user
+    // would see no feedback — they'd just stare at the button and assume
+    // share is broken.
+    try {
+      if (!navigator.clipboard) {
+        toast.message('Tap and hold the URL bar to copy this link.')
+        return
+      }
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      if (timerRef.current) clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(() => setCopied(false), 2000)
+    } catch {
+      toast.error("Couldn't copy the link — please copy from the address bar.")
+    }
   }
 
   return (
