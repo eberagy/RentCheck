@@ -72,8 +72,8 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="mx-auto max-w-[1100px] px-6 py-10">
-        <Link href="/dashboard" className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-slate-500 hover:text-slate-700">
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to dashboard
+        <Link href="/dashboard" className="mb-5 inline-flex items-center gap-1.5 text-[13px] text-slate-500 hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Back to dashboard
         </Link>
 
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">

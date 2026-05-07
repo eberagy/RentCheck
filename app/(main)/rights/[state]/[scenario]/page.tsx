@@ -160,9 +160,9 @@ export default async function ScenarioPage({ params }: ScenarioPageProps) {
 
         <Link
           href={`/rights/${p.state.toLowerCase()}`}
-          className="mt-8 inline-flex items-center gap-1.5 text-[13px] text-slate-500 hover:text-slate-700"
+          className="mt-8 inline-flex items-center gap-1.5 text-[13px] text-slate-500 hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
         >
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to {stateInfo.name} rights
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Back to {stateInfo.name} rights
         </Link>
       </article>
     </div>

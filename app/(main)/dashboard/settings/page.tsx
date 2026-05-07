@@ -152,8 +152,8 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6">
-        <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+      <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back to Dashboard
       </Link>
 
       <h1 className="font-display text-[clamp(1.9rem,4vw,2.75rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Account Settings</h1>
