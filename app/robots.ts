@@ -9,8 +9,11 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        // /landlord-portal and /landlord-portal/claim are public
-        // marketing pages; only the authenticated subpaths are private.
+        // Also robots: noindex via layout metadata: /landlord-portal,
+        // /onboarding, /dashboard. They're SPA-rendered so SSR HTML is
+        // a skeleton — keeping them out of robots.txt would still let
+        // crawlers fetch them but the noindex meta tells Google to drop
+        // them from the index.
         disallow: ['/admin/', '/dashboard/', '/api/', '/auth/'],
       },
       {
