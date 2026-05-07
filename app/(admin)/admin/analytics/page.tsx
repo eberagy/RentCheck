@@ -122,10 +122,15 @@ export default async function AdminAnalyticsPage() {
 
       {/* Volume by weekday */}
       <div className="rounded-2xl border border-slate-200 bg-white p-5 mb-6">
-        <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
+        <div id="weekday-histogram-label" className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">
           Reviews submitted by day of week (last 30d)
         </div>
-        <div className="grid grid-cols-7 gap-2 items-end h-32">
+        <div
+          role="img"
+          aria-labelledby="weekday-histogram-label"
+          aria-describedby="weekday-histogram-desc"
+          className="grid grid-cols-7 gap-2 items-end h-32"
+        >
           {dayBuckets.map((count, i) => (
             <div key={i} className="flex flex-col items-center gap-1.5">
               <div className="w-full flex-1 flex items-end">
@@ -133,13 +138,17 @@ export default async function AdminAnalyticsPage() {
                   className="w-full rounded-md bg-navy-500"
                   style={{ height: `${(count / maxBucket) * 100}%`, minHeight: count > 0 ? 4 : 0 }}
                   title={`${count} reviews`}
+                  aria-hidden="true"
                 />
               </div>
-              <div className="text-[11px] text-slate-500">{WEEKDAYS[i]}</div>
-              <div className="text-[10.5px] font-semibold tabular-nums text-slate-700">{count}</div>
+              <div className="text-[11px] text-slate-500" aria-hidden="true">{WEEKDAYS[i]}</div>
+              <div className="text-[10.5px] font-semibold tabular-nums text-slate-700" aria-hidden="true">{count}</div>
             </div>
           ))}
         </div>
+        <p id="weekday-histogram-desc" className="sr-only">
+          {WEEKDAYS.map((d, i) => `${d}: ${dayBuckets[i] ?? 0} review${dayBuckets[i] === 1 ? '' : 's'}`).join('. ')}.
+        </p>
       </div>
 
       {/* Totals */}
