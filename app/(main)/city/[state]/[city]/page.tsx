@@ -304,7 +304,7 @@ export default async function CityPage({ params }: CityPageProps) {
                 <Link
                   key={l.id}
                   href={l.slug ? `/landlord/${l.slug}` : '/search'}
-                  className="grid items-center gap-3.5 rounded-[14px] border border-slate-100 bg-slate-50 p-3 transition-colors hover:border-slate-200"
+                  className="grid items-center gap-3.5 rounded-[14px] border border-slate-100 bg-slate-50 p-3 transition-colors hover:border-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                   style={{ gridTemplateColumns: '24px auto 1fr auto' }}
                 >
                   <div className="text-[14px] font-extrabold text-slate-400">{i + 1}</div>
