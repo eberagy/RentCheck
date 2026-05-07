@@ -133,7 +133,7 @@ export default function TenantRightsIndexPage() {
               <Link
                 key={state.abbr}
                 href={`/rights/${state.abbr.toLowerCase()}`}
-                className="group flex items-center justify-between rounded-xl border border-navy-200 bg-white p-4 transition-[border-color,box-shadow] duration-200 hover:border-navy-400 hover:shadow-md"
+                className="group flex items-center justify-between rounded-xl border border-navy-200 bg-white p-4 transition-[border-color,box-shadow] duration-200 hover:border-navy-400 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
               >
                 <div>
                   <div className="flex items-center gap-2 mb-0.5">
@@ -157,7 +157,7 @@ export default function TenantRightsIndexPage() {
               <Link
                 key={state.abbr}
                 href={`/rights/${state.abbr.toLowerCase()}`}
-                className="group flex items-center justify-between rounded-[14px] border border-slate-200 bg-slate-50 p-3 transition-[border-color,background-color] duration-200 hover:border-slate-300 hover:bg-white"
+                className="group flex items-center justify-between rounded-[14px] border border-slate-200 bg-slate-50 p-3 transition-[border-color,background-color] duration-200 hover:border-slate-300 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
               >
                 <div>
                   <p className="text-sm font-bold text-slate-600 group-hover:text-slate-800">{state.abbr}</p>
