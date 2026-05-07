@@ -35,7 +35,7 @@ export default async function UnsubscribePage({ searchParams }: UnsubscribePageP
           </h1>
           <p className="mt-3 text-[14px] leading-relaxed text-slate-500">
             Sign in to manage your email preferences directly, or email{' '}
-            <a href="mailto:support@vettrentals.com" className="underline hover:text-slate-700">support@vettrentals.com</a> and we&apos;ll do it manually.
+            <a href="mailto:support@vettrentals.com" className="underline hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">support@vettrentals.com</a> and we&apos;ll do it manually.
           </p>
           <Button asChild className="mt-6 rounded-full bg-navy-600 px-6 hover:bg-navy-700 text-white">
             <Link href="/login?redirectTo=/dashboard/settings">Sign in to manage emails</Link>
@@ -62,7 +62,7 @@ export default async function UnsubscribePage({ searchParams }: UnsubscribePageP
           </h1>
           <p className="mt-3 text-[15px] leading-relaxed text-slate-500">
             Couldn&apos;t update your preferences. Email{' '}
-            <a href="mailto:support@vettrentals.com" className="underline">support@vettrentals.com</a>{' '}
+            <a href="mailto:support@vettrentals.com" className="underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">support@vettrentals.com</a>{' '}
             and we&apos;ll unsubscribe you by hand within 24 hours.
           </p>
         </div>
@@ -126,7 +126,7 @@ export default async function UnsubscribePage({ searchParams }: UnsubscribePageP
 
         <p className="mt-10 text-xs text-slate-400">
           Still getting emails you didn&apos;t sign up for? Email{' '}
-          <a href="mailto:support@vettrentals.com" className="underline underline-offset-2 hover:text-slate-600">support@vettrentals.com</a>
+          <a href="mailto:support@vettrentals.com" className="underline underline-offset-2 hover:text-slate-600 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">support@vettrentals.com</a>
           {' '}and we&apos;ll unsubscribe you by hand.
         </p>
       </div>

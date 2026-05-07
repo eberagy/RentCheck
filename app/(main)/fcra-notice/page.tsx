@@ -60,7 +60,7 @@ export default function FcraNoticePage() {
 
         <section>
           <h2 className="text-base font-semibold text-slate-900 mb-2">Questions</h2>
-          <p>For questions about this notice, contact <a href="mailto:legal@vettrentals.com" className="text-navy-600 hover:underline">legal@vettrentals.com</a>.</p>
+          <p>For questions about this notice, contact <a href="mailto:legal@vettrentals.com" className="text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">legal@vettrentals.com</a>.</p>
         </section>
       </div>
     </div>
