@@ -420,7 +420,7 @@ function AdminNotesEditor({ user, onSaved }: { user: UserProfile; onSaved: (next
         className="w-full rounded-md border border-amber-200 bg-white px-2.5 py-2 text-[13px] text-slate-900 focus:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-100"
       />
       <div className="mt-2 flex items-center justify-between">
-        <span className="text-[11px] text-slate-400">{value.length}/4000</span>
+        <span aria-hidden="true" className="text-[11px] text-slate-400">{value.length}/4000</span>
         <Button
           size="sm"
           variant="outline"

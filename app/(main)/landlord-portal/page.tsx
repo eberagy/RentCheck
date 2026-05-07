@@ -485,7 +485,7 @@ export default function LandlordPortalPage() {
                       placeholder="Who you are, how renters can reach you for maintenance, your response expectations."
                       className="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-100"
                     />
-                    <p className="mt-1 text-[11px] text-slate-400">{profileDescription.length}/1200</p>
+                    <p aria-hidden="true" className="mt-1 text-[11px] text-slate-400">{profileDescription.length}/1200</p>
                   </label>
                 </div>
               )}
@@ -568,7 +568,7 @@ export default function LandlordPortalPage() {
                           autoComplete="off"
                         />
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] text-slate-400">{newTplBody.length}/1000</span>
+                          <span aria-hidden="true" className="text-[11px] text-slate-400">{newTplBody.length}/1000</span>
                           <Button
                             size="sm"
                             className="rounded-full bg-teal text-white hover:bg-teal-500"

@@ -249,7 +249,7 @@ function EditReviewInline({ review, onCancel, onSaved }: {
             autoComplete="off"
             className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-100"
           />
-          <span className="mt-1 text-[11px] text-slate-400">{title.length}/150</span>
+          <span aria-hidden="true" className="mt-1 text-[11px] text-slate-400">{title.length}/150</span>
         </label>
         <label className="block">
           <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Review</span>
@@ -261,7 +261,7 @@ function EditReviewInline({ review, onCancel, onSaved }: {
             autoComplete="off"
             className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-100"
           />
-          <span className="mt-1 text-[11px] text-slate-400">{body.length}/2000</span>
+          <span aria-hidden="true" className="mt-1 text-[11px] text-slate-400">{body.length}/2000</span>
         </label>
         <div className="flex flex-wrap items-center gap-5">
           <div>

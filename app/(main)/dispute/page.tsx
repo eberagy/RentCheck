@@ -155,7 +155,7 @@ function DisputeForm() {
           autoComplete="off"
           className="text-sm resize-none"
         />
-        <p className="text-xs text-slate-400 text-right mt-0.5">{detail.length}/2000</p>
+        <p aria-hidden="true" className="text-xs text-slate-400 text-right mt-0.5">{detail.length}/2000</p>
       </div>
 
       <div>
