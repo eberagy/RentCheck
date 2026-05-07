@@ -390,7 +390,9 @@ export default async function HomePage() {
                       <div className="flex-shrink-0 text-right">
                         <StarDisplay rating={review.rating_overall} />
                         <p className="mt-1 text-[11px] text-slate-400">
-                          {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                          <time dateTime={review.created_at}>
+                            {new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                          </time>
                         </p>
                       </div>
                     </div>
