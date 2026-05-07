@@ -90,7 +90,7 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
 
         {items.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-16 text-center">
-            <Bell className="mx-auto mb-3 h-8 w-8 text-slate-300" />
+            <Bell className="mx-auto mb-3 h-8 w-8 text-slate-300" aria-hidden="true" />
             <p className="text-sm font-semibold text-slate-700">Your watchlist is empty</p>
             <p className="mt-1 text-[13px] text-slate-500">Find a landlord and tap &ldquo;Watch Landlord&rdquo; on their profile to track updates.</p>
             <div className="mt-4">
@@ -169,7 +169,7 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
                       <div className="flex flex-shrink-0 items-center gap-1.5">
                         <Button asChild variant="outline" size="sm" className="h-8 rounded-full">
                           <Link href={`/landlord/${l.slug}`}>
-                            <Eye className="mr-1 h-3.5 w-3.5" /> View
+                            <Eye className="mr-1 h-3.5 w-3.5" aria-hidden="true" /> View
                           </Link>
                         </Button>
                         <Button
@@ -179,7 +179,7 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
                           onClick={() => toggleNotify(row)}
                           disabled={processing === row.id}
                         >
-                          {row.notify_email ? <Bell className="mr-1 h-3.5 w-3.5" /> : <BellOff className="mr-1 h-3.5 w-3.5" />}
+                          {row.notify_email ? <Bell className="mr-1 h-3.5 w-3.5" aria-hidden="true" /> : <BellOff className="mr-1 h-3.5 w-3.5" aria-hidden="true" />}
                           {row.notify_email ? 'Alerts on' : 'Alerts off'}
                         </Button>
                         <Button
@@ -189,7 +189,7 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
                           onClick={() => remove(row)}
                           disabled={processing === row.id}
                         >
-                          <Trash2 className="mr-1 h-3.5 w-3.5" />
+                          <Trash2 className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
                           Remove
                         </Button>
                       </div>

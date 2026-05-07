@@ -64,7 +64,7 @@ export default function ContactPage() {
         {CONTACTS.map(({ label, email, description }) => (
           <div key={email} className="flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-colors hover:border-navy-300">
             <div className="h-10 w-10 rounded-2xl bg-navy-50 ring-1 ring-navy-100 flex items-center justify-center flex-shrink-0 text-navy-600">
-              <Mail className="h-5 w-5" />
+              <Mail className="h-5 w-5" aria-hidden="true" />
             </div>
             <div>
               <p className="font-semibold text-slate-900 text-sm">{label}</p>
