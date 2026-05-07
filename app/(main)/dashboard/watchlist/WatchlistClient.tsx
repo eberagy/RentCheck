@@ -163,7 +163,7 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
                               {l.eviction_count} eviction{l.eviction_count === 1 ? '' : 's'}
                             </span>
                           )}
-                          <span className="text-slate-400">Added {formatDate(row.created_at)}</span>
+                          <span className="text-slate-400">Added <time dateTime={row.created_at}>{formatDate(row.created_at)}</time></span>
                         </div>
                       </div>
                       <div className="flex flex-shrink-0 items-center gap-1.5">

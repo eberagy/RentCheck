@@ -127,7 +127,7 @@ export function MyReviewsClient({ reviews, statusFilter }: { reviews: MyReviewIt
                             Lease verified
                           </Badge>
                         )}
-                        <span className="text-[12px] text-slate-400">{formatDate(r.created_at)}</span>
+                        <time className="text-[12px] text-slate-400" dateTime={r.created_at}>{formatDate(r.created_at)}</time>
                       </div>
                       <h2 className="text-[16px] font-bold text-slate-900">{r.title}</h2>
                       <p className="mt-1 text-[13.5px] leading-relaxed text-slate-600 line-clamp-3">{r.body}</p>

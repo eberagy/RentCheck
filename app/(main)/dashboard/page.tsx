@@ -218,7 +218,7 @@ export default async function DashboardPage() {
                       <div className="min-w-0">
                         <p className="truncate text-[13px] font-bold text-slate-900">{r.title}</p>
                         <p className="mt-0.5 flex items-center gap-2 text-[12px] text-slate-500 truncate">
-                          <span className="truncate">{landlord?.display_name ?? 'Unknown'} &middot; {formatDate(r.created_at)}</span>
+                          <span className="truncate">{landlord?.display_name ?? 'Unknown'} &middot; <time dateTime={r.created_at}>{formatDate(r.created_at)}</time></span>
                           <ReviewPrivacyToggle reviewId={r.id} initialAnonymous={!!r.is_anonymous} />
                         </p>
                       </div>
@@ -258,7 +258,7 @@ export default async function DashboardPage() {
                     <div className="min-w-0">
                       <p className="truncate text-[13px] font-bold text-slate-900">{s.display_name}</p>
                       <p className="mt-0.5 text-[12px] text-slate-500 truncate">
-                        {[s.city, s.state_abbr].filter(Boolean).join(', ')} &middot; {formatDate(s.created_at)}
+                        {[s.city, s.state_abbr].filter(Boolean).join(', ')} &middot; <time dateTime={s.created_at}>{formatDate(s.created_at)}</time>
                       </p>
                     </div>
                     <Badge className={`text-[11px] border capitalize ${STATUS_STYLES[s.status] ?? 'text-slate-500 border-slate-200'}`}>
@@ -285,7 +285,9 @@ export default async function DashboardPage() {
                   // Use the canonical-city helper so "New York City" resolves
                   // to /city/ny/new-york (matches the city pages we generate).
                   const href = cityPagePath(s.city, s.state_abbr)
-                  const last = s.last_notified_at ? `Last digest ${formatDate(s.last_notified_at)}` : 'No digest sent yet'
+                  const last = s.last_notified_at
+                    ? <>Last digest <time dateTime={s.last_notified_at}>{formatDate(s.last_notified_at)}</time></>
+                    : 'No digest sent yet'
                   return (
                     <div
                       key={s.id}

@@ -364,7 +364,7 @@ export default function LandlordPortalPage() {
                 <p className="mt-1 text-sm leading-relaxed text-amber-800">
                   Your claim for <strong>{(claim.landlord as unknown as Landlord)?.display_name ?? 'your profile'}</strong> is being reviewed. We typically respond within 48 hours.
                 </p>
-                <p className="mt-2 text-xs text-amber-600">Submitted {formatDate(claim.created_at)}</p>
+                <p className="mt-2 text-xs text-amber-600">Submitted <time dateTime={claim.created_at}>{formatDate(claim.created_at)}</time></p>
               </div>
             </div>
           </div>
@@ -626,7 +626,7 @@ export default function LandlordPortalPage() {
                             <p className="text-[13px] leading-relaxed text-slate-600 line-clamp-2">{review.body}</p>
                           </div>
                           <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                            <span className="text-[11.5px] text-slate-400">{formatDate(review.created_at)}</span>
+                            <time className="text-[11.5px] text-slate-400" dateTime={review.created_at}>{formatDate(review.created_at)}</time>
                             {needsResponse && (
                               <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10.5px]">Unanswered</Badge>
                             )}
