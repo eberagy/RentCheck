@@ -101,7 +101,11 @@ export default function OnboardingPage() {
         />
       </div>
 
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+      {/* This was <main>, but (main)/layout.tsx already renders one — two
+          <main> elements per page is an HTML5 spec violation that screen
+          readers handle inconsistently. Plain <div> here; the parent
+          layout's main is the landmark. */}
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="w-full max-w-xl">
           {/* Step indicator */}
           <p className="text-xs font-semibold text-teal-600 uppercase tracking-widest mb-3 text-center">
@@ -248,7 +252,7 @@ export default function OnboardingPage() {
             </div>
           )}
         </div>
-      </main>
+      </div>
     </div>
   )
 }
