@@ -118,7 +118,7 @@ export default function AdminFlagsPage() {
                         {reasonLabels[item.reason] ?? item.reason}
                       </Badge>
                       <span className="text-xs text-slate-400">
-                        Flagged by {item.flagger?.full_name ?? item.flagger?.email ?? 'Unknown'} on {formatDate(item.created_at)}
+                        Flagged by {item.flagger?.full_name ?? item.flagger?.email ?? 'Unknown'} on <time dateTime={item.created_at}>{formatDate(item.created_at)}</time>
                       </span>
                     </div>
 

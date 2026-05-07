@@ -265,7 +265,7 @@ export default function AdminUsersPage() {
                         <span className="text-slate-300 text-xs" aria-hidden="true">·</span>
                         <span className="flex items-center gap-1 text-xs text-slate-500">
                           <Calendar className="h-3 w-3" aria-hidden="true" />
-                          Joined {formatDate(user.created_at)}
+                          Joined <time dateTime={user.created_at}>{formatDate(user.created_at)}</time>
                         </span>
                       </div>
                     </div>

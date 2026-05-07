@@ -253,7 +253,7 @@ export default function AdminReviewsPage() {
                         {review.landlord && <span>→ {review.landlord.display_name}</span>}
                         {review.property_address && <span>@ {review.property_address}</span>}
                         {!review.property_address && review.property && <span>@ {review.property.address_line1}, {review.property.city}</span>}
-                        <span>{formatDate(review.created_at)}</span>
+                        <time dateTime={review.created_at}>{formatDate(review.created_at)}</time>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">

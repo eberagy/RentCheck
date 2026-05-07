@@ -171,7 +171,7 @@ export default async function AdminAuditPage({
               {rows.map(r => (
                 <tr key={r.id} className="border-b border-slate-100 last:border-b-0 align-top">
                   <td className="px-4 py-3 text-[12.5px] text-slate-500 whitespace-nowrap">
-                    {formatDate(r.created_at)}
+                    <time dateTime={r.created_at}>{formatDate(r.created_at)}</time>
                   </td>
                   <td className="px-4 py-3 text-[13px]">
                     <div className="font-medium text-slate-900">{r.admin?.full_name ?? 'Unknown'}</div>

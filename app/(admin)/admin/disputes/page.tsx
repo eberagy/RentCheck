@@ -132,7 +132,7 @@ export default function AdminDisputesPage() {
                     </div>
                     {dispute.detail && <p className="text-sm text-slate-600">{dispute.detail}</p>}
                     <p className="text-xs text-slate-400 mt-1">
-                      By {dispute.submitter?.full_name ?? dispute.submitter?.email ?? 'Unknown'} · {formatDate(dispute.created_at)}
+                      By {dispute.submitter?.full_name ?? dispute.submitter?.email ?? 'Unknown'} · <time dateTime={dispute.created_at}>{formatDate(dispute.created_at)}</time>
                     </p>
                   </div>
                 </div>

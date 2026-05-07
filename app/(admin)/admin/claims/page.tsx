@@ -136,7 +136,7 @@ export default function AdminClaimsPage() {
                       <p className="text-sm text-slate-500">{claim.landlord.city}, {claim.landlord.state_abbr} · {claim.landlord.review_count} reviews</p>
                     )}
                   </div>
-                  <span className="text-xs text-slate-400 flex-shrink-0">{formatDate(claim.created_at)}</span>
+                  <time className="text-xs text-slate-400 flex-shrink-0" dateTime={claim.created_at}>{formatDate(claim.created_at)}</time>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 mb-4 text-sm">

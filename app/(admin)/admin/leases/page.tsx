@@ -125,7 +125,7 @@ export default function AdminLeasesPage() {
                       {item.landlord && <p>Landlord: <span className="font-medium">{item.landlord.display_name}</span></p>}
                       {item.property_address && <p>Address: <span className="font-medium">{item.property_address}</span></p>}
                       {!item.property_address && item.property && <p>Property: {item.property.address_line1}, {item.property.city}, {item.property.state_abbr}</p>}
-                      <p className="text-xs text-slate-400">Submitted {formatDate(item.created_at)} {item.lease_file_size ? `· ${formatBytes(item.lease_file_size)}` : ''}</p>
+                      <p className="text-xs text-slate-400">Submitted <time dateTime={item.created_at}>{formatDate(item.created_at)}</time> {item.lease_file_size ? `· ${formatBytes(item.lease_file_size)}` : ''}</p>
                     </div>
 
                     {/* Document viewer button */}

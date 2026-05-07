@@ -171,7 +171,7 @@ export default async function AdminEmailLeadsPage({
                       {r.source ?? 'unknown'}
                     </span>
                   </td>
-                  <td className="px-4 py-2.5 text-slate-500">{formatDate(r.created_at)}</td>
+                  <td className="px-4 py-2.5 text-slate-500"><time dateTime={r.created_at}>{formatDate(r.created_at)}</time></td>
                 </tr>
               ))
             )}

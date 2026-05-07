@@ -176,7 +176,7 @@ export default function AdminSubmissionsPage() {
                       )}
                     </div>
                   </div>
-                  <span className="text-xs text-slate-400 flex-shrink-0">{formatDate(sub.created_at)}</span>
+                  <time className="text-xs text-slate-400 flex-shrink-0" dateTime={sub.created_at}>{formatDate(sub.created_at)}</time>
                 </div>
 
                 <div className="text-xs text-slate-500 mb-2">
