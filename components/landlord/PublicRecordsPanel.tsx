@@ -493,10 +493,10 @@ export function PublicRecordsPanel({ records, landlordName, isUnclaimed, propert
           </div>
           <div className="flex flex-wrap items-center gap-1 rounded-full border border-slate-200 bg-white p-1">
             <FilterTab active={filter === 'all'} onClick={() => setFilter('all')} count={records.length}>
-              <Filter className="h-3 w-3" /> All
+              <Filter className="h-3 w-3" aria-hidden="true" /> All
             </FilterTab>
             <FilterTab active={filter === 'open'} onClick={() => setFilter('open')} count={totals.open} tone="rose">
-              <AlertTriangle className="h-3 w-3" /> Open
+              <AlertTriangle className="h-3 w-3" aria-hidden="true" /> Open
             </FilterTab>
             <FilterTab active={filter === 'closed'} onClick={() => setFilter('closed')} count={totals.closed}>
               Closed
@@ -572,7 +572,7 @@ function SummaryStat({
   return (
     <div className={`rounded-2xl border px-3 py-3 ${styles}`}>
       <div className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wider opacity-90">
-        {icon}
+        <span aria-hidden="true" className="inline-flex items-center">{icon}</span>
         {label}
       </div>
       <div className="mt-1 font-display text-[24px] font-semibold leading-none tracking-tight tabular-nums">
