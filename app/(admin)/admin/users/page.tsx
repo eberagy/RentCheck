@@ -331,8 +331,8 @@ export default function AdminUsersPage() {
                       Review History
                     </p>
                     {(userReviews[user.id] === undefined) ? (
-                      <div className="flex items-center gap-2 text-sm text-slate-400">
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <div role="status" aria-live="polite" className="flex items-center gap-2 text-sm text-slate-400">
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
                         Loading...
                       </div>
                     ) : (userReviews[user.id] ?? []).length === 0 ? (

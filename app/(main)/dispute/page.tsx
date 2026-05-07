@@ -224,7 +224,7 @@ export default function DisputePage() {
       </p>
 
       <div className="bg-white border border-slate-200 rounded-xl p-6">
-        <Suspense fallback={<div className="h-40 flex items-center justify-center text-slate-400 text-sm">Loading…</div>}>
+        <Suspense fallback={<div role="status" aria-live="polite" className="h-40 flex items-center justify-center text-slate-400 text-sm">Loading…</div>}>
           <DisputeForm />
         </Suspense>
       </div>
