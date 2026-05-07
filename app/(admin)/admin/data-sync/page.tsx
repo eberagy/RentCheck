@@ -271,11 +271,15 @@ export default function AdminDataSyncPage() {
                   </div>
 
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    {/* History dots */}
+                    {/* History dots — recent run statuses, oldest-first L-to-R */}
                     {logs.length > 1 && (
-                      <div className="flex gap-1">
+                      <div role="list" aria-label="Recent sync history" className="flex gap-1">
                         {logs.slice(0, 5).map(log => (
-                          <div key={log.id} title={`${formatDate(log.started_at)}: ${log.status}`}
+                          <div
+                            key={log.id}
+                            role="listitem"
+                            title={`${formatDate(log.started_at)}: ${log.status}`}
+                            aria-label={`${formatDate(log.started_at)}: ${log.status}`}
                             className={`h-2 w-2 rounded-full ${
                               log.status === 'success' ? 'bg-teal-400' :
                               log.status === 'error' ? 'bg-red-400' :

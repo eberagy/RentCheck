@@ -262,15 +262,15 @@ export default async function AdminDashboardPage() {
             <Card className={`border ${border} ${bg} hover:shadow-md transition-[transform,box-shadow] duration-200 cursor-pointer hover:-translate-y-0.5`}>
               <CardContent className="p-5">
                 <div className="flex items-center justify-between mb-3">
-                  <Icon className={`h-5 w-5 ${color}`} />
+                  <Icon className={`h-5 w-5 ${color}`} aria-hidden="true" />
                   {urgent && (
                     <Badge className="bg-red-100 text-red-700 border-red-200 text-xs">Urgent</Badge>
                   )}
                   {!urgent && count > 0 && (
-                    <div className={`h-2 w-2 rounded-full ${color.replace('text-', 'bg-')}`} />
+                    <div aria-hidden="true" className={`h-2 w-2 rounded-full ${color.replace('text-', 'bg-')}`} />
                   )}
                   {count === 0 && (
-                    <div className="h-2 w-2 rounded-full bg-teal-400" />
+                    <div aria-hidden="true" className="h-2 w-2 rounded-full bg-teal-400" />
                   )}
                 </div>
                 <div className={`text-3xl font-bold ${color}`}>{count}</div>
