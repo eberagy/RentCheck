@@ -415,7 +415,7 @@ export default function LandlordPortalPage() {
                       setProfileDescription(landlord.description ?? '')
                     }} disabled={savingProfile}>Cancel</Button>
                     <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white" onClick={saveProfile} disabled={savingProfile}>
-                      {savingProfile ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : null}
+                      {savingProfile ? <><Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /><span className="sr-only">Saving… </span></> : null}
                       Save
                     </Button>
                   </div>
