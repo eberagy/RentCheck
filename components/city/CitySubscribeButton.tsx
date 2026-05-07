@@ -89,7 +89,7 @@ export function CitySubscribeButton({ city, stateAbbr }: Props) {
   if (status === 'loading') {
     return (
       <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-[12px] text-slate-300">
-        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
         Checking…
       </span>
     )
@@ -99,9 +99,9 @@ export function CitySubscribeButton({ city, stateAbbr }: Props) {
     return (
       <a
         href={`/login?redirectTo=/city/${stateAbbr.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`}
-        className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-[12px] font-medium text-white/90 hover:bg-white/10"
+        className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-[12px] font-medium text-white/90 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
       >
-        <Bell className="h-3.5 w-3.5" />
+        <Bell className="h-3.5 w-3.5" aria-hidden="true" />
         Sign in to get city alerts
       </a>
     )
@@ -113,9 +113,9 @@ export function CitySubscribeButton({ city, stateAbbr }: Props) {
         type="button"
         onClick={unsubscribe}
         disabled={busy}
-        className="inline-flex items-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-500/15 px-3.5 py-1.5 text-[12px] font-semibold text-teal-200 hover:bg-teal-500/25 disabled:opacity-60"
+        className="inline-flex items-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-500/15 px-3.5 py-1.5 text-[12px] font-semibold text-teal-200 hover:bg-teal-500/25 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
       >
-        {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Check className="h-3.5 w-3.5" />}
+        {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : <Check className="h-3.5 w-3.5" aria-hidden="true" />}
         Subscribed · click to stop
       </button>
     )
@@ -126,9 +126,9 @@ export function CitySubscribeButton({ city, stateAbbr }: Props) {
       type="button"
       onClick={subscribe}
       disabled={busy}
-      className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-[12px] font-semibold text-white hover:bg-white/20 disabled:opacity-60"
+      className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-[12px] font-semibold text-white hover:bg-white/20 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
     >
-      {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Bell className="h-3.5 w-3.5" />}
+      {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : <Bell className="h-3.5 w-3.5" aria-hidden="true" />}
       Get weekly alerts for {city}
     </button>
   )
