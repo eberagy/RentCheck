@@ -77,7 +77,7 @@ function DisputeForm() {
   if (done) {
     return (
       <div className="text-center py-8">
-        <CheckCircle2 className="h-14 w-14 text-teal-500 mx-auto mb-4" />
+        <CheckCircle2 className="h-14 w-14 text-teal-500 mx-auto mb-4" aria-hidden="true" />
         <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Dispute submitted</h1>
         <p className="text-slate-600 mb-2">Our team will review your dispute within 5–7 business days.</p>
         <p className="text-sm text-slate-500 mb-8">
@@ -99,8 +99,8 @@ function DisputeForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {!recordId && (
-        <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
-          <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+        <div role="alert" className="flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
+          <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" aria-hidden="true" />
           No record ID found. Please use the &ldquo;Dispute this record&rdquo; link on a public record card.
         </div>
       )}
@@ -180,7 +180,7 @@ function DisputeForm() {
         disabled={submitting || !recordId || !finalReason.trim()}
         className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold"
       >
-        {submitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Submitting…</> : 'Submit Dispute'}
+        {submitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Submitting…</> : 'Submit Dispute'}
       </Button>
     </form>
   )
@@ -209,7 +209,7 @@ export default function DisputePage() {
 
       <div className="mb-3">
         <div className="h-11 w-11 bg-amber-50 rounded-xl flex items-center justify-center mb-4">
-          <AlertCircle className="h-5 w-5 text-amber-600" />
+          <AlertCircle className="h-5 w-5 text-amber-600" aria-hidden="true" />
         </div>
         <h1 className="font-display text-[clamp(1.9rem,4vw,2.75rem)] leading-[1.08] tracking-tight text-slate-900">Dispute a Public Record</h1>
       </div>
