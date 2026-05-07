@@ -23,7 +23,7 @@ export default function AdminError({
 
   return (
     <div className="p-4 sm:p-8">
-      <div className="mx-auto max-w-xl rounded-2xl border border-amber-200 bg-amber-50 p-6">
+      <div role="alert" aria-live="assertive" className="mx-auto max-w-xl rounded-2xl border border-amber-200 bg-amber-50 p-6">
         <div className="flex items-start gap-4">
           <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-amber-100 text-amber-700">
             <AlertTriangle className="h-5 w-5" aria-hidden="true" />
