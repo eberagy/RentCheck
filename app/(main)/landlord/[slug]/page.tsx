@@ -460,7 +460,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
             the tabs. This used to be jammed inside the hero card. */}
         <section className="mb-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-display text-[16px] font-semibold tracking-tight text-slate-900">Rating breakdown</h3>
+            <h2 className="font-display text-[16px] font-semibold tracking-tight text-slate-900">Rating breakdown</h2>
             {wouldRentAgainPct !== null && approved.length > 0 ? (
               <p className="text-[13px] text-slate-500">
                 <span className={`font-bold ${wouldRentAgainPct >= 50 ? 'text-amber-700' : 'text-red-600'}`}>

@@ -60,9 +60,9 @@ export function ViolationChart({ records }: ViolationChartProps) {
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
             Violation history
           </p>
-          <h3 className="mt-1 font-display text-[20px] leading-tight tracking-tight text-slate-950">
+          <h2 className="mt-1 font-display text-[20px] leading-tight tracking-tight text-slate-950">
             By year — open vs closed
-          </h3>
+          </h2>
         </div>
         <div className="flex flex-wrap items-center gap-3 text-[12px] text-slate-600">
           <span className="inline-flex items-center gap-1.5">
