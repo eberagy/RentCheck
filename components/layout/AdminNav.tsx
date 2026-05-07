@@ -44,21 +44,22 @@ export function AdminNav() {
         </div>
         <span className="text-xs text-navy-300 mt-1 block">Admin Panel</span>
       </div>
-      <nav className="flex-1 p-3 space-y-1">
+      <nav aria-label="Admin sections" className="flex-1 p-3 space-y-1">
         {ADMIN_LINKS.map(({ href, label, icon: Icon, exact }) => {
           const active = exact ? pathname === href : pathname.startsWith(href)
           return (
             <Link
               key={href}
               href={href}
+              aria-current={active ? 'page' : undefined}
               className={cn(
-                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-navy-900',
                 active
                   ? 'bg-navy-600 text-white'
                   : 'text-navy-300 hover:bg-navy-800 hover:text-white'
               )}
             >
-              <Icon className="h-4 w-4 flex-shrink-0" />
+              <Icon className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
               {label}
             </Link>
           )
