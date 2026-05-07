@@ -68,7 +68,7 @@ export default function ContactPage() {
             </div>
             <div>
               <p className="font-semibold text-slate-900 text-sm">{label}</p>
-              <a href={`mailto:${email}`} className="text-navy-600 hover:text-navy-800 text-sm font-medium">
+              <a href={`mailto:${email}`} className="text-navy-600 hover:text-navy-800 text-sm font-medium rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                 {email}
               </a>
               <p className="text-xs text-slate-500 mt-1">{description}</p>
@@ -81,7 +81,7 @@ export default function ContactPage() {
         <Shield className="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" />
         <p>
           Vett is not a consumer reporting agency under the FCRA. For review disputes or removal requests,
-          email <a href="mailto:legal@vettrentals.com" className="text-navy-600 hover:underline">legal@vettrentals.com</a> with
+          email <a href="mailto:legal@vettrentals.com" className="text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">legal@vettrentals.com</a> with
           the review URL and your reason.
         </p>
       </div>
