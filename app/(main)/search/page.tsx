@@ -425,7 +425,7 @@ async function SearchResults({
             })}
           </div>
           <span className="text-[12.5px] text-slate-500">
-            <b className="text-slate-900">{total.toLocaleString()}</b> {total === 1 ? 'landlord' : 'landlords'} found
+            <b className="text-slate-900 tabular-nums">{total.toLocaleString()}</b> {total === 1 ? 'landlord' : 'landlords'} found
           </span>
         </div>
         <div className="grid gap-3">
