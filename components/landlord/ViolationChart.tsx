@@ -103,8 +103,14 @@ export function ViolationChart({ records }: ViolationChartProps) {
         </div>
       </div>
 
-      {/* Chart */}
-      <div className="h-44">
+      {/* Chart — Recharts SVG is purely visual. Screen readers get the
+          same data (open/closed totals + peak year) from the summary
+          chips above, so a single role=img label here is enough. */}
+      <div
+        role="img"
+        aria-label={`Stacked bar chart of ${totals.open + totals.closed} records from ${data[0]?.year ?? ''} to ${data[data.length - 1]?.year ?? ''} — ${totals.open} open and ${totals.closed} closed; peak in ${peakYear.year} with ${peakYear.total}.`}
+        className="h-44"
+      >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={data}
