@@ -144,7 +144,7 @@ export default function SettingsPage() {
           ))}
         </div>
         <div className="flex justify-center pt-2">
-          <Loader2 className="h-5 w-5 animate-spin text-slate-300" />
+          <Loader2 className="h-5 w-5 animate-spin text-slate-300" aria-hidden="true" />
         </div>
       </div>
     )
@@ -163,7 +163,7 @@ export default function SettingsPage() {
         {/* Profile section */}
         <div className="p-6">
           <div className="flex items-center gap-2 mb-4">
-            <User className="h-4 w-4 text-slate-500" />
+            <User className="h-4 w-4 text-slate-500" aria-hidden="true" />
             <h2 className="font-semibold text-slate-900">Profile</h2>
           </div>
 
@@ -206,7 +206,7 @@ export default function SettingsPage() {
                       disabled={uploadingAvatar}
                       onClick={() => fileInputRef.current?.click()}
                     >
-                      {uploadingAvatar ? <><Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> Uploading…</> : <><Upload className="h-4 w-4 mr-1.5" /> {profile?.avatar_url ? 'Change photo' : 'Upload photo'}</>}
+                      {uploadingAvatar ? <><Loader2 className="h-4 w-4 mr-1.5 animate-spin" aria-hidden="true" /> Uploading…</> : <><Upload className="h-4 w-4 mr-1.5" aria-hidden="true" /> {profile?.avatar_url ? 'Change photo' : 'Upload photo'}</>}
                     </Button>
                     {profile?.avatar_url && (
                       <Button
@@ -217,7 +217,7 @@ export default function SettingsPage() {
                         onClick={removeAvatar}
                         className="text-slate-500 hover:text-red-600"
                       >
-                        <X className="h-4 w-4 mr-1.5" /> Remove
+                        <X className="h-4 w-4 mr-1.5" aria-hidden="true" /> Remove
                       </Button>
                     )}
                   </div>
@@ -255,7 +255,7 @@ export default function SettingsPage() {
         {/* Notifications section */}
         <div id="email-preferences" className="p-6 scroll-mt-24">
           <div className="flex items-center gap-2 mb-4">
-            <Bell className="h-4 w-4 text-slate-500" />
+            <Bell className="h-4 w-4 text-slate-500" aria-hidden="true" />
             <h2 className="font-semibold text-slate-900">Email Notifications</h2>
           </div>
 
@@ -289,7 +289,7 @@ export default function SettingsPage() {
         {/* Public profile toggle */}
         <div id="public-profile" className="p-6 border-t border-slate-100 scroll-mt-24">
           <div className="flex items-center gap-2 mb-4">
-            <User className="h-4 w-4 text-slate-500" />
+            <User className="h-4 w-4 text-slate-500" aria-hidden="true" />
             <h2 className="font-semibold text-slate-900">Public profile</h2>
           </div>
           <div className="flex items-center justify-between">
@@ -323,9 +323,9 @@ export default function SettingsPage() {
             disabled={saving}
           >
             {saving ? (
-              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving...</>
+              <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Saving...</>
             ) : (
-              <><Save className="h-4 w-4 mr-2" /> Save Changes</>
+              <><Save className="h-4 w-4 mr-2" aria-hidden="true" /> Save Changes</>
             )}
           </Button>
         </div>
@@ -334,7 +334,7 @@ export default function SettingsPage() {
       {/* Password section */}
       <div className="mt-6 bg-white border border-slate-200 rounded-xl p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Lock className="h-4 w-4 text-slate-500" />
+          <Lock className="h-4 w-4 text-slate-500" aria-hidden="true" />
           <h2 className="font-semibold text-slate-900">Change Password</h2>
         </div>
         <div className="space-y-3">
@@ -364,7 +364,7 @@ export default function SettingsPage() {
             disabled={savingPassword || newPassword.length < 8}
             className="text-sm"
           >
-            {savingPassword ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Updating...</> : 'Update Password'}
+            {savingPassword ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Updating...</> : 'Update Password'}
           </Button>
         </div>
       </div>
@@ -372,7 +372,7 @@ export default function SettingsPage() {
       {/* Data + account control */}
       <div className="mt-6 bg-white border border-slate-200 rounded-xl p-6">
         <div className="flex items-center gap-2 mb-2">
-          <Download className="h-4 w-4 text-slate-500" />
+          <Download className="h-4 w-4 text-slate-500" aria-hidden="true" />
           <h2 className="font-semibold text-slate-900">Download your data</h2>
         </div>
         <p className="text-sm text-slate-500 mb-4">
@@ -380,7 +380,7 @@ export default function SettingsPage() {
         </p>
         <Button variant="outline" asChild>
           <a href="/api/me/export" download>
-            <Download className="h-4 w-4 mr-2" /> Download data
+            <Download className="h-4 w-4 mr-2" aria-hidden="true" /> Download data
           </a>
         </Button>
       </div>
@@ -426,7 +426,7 @@ function AccountDeleteSection() {
       </p>
       {!expanded ? (
         <Button variant="outline" className="border-red-300 text-red-700 hover:bg-red-50" onClick={() => setExpanded(true)}>
-          <Trash2 className="h-4 w-4 mr-2" /> Start deletion
+          <Trash2 className="h-4 w-4 mr-2" aria-hidden="true" /> Start deletion
         </Button>
       ) : (
         <div className="space-y-3">
