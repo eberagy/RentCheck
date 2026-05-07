@@ -78,12 +78,17 @@ type RecentReview = {
 async function getRecentReviews(): Promise<RecentReview[]> {
   try {
     const supabase = createServiceClient()
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('reviews')
       .select('id, title, body, rating_overall, created_at, landlord:landlords(display_name, slug, city, state_abbr)')
       .eq('status', 'approved')
       .order('created_at', { ascending: false })
       .limit(6)
+    // The try/catch only catches thrown exceptions (network failure,
+    // timeout). PostgREST query errors come back as { error }, which
+    // we'd silently swallow without this branch — homepage would show
+    // empty 'Recent reviews' on a sustained DB hiccup.
+    if (error) captureException(error, { where: 'home:getRecentReviews:query' })
     return (data ?? []) as unknown as RecentReview[]
   } catch (err) {
     // Same rationale as getStats — homepage failure visible to everyone.

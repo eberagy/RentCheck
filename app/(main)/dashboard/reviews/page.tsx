@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { MyReviewsClient, type MyReviewItem } from './MyReviewsClient'
+import { captureException } from '@/lib/sentry'
 
 export const metadata: Metadata = {
   title: 'My reviews',
@@ -22,7 +23,12 @@ export default async function MyReviewsPage({ searchParams }: { searchParams: Pr
     .eq('reviewer_id', user.id)
     .order('created_at', { ascending: false })
   if (statusFilter !== 'all') q = q.eq('status', statusFilter)
-  const { data } = await q
+  const { data, error } = await q
+
+  // Same rationale as /dashboard/watchlist — query failure would render
+  // the user's reviews list as 'no reviews yet,' looking like a brand-new
+  // account. Capture so we know about transient failures.
+  if (error) captureException(error, { where: 'dashboard:my-reviews', userId: user.id, statusFilter })
 
   const reviews = (data ?? []) as unknown as MyReviewItem[]
   return <MyReviewsClient reviews={reviews} statusFilter={statusFilter} />
