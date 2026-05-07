@@ -63,6 +63,12 @@ function DisputeForm() {
       if (!res.ok) { toast.error(data.error ?? 'Submission failed'); return }
       track('dispute_submitted', { record_id: recordId, reason: finalReason })
       setDone(true)
+    } catch {
+      // Network failure or JSON parse error. The try/finally already
+      // clears submitting; without this catch the button would silently
+      // re-enable with no toast and the user would have no idea whether
+      // their dispute went through.
+      toast.error("Couldn't reach the server. Please try again.")
     } finally {
       setSubmitting(false)
     }
