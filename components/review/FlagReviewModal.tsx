@@ -149,15 +149,17 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
 
             {reason && (
               <div className="mb-4">
-                <label className="text-xs font-medium text-slate-600 block mb-1.5">
+                <label htmlFor="flag-review-note" className="text-xs font-medium text-slate-600 block mb-1.5">
                   Additional details {reason !== 'other' && '(optional)'}
                 </label>
                 <textarea
+                  id="flag-review-note"
                   value={note}
                   onChange={e => setNote(e.target.value)}
                   placeholder="Describe the issue..."
                   rows={3}
                   maxLength={500}
+                  autoComplete="off"
                   className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 resize-none focus:outline-none focus:border-navy-400 transition-colors"
                 />
                 <p className="text-xs text-slate-400 text-right mt-0.5">{note.length}/500</p>

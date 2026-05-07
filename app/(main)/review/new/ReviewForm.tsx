@@ -525,6 +525,8 @@ export default function ReviewForm() {
                   {...register('body')}
                   placeholder="Share your experience. What went well? What could have been better? Be specific."
                   rows={6}
+                  aria-label="Your full review"
+                  autoComplete="off"
                   className="rounded-xl border-slate-200 text-[14px] leading-relaxed resize-y"
                 />
                 <div className="mt-1.5 text-[11.5px] text-slate-400">{watch('body')?.length ?? 0} / 2000 characters</div>
