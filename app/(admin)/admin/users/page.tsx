@@ -212,17 +212,17 @@ export default function AdminUsersPage() {
           onChange={e => setQuery(e.target.value)}
         />
         {searching && (
-          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-slate-400" />
+          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-slate-400" aria-hidden="true" />
         )}
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-navy-500" />
+          <Loader2 className="h-8 w-8 animate-spin text-navy-500" aria-hidden="true" />
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-20 text-slate-500">
-          <User className="h-8 w-8 text-slate-300 mx-auto mb-3" />
+          <User className="h-8 w-8 text-slate-300 mx-auto mb-3" aria-hidden="true" />
           <p className="font-medium">No users found</p>
           {query && <p className="text-sm mt-1 text-slate-400">Try a different search term</p>}
         </div>
@@ -250,17 +250,17 @@ export default function AdminUsersPage() {
                       </div>
                       <div className="flex items-center gap-3 mt-1 flex-wrap">
                         <span className="flex items-center gap-1 text-xs text-slate-500">
-                          <Mail className="h-3 w-3" />
+                          <Mail className="h-3 w-3" aria-hidden="true" />
                           {user.email ?? '—'}
                         </span>
-                        <span className="text-slate-300 text-xs">·</span>
+                        <span className="text-slate-300 text-xs" aria-hidden="true">·</span>
                         <span className="flex items-center gap-1 text-xs text-slate-500">
-                          <Star className="h-3 w-3" />
+                          <Star className="h-3 w-3" aria-hidden="true" />
                           {user.review_count} review{user.review_count !== 1 ? 's' : ''}
                         </span>
-                        <span className="text-slate-300 text-xs">·</span>
+                        <span className="text-slate-300 text-xs" aria-hidden="true">·</span>
                         <span className="flex items-center gap-1 text-xs text-slate-500">
-                          <Calendar className="h-3 w-3" />
+                          <Calendar className="h-3 w-3" aria-hidden="true" />
                           Joined {formatDate(user.created_at)}
                         </span>
                       </div>

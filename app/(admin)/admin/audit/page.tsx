@@ -97,7 +97,7 @@ export default async function AdminAuditPage({
     <div className="p-4 sm:p-8">
       <div className="mb-6 flex flex-wrap items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white">
-          <ScrollText className="h-5 w-5" />
+          <ScrollText className="h-5 w-5" aria-hidden="true" />
         </div>
         <div className="mr-auto">
           <h1 className="text-2xl font-bold text-slate-900">Audit log</h1>

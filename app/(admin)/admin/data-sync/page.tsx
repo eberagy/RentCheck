@@ -193,7 +193,7 @@ export default function AdminDataSyncPage() {
             onClick={runAll}
             disabled={runningAll}
           >
-            {runningAll ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> : <Zap className="h-4 w-4 mr-1.5" />}
+            {runningAll ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" aria-hidden="true" /> : <Zap className="h-4 w-4 mr-1.5" aria-hidden="true" />}
             Run All Now
           </Button>
         </div>
@@ -227,12 +227,15 @@ export default function AdminDataSyncPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
-                    {/* Status dot */}
-                    {!latest && <Clock className="h-4 w-4 text-slate-300 flex-shrink-0" />}
-                    {latest?.status === 'success' && <CheckCircle2 className="h-4 w-4 text-teal-500 flex-shrink-0" />}
-                    {latest?.status === 'error' && <XCircle className="h-4 w-4 text-red-500 flex-shrink-0" />}
-                    {latest?.status === 'running' && <Loader2 className="h-4 w-4 text-blue-500 animate-spin flex-shrink-0" />}
-                    {latest?.status === 'partial' && <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />}
+                    {/* Status icon — wrapped in role=img + label so the
+                        sync state is announced ("Status: error",
+                        "Status: running", etc.) instead of being a
+                        silent color change. */}
+                    {!latest && <Clock role="img" aria-label="Status: never run" className="h-4 w-4 text-slate-300 flex-shrink-0" />}
+                    {latest?.status === 'success' && <CheckCircle2 role="img" aria-label="Status: succeeded" className="h-4 w-4 text-teal-500 flex-shrink-0" />}
+                    {latest?.status === 'error' && <XCircle role="img" aria-label="Status: errored" className="h-4 w-4 text-red-500 flex-shrink-0" />}
+                    {latest?.status === 'running' && <Loader2 role="img" aria-label="Status: running" className="h-4 w-4 text-blue-500 animate-spin flex-shrink-0" />}
+                    {latest?.status === 'partial' && <AlertTriangle role="img" aria-label="Status: partial" className="h-4 w-4 text-amber-500 flex-shrink-0" />}
 
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
