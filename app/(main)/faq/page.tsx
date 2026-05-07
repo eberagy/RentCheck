@@ -96,7 +96,7 @@ export default function FAQPage() {
               (i < FAQS.length - 1 ? 'border-b border-slate-100' : '')
             }
           >
-            <summary className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left list-none transition-colors hover:bg-slate-50 group-open:bg-slate-50/40">
+            <summary className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 text-left list-none transition-colors hover:bg-slate-50 group-open:bg-slate-50/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-[-2px]">
               <span className="font-semibold text-[14px] text-slate-900 transition-colors group-open:text-teal-700">
                 {faq.q}
               </span>
