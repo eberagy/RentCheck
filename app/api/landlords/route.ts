@@ -1,19 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { dbError } from '@/lib/api-errors'
 import { createServiceClient } from '@/lib/supabase/service'
+import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { z } from 'zod'
 
 const querySchema = z.object({
   id: z.string().uuid().optional(),
-  city: z.string().optional(),
-  state: z.string().optional(),
+  // Caps prevent unbounded ilike '%...%' scans on Postgres. Real city
+  // names max around 30 chars; 100 leaves headroom for hyphenated
+  // multi-word inputs without enabling DoS via 10MB strings.
+  city: z.string().max(100).optional(),
+  state: z.string().max(2).optional(),
   minRating: z.coerce.number().min(1).max(5).optional(),
   verified: z.coerce.boolean().optional(),
-  page: z.coerce.number().min(1).default(1),
+  page: z.coerce.number().min(1).max(500).default(1),
   limit: z.coerce.number().min(1).max(50).default(20),
 })
 
 export async function GET(req: NextRequest) {
+  // IP-based rate limit — public read but the count + filter combo
+  // forces a Postgres scan of the landlords table for each call.
+  // 60/min/IP keeps it accessible for legit tooling without enabling
+  // a tight loop to DoS the DB.
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? req.headers.get('x-real-ip') ?? 'anon'
+  const rl = rateLimit(`landlords-list:${ip}`, 60, 60_000)
+  if (!rl.success) return rateLimitResponse(rl)
+
   const parsed = querySchema.safeParse(Object.fromEntries(req.nextUrl.searchParams))
   if (!parsed.success) return NextResponse.json({ error: 'Invalid params' }, { status: 400 })
 
