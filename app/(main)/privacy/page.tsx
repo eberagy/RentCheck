@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -53,7 +54,7 @@ export default function PrivacyPage() {
           <h2 className="text-lg font-semibold text-slate-900">Your Rights</h2>
           <p className="text-slate-600">Depending on your jurisdiction (CCPA, GDPR, and similar regimes), you have the right to access, correct, or delete your personal data.</p>
           <ul className="mt-2 space-y-1 text-slate-600 list-disc list-inside">
-            <li><strong>Access:</strong> Sign in and visit your <a href="/dashboard/settings" className="text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">account settings</a> &rarr; <em>Download data</em>. Returns a JSON file with every row Vett stores about you (profile, reviews, watchlist, submissions, disputes, flags, saved searches, response templates, email leads).</li>
+            <li><strong>Access:</strong> Sign in and visit your <Link href="/dashboard/settings" className="text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">account settings</Link> &rarr; <em>Download data</em>. Returns a JSON file with every row Vett stores about you (profile, reviews, watchlist, submissions, disputes, flags, saved searches, response templates, email leads).</li>
             <li><strong>Delete:</strong> Same page &rarr; <em>Delete account</em>. Wipes your profile, watchlist, saved searches, and templates immediately. Reviews stay public unless you flag specific ones for removal.</li>
             <li><strong>Correct or escalate:</strong> Email <a href="mailto:privacy@vettrentals.com" className="text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">privacy@vettrentals.com</a>. We respond within 30 days.</li>
           </ul>

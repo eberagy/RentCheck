@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { Bell, Check, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
@@ -97,13 +98,13 @@ export function CitySubscribeButton({ city, stateAbbr }: Props) {
 
   if (status === 'signed-out') {
     return (
-      <a
+      <Link
         href={`/login?redirectTo=/city/${stateAbbr.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`}
         className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3.5 py-1.5 text-[12px] font-medium text-white/90 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
       >
         <Bell className="h-3.5 w-3.5" aria-hidden="true" />
         Sign in to get city alerts
-      </a>
+      </Link>
     )
   }
 
