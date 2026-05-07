@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import slugify from 'slugify'
@@ -81,7 +82,10 @@ export async function POST(req: NextRequest) {
 
       if (!insertErr && data) { newLandlord = data; break }
       if (insertErr && !insertErr.message.includes('duplicate') && !insertErr.message.includes('unique')) {
-        return NextResponse.json({ error: insertErr.message }, { status: 500 })
+        // Same fix as admin/moderate-flag — don't leak the raw Postgres
+        // error message back to the client. Route through dbError so
+        // Sentry sees it and the response is the canonical generic shape.
+        return dbError('admin/moderate-submission:insert', insertErr)
       }
     }
 
