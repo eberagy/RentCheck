@@ -135,9 +135,9 @@ export default async function DashboardPage() {
           {/* Watchlist panel */}
           <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-[16px] font-bold text-slate-900">
+              <h2 className="text-[16px] font-bold text-slate-900">
                 Your watchlist <span className="font-normal text-slate-400">&middot; {watchList.length}</span>
-              </h3>
+              </h2>
               <Link href="/search" className="text-[12.5px] text-slate-500 hover:text-slate-700">Manage &rarr;</Link>
             </div>
             {watchList.length === 0 ? (
@@ -189,9 +189,9 @@ export default async function DashboardPage() {
           {/* Reviews panel */}
           <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
             <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-[16px] font-bold text-slate-900">
+              <h2 className="text-[16px] font-bold text-slate-900">
                 Your reviews <span className="font-normal text-slate-400">&middot; {reviewList.length}</span>
-              </h3>
+              </h2>
               <Link href="/review/new" className="text-[12.5px] text-slate-500 hover:text-slate-700">Write new &rarr;</Link>
             </div>
             {reviewList.length === 0 ? (
@@ -235,9 +235,9 @@ export default async function DashboardPage() {
           {submissionList.length > 0 && (
             <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-[16px] font-bold text-slate-900">
+                <h2 className="text-[16px] font-bold text-slate-900">
                   Submitted landlords <span className="font-normal text-slate-400">&middot; {submissionList.length}</span>
-                </h3>
+                </h2>
                 <Link href="/add-landlord" className="text-[12.5px] text-slate-500 hover:text-slate-700">Submit new &rarr;</Link>
               </div>
               <div className="grid gap-1">
@@ -274,10 +274,10 @@ export default async function DashboardPage() {
           {savedSearchList.length > 0 && (
             <div className="rounded-[24px] border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-[16px] font-bold text-slate-900 flex items-center gap-2">
+                <h2 className="text-[16px] font-bold text-slate-900 flex items-center gap-2">
                   <Bell className="h-4 w-4 text-teal-600" />
                   City alerts <span className="font-normal text-slate-400">&middot; {savedSearchList.length}</span>
-                </h3>
+                </h2>
                 <p className="text-[12px] text-slate-400">Weekly digest emails when new reviews land</p>
               </div>
               <div className="grid gap-1">
