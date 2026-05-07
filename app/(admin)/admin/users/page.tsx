@@ -204,8 +204,12 @@ export default function AdminUsersPage() {
 
       {/* Search */}
       <div className="relative mb-6">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" aria-hidden="true" />
         <Input
+          type="search"
+          inputMode="search"
+          autoComplete="off"
+          aria-label="Search users by name or email"
           className="pl-9 pr-9 bg-white"
           placeholder="Search by name or email..."
           value={query}
@@ -403,10 +407,11 @@ function AdminNotesEditor({ user, onSaved }: { user: UserProfile; onSaved: (next
 
   return (
     <div className="mt-4 rounded-lg border border-amber-100 bg-amber-50/50 p-3">
-      <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-800">
+      <label htmlFor={`admin-notes-${user.id}`} className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-800">
         Internal admin notes
-      </p>
+      </label>
       <textarea
+        id={`admin-notes-${user.id}`}
         value={value}
         onChange={e => setValue(e.target.value.slice(0, 4000))}
         rows={3}
