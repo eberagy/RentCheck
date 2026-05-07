@@ -387,7 +387,7 @@ export default async function CityPage({ params }: CityPageProps) {
                       <p className="line-clamp-1 text-[13.5px] font-medium text-slate-900">{r.title}</p>
                       <p className="mt-0.5 text-[12px] text-slate-500">
                         {landlord?.slug ? (
-                          <Link href={`/landlord/${landlord.slug}`} className="hover:underline">
+                          <Link href={`/landlord/${landlord.slug}`} className="hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                             {landlord.display_name}
                           </Link>
                         ) : (

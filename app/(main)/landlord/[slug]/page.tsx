@@ -371,7 +371,13 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                 <div className="flex flex-wrap gap-2 pt-1">
                   {landlord.website && (
                     <Chip icon={<Globe className="h-3 w-3" />}>
-                      <a href={landlord.website} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                      <a
+                        href={landlord.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`${landlord.display_name} website (opens in new tab)`}
+                        className="hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
+                      >
                         {landlord.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
                       </a>
                     </Chip>
@@ -380,7 +386,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                     <Chip icon={<Phone className="h-3 w-3" />}>
                       <a
                         href={`tel:${landlord.phone.replace(/[^\d+]/g, '')}`}
-                        className="hover:underline"
+                        className="hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                         aria-label={`Call ${landlord.display_name} at ${landlord.phone}`}
                       >
                         {landlord.phone}
