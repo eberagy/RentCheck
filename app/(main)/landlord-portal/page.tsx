@@ -421,7 +421,7 @@ export default function LandlordPortalPage() {
                   <div>
                     <dt className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Website</dt>
                     <dd className="mt-1 text-[14px] text-slate-900">
-                      {landlord.website ? <a href={landlord.website} target="_blank" rel="noopener noreferrer" className="text-navy-600 hover:underline break-all">{landlord.website}</a> : <span className="text-slate-400 italic">Not set</span>}
+                      {landlord.website ? <a href={landlord.website} target="_blank" rel="noopener noreferrer" aria-label={`${landlord.website} (opens in new tab)`} className="text-navy-600 hover:underline break-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">{landlord.website}</a> : <span className="text-slate-400 italic">Not set</span>}
                     </dd>
                   </div>
                   <div>
