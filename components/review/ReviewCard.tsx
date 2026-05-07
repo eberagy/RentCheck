@@ -1,11 +1,17 @@
 'use client'
 
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { ThumbsUp, Flag, CheckCircle2, XCircle, User, Home } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { StarRating } from './StarRating'
 import { RatingBar } from '@/components/landlord/RatingBar'
-import { FlagReviewModal } from './FlagReviewModal'
+// Modal only mounts when the user actually clicks Flag — keeps the
+// review card's payload small on landlord/property pages where every
+// visitor pays for the import even if they never open it.
+const FlagReviewModal = dynamic(() =>
+  import('./FlagReviewModal').then(m => ({ default: m.FlagReviewModal }))
+)
 import { formatDate, formatRentalPeriod, formatReviewerName } from '@/lib/utils'
 import { toast } from 'sonner'
 import type { Review } from '@/types'
