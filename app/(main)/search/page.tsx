@@ -312,21 +312,31 @@ async function SearchResults({
             return `/search${s ? `?${s}` : ''}`
           }
           return (
-            <div className="flex items-center justify-center gap-2 pt-2">
+            <nav aria-label="Search results pagination" className="flex items-center justify-center gap-2 pt-2">
               {page > 1 && (
-                <Link href={pageHref(page - 1)} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
+                <Link
+                  href={pageHref(page - 1)}
+                  rel="prev"
+                  aria-label={`Go to page ${page - 1}`}
+                  className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
+                >
                   ← Previous
                 </Link>
               )}
-              <span className="px-3 py-2 text-sm text-slate-500">
+              <span aria-current="page" className="px-3 py-2 text-sm text-slate-500">
                 Page <span className="font-semibold text-slate-900">{page}</span> of {Math.ceil(total / pageSize)}
               </span>
               {page * pageSize < total && (
-                <Link href={pageHref(page + 1)} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
+                <Link
+                  href={pageHref(page + 1)}
+                  rel="next"
+                  aria-label={`Go to page ${page + 1}`}
+                  className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
+                >
                   Next →
                 </Link>
               )}
-            </div>
+            </nav>
           )
         })()}
       </div>
@@ -441,21 +451,31 @@ async function SearchResults({
             return `/search${s ? `?${s}` : ''}`
           }
           return (
-            <div className="flex items-center justify-center gap-2 pt-2">
+            <nav aria-label="Search results pagination" className="flex items-center justify-center gap-2 pt-2">
               {page > 1 && (
-                <Link href={pageHref(page - 1)} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
+                <Link
+                  href={pageHref(page - 1)}
+                  rel="prev"
+                  aria-label={`Go to page ${page - 1}`}
+                  className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
+                >
                   ← Previous
                 </Link>
               )}
-              <span className="px-3 py-2 text-sm text-slate-500">
+              <span aria-current="page" className="px-3 py-2 text-sm text-slate-500">
                 Page <span className="font-semibold text-slate-900">{page}</span> of {Math.ceil(total / pageSize)}
               </span>
               {page * pageSize < total && (
-                <Link href={pageHref(page + 1)} className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50">
+                <Link
+                  href={pageHref(page + 1)}
+                  rel="next"
+                  aria-label={`Go to page ${page + 1}`}
+                  className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
+                >
                   Next →
                 </Link>
               )}
-            </div>
+            </nav>
           )
         })()}
     </div>
