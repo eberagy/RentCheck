@@ -286,7 +286,7 @@ export default async function AdminDashboardPage() {
         <Card className="mb-6 border-orange-200 bg-orange-50/30">
           <CardHeader className="pb-3 border-b border-orange-100">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base flex items-center gap-2">
+              <CardTitle as="h2" className="text-base flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-orange-500" />
                 Pending Landlord Submissions
                 <Badge className="bg-orange-100 text-orange-800 border-orange-200 text-xs ml-1">
@@ -342,7 +342,7 @@ export default async function AdminDashboardPage() {
         <Card className="border-slate-200">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base flex items-center gap-2">
+              <CardTitle as="h2" className="text-base flex items-center gap-2">
                 <Clock className="h-4 w-4 text-amber-500" />
                 Recent Activity
                 {(pendingReviews ?? 0) > 0 && (
@@ -420,7 +420,7 @@ export default async function AdminDashboardPage() {
         <Card className="border-slate-200">
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base flex items-center gap-2">
+              <CardTitle as="h2" className="text-base flex items-center gap-2">
                 <Database className="h-4 w-4 text-navy-600" />
                 Data Health
                 {hasDataErrors && (
