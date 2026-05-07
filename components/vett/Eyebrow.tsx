@@ -35,7 +35,7 @@ export function Eyebrow({ children, dark = false, dot = false, tone = 'teal', cl
       )}
     >
       {dot && (
-        <span className="relative inline-flex h-1.5 w-1.5">
+        <span aria-hidden="true" className="relative inline-flex h-1.5 w-1.5">
           <span className={cn('absolute inset-0 animate-ping rounded-full opacity-75', dotColors[tone])} />
           <span className={cn('relative inline-flex h-1.5 w-1.5 rounded-full', dotColors[tone])} />
         </span>
