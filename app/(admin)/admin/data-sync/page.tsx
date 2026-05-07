@@ -210,7 +210,7 @@ export default function AdminDataSyncPage() {
           { label: 'Records total', count: totalAdded.toLocaleString(), color: 'bg-blue-50 border-blue-200 text-blue-700' },
         ].map(s => (
           <div key={s.label} className={`rounded-xl border p-4 ${s.color}`}>
-            <div className="text-2xl font-bold">{s.count}</div>
+            <div className="text-2xl font-bold tabular-nums">{s.count}</div>
             <div className="text-xs">{s.label}</div>
           </div>
         ))}
@@ -248,7 +248,7 @@ export default function AdminDataSyncPage() {
                         <div className="flex items-center gap-3 mt-1 text-xs flex-wrap">
                           <span className="text-slate-400">{formatDate(latest.started_at)}</span>
                           {(latest.records_added ?? 0) > 0 && (
-                            <span className="text-teal-600 font-medium">+{latest.records_added?.toLocaleString()} added</span>
+                            <span className="text-teal-600 font-medium tabular-nums">+{latest.records_added?.toLocaleString()} added</span>
                           )}
                           {/* Yellow flag when a successful run added 0 records — usually
                               means the dataset rotated or env-var ID is missing. */}
@@ -258,7 +258,7 @@ export default function AdminDataSyncPage() {
                             </span>
                           )}
                           {(latest.records_skipped ?? 0) > 0 && (
-                            <span className="text-slate-400">{latest.records_skipped?.toLocaleString()} skipped</span>
+                            <span className="text-slate-400 tabular-nums">{latest.records_skipped?.toLocaleString()} skipped</span>
                           )}
                           {(latest.status === 'error' || (latest.status === 'success' && latest.error_message)) && latest.error_message && (
                             <span role="alert" className="text-red-500 truncate max-w-xs" title={latest.error_message}>{latest.error_message}</span>

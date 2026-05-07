@@ -467,8 +467,8 @@ export default async function AdminDashboardPage() {
                           </div>
                         ) : (
                           <>
-                            <p className="text-xs text-slate-600 font-medium">+{(s.records_added ?? 0).toLocaleString()}</p>
-                            <p className="text-xs text-slate-400">{(s.records_updated ?? 0).toLocaleString()} updated</p>
+                            <p className="text-xs text-slate-600 font-medium tabular-nums">+{(s.records_added ?? 0).toLocaleString()}</p>
+                            <p className="text-xs text-slate-400 tabular-nums">{(s.records_updated ?? 0).toLocaleString()} updated</p>
                           </>
                         )}
                       </div>
