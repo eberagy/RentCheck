@@ -51,7 +51,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/contact`, changeFrequency: 'monthly' },
     { url: `${baseUrl}/rights`, changeFrequency: 'monthly' },
     { url: `${baseUrl}/add-landlord`, changeFrequency: 'monthly' },
-    { url: `${baseUrl}/landlord-portal`, changeFrequency: 'monthly' },
+    // /landlord-portal is robots: noindex (logged-in surface) — keep it
+    // out of the sitemap to avoid the "submitted URL marked noindex"
+    // warning in Search Console.
     { url: `${baseUrl}/terms`, changeFrequency: 'monthly' },
     { url: `${baseUrl}/privacy`, changeFrequency: 'monthly' },
     { url: `${baseUrl}/fcra-notice`, changeFrequency: 'monthly' },
