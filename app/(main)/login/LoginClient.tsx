@@ -352,7 +352,7 @@ export default function LoginClient() {
                             if (error) toast.error(error.message)
                             else toast.success('Password reset link sent — check your email.')
                           }}
-                          className="underline hover:text-slate-600"
+                          className="underline hover:text-slate-600 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                         >
                           Reset password
                         </button>
@@ -399,9 +399,9 @@ export default function LoginClient() {
 
               <p className="text-xs text-center text-slate-400 pt-1">
                 By signing in, you agree to our{' '}
-                <Link href="/terms" className="underline hover:text-slate-600">Terms</Link>
+                <Link href="/terms" className="underline hover:text-slate-600 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">Terms</Link>
                 {' '}and{' '}
-                <Link href="/privacy" className="underline hover:text-slate-600">Privacy Policy</Link>.
+                <Link href="/privacy" className="underline hover:text-slate-600 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">Privacy Policy</Link>.
               </p>
             </div>
           )}

@@ -185,7 +185,7 @@ export default async function RenterProfilePage({ params }: RenterProfilePagePro
         )}
 
         <p className="mt-10 text-center text-[12px] text-slate-400">
-          Public profile shared by {firstName}. You can <Link href="/dashboard/settings#public-profile" className="underline hover:text-slate-600">turn yours on or off</Link> in settings.
+          Public profile shared by {firstName}. You can <Link href="/dashboard/settings#public-profile" className="underline hover:text-slate-600 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">turn yours on or off</Link> in settings.
         </p>
       </section>
     </div>

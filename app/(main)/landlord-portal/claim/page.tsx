@@ -286,7 +286,7 @@ export default function ClaimProfilePage() {
           {!searching && !selectedLandlord && searchQuery.length >= 2 && searchResults.length === 0 && (
             <p className="text-xs text-slate-500 mt-2 text-center">
               No unclaimed profiles found.{' '}
-              <Link href="/add-landlord" className="text-navy-600 underline hover:text-navy-800">
+              <Link href="/add-landlord" className="text-navy-600 underline hover:text-navy-800 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                 Add your profile
               </Link>
             </p>

@@ -243,7 +243,7 @@ export default function OnboardingPage() {
                 Don&rsquo;t see your city?{' '}
                 <button
                   type="button"
-                  className="underline hover:text-slate-600"
+                  className="underline hover:text-slate-600 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                   onClick={handleFinish}
                 >
                   Skip for now
