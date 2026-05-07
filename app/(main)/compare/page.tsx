@@ -28,11 +28,19 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   // a cookies() call which would prevent any future ISR caching.
   const supabase = createServiceClient()
 
-  const [{ data: landlordA }, { data: landlordB }] = await Promise.all([
+  const [resA, resB] = await Promise.all([
     supabase.from('landlords').select('*').eq('slug', slugA).single(),
     supabase.from('landlords').select('*').eq('slug', slugB).single(),
   ])
 
+  // Same PGRST116-vs-real-error split used in landlord/property/u/city.
+  // A transient DB hiccup on either query shouldn't render a 404 — the
+  // pair-page is canonical and gets indexed if linked.
+  for (const r of [resA, resB]) {
+    if (r.error && r.error.code !== 'PGRST116') throw r.error
+  }
+  const landlordA = resA.data
+  const landlordB = resB.data
   if (!landlordA || !landlordB) notFound()
 
   // Fetch sub-ratings for both
