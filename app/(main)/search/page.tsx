@@ -15,6 +15,7 @@ import { VerifiedBadge } from '@/components/vett/VerifiedBadge'
 import { Chip } from '@/components/vett/Chip'
 import { getGradeLetter } from '@/lib/grade'
 import { TrackPageView } from '@/components/analytics/TrackPageView'
+import { captureException } from '@/lib/sentry'
 
 type SortKey = 'reviewed' | 'highest' | 'lowest' | 'violations'
 
@@ -105,6 +106,11 @@ async function SearchResults({
     const { data, error } = await supabase.rpc('search_all', { query: q, limit_n: fetchLimit })
 
     if (error) {
+      // RPC failure shows the user-facing message, but it's also a real
+      // signal worth knowing about — search is the highest-traffic
+      // dynamic surface on the site, so a sustained failure rate here
+      // would mean a lot of users hitting the "try again" message.
+      captureException(error, { where: 'search:rpc', query: q })
       return (
         <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-5 text-sm text-red-700">
           We couldn&apos;t run this search right now. Please try again in a moment.
