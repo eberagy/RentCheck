@@ -72,7 +72,10 @@ export default function LandlordPortalPage() {
   const supabase = createClient()
 
   useEffect(() => {
-    loadData()
+    // .catch so a transient Supabase failure during the parallel fetches
+    // (profiles + landlord_claims + reviews + properties + disputes)
+    // doesn't leave the page stuck on the loading skeleton.
+    loadData().catch(() => setLoading(false))
   }, []) // eslint-disable-line
 
   async function loadData() {
