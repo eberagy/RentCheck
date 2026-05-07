@@ -43,12 +43,17 @@ export default async function RenterProfilePage({ params }: RenterProfilePagePro
   const p = await params
   const service = createServiceClient()
 
-  const { data: profile } = await service
+  const { data: profile, error: profileErr } = await service
     .from('profiles')
     .select('id, full_name, avatar_url, bio, public_profile, is_banned, created_at')
     .eq('id', p.id)
     .single()
 
+  // Same pattern as landlord/property: PGRST116 = legitimate 404 (id
+  // doesn't exist or isn't a public profile). Anything else throws to
+  // error.tsx so we don't deindex a real profile page on a transient
+  // DB hiccup.
+  if (profileErr && profileErr.code !== 'PGRST116') throw profileErr
   if (!profile || !profile.public_profile || profile.is_banned) {
     notFound()
   }
