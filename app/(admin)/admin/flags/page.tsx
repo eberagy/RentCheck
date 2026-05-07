@@ -98,10 +98,10 @@ export default function AdminFlagsPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" /></div>
+        <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" aria-hidden="true" /></div>
       ) : items.length === 0 ? (
         <div className="text-center py-20 text-slate-500">
-          <CheckCircle2 className="h-10 w-10 text-teal-400 mx-auto mb-3" />
+          <CheckCircle2 className="h-10 w-10 text-teal-400 mx-auto mb-3" aria-hidden="true" />
           <p className="font-medium">No flagged reviews</p>
           <p className="text-sm mt-1">No community reports to review</p>
         </div>
@@ -151,7 +151,7 @@ export default function AdminFlagsPage() {
                         onClick={() => dismissFlag(item.id)}
                         disabled={processing === item.id}
                       >
-                        {processing === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <XCircle className="h-3.5 w-3.5 mr-1" />}
+                        {processing === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : <XCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
                         Dismiss Flag
                       </Button>
                       {item.review && item.review.status !== 'flagged' && (

@@ -110,10 +110,10 @@ export default function AdminClaimsPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" /></div>
+        <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" aria-hidden="true" /></div>
       ) : claims.length === 0 ? (
         <div className="text-center py-20 text-slate-500">
-          <CheckCircle2 className="h-10 w-10 text-teal-400 mx-auto mb-3" />
+          <CheckCircle2 className="h-10 w-10 text-teal-400 mx-auto mb-3" aria-hidden="true" />
           <p className="font-medium">No {filter} claims</p>
         </div>
       ) : (
@@ -186,7 +186,7 @@ export default function AdminClaimsPage() {
                         onClick={() => processClaim(claim.id, 'approved')}
                         disabled={processing === claim.id}
                       >
-                        {processing === claim.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
+                        {processing === claim.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
                         Approve Claim
                       </Button>
                       <Button
@@ -196,7 +196,7 @@ export default function AdminClaimsPage() {
                         onClick={() => processClaim(claim.id, 'rejected')}
                         disabled={processing === claim.id}
                       >
-                        <XCircle className="h-3.5 w-3.5 mr-1" />
+                        <XCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                         Reject
                       </Button>
                     </div>

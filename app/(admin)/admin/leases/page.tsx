@@ -102,10 +102,10 @@ export default function AdminLeasesPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" /></div>
+        <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" aria-hidden="true" /></div>
       ) : items.length === 0 ? (
         <div className="text-center py-20 text-slate-500">
-          <CheckCircle2 className="h-10 w-10 text-teal-400 mx-auto mb-3" />
+          <CheckCircle2 className="h-10 w-10 text-teal-400 mx-auto mb-3" aria-hidden="true" />
           <p className="font-medium">All caught up</p>
           <p className="text-sm mt-1">No pending lease verifications</p>
         </div>
@@ -156,7 +156,7 @@ export default function AdminLeasesPage() {
                         onClick={() => verifyLease(item.id, true)}
                         disabled={processing === item.id}
                       >
-                        {processing === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
+                        {processing === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
                         Verify Lease
                       </Button>
                       <Button
@@ -166,7 +166,7 @@ export default function AdminLeasesPage() {
                         onClick={() => verifyLease(item.id, false)}
                         disabled={processing === item.id}
                       >
-                        <XCircle className="h-3.5 w-3.5 mr-1" />
+                        <XCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                         Reject
                       </Button>
                     </div>
