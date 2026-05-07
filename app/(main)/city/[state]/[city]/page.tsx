@@ -15,6 +15,7 @@ import { getCityAliases } from '@/lib/cities'
 import { CitySubscribeButton } from '@/components/city/CitySubscribeButton'
 import Script from 'next/script'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
+import { captureException } from '@/lib/sentry'
 
 export const revalidate = 3600
 // Empty generateStaticParams + dynamicParams=true: see /landlord/[slug]
@@ -155,15 +156,24 @@ export default async function CityPage({ params }: CityPageProps) {
   // government records we ingest so the page feels alive even before
   // renters review. Skip purely-informational types (business filings).
   const landlordIdsForActivity = landlords.map((l: Landlord) => l.id).slice(0, 200)
-  const recentRecords = landlordIdsForActivity.length
-    ? (await supabase
-        .from('public_records')
-        .select('id, record_type, title, severity, status, filed_date, source_url, landlord:landlords(display_name, slug)')
-        .in('landlord_id', landlordIdsForActivity)
-        .neq('record_type', 'business_registration')
-        .order('filed_date', { ascending: false, nullsFirst: false })
-        .limit(8)).data ?? []
-    : []
+  // Inline IIFE to keep recentRecords' type inferred from the Supabase
+  // query rather than re-stating it (the joined `landlord` field is
+  // typed as an array in PostgREST + a single object at runtime, which
+  // makes hand-written types fight with reality).
+  const { recentRecords, recentRecordsErr } = await (async () => {
+    if (!landlordIdsForActivity.length) return { recentRecords: [], recentRecordsErr: null }
+    const { data, error } = await supabase
+      .from('public_records')
+      .select('id, record_type, title, severity, status, filed_date, source_url, landlord:landlords(display_name, slug)')
+      .in('landlord_id', landlordIdsForActivity)
+      .neq('record_type', 'business_registration')
+      .order('filed_date', { ascending: false, nullsFirst: false })
+      .limit(8)
+    return { recentRecords: data ?? [], recentRecordsErr: error }
+  })()
+  // Non-fatal — page renders fine without recent activity. But a sustained
+  // failure would mean the city page looks dead, so capture for visibility.
+  if (recentRecordsErr) captureException(recentRecordsErr, { where: 'city:[state]/[city]:recent-records', stateAbbr, cityName })
 
   // CollectionPage JSON-LD — tells Google this is a directory page for
   // a specific locale, so it ranks for "{city} landlords" queries.
