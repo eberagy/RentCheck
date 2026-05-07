@@ -446,6 +446,8 @@ export default function LandlordPortalPage() {
                       <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Website</span>
                       <input
                         type="url"
+                        inputMode="url"
+                        autoComplete="url"
                         value={profileWebsite}
                         onChange={e => setProfileWebsite(e.target.value)}
                         placeholder="https://example.com"
@@ -456,6 +458,8 @@ export default function LandlordPortalPage() {
                       <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400">Phone</span>
                       <input
                         type="tel"
+                        inputMode="tel"
+                        autoComplete="tel"
                         value={profilePhone}
                         onChange={e => setProfilePhone(e.target.value)}
                         placeholder="(555) 123-4567"
