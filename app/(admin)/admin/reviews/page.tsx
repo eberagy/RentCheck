@@ -186,7 +186,7 @@ export default function AdminReviewsPage() {
                 disabled={bulkRunning || approvableSelected.length === 0}
                 title={approvableSelected.length < selected.size ? 'Lease-verified selections only' : undefined}
               >
-                {bulkRunning ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
+                {bulkRunning ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
                 Approve {approvableSelected.length > 0 ? `(${approvableSelected.length})` : ''}
               </Button>
               <Button
@@ -196,7 +196,7 @@ export default function AdminReviewsPage() {
                 onClick={() => bulkModerate('rejected', rejectableSelected)}
                 disabled={bulkRunning || rejectableSelected.length === 0}
               >
-                <XCircle className="h-3.5 w-3.5 mr-1" />
+                <XCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                 Reject {rejectableSelected.length > 0 ? `(${rejectableSelected.length})` : ''}
               </Button>
             </div>
@@ -205,10 +205,10 @@ export default function AdminReviewsPage() {
       )}
 
       {loading ? (
-        <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" /></div>
+        <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" aria-hidden="true" /></div>
       ) : reviews.length === 0 ? (
         <div className="text-center py-20 text-slate-500">
-          <CheckCircle2 className="h-10 w-10 text-teal-400 mx-auto mb-3" />
+          <CheckCircle2 className="h-10 w-10 text-teal-400 mx-auto mb-3" aria-hidden="true" />
           <p className="font-medium">Queue is empty</p>
           <p className="text-sm mt-1">No {filter} reviews</p>
         </div>
@@ -315,7 +315,7 @@ export default function AdminReviewsPage() {
                             onClick={() => moderate(review.id, 'approved')}
                             disabled={processing === review.id || !review.lease_verified}
                           >
-                            {processing === review.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
+                            {processing === review.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
                             Approve
                           </Button>
                           <Button
@@ -325,7 +325,7 @@ export default function AdminReviewsPage() {
                             onClick={() => moderate(review.id, 'rejected')}
                             disabled={processing === review.id}
                           >
-                            <XCircle className="h-3.5 w-3.5 mr-1" />
+                            <XCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                             Reject
                           </Button>
                         </div>
