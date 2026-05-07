@@ -38,7 +38,7 @@ export async function GET() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
-  if (error) return dbError('saved-searches:db', error)
+  if (error) return dbError('saved-searches:list', error)
   return NextResponse.json({ searches: data ?? [] })
 }
 
@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
     .select('id, city, state_abbr, notify_email, created_at')
     .single()
 
-  if (error) return dbError('saved-searches:db', error)
+  if (error) return dbError('saved-searches:upsert', error)
   return NextResponse.json({ search: data })
 }
 
@@ -110,6 +110,6 @@ export async function DELETE(req: NextRequest) {
     .eq('id', id)
     .eq('user_id', user.id)
 
-  if (error) return dbError('saved-searches:db', error)
+  if (error) return dbError('saved-searches:delete', error)
   return NextResponse.json({ ok: true })
 }

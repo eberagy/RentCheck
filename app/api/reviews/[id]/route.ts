@@ -93,7 +93,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   const { error } = await service.from('reviews').update(updates).eq('id', id)
-  if (error) return dbError('reviews/[id]:db', error)
+  if (error) return dbError('reviews/[id]:patch', error)
   return NextResponse.json({ ok: true })
 }
 
@@ -113,7 +113,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const ownerId = review.reviewer_id
 
   const { error } = await service.from('reviews').delete().eq('id', id)
-  if (error) return dbError('reviews/[id]:db', error)
+  if (error) return dbError('reviews/[id]:delete', error)
 
   // Best-effort: remove the stored lease doc since it was never verified.
   void (async () => {

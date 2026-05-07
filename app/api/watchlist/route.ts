@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     notify_email: notifyEmail,
   }, { onConflict })
 
-  if (error) return dbError('watchlist:db', error)
+  if (error) return dbError('watchlist:upsert', error)
   return NextResponse.json({ ok: true }, { status: 201 })
 }
 
@@ -71,6 +71,6 @@ export async function DELETE(req: NextRequest) {
   if (propertyId) q = q.eq('property_id', propertyId)
 
   const { error } = await q
-  if (error) return dbError('watchlist:db', error)
+  if (error) return dbError('watchlist:delete', error)
   return NextResponse.json({ ok: true })
 }
