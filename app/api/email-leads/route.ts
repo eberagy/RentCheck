@@ -4,6 +4,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { sanitizeText } from '@/lib/sanitize'
 import { sendCityAlertConfirmationEmail } from '@/lib/email'
+import { captureException } from '@/lib/sentry'
 import { z } from 'zod'
 
 // POST /api/email-leads — anon-friendly email capture endpoint.
@@ -50,7 +51,11 @@ export async function POST(req: NextRequest) {
 
   const isDuplicate = error && (error.message.includes('duplicate') || error.message.includes('unique'))
   if (error && !isDuplicate) {
+    // Custom error path because dbError can't be used here — duplicate
+    // emails are a non-error 200 (already subscribed), only genuine
+    // failures get the 500. Sentry capture so we hear about it.
     console.error('[email-leads] insert failed:', error)
+    captureException(error, { where: 'email-leads:insert' })
     return NextResponse.json({ error: 'Could not save' }, { status: 500 })
   }
 
