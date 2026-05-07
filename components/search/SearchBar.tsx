@@ -111,7 +111,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
               aria-label="Clear search"
               className={cn('flex-shrink-0 p-1 -m-1 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400', variant === 'dark' ? 'text-slate-400 hover:text-white' : 'text-slate-400 hover:text-slate-600')}
             >
-              <X className="h-4 w-4" />
+              <X className="h-4 w-4" aria-hidden="true" />
             </button>
           ) : size === 'lg' && !inline ? (
             <kbd className={cn(

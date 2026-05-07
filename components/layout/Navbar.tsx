@@ -175,7 +175,7 @@ export function Navbar() {
                 : 'border-slate-200 bg-white text-slate-600 shadow-sm hover:bg-slate-50'
             )}
           >
-            <Menu className="h-5 w-5" />
+            <Menu className="h-5 w-5" aria-hidden="true" />
           </button>
           <SheetContent side="right" className="w-[min(20rem,90vw)] border-l border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] pt-8">
             <div className="mb-6">
