@@ -28,23 +28,27 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
   const [done, setDone] = useState(false)
   const dialogRef = useRef<HTMLDivElement>(null)
 
-  // Close on Escape and lock body scroll while open. The previous modal had
-  // neither — keyboard users could not dismiss it without clicking the
-  // backdrop, and on mobile the page scrolled behind the overlay.
+  // Close on Escape, lock body scroll, and restore focus on close. The
+  // previous modal had none of these — keyboard users could not dismiss
+  // it without clicking the backdrop, the page scrolled behind the overlay
+  // on mobile, and after closing focus jumped to the top of the page
+  // instead of returning to the Flag button that triggered it.
   useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null
     function onKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose()
     }
     document.addEventListener('keydown', onKey)
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    // Move focus into the dialog so screen readers announce its content
-    // and Tab cycles within it (browsers handle the inertness of the
-    // backdrop given role=dialog + aria-modal).
     dialogRef.current?.focus()
     return () => {
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = prevOverflow
+      // Return focus to whatever opened us — typically the per-review
+      // "Flag" button — so keyboard / screen-reader users keep their
+      // place in the page.
+      previouslyFocused?.focus?.()
     }
   }, [onClose])
 
