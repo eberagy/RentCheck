@@ -108,7 +108,14 @@ export default function OnboardingPage() {
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
         <div className="w-full max-w-xl">
           {/* Step indicator */}
-          <p className="text-xs font-semibold text-teal-600 uppercase tracking-widest mb-3 text-center">
+          <p
+            role="progressbar"
+            aria-valuenow={step === 'role' ? 1 : 2}
+            aria-valuemin={1}
+            aria-valuemax={2}
+            aria-valuetext={`Step ${step === 'role' ? '1' : '2'} of 2`}
+            className="text-xs font-semibold text-teal-600 uppercase tracking-widest mb-3 text-center"
+          >
             Step {step === 'role' ? '1' : '2'} of 2
           </p>
 

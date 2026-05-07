@@ -23,13 +23,21 @@ const STEPS = [
 ]
 
 function StepIndicator({ current }: { current: 1 | 2 | 3 }) {
+  const currentLabel = STEPS.find(s => s.n === current)?.label ?? ''
   return (
-    <div className="flex items-center justify-center gap-0 mb-10">
+    <div
+      role="progressbar"
+      aria-valuenow={current}
+      aria-valuemin={1}
+      aria-valuemax={STEPS.length}
+      aria-valuetext={`Step ${current} of ${STEPS.length}: ${currentLabel}`}
+      className="flex items-center justify-center gap-0 mb-10"
+    >
       {STEPS.map((step, i) => {
         const isDone = step.n < current
         const isActive = step.n === current
         return (
-          <div key={step.n} className="flex items-center">
+          <div key={step.n} aria-hidden="true" className="flex items-center">
             <div className="flex flex-col items-center gap-1.5">
               <div
                 className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
