@@ -130,7 +130,11 @@ describe('formatCount', () => {
   it('uses K suffix for thousands', () => {
     expect(formatCount(1000)).toBe('1.0K')
     expect(formatCount(2500)).toBe('2.5K')
-    expect(formatCount(999_999)).toBe('1000.0K')
+    // 999_999 used to render as "1000.0K" (visually broken — 4-digit K).
+    // Now bumps up into the M bucket via the lowered threshold.
+    expect(formatCount(999_999)).toBe('1.0M')
+    // Just below the bump threshold still reads as K.
+    expect(formatCount(999_499)).toBe('999.5K')
   })
 
   it('uses M suffix for millions', () => {

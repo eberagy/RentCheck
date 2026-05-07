@@ -95,8 +95,11 @@ export function formatAddress(line1: string, city: string, stateAbbr: string, zi
 // ─── NUMBER HELPERS ──────────────────────────────────────────
 
 export function formatCount(n: number): string {
-  if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`
-  if (n >= 1000) return `${(n / 1000).toFixed(1)}K`
+  // Lower the M-threshold to 999_500 so values that would round to "1000.0K"
+  // get bumped into the M bucket instead. Without this, 999_999 rendered
+  // as "1000.0K" — visually broken because no one writes 4-digit Ks.
+  if (n >= 999_500) return `${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`
   return n.toString()
 }
 
