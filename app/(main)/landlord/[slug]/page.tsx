@@ -349,7 +349,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           <div className="px-5 py-7 sm:px-8 sm:py-8">
             <div className="flex items-start gap-4">
               <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-navy-50 text-navy-600 ring-1 ring-navy-100">
-                <Building2 className="h-7 w-7" />
+                <Building2 className="h-7 w-7" aria-hidden="true" />
               </div>
               <div className="min-w-0 flex-1 space-y-3">
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -364,7 +364,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                 )}
                 {(landlord.city || landlord.state_abbr) && (
                   <div className="flex items-center gap-1.5 text-[13.5px] text-slate-600">
-                    <MapPin className="h-3.5 w-3.5 text-slate-400" />
+                    <MapPin className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
                     <span>{[landlord.city, landlord.state_abbr, landlord.zip].filter(Boolean).join(', ')}</span>
                   </div>
                 )}
@@ -447,9 +447,9 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
 
         {/* Violation banner */}
         {openViolationCount > 0 && (
-          <div className="mb-6 flex items-start gap-3.5 rounded-2xl border border-red-200 bg-gradient-to-r from-red-50 to-orange-50 px-5 py-4">
+          <div role="status" className="mb-6 flex items-start gap-3.5 rounded-2xl border border-red-200 bg-gradient-to-r from-red-50 to-orange-50 px-5 py-4">
             <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-red-200 bg-red-100">
-              <Flag className="h-[18px] w-[18px] text-red-600" />
+              <Flag className="h-[18px] w-[18px] text-red-600" aria-hidden="true" />
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-[14.5px] font-bold text-red-900">

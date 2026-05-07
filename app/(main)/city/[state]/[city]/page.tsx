@@ -279,7 +279,7 @@ export default async function CityPage({ params }: CityPageProps) {
             <div className="mt-6 flex flex-wrap gap-2">
               {collegeInfo.universities.map(uni => (
                 <span key={uni} className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-white/80">
-                  <GraduationCap className="h-3 w-3" />
+                  <GraduationCap className="h-3 w-3" aria-hidden="true" />
                   {uni}
                 </span>
               ))}
