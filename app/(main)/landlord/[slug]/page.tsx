@@ -32,6 +32,7 @@ import { formatAddress } from '@/lib/utils'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
 import { isValidLandlordSlug } from '@/lib/url-guards'
 import { TrackPageView } from '@/components/analytics/TrackPageView'
+import { captureException } from '@/lib/sentry'
 import type { Review, PublicRecord, Property } from '@/types'
 
 interface LandlordPageProps {
@@ -156,13 +157,17 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
   const propertyIds = (properties ?? []).map((p: Property) => p.id)
   let propertyRecords: PublicRecord[] = []
   if (propertyIds.length > 0) {
-    const { data: propRecs } = await supabase
+    const { data: propRecs, error: propRecsErr } = await supabase
       .from('public_records')
       .select('id, record_type, status, severity, violation_class, case_number, title, description, filed_date, closed_date, source, source_url, source_id, property_id, landlord_id, last_synced_at, raw_data, property:properties(address_line1, city, state_abbr, zip)')
       .in('property_id', propertyIds)
       .is('landlord_id', null)
       .order('filed_date', { ascending: false })
       .limit(500)
+    // A query failure would silently hide property-linked records on
+    // a landlord profile (most of the page's value). Capture so we
+    // notice — fallback to empty array preserves the page render.
+    if (propRecsErr) captureException(propRecsErr, { where: 'landlord:[slug]:property-records', slug: landlord.slug })
     propertyRecords = (propRecs ?? []) as unknown as PublicRecord[]
   }
 
