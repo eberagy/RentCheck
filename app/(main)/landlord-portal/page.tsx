@@ -366,7 +366,7 @@ export default function LandlordPortalPage() {
 
         {/* ── Rejected claim ── */}
         {claim && claim.status === 'rejected' && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-6">
+          <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 p-6">
             <h2 className="font-bold text-red-900">Claim Rejected</h2>
             <p className="mt-1 text-sm text-red-800">{claim.admin_notes ?? 'Your verification documents could not be confirmed. Please try again with different documents.'}</p>
             <Button asChild size="sm" variant="outline" className="mt-4 rounded-full border-red-300 text-red-700 hover:bg-red-100">

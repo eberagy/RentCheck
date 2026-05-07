@@ -125,7 +125,7 @@ async function SearchResults({
       // would mean a lot of users hitting the "try again" message.
       captureException(error, { where: 'search:rpc', query: q })
       return (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-5 text-sm text-red-700">
+        <div role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-5 text-sm text-red-700">
           We couldn&apos;t run this search right now. Please try again in a moment.
         </div>
       )
