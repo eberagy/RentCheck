@@ -130,10 +130,11 @@ export default function AdminLeasesPage() {
 
                     {/* Document viewer button */}
                     <button
+                      type="button"
                       onClick={() => getDocUrl(item.id)}
-                      className="inline-flex items-center gap-1.5 text-sm text-navy-600 hover:text-navy-800 font-medium mb-4"
+                      className="inline-flex items-center gap-1.5 text-sm text-navy-600 hover:text-navy-800 font-medium mb-4 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                     >
-                      <Eye className="h-4 w-4" />
+                      <Eye className="h-4 w-4" aria-hidden="true" />
                       View Document: {item.lease_filename ?? 'lease.pdf'}
                     </button>
 

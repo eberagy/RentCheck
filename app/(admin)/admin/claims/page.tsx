@@ -153,10 +153,11 @@ export default function AdminClaimsPage() {
 
                 {claim.doc_url && (
                   <button
+                    type="button"
                     onClick={() => getDocUrl(claim.id, claim.doc_url!)}
-                    className="inline-flex items-center gap-1.5 text-sm text-navy-600 hover:text-navy-800 font-medium mb-4"
+                    className="inline-flex items-center gap-1.5 text-sm text-navy-600 hover:text-navy-800 font-medium mb-4 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                   >
-                    <Eye className="h-4 w-4" />
+                    <Eye className="h-4 w-4" aria-hidden="true" />
                     View Verification Document{claim.doc_filename ? `: ${claim.doc_filename}` : ''}
                   </button>
                 )}

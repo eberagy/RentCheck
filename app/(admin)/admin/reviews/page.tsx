@@ -172,7 +172,7 @@ export default function AdminReviewsPage() {
               </span>
             </label>
             {selected.size > 0 && (
-              <button type="button" onClick={clearSelection} className="text-[12.5px] text-slate-500 hover:text-slate-700">
+              <button type="button" onClick={clearSelection} className="text-[12.5px] text-slate-500 hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                 Clear
               </button>
             )}
@@ -258,10 +258,15 @@ export default function AdminReviewsPage() {
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <button
-                        className="text-slate-400 hover:text-slate-600"
+                        type="button"
+                        aria-expanded={expanded === review.id}
+                        aria-label={expanded === review.id ? 'Collapse review details' : 'Expand review details'}
+                        className="text-slate-400 hover:text-slate-600 p-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                         onClick={() => setExpanded(expanded === review.id ? null : review.id)}
                       >
-                        {expanded === review.id ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                        {expanded === review.id
+                          ? <ChevronUp className="h-4 w-4" aria-hidden="true" />
+                          : <ChevronDown className="h-4 w-4" aria-hidden="true" />}
                       </button>
                     </div>
                   </div>

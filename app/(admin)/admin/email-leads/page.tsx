@@ -122,7 +122,7 @@ export default async function AdminEmailLeadsPage({
           placeholder="Filter by source…"
           className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm"
         />
-        <button type="submit" className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white">
+        <button type="submit" className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-700 focus-visible:ring-offset-2">
           Apply
         </button>
         {(params.city || params.source) && (
