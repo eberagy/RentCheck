@@ -245,32 +245,32 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           <div className="px-5 py-7 sm:px-8 sm:py-8">
             <div className="flex items-start gap-4">
               <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-navy-50 text-navy-600 ring-1 ring-navy-100">
-                <Building2 className="h-7 w-7" />
+                <Building2 className="h-7 w-7" aria-hidden="true" />
               </div>
               <div className="min-w-0 flex-1 space-y-3">
                 <h1 className="font-display text-[clamp(1.8rem,3.6vw,2.6rem)] leading-[1.05] tracking-tight text-slate-950">
                   {property.address_line1}
                 </h1>
                 <p className="flex items-center gap-1.5 text-[13.5px] text-slate-600">
-                  <MapPin className="h-3.5 w-3.5 text-slate-400" />
+                  <MapPin className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
                   {property.city}, {property.state_abbr} {property.zip}
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1">
                   {property.property_type && (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-navy-50 px-3 py-1 text-[12px] font-medium text-navy-700 capitalize">
-                      <Building2 className="h-3 w-3" />
+                      <Building2 className="h-3 w-3" aria-hidden="true" />
                       {property.property_type}
                     </span>
                   )}
                   {property.unit_count && (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[12px] font-medium text-slate-600">
-                      <Hash className="h-3 w-3" />
+                      <Hash className="h-3 w-3" aria-hidden="true" />
                       {property.unit_count} units
                     </span>
                   )}
                   {property.year_built && (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[12px] font-medium text-slate-600">
-                      <Calendar className="h-3 w-3" />
+                      <Calendar className="h-3 w-3" aria-hidden="true" />
                       Built {property.year_built}
                     </span>
                   )}
@@ -319,7 +319,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         <section>
           <div className="mb-4 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5 text-navy-600" />
+              <MessageSquare className="h-5 w-5 text-navy-600" aria-hidden="true" />
               <h2 className="text-lg font-semibold text-slate-950">
                 Renter Reviews{reviewList.length > 0 && ` (${reviewList.length})`}
               </h2>
@@ -363,7 +363,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         <div className="mt-10 flex flex-col items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:flex-row sm:items-center">
           <div className="flex items-start gap-3">
             <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-red-100">
-              <Phone className="h-5 w-5 text-red-600" />
+              <Phone className="h-5 w-5 text-red-600" aria-hidden="true" />
             </div>
             <div>
               <p className="text-sm font-semibold text-slate-950">See something wrong?</p>
@@ -431,9 +431,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             {landlord && (
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
                 <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-400">Managed by</p>
-                <Link href={`/landlord/${landlord.slug}`} className="group mt-3 flex items-center gap-3">
+                <Link href={`/landlord/${landlord.slug}`} className="group mt-3 flex items-center gap-3 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                   <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-navy-50 text-navy-600 ring-1 ring-navy-100">
-                    <User className="h-4 w-4" />
+                    <User className="h-4 w-4" aria-hidden="true" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5">
@@ -448,7 +448,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
                       </p>
                     )}
                   </div>
-                  <ExternalLink className="h-3.5 w-3.5 text-slate-400 transition-colors group-hover:text-navy-600" />
+                  <ExternalLink className="h-3.5 w-3.5 text-slate-400 transition-colors group-hover:text-navy-600" aria-hidden="true" />
                 </Link>
               </div>
             )}
