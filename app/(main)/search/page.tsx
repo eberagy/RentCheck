@@ -62,10 +62,23 @@ export async function generateMetadata({ searchParams }: SearchPageProps): Promi
     : q
     ? `"${q}" — Search Results`
     : 'Search Landlords and Properties'
+
+  // Build canonical URL containing only the indexable params (q, city,
+  // state). Drops sort + page + filter params so /search?q=foo&sort=highest
+  // and /search?q=foo collapse to the same canonical, preventing Google
+  // from treating them as separate index targets.
+  const canonicalParams = new URLSearchParams()
+  if (q) canonicalParams.set('q', q)
+  if (city) canonicalParams.set('city', city)
+  if (state) canonicalParams.set('state', state)
+  const canonicalQs = canonicalParams.toString()
+  const canonical = canonicalQs ? `/search?${canonicalQs}` : '/search'
+
   return {
     title,
     description: `Search landlords, properties, lease-verified renter reviews, and linked public records${city ? ` in ${city}` : ''} on Vett.`,
     robots: { index: !!(q || (city && state)), follow: true },
+    alternates: { canonical },
   }
 }
 
