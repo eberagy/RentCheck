@@ -67,13 +67,3 @@ export function StarRating({ value, onChange, readonly = false, size = 'md', sho
   )
 }
 
-// Display-only compact version
-export function RatingDisplay({ rating, count }: { rating: number; count: number }) {
-  return (
-    <div className="flex items-center gap-1.5">
-      <StarRating value={rating} readonly size="sm" />
-      <span className="text-sm font-semibold text-slate-900">{rating.toFixed(1)}</span>
-      <span className="text-sm text-slate-500">({count.toLocaleString()} {count === 1 ? 'review' : 'reviews'})</span>
-    </div>
-  )
-}
