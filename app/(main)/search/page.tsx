@@ -658,8 +658,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
             {/* Rating filter */}
             <div className="rounded-lg border border-slate-200 bg-white p-[18px]">
-              <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Overall rating</div>
-              <div className="grid gap-2">
+              <div id="search-filter-rating-label" className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Overall rating</div>
+              <div role="radiogroup" aria-labelledby="search-filter-rating-label" className="grid gap-2">
                 {[
                   { label: '4.0+', value: '4' },
                   { label: '3.0+', value: '3' },
