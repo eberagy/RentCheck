@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { verifyCronSecret } from '@/lib/data-sync/utils'
 import { sendAdminDigestEmail } from '@/lib/email'
+import { captureException } from '@/lib/sentry'
 import type { AdminDigestCounts } from '@/emails/admin-digest'
 
 export const maxDuration = 60
@@ -51,11 +52,20 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, skipped: 'empty queues, not Monday', counts })
   }
 
-  const { data: admins } = await supabase
+  const { data: admins, error: adminsErr } = await supabase
     .from('profiles')
     .select('email')
     .eq('user_type', 'admin')
     .eq('is_banned', false)
+
+  if (adminsErr) {
+    // Without this, a profiles-table outage would silently report
+    // recipients: 0 — admins would assume "no admin accounts" rather
+    // than "the digest cron silently failed". Sentry alert + 500 so
+    // Vercel cron retry kicks in.
+    captureException(adminsErr, { where: 'cron:admin-digest:select-admins' })
+    return NextResponse.json({ error: 'Failed to load admin recipients' }, { status: 500 })
+  }
 
   const recipients = (admins ?? []).map(a => a.email).filter((e): e is string => Boolean(e))
   if (recipients.length === 0) {
