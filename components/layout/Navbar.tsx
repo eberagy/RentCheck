@@ -45,15 +45,16 @@ export function Navbar() {
         <Logo size="md" inverted={isDark} />
 
         {/* Desktop nav */}
-        <nav className="hidden items-center justify-center gap-7 md:flex">
+        <nav aria-label="Main" className="hidden items-center justify-center gap-7 md:flex">
           {NAV_LINKS.map(link => {
             const active = pathname.startsWith(link.href)
             return (
               <Link
                 key={link.href}
                 href={link.href}
+                aria-current={active ? 'page' : undefined}
                 className={cn(
-                  'pb-1 text-[13.5px] font-medium transition-colors border-b-2',
+                  'pb-1 text-[13.5px] font-medium transition-colors border-b-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 rounded',
                   active
                     ? isDark
                       ? 'border-teal-300 text-white'
@@ -183,22 +184,26 @@ export function Navbar() {
                 Know before you rent
               </p>
             </div>
-            <nav className="flex flex-col gap-1">
-              {NAV_LINKS.map(link => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className={cn(
-                    'rounded-2xl px-3 py-2.5 text-sm font-medium',
-                    pathname.startsWith(link.href)
-                      ? 'bg-slate-950 text-white'
-                      : 'text-slate-700 hover:bg-white'
-                  )}
-                >
-                  {link.label}
-                </Link>
-              ))}
+            <nav aria-label="Main" className="flex flex-col gap-1">
+              {NAV_LINKS.map(link => {
+                const active = pathname.startsWith(link.href)
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    aria-current={active ? 'page' : undefined}
+                    className={cn(
+                      'rounded-2xl px-3 py-2.5 text-sm font-medium',
+                      active
+                        ? 'bg-slate-950 text-white'
+                        : 'text-slate-700 hover:bg-white'
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                )
+              })}
               <div className="my-3 border-t border-slate-200" />
               {user ? (
                 <>
