@@ -54,8 +54,13 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
         setDidVote(data.voted)
       }
     } catch {
+      // Network failure — revert the optimistic update and surface a
+      // toast. Without the toast the user sees their click "succeed"
+      // (count goes up) and then quietly "undo" (count reverts), with
+      // no signal as to whether the action took.
       setDidVote(prevVote)
       setHelpfulCount(prev)
+      toast.error("Couldn't reach the server. Please try again.")
     } finally {
       setVoting(false)
     }
