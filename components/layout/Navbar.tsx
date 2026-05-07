@@ -73,7 +73,7 @@ export function Navbar() {
         {/* Desktop auth */}
         <div className="hidden items-center gap-2.5 md:flex">
           {loading ? (
-            <div className="h-8 w-8 animate-pulse rounded-full bg-slate-200" />
+            <div aria-hidden="true" className="h-8 w-8 animate-pulse rounded-full bg-slate-200" />
           ) : user ? (
             <>
               <Button

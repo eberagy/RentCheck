@@ -164,7 +164,7 @@ export default async function AdminDashboardPage() {
           <p className="text-sm text-slate-500 mt-1">Platform overview and moderation queue</p>
         </div>
         <div className="flex items-center gap-2">
-          <div className={`h-2.5 w-2.5 rounded-full ${hasDataErrors ? 'bg-red-500' : 'bg-teal-500'} animate-pulse`} />
+          <div aria-hidden="true" className={`h-2.5 w-2.5 rounded-full ${hasDataErrors ? 'bg-red-500' : 'bg-teal-500'} animate-pulse`} />
           <span className={`text-sm font-medium ${hasDataErrors ? 'text-red-600' : 'text-teal-700'}`}>
             {hasDataErrors ? 'Data errors detected' : 'All systems healthy'}
           </span>
@@ -443,6 +443,7 @@ export default async function AdminDashboardPage() {
                     <div key={s.id} className="px-4 py-3 flex items-center justify-between gap-3">
                       <div className="flex items-center gap-3 min-w-0">
                         <div
+                          aria-hidden="true"
                           className={`h-2.5 w-2.5 rounded-full flex-shrink-0 ${
                             hasError ? 'bg-red-500' :
                             s.status === 'running' ? 'bg-amber-400 animate-pulse' :

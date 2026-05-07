@@ -145,7 +145,7 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-[1100px] px-6 pb-20 pt-16 lg:pb-28 lg:pt-24">
           <ScrollReveal delay={0} direction="up">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 backdrop-blur-sm">
-              <span className="relative flex h-1.5 w-1.5">
+              <span aria-hidden="true" className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-400 opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-teal-400" />
               </span>
