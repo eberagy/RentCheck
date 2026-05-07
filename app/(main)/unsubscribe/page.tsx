@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { BellOff, Mail, CheckCircle2 } from 'lucide-react'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { verifyUnsubscribeToken } from '@/lib/unsubscribe-token'
+import { captureException } from '@/lib/sentry'
 import { Button } from '@/components/ui/button'
 
 export const metadata: Metadata = {
@@ -28,7 +29,7 @@ export default async function UnsubscribePage({ searchParams }: UnsubscribePageP
       return (
         <div className="mx-auto max-w-md px-4 py-20 text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-red-50">
-            <BellOff className="h-7 w-7 text-red-600" />
+            <BellOff className="h-7 w-7 text-red-600" aria-hidden="true" />
           </div>
           <h1 className="font-display text-[clamp(1.5rem,3vw,2rem)] leading-tight tracking-tight text-slate-900">
             That unsubscribe link has expired
@@ -51,11 +52,16 @@ export default async function UnsubscribePage({ searchParams }: UnsubscribePageP
       .eq('id', payload.userId)
 
     if (updateErr) {
+      // Failed unsubscribes are a CAN-SPAM / GDPR liability — if Vett can't
+      // honor opt-outs, we need to know within minutes, not via inbound
+      // complaints. Tag with the user id so the team can manually flip
+      // their prefs while the bug is being chased.
       console.error('[unsubscribe] update failed:', updateErr.message)
+      captureException(updateErr, { where: 'unsubscribe:update', userId: payload.userId })
       return (
         <div className="mx-auto max-w-md px-4 py-20 text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50">
-            <Mail className="h-7 w-7 text-amber-600" />
+            <Mail className="h-7 w-7 text-amber-600" aria-hidden="true" />
           </div>
           <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-tight tracking-tight text-slate-900">
             We hit a snag.
@@ -72,7 +78,7 @@ export default async function UnsubscribePage({ searchParams }: UnsubscribePageP
     return (
       <div className="mx-auto max-w-md px-4 py-20 text-center">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50">
-          <CheckCircle2 className="h-7 w-7 text-teal-600" />
+          <CheckCircle2 className="h-7 w-7 text-teal-600" aria-hidden="true" />
         </div>
         <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-tight tracking-tight text-slate-900">
           You&apos;re unsubscribed.
@@ -103,7 +109,7 @@ export default async function UnsubscribePage({ searchParams }: UnsubscribePageP
     <div className="mx-auto max-w-md px-4 py-20">
       <div className="text-center">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-50">
-          <BellOff className="h-7 w-7 text-navy-600" />
+          <BellOff className="h-7 w-7 text-navy-600" aria-hidden="true" />
         </div>
         <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-tight tracking-tight text-slate-900">
           Manage your email preferences
@@ -116,7 +122,7 @@ export default async function UnsubscribePage({ searchParams }: UnsubscribePageP
         <div className="mt-7 flex flex-col items-center gap-3">
           <Button asChild className="rounded-full bg-navy-600 px-6 hover:bg-navy-700 text-white">
             <Link href="/login?redirectTo=/dashboard/settings">
-              <Mail className="mr-2 h-4 w-4" /> Sign in to manage
+              <Mail className="mr-2 h-4 w-4" aria-hidden="true" /> Sign in to manage
             </Link>
           </Button>
           <Link href="/" className="text-sm text-slate-500 hover:text-slate-700">
