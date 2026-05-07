@@ -89,7 +89,8 @@ export function MyReviewsClient({ reviews, statusFilter }: { reviews: MyReviewIt
               <Link
                 key={f.key}
                 href={f.key === 'all' ? '/dashboard/reviews' : `/dashboard/reviews?status=${f.key}`}
-                className={`rounded-full px-3.5 py-1.5 text-[12.5px] font-medium transition-colors ${
+                aria-current={active ? 'page' : undefined}
+                className={`rounded-full px-3.5 py-1.5 text-[12.5px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2 ${
                   active ? 'bg-slate-900 text-white' : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-800'
                 }`}
               >
