@@ -272,7 +272,8 @@ function EditReviewInline({ review, onCancel, onSaved }: {
                   key={v}
                   type="button"
                   onClick={() => setRatingOverall(v)}
-                  className="p-0.5"
+                  aria-pressed={v <= ratingOverall}
+                  className="p-0.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2"
                   aria-label={`${v} star${v > 1 ? 's' : ''}`}
                 >
                   <Star className={`h-5 w-5 transition-colors ${v <= ratingOverall ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} aria-hidden="true" />
@@ -281,8 +282,8 @@ function EditReviewInline({ review, onCancel, onSaved }: {
             </div>
           </div>
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Would rent again?</span>
-            <div className="mt-1.5 flex items-center gap-1">
+            <span id="would-rent-again-label" className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">Would rent again?</span>
+            <div role="radiogroup" aria-labelledby="would-rent-again-label" className="mt-1.5 flex items-center gap-1">
               {[
                 { v: true, label: 'Yes' },
                 { v: false, label: 'No' },
@@ -293,8 +294,10 @@ function EditReviewInline({ review, onCancel, onSaved }: {
                   <button
                     key={opt.label}
                     type="button"
+                    role="radio"
+                    aria-checked={active}
                     onClick={() => setWouldRentAgain(opt.v)}
-                    className={`rounded-full border px-3 py-1 text-[12px] font-medium transition-colors ${active ? 'border-navy-500 bg-navy-50 text-navy-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
+                    className={`rounded-full border px-3 py-1 text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2 ${active ? 'border-navy-500 bg-navy-50 text-navy-700' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
                   >
                     {opt.label}
                   </button>
