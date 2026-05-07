@@ -175,7 +175,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
             <button
               type="button"
               onClick={e => handleSubmit(e)}
-              className="text-xs font-medium text-navy-600 hover:text-navy-800"
+              className="text-xs font-medium text-navy-600 hover:text-navy-800 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
             >
               See all results for &ldquo;{query}&rdquo; →
             </button>
