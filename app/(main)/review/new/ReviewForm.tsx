@@ -324,8 +324,12 @@ export default function ReviewForm() {
           <p className="mt-1.5 text-[14.5px] text-slate-500">Search by name, management company, or address</p>
 
           <div className="relative mt-8 mb-4">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" aria-hidden="true" />
             <Input
+              type="search"
+              inputMode="search"
+              autoComplete="off"
+              aria-label="Search landlords by name, management company, or address"
               className="h-11 rounded-xl border-slate-200 pl-10 text-[14px]"
               placeholder="Search landlords..."
               value={searchQuery}
@@ -496,7 +500,7 @@ export default function ReviewForm() {
                   <span className="text-[13px] font-semibold text-slate-900">Property address <span className="text-red-600">*</span></span>
                   <span className="text-[11.5px] text-slate-400">The address you rented at</span>
                 </div>
-                <Input {...register('propertyAddress')} placeholder="123 Main St, Apt 4B, Pittsburgh, PA" className="h-11 rounded-xl border-slate-200 text-[14px]" />
+                <Input {...register('propertyAddress')} placeholder="123 Main St, Apt 4B, Pittsburgh, PA" autoComplete="street-address" aria-label="Property address" className="h-11 rounded-xl border-slate-200 text-[14px]" />
                 {errors.propertyAddress && <p className="text-xs text-red-600 mt-1">{errors.propertyAddress.message}</p>}
               </div>
 
@@ -506,7 +510,7 @@ export default function ReviewForm() {
                   <span className="text-[13px] font-semibold text-slate-900">Headline <span className="text-red-600">*</span></span>
                   <span className="text-[11.5px] text-slate-400">A short, specific summary — like a subject line.</span>
                 </div>
-                <Input {...register('title')} placeholder="Summarize your experience" className="h-11 rounded-xl border-slate-200 text-[14px]" />
+                <Input {...register('title')} placeholder="Summarize your experience" autoComplete="off" aria-label="Review headline" className="h-11 rounded-xl border-slate-200 text-[14px]" />
                 <div className="mt-1.5 text-[11.5px] text-slate-400">{watch('title')?.length ?? 0} / 150 characters</div>
                 {errors.title && <p className="text-xs text-red-600 mt-1">{errors.title.message}</p>}
               </div>
