@@ -142,24 +142,24 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
                         <div className="mt-2 flex flex-wrap items-center gap-3 text-[12.5px] text-slate-500">
                           {(l.city || l.state_abbr) && (
                             <span className="inline-flex items-center gap-1">
-                              <MapPin className="h-3.5 w-3.5" />
+                              <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
                               {[l.city, l.state_abbr].filter(Boolean).join(', ')}
                             </span>
                           )}
                           <span className="inline-flex items-center gap-1">
-                            <Star className="h-3.5 w-3.5 text-amber-400" />
+                            <Star className="h-3.5 w-3.5 text-amber-400" aria-hidden="true" />
                             {l.avg_rating != null && l.avg_rating > 0 ? l.avg_rating.toFixed(1) : '—'}
                             <span className="text-slate-400">· {l.review_count} review{l.review_count === 1 ? '' : 's'}</span>
                           </span>
                           {l.open_violation_count > 0 && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 font-medium text-red-700">
-                              <AlertTriangle className="h-3 w-3" />
+                              <AlertTriangle className="h-3 w-3" aria-hidden="true" />
                               {l.open_violation_count} open violation{l.open_violation_count === 1 ? '' : 's'}
                             </span>
                           )}
                           {l.eviction_count > 0 && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 font-medium text-orange-700">
-                              <Gavel className="h-3 w-3" />
+                              <Gavel className="h-3 w-3" aria-hidden="true" />
                               {l.eviction_count} eviction{l.eviction_count === 1 ? '' : 's'}
                             </span>
                           )}

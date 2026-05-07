@@ -160,7 +160,7 @@ export default async function RenterProfilePage({ params }: RenterProfilePagePro
                     <time dateTime={r.created_at}>{formatDate(r.created_at)}</time>
                     {r.lease_verified && (
                       <span className="inline-flex items-center gap-1 rounded-full border border-teal-200 bg-teal-50 px-2 py-0.5 font-semibold text-teal-700">
-                        <BadgeCheck className="h-3 w-3" /> Lease verified
+                        <BadgeCheck className="h-3 w-3" aria-hidden="true" /> Lease verified
                       </span>
                     )}
                   </div>
@@ -169,9 +169,9 @@ export default async function RenterProfilePage({ params }: RenterProfilePagePro
                   {landlord && (
                     <Link
                       href={`/landlord/${landlord.slug}`}
-                      className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-navy-700 hover:underline"
+                      className="mt-3 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-navy-700 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                     >
-                      <MapPin className="h-3.5 w-3.5" />
+                      <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
                       {landlord.display_name}
                       {landlord.city && (
                         <span className="text-slate-400"> · {landlord.city}{landlord.state_abbr ? `, ${landlord.state_abbr}` : ''}</span>
