@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyCronSecret, withSyncLog } from '@/lib/data-sync/utils'
+import { captureException } from '@/lib/sentry'
 import { syncNycHpd } from '@/lib/data-sync/nyc-hpd'
 import { syncNycDob } from '@/lib/data-sync/nyc-dob'
 import { syncNycRegistration } from '@/lib/data-sync/nyc-registration'
@@ -146,11 +147,14 @@ const SYNC_HANDLERS: Record<string, { fn: SyncFn; logKey: string }> = {
 
 export const maxDuration = 300 // Vercel Pro: 5 min max
 
-export async function GET(req: NextRequest, { params }: { params: { source: string } }) {
+// Promise-typed params — forward-compat with Next 15 where dynamic
+// route segments become async. On Next 14.2.x `await` on a plain
+// object is a no-op, so this works either way.
+export async function GET(req: NextRequest, { params }: { params: Promise<{ source: string }> }) {
   return handleSync(req, (await params).source)
 }
 
-export async function POST(req: NextRequest, { params }: { params: { source: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ source: string }> }) {
   return handleSync(req, (await params).source)
 }
 
@@ -176,6 +180,10 @@ async function handleSync(req: NextRequest, source: string) {
     const result = await withSyncLog(handler.logKey, handler.fn)
     return NextResponse.json({ ok: true, source, ...result })
   } catch (err) {
+    // withSyncLog already records to sync_logs (admin UI surfaces it),
+    // but Sentry needs the trace too — sync failures are silent until
+    // someone checks /admin/data-sync, and 500s otherwise vanish.
+    captureException(err, { where: 'sync', source, logKey: handler.logKey })
     const msg = err instanceof Error ? err.message : String(err)
     return NextResponse.json({ ok: false, source, error: msg }, { status: 500 })
   }
