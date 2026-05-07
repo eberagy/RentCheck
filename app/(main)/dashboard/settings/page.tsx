@@ -235,6 +235,7 @@ export default function SettingsPage() {
                 placeholder="Your name (shown on reviews)"
                 className="mt-1.5"
                 maxLength={100}
+                autoComplete="name"
               />
               <p className="text-xs text-slate-400 mt-1">This name appears on your reviews. Leave blank to stay anonymous.</p>
             </div>
@@ -347,6 +348,7 @@ export default function SettingsPage() {
               placeholder="Enter new password (min 8 characters)"
               className="mt-1.5"
               minLength={8}
+              autoComplete="new-password"
             />
           </div>
           <Button
