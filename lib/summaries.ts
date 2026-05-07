@@ -1,8 +1,5 @@
 import type { Landlord, Property, PublicRecord } from '@/types'
-
-function pluralize(count: number, singular: string, plural = `${singular}s`) {
-  return `${count} ${count === 1 ? singular : plural}`
-}
+import { pluralize } from './utils'
 
 function formatRating(rating: number) {
   return Number.isFinite(rating) && rating > 0 ? rating.toFixed(1) : null
