@@ -20,10 +20,15 @@ const MAX_RESPONSE_LENGTH = 1000
 
 function StarRow({ rating }: { rating: number }) {
   return (
-    <div className="flex items-center gap-0.5">
+    <div
+      role="img"
+      aria-label={rating > 0 ? `Rated ${rating.toFixed(1)} out of 5 stars` : 'No rating'}
+      className="flex items-center gap-0.5"
+    >
       {[1, 2, 3, 4, 5].map(i => (
         <Star
           key={i}
+          aria-hidden="true"
           className={`h-3.5 w-3.5 ${i <= Math.round(rating) ? 'text-amber-400 fill-amber-400' : 'text-slate-200'}`}
         />
       ))}

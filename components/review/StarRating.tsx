@@ -44,6 +44,7 @@ export function StarRating({ value, onChange, readonly = false, size = 'md', sho
               aria-pressed={!readonly && star <= display}
             >
               <Star
+                aria-hidden="true"
                 className={cn(
                   starSize,
                   'transition-colors',
