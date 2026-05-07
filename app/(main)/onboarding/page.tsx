@@ -8,6 +8,7 @@ import { Logo } from '@/components/Logo'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { COLLEGE_CITIES } from '@/types'
+import { captureException } from '@/lib/sentry'
 import type { UserType } from '@/types'
 
 type Step = 'role' | 'city'
@@ -72,7 +73,11 @@ export default function OnboardingPage() {
     setSaving(false)
 
     if (error) {
+      // Onboarding failure means a new user can't set their role —
+      // they'll bounce out without ever using the product. Sentry-route
+      // so we know about it before churn does.
       console.error('[onboarding] profile update failed:', error.message)
+      captureException(error, { where: 'onboarding:profile-update' })
       toast.error('Could not save your preferences. Please try again.')
       return
     }
