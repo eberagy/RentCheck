@@ -178,7 +178,7 @@ export default async function AdminDashboardPage() {
           <CardContent className="p-5">
             <div className="flex items-center gap-3 mb-4">
               <div className="h-9 w-9 rounded-lg bg-navy-50 flex items-center justify-center">
-                <BarChart3 className="h-5 w-5 text-navy-600" />
+                <BarChart3 className="h-5 w-5 text-navy-600" aria-hidden="true" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-slate-900">{totalReviews.toLocaleString()}</div>
@@ -205,7 +205,7 @@ export default async function AdminDashboardPage() {
         <Card className="border-slate-100">
           <CardContent className="p-5 flex items-center gap-3">
             <div className="h-9 w-9 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="h-5 w-5 text-blue-600" />
+              <TrendingUp className="h-5 w-5 text-blue-600" aria-hidden="true" />
             </div>
             <div>
               <div className="text-2xl font-bold text-slate-900">{(totalLandlords ?? 0).toLocaleString()}</div>
@@ -217,7 +217,7 @@ export default async function AdminDashboardPage() {
         <Card className="border-slate-100">
           <CardContent className="p-5 flex items-center gap-3">
             <div className="h-9 w-9 rounded-lg bg-purple-50 flex items-center justify-center flex-shrink-0">
-              <Users className="h-5 w-5 text-purple-600" />
+              <Users className="h-5 w-5 text-purple-600" aria-hidden="true" />
             </div>
             <div>
               <div className="text-2xl font-bold text-slate-900">{(totalUsers ?? 0).toLocaleString()}</div>
@@ -230,7 +230,7 @@ export default async function AdminDashboardPage() {
           <CardContent className="p-5">
             <div className="flex items-center gap-3 mb-2">
               <div className="h-9 w-9 rounded-lg bg-teal-50 flex items-center justify-center flex-shrink-0">
-                <Activity className="h-5 w-5 text-teal-600" />
+                <Activity className="h-5 w-5 text-teal-600" aria-hidden="true" />
               </div>
               <div>
                 <div className="text-2xl font-bold text-slate-900">{(totalWatchlists ?? 0).toLocaleString()}</div>
@@ -244,14 +244,14 @@ export default async function AdminDashboardPage() {
       {/* Public Records stat — full width bar */}
       <div className="mb-8 p-4 rounded-xl bg-navy-900 text-white flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Database className="h-5 w-5 text-teal-400" />
+          <Database className="h-5 w-5 text-teal-400" aria-hidden="true" />
           <div>
             <span className="font-semibold text-white">{(totalPublicRecords ?? 0).toLocaleString()}</span>
             <span className="text-navy-200 text-sm ml-2">public records indexed</span>
           </div>
         </div>
-        <Link href="/admin/data-sync" className="text-teal-400 hover:text-teal-300 text-sm flex items-center gap-1">
-          Manage data sources <RefreshCw className="h-3.5 w-3.5 ml-1" />
+        <Link href="/admin/data-sync" className="text-teal-400 hover:text-teal-300 text-sm flex items-center gap-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-navy-900">
+          Manage data sources <RefreshCw className="h-3.5 w-3.5 ml-1" aria-hidden="true" />
         </Link>
       </div>
 
