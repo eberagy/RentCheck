@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
 
   // Throttle so a compromised account can't enumerate templates rapidly.
   const rl = rateLimit(`response-templates-get:${user.id}`, 120, 60_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const url = new URL(req.url)
   const landlordId = url.searchParams.get('landlordId') ?? ''
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Not signed in' }, { status: 401 })
 
   const rl = rateLimit(`response-templates:${user.id}`, 30, 3600_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const body = await req.json()
   const parsed = createSchema.safeParse(body)

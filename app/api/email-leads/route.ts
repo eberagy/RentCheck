@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     ?? req.headers.get('x-real-ip')
     ?? 'anon'
   const rl = rateLimit(`email-leads:${ip}`, 10, 3600_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const body = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)

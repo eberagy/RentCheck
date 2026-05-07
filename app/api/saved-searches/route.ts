@@ -29,7 +29,7 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: 'Not signed in' }, { status: 401 })
 
   const rl = rateLimit(`saved-searches-get:${user.id}`, 120, 60_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const service = createServiceClient()
   const { data, error } = await service
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Not signed in' }, { status: 401 })
 
   const rl = rateLimit(`saved-searches:${user.id}`, 30, 3600_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const body = await req.json()
   const parsed = createSchema.safeParse(body)

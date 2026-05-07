@@ -69,7 +69,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const { service, user } = gate
 
   const rl = rateLimit(`review-edit:${user.id}`, 30, 3600_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const body = await req.json().catch(() => null)
   if (!body) return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
@@ -107,7 +107,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const { service, review, user } = gate
 
   const rl = rateLimit(`review-delete:${user.id}`, 10, 3600_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const leasePath = review.lease_doc_path
   const ownerId = review.reviewer_id

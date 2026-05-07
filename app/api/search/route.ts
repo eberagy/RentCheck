@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   // because search_all is an expensive full-text RPC.
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? req.headers.get('x-real-ip') ?? 'anon'
   const rl = rateLimit(`search:${ip}`, 60, 60_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const parsed = schema.safeParse(Object.fromEntries(req.nextUrl.searchParams))
   if (!parsed.success) return NextResponse.json({ error: 'Invalid query' }, { status: 400 })

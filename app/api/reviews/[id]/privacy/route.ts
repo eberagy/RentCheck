@@ -21,7 +21,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!user) return NextResponse.json({ error: 'Not signed in' }, { status: 401 })
 
   const rl = rateLimit(`review-privacy:${user.id}`, 30, 3600_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const body = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)

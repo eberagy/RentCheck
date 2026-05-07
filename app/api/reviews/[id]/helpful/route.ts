@@ -18,7 +18,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   // Rate limit: 30 votes per minute per user
   const rl = rateLimit(`helpful:${user.id}`, 30, 60_000)
-  if (!rl.success) return rateLimitResponse()
+  if (!rl.success) return rateLimitResponse(rl)
 
   const { data: voted, error } = await supabase.rpc('toggle_helpful_vote', {
     p_review_id: id,
