@@ -90,11 +90,17 @@ export default async function CityPage({ params }: CityPageProps) {
     landlordQuery = landlordQuery.ilike('city', `%${sanitize(cityName)}%`)
   }
 
-  const { data: landlords, count } = await landlordQuery
+  const { data: landlords, count, error: landlordsErr } = await landlordQuery
     .order('review_count', { ascending: false, nullsFirst: false })
     .order('display_name', { ascending: true })
     .limit(20)
 
+  // Distinguish a real DB failure from "no landlords in this city yet."
+  // The previous code notFound()'d on either, which meant a transient
+  // Postgres hiccup rendered a 404 page even though the city is real.
+  // Throw instead so error.tsx (the route group's error boundary,
+  // which already pipes to Sentry) handles it.
+  if (landlordsErr) throw landlordsErr
   if (!landlords) notFound()
 
   // Count public records for this city. Try the cached city_stats table
