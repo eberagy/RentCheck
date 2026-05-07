@@ -11,7 +11,7 @@ import { z } from 'zod'
 // because it can change rating + body, which would re-open moderation.
 const schema = z.object({ isAnonymous: z.boolean() })
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const csrf = assertSameOrigin(req)
   if (csrf) return csrf
 

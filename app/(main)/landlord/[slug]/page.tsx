@@ -35,7 +35,7 @@ import { TrackPageView } from '@/components/analytics/TrackPageView'
 import type { Review, PublicRecord, Property } from '@/types'
 
 interface LandlordPageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 export const revalidate = 3600 // ISR: revalidate every 1 hour

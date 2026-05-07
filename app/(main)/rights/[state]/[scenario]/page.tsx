@@ -7,7 +7,7 @@ import { getAllScenarios, getScenario } from '@/lib/rights-scenarios'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 interface ScenarioPageProps {
-  params: { state: string; scenario: string }
+  params: Promise<{ state: string; scenario: string }>
 }
 
 // Scenario content is statically authored in lib/rights-scenarios; same

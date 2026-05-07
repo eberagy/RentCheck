@@ -6,7 +6,7 @@ export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 export const alt = 'Landlord profile on Vett — lease-verified reviews and public records'
 
-export default async function OgImage({ params }: { params: { slug: string } }) {
+export default async function OgImage({ params }: { params: Promise<{ slug: string }> }) {
   const p = await params
   const supabase = createServiceClient()
 

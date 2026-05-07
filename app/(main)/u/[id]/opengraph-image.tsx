@@ -6,7 +6,7 @@ export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 export const alt = 'Renter profile on Vett — lease-verified reviews'
 
-export default async function OgImage({ params }: { params: { id: string } }) {
+export default async function OgImage({ params }: { params: Promise<{ id: string }> }) {
   const p = await params
   const service = createServiceClient()
 

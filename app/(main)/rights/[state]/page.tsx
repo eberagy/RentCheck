@@ -21,7 +21,7 @@ import { TrackPageView } from '@/components/analytics/TrackPageView'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 interface TenantRightsPageProps {
-  params: { state: string }
+  params: Promise<{ state: string }>
 }
 
 // Pre-render all 50 + DC at build time. Tenant-rights content is a closed

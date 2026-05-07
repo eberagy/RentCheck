@@ -26,7 +26,7 @@ export async function generateStaticParams() {
 }
 
 interface CityPageProps {
-  params: { state: string; city: string }
+  params: Promise<{ state: string; city: string }>
 }
 
 function formatCityName(slug: string) {

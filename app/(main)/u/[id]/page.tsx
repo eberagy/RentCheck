@@ -9,7 +9,7 @@ import { formatDate } from '@/lib/utils'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 interface RenterProfilePageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export const revalidate = 3600

@@ -6,7 +6,7 @@ import { getPost, getAllPosts } from '@/lib/blog'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
 
 interface BlogPostPageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 // Posts are file-system backed (lib/blog reads MDX from /content), so the

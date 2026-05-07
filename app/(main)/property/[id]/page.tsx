@@ -32,7 +32,7 @@ import { cityPagePath, getCanonicalCity } from '@/lib/cities'
 import type { Review, PublicRecord } from '@/types'
 
 interface PropertyPageProps {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 export const revalidate = 3600

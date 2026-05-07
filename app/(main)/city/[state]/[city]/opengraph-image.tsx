@@ -12,7 +12,7 @@ function formatCityName(slug: string) {
   return slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
 }
 
-export default async function OgImage({ params }: { params: { state: string; city: string } }) {
+export default async function OgImage({ params }: { params: Promise<{ state: string; city: string }> }) {
   const p = await params
   const cityName = formatCityName(p.city)
   const stateAbbr = p.state.toUpperCase()
