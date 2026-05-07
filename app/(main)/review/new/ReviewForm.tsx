@@ -411,28 +411,28 @@ export default function ReviewForm() {
             <input {...getInputProps()} />
             {leaseFile ? (
               <div className="flex items-center justify-center gap-3">
-                <FileText className="h-6 w-6 text-teal" />
+                <FileText className="h-6 w-6 text-teal" aria-hidden="true" />
                 <div className="text-left">
                   <p className="font-bold text-[14px] text-slate-900">{leaseFile.name}</p>
                   <p className="text-[12.5px] text-slate-500">{(leaseFile.size / 1024 / 1024).toFixed(2)} MB</p>
                 </div>
-                <button type="button" aria-label="Remove uploaded file" onClick={e => { e.stopPropagation(); setLeaseFile(null) }} className="ml-2 text-slate-400 hover:text-red-500">
-                  <X className="h-4 w-4" />
+                <button type="button" aria-label="Remove uploaded file" onClick={e => { e.stopPropagation(); setLeaseFile(null) }} className="ml-2 text-slate-400 hover:text-red-500 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2">
+                  <X className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
             ) : (
               <>
-                <Upload className="h-8 w-8 text-slate-400 mx-auto mb-3" />
+                <Upload className="h-8 w-8 text-slate-400 mx-auto mb-3" aria-hidden="true" />
                 <p className="font-semibold text-slate-700">Drag & drop your lease here</p>
                 <p className="text-[12.5px] text-slate-500 mt-1">or click to browse &middot; PDF, JPG, PNG, DOCX &middot; Max 10MB</p>
               </>
             )}
           </div>
-          {leaseError && <p className="mt-2 text-sm text-red-600 flex items-center gap-1"><AlertTriangle className="h-3.5 w-3.5" />{leaseError}</p>}
+          {leaseError && <p role="alert" className="mt-2 text-sm text-red-600 flex items-center gap-1"><AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />{leaseError}</p>}
 
           {/* Actions */}
           <div className="mt-6 flex items-center justify-between">
-            <button type="button" onClick={() => setStep(0)} className="text-[13px] font-medium text-slate-500 hover:text-slate-700">&larr; Back</button>
+            <button type="button" onClick={() => setStep(0)} className="text-[13px] font-medium text-slate-500 hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">&larr; Back</button>
             <div className="flex gap-2.5">
               {leaseFile && (
                 <Button
