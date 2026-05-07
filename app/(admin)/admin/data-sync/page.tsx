@@ -184,7 +184,7 @@ export default function AdminDataSyncPage() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={loadLogs} disabled={loading}>
-            <RefreshCw className={`h-4 w-4 mr-1.5 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 mr-1.5 ${loading ? 'animate-spin' : ''}`} aria-hidden="true" />
             Refresh
           </Button>
           <Button

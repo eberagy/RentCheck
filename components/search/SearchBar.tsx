@@ -76,8 +76,8 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
               )}
             >
               {loading
-                ? <Loader2 className={cn('animate-spin', size === 'lg' ? 'h-5 w-5' : 'h-4 w-4')} />
-                : <Search className={cn(size === 'lg' ? 'h-5 w-5' : 'h-4 w-4')} />
+                ? <Loader2 className={cn('animate-spin', size === 'lg' ? 'h-5 w-5' : 'h-4 w-4')} aria-hidden="true" />
+                : <Search className={cn(size === 'lg' ? 'h-5 w-5' : 'h-4 w-4')} aria-hidden="true" />
               }
             </button>
           )}
