@@ -60,7 +60,7 @@ export function Footer() {
 
           {/* Link columns */}
           {FOOTER_COLS.map(col => (
-            <div key={col.title}>
+            <nav key={col.title} aria-label={col.title}>
               <h3 className="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-slate-300">
                 {col.title}
               </h3>
@@ -69,25 +69,25 @@ export function Footer() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-[13px] text-slate-400 transition-colors hover:text-white"
+                      className="text-[13px] text-slate-400 transition-colors hover:text-white rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
                     >
                       {link.label}
                     </Link>
                   </li>
                 ))}
               </ul>
-            </div>
+            </nav>
           ))}
         </div>
 
         {/* Bottom bar */}
         <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-white/[0.08] pt-6 text-[12px] text-slate-600">
           <span>&copy; {new Date().getFullYear()} Vett, Inc. &middot; Know before you rent.</span>
-          <div className="flex gap-5">
-            <Link href="/privacy" className="hover:text-slate-400 transition-colors">Privacy</Link>
-            <Link href="/terms" className="hover:text-slate-400 transition-colors">Terms</Link>
-            <Link href="/fcra-notice" className="hover:text-slate-400 transition-colors">FCRA Notice</Link>
-          </div>
+          <nav aria-label="Legal" className="flex gap-5">
+            <Link href="/privacy" className="hover:text-slate-400 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink">Privacy</Link>
+            <Link href="/terms" className="hover:text-slate-400 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink">Terms</Link>
+            <Link href="/fcra-notice" className="hover:text-slate-400 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink">FCRA Notice</Link>
+          </nav>
         </div>
       </div>
     </footer>
