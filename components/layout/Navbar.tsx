@@ -92,9 +92,9 @@ export function Navbar() {
                 <DropdownMenuTrigger
                   aria-label="Account menu"
                   className={cn(
-                    'flex items-center gap-2 rounded-full px-1.5 py-1 pr-3 focus:outline-none focus:ring-2 focus:ring-teal-500',
+                    'flex items-center gap-2 rounded-full px-1.5 py-1 pr-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-500',
                     isDark
-                      ? 'border border-white/10 bg-white/5 text-white'
+                      ? 'border border-white/10 bg-white/5 text-white focus-visible:ring-offset-ink'
                       : 'border border-slate-200 bg-white shadow-sm'
                   )}
                 >
