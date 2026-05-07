@@ -56,11 +56,15 @@ const getProperty = cache(async (id: string) => {
   // disqualifies it from full ISR caching on Vercel.
   if (!isValidPropertyId(id)) return null
   const supabase = createServiceClient()
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('properties')
     .select('*, landlord:landlords(*)')
     .eq('id', id)
     .single()
+  // PGRST116 = "no rows returned" — that's a legitimate 404. Anything
+  // else (network, permission, syntax) is a real failure that should
+  // surface to the route's error.tsx boundary, not be masked as 404.
+  if (error && error.code !== 'PGRST116') throw error
   return data
 })
 
