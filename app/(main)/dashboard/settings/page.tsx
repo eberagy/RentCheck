@@ -51,7 +51,10 @@ export default function SettingsPage() {
       }
       setLoading(false)
     }
-    load()
+    // .catch so a transient profile-fetch failure doesn't leave the page
+    // stuck on the loading skeleton — clear loading and let the empty
+    // form render with current state. The user can refresh to retry.
+    load().catch(() => setLoading(false))
   }, []) // eslint-disable-line
 
   async function uploadAvatar(file: File) {
