@@ -193,28 +193,30 @@ export default async function HomePage() {
             </div>
           </ScrollReveal>
 
-          {/* Stats row — editorial magazine style. Always show all three. */}
+          {/* Stats row — editorial magazine style. Always show all three.
+              Marked up as <dl> so AT announces each pair as
+              "1,234 — Verified reviews" instead of two unrelated <p>s. */}
           <ScrollReveal delay={320} direction="up">
-            <div className="mt-16 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-white/[0.08] border-t border-white/[0.08] pt-8">
+            <dl className="mt-16 grid grid-cols-1 gap-y-6 sm:grid-cols-3 sm:gap-0 sm:divide-x sm:divide-white/[0.08] border-t border-white/[0.08] pt-8">
               <div className="sm:pr-6">
-                <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
+                <dd className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
                   <AnimatedCounter target={stats.reviews} duration={2000} />
-                </p>
-                <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Verified reviews</p>
+                </dd>
+                <dt className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Verified reviews</dt>
               </div>
               <div className="sm:px-6">
-                <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
+                <dd className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
                   <AnimatedCounter target={stats.landlords} duration={2000} />
-                </p>
-                <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Landlords tracked</p>
+                </dd>
+                <dt className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Landlords tracked</dt>
               </div>
               <div className="sm:pl-6">
-                <p className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
+                <dd className="font-display text-[clamp(2rem,3.5vw,3.25rem)] leading-none tracking-tight text-white tabular-nums">
                   <AnimatedCounter target={stats.records} duration={2000} />
-                </p>
-                <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Public records</p>
+                </dd>
+                <dt className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Public records</dt>
               </div>
-            </div>
+            </dl>
           </ScrollReveal>
         </div>
       </section>
@@ -279,18 +281,18 @@ export default async function HomePage() {
                   Public surface stays calm and readable. The data underneath stays dense, trustworthy, and current.
                 </p>
 
-                <div className="mt-10 grid grid-cols-2 gap-0 divide-x divide-slate-200">
+                <dl className="mt-10 grid grid-cols-2 gap-0 divide-x divide-slate-200">
                   <div className="pr-6">
-                    <p className="font-display text-[clamp(2.25rem,3vw,3rem)] leading-none tracking-tight text-slate-900 tabular-nums">
+                    <dd className="font-display text-[clamp(2.25rem,3vw,3rem)] leading-none tracking-tight text-slate-900 tabular-nums">
                       <AnimatedCounter target={stats.cities} suffix="+" />
-                    </p>
-                    <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Cities covered</p>
+                    </dd>
+                    <dt className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Cities covered</dt>
                   </div>
                   <div className="pl-6">
-                    <p className="font-display text-[clamp(2.25rem,3vw,3rem)] leading-none tracking-tight text-slate-900">100%</p>
-                    <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Lease-verified</p>
+                    <dd className="font-display text-[clamp(2.25rem,3vw,3rem)] leading-none tracking-tight text-slate-900">100%</dd>
+                    <dt className="mt-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">Lease-verified</dt>
                   </div>
-                </div>
+                </dl>
               </div>
             </ScrollReveal>
 
