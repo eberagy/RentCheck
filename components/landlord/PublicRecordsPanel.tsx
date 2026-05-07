@@ -179,7 +179,7 @@ function RecordRow({ record }: { record: EnrichedRecord }) {
               type="button"
               onClick={() => setExpanded(e => !e)}
               aria-expanded={expanded}
-              className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+              className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
             >
               {expanded ? 'Less' : 'Details'}
               {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
@@ -373,7 +373,7 @@ function RecordGroup({ type, records }: { type: string; records: EnrichedRecord[
         <button
           type="button"
           onClick={() => setExpanded(true)}
-          className="mt-3 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+          className="mt-3 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
           Show {hidden.toLocaleString()} more
           <ChevronDown className="h-3 w-3" />
@@ -383,7 +383,7 @@ function RecordGroup({ type, records }: { type: string; records: EnrichedRecord[
         <button
           type="button"
           onClick={() => setExpanded(false)}
-          className="mt-3 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-500 hover:bg-slate-50"
+          className="mt-3 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-500 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
           Show fewer <ChevronUp className="h-3 w-3" />
         </button>
@@ -601,7 +601,7 @@ function FilterTab({
       type="button"
       onClick={onClick}
       className={
-        'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-semibold transition-colors ' +
+        'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12.5px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ' +
         (active ? baseActive : 'text-slate-600 hover:bg-slate-50')
       }
       aria-pressed={active}
