@@ -7,6 +7,7 @@ import { Star, MapPin, BadgeCheck } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/service'
 import { formatDate } from '@/lib/utils'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
+import { captureException } from '@/lib/sentry'
 
 interface RenterProfilePageProps {
   params: Promise<{ id: string }>
@@ -61,7 +62,7 @@ export default async function RenterProfilePage({ params }: RenterProfilePagePro
   // Public profile shows only reviews the user explicitly chose to display
   // their name on. is_anonymous=true reviews stay invisible here even though
   // the user opted into a public profile — they made two separate decisions.
-  const { data: reviews } = await service
+  const { data: reviews, error: reviewsErr } = await service
     .from('reviews')
     .select('id, title, body, rating_overall, lease_verified, created_at, landlord:landlords(display_name, slug, city, state_abbr)')
     .eq('reviewer_id', p.id)
@@ -70,6 +71,10 @@ export default async function RenterProfilePage({ params }: RenterProfilePagePro
     .order('created_at', { ascending: false })
     .limit(50)
 
+  // Without surfacing this, a query failure renders the same '0 reviews'
+  // empty state as a profile with no public reviews — visitors would
+  // think the user has nothing published.
+  if (reviewsErr) captureException(reviewsErr, { where: 'u/[id]:reviews', userId: p.id })
   const approvedReviews = reviews ?? []
   const firstName = profile.full_name?.split(' ')[0]?.trim() || 'Reviewer'
   const joinYear = new Date(profile.created_at).getFullYear()
