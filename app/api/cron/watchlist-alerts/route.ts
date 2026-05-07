@@ -3,6 +3,7 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { verifyCronSecret } from '@/lib/data-sync/utils'
 import { sendWatchlistAlertEmail } from '@/lib/email'
 import { createUnsubscribeToken } from '@/lib/unsubscribe-token'
+import { captureException } from '@/lib/sentry'
 
 export const maxDuration = 60
 
@@ -30,7 +31,10 @@ export async function GET(req: NextRequest) {
   // alerts before.
   const INFORMATIONAL_TYPES = ['business_registration']
 
-  const [{ data: directRecords }, { data: propertyLinked }] = await Promise.all([
+  const [
+    { data: directRecords, error: directErr },
+    { data: propertyLinked, error: linkedErr },
+  ] = await Promise.all([
     supabase
       .from('public_records')
       .select('id, landlord_id, record_type, description, title')
@@ -50,6 +54,23 @@ export async function GET(req: NextRequest) {
       .gte('created_at', since)
       .order('created_at', { ascending: false }),
   ])
+
+  // Without these branches a public_records query failure would silently
+  // mark the cron 'success' below — admins would see a green run with
+  // 0 alerts and have no idea every watcher missed their notification.
+  // Mirror the fix from 6ead1ae (saved-search-alerts).
+  if (directErr || linkedErr) {
+    const err = directErr ?? linkedErr
+    captureException(err, { where: 'cron:watchlist-alerts:select-records', logId })
+    if (logId) {
+      await supabase.from('sync_log').update({
+        status: 'error',
+        finished_at: new Date().toISOString(),
+        error_message: err?.message ?? 'unknown',
+      }).eq('id', logId)
+    }
+    return NextResponse.json({ error: 'Failed to load records' }, { status: 500 })
+  }
 
   type RecAlert = {
     record_type: string | null
