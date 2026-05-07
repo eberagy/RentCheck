@@ -109,7 +109,7 @@ export default async function AdminEmailLeadsPage({
       </div>
 
       {/* Filters */}
-      <form className="mb-4 flex items-center gap-2 text-sm">
+      <form method="get" className="mb-4 flex items-center gap-2 text-sm">
         <label htmlFor="filter-city" className="sr-only">Filter by city</label>
         <input
           id="filter-city"
