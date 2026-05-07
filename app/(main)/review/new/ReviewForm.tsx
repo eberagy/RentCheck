@@ -144,7 +144,7 @@ export default function ReviewForm() {
     return (
       <div className="mx-auto max-w-md px-4 py-20 text-center">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-50">
-          <Lock className="h-7 w-7 text-navy-600" />
+          <Lock className="h-7 w-7 text-navy-600" aria-hidden="true" />
         </div>
         <h1 className="text-2xl font-bold text-slate-900">Sign in to write a review</h1>
         <p className="mt-2 text-sm text-slate-500">
@@ -611,7 +611,7 @@ export default function ReviewForm() {
 
               {/* Privacy box */}
               <div className="flex gap-3.5 rounded-[18px] border border-slate-200 bg-slate-50 p-[18px]">
-                <Lock className="h-[18px] w-[18px] flex-shrink-0 text-teal" />
+                <Lock className="h-[18px] w-[18px] flex-shrink-0 text-teal" aria-hidden="true" />
                 <div className="text-[13px] leading-relaxed text-slate-700">
                   <b>Your review is anonymous.</b> We show &ldquo;Verified tenant&rdquo; — never your name, email, or lease details. Moderation review takes 24–48 hours.
                 </div>
