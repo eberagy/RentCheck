@@ -450,7 +450,7 @@ function AccountDeleteSection() {
               onClick={handleDelete}
               disabled={deleting || confirm !== 'DELETE MY ACCOUNT'}
             >
-              {deleting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Deleting…</> : <>Confirm delete</>}
+              {deleting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Deleting…</> : <>Confirm delete</>}
             </Button>
             <Button variant="outline" onClick={() => { setExpanded(false); setConfirm('') }} disabled={deleting}>
               Cancel

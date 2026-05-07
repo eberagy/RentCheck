@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-navy-500" /></div>}>
+    <Suspense fallback={<div role="status" aria-live="polite" className="min-h-[60vh] flex items-center justify-center"><Loader2 className="h-6 w-6 animate-spin text-navy-500" aria-hidden="true" /><span className="sr-only">Loading sign in…</span></div>}>
       <LoginClient />
     </Suspense>
   )

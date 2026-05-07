@@ -428,7 +428,7 @@ function AdminNotesEditor({ user, onSaved }: { user: UserProfile; onSaved: (next
           onClick={save}
           disabled={saving || !dirty}
         >
-          {saving ? <><Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> Saving…</> : 'Save notes'}
+          {saving ? <><Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" aria-hidden="true" /> Saving…</> : 'Save notes'}
         </Button>
       </div>
     </div>

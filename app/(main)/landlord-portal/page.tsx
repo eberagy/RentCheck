@@ -280,8 +280,9 @@ export default function LandlordPortalPage() {
               </div>
             ))}
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 flex items-center justify-center min-h-48">
-            <div className="h-8 w-8 border-2 border-navy-500 border-t-transparent rounded-full animate-spin" />
+          <div role="status" aria-live="polite" className="rounded-2xl border border-slate-200 bg-white p-6 flex items-center justify-center min-h-48">
+            <div className="h-8 w-8 border-2 border-navy-500 border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+            <span className="sr-only">Loading your profile…</span>
           </div>
         </div>
       </div>
@@ -569,7 +570,7 @@ export default function LandlordPortalPage() {
                             disabled={savingTpl || !newTplLabel.trim() || !newTplBody.trim()}
                             onClick={createTemplate}
                           >
-                            {savingTpl ? <><Loader2 className="mr-1 h-3 w-3 animate-spin" /> Saving…</> : <><Plus className="mr-1 h-3 w-3" /> Save template</>}
+                            {savingTpl ? <><Loader2 className="mr-1 h-3 w-3 animate-spin" aria-hidden="true" /> Saving…</> : <><Plus className="mr-1 h-3 w-3" aria-hidden="true" /> Save template</>}
                           </Button>
                         </div>
                       </div>
@@ -731,7 +732,7 @@ export default function LandlordPortalPage() {
                                         onClick={() => submitResponse(review.id)}
                                         disabled={!responseText.trim() || responseText.length > MAX_RESPONSE_LENGTH || submittingResponse}
                                       >
-                                        {submittingResponse ? <><Loader2 className="mr-1 h-3 w-3 animate-spin" /> Submitting…</> : 'Submit Response'}
+                                        {submittingResponse ? <><Loader2 className="mr-1 h-3 w-3 animate-spin" aria-hidden="true" /> Submitting…</> : 'Submit Response'}
                                       </Button>
                                     </div>
                                   </div>
