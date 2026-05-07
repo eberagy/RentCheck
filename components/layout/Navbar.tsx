@@ -113,24 +113,24 @@ export function Navbar() {
                   <div className="px-3 py-2 text-xs text-slate-500 truncate">{user.email}</div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => router.push('/dashboard')} className="flex items-center gap-2">
-                    <LayoutDashboard className="h-4 w-4" /> My Dashboard
+                    <LayoutDashboard className="h-4 w-4" aria-hidden="true" /> My Dashboard
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => router.push('/dashboard/settings')} className="flex items-center gap-2">
-                    <User className="h-4 w-4" /> Account Settings
+                    <User className="h-4 w-4" aria-hidden="true" /> Account Settings
                   </DropdownMenuItem>
                   {profile?.user_type === 'landlord' && (
                     <DropdownMenuItem onClick={() => router.push('/landlord-portal')} className="flex items-center gap-2">
-                      <Shield className="h-4 w-4" /> Landlord Portal
+                      <Shield className="h-4 w-4" aria-hidden="true" /> Landlord Portal
                     </DropdownMenuItem>
                   )}
                   {profile?.user_type === 'admin' && (
                     <DropdownMenuItem onClick={() => router.push('/admin')} className="flex items-center gap-2">
-                      <Settings className="h-4 w-4" /> Admin Panel
+                      <Settings className="h-4 w-4" aria-hidden="true" /> Admin Panel
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={signOut} className="text-red-600 flex items-center gap-2">
-                    <LogOut className="h-4 w-4" /> Sign Out
+                    <LogOut className="h-4 w-4" aria-hidden="true" /> Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -209,18 +209,18 @@ export function Navbar() {
                 <>
                   <div className="truncate px-3 py-1 text-xs text-slate-500">{user.email}</div>
                   <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-white">
-                    <LayoutDashboard className="h-4 w-4" /> My Dashboard
+                    <LayoutDashboard className="h-4 w-4" aria-hidden="true" /> My Dashboard
                   </Link>
                   <Link href="/review/new" onClick={() => setMobileOpen(false)} className="rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-white">
                     Write a Review
                   </Link>
                   {profile?.user_type === 'admin' && (
                     <Link href="/admin" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-white">
-                      <Settings className="h-4 w-4" /> Admin
+                      <Settings className="h-4 w-4" aria-hidden="true" /> Admin
                     </Link>
                   )}
-                  <button onClick={() => { signOut(); setMobileOpen(false) }} className="flex items-center gap-2 rounded-2xl px-3 py-2.5 text-left text-sm font-medium text-red-600 hover:bg-red-50">
-                    <LogOut className="h-4 w-4" /> Sign Out
+                  <button type="button" onClick={() => { signOut(); setMobileOpen(false) }} className="flex items-center gap-2 rounded-2xl px-3 py-2.5 text-left text-sm font-medium text-red-600 hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2">
+                    <LogOut className="h-4 w-4" aria-hidden="true" /> Sign Out
                   </button>
                 </>
               ) : (
