@@ -613,7 +613,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                           <div className="flex flex-shrink-0 flex-col items-end gap-1.5">
                             {stats.open > 0 ? (
                               <span className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-700">
-                                <Flag className="h-2.5 w-2.5" /> {stats.open.toLocaleString()} open
+                                <Flag className="h-2.5 w-2.5" aria-hidden="true" /> {stats.open.toLocaleString()} open
                               </span>
                             ) : stats.total > 0 ? (
                               <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-600">
@@ -734,7 +734,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                 {openViolationCount > 0 && (
                   <li className="flex items-center justify-between gap-3">
                     <span className="flex items-center gap-1.5 text-slate-700">
-                      <Flag className="h-3.5 w-3.5 text-red-500" />
+                      <Flag className="h-3.5 w-3.5 text-red-500" aria-hidden="true" />
                       Open violations
                     </span>
                     <span className="font-display text-[16px] font-semibold tabular-nums text-red-600">

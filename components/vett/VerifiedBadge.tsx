@@ -16,7 +16,7 @@ export function VerifiedBadge({ label = 'Lease verified', small = false, classNa
         className
       )}
     >
-      <ShieldCheck className={cn(small ? 'h-2.5 w-2.5' : 'h-3 w-3')} />
+      <ShieldCheck className={cn(small ? 'h-2.5 w-2.5' : 'h-3 w-3')} aria-hidden="true" />
       {label}
     </span>
   )
