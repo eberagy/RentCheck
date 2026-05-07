@@ -70,7 +70,16 @@ export function AnimatedCounter({
   const formatted = separator ? count.toLocaleString() : String(count)
 
   return (
-    <span ref={ref} className={className}>
+    <span
+      ref={ref}
+      className={className}
+      // The number animates 0 → target over ~2s, which would make
+      // any aria-live region above this read every intermediate
+      // value. aria-live="off" pins it: SR users hear the number
+      // once when they encounter it, not every frame.
+      aria-live="off"
+      aria-atomic="true"
+    >
       {prefix}{formatted}{suffix}
     </span>
   )
