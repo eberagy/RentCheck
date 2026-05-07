@@ -367,7 +367,7 @@ export default async function HomePage() {
                   Real experiences from tenants with verified leases.
                 </p>
               </div>
-              <Link href="/search" className="group hidden items-center gap-1.5 text-[13px] font-medium text-navy-600 hover:text-navy-800 sm:inline-flex">
+              <Link href="/search" className="group hidden items-center gap-1.5 text-[13px] font-medium text-navy-600 hover:text-navy-800 sm:inline-flex rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                 Browse all <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </Link>
             </div>
@@ -406,7 +406,7 @@ export default async function HomePage() {
               })}
             </div>
             <div className="mt-6 text-center sm:hidden">
-              <Link href="/search" className="text-[13px] font-medium text-navy-600 hover:text-navy-800">
+              <Link href="/search" className="text-[13px] font-medium text-navy-600 hover:text-navy-800 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                 Browse all reviews →
               </Link>
             </div>
@@ -458,7 +458,7 @@ export default async function HomePage() {
               </h2>
               <p className="mt-1.5 text-[14px] text-slate-500">Search landlord reviews near your university.</p>
             </div>
-            <Link href="/search" className="group inline-flex items-center gap-1 text-[13px] font-medium text-navy-600 hover:text-navy-800">
+            <Link href="/search" className="group inline-flex items-center gap-1 text-[13px] font-medium text-navy-600 hover:text-navy-800 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
               All cities <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
             </Link>
           </div>

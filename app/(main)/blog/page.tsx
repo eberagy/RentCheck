@@ -74,7 +74,7 @@ export default function BlogIndex() {
               <Link
                 key={post.slug}
                 href={`/blog/${post.slug}`}
-                className="group block rounded-2xl border border-slate-200 bg-white p-6 transition-colors hover:border-navy-300"
+                className="group block rounded-2xl border border-slate-200 bg-white p-6 transition-colors hover:border-navy-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
               >
                 <div className="flex flex-wrap items-center gap-2 text-[12px] text-slate-500">
                   <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
