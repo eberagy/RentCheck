@@ -680,8 +680,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
             {/* State filter */}
             <div className="rounded-lg border border-slate-200 bg-white p-[18px]">
-              <div className="mb-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">State</div>
-              <select name="state" defaultValue={state} className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-700 focus:border-teal focus:outline-none">
+              <label htmlFor="search-filter-state" className="mb-3 block text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">State</label>
+              <select id="search-filter-state" name="state" defaultValue={state} aria-label="Filter results by state" className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-700 focus:border-teal focus:outline-none">
                 <option value="">All states</option>
                 {US_STATES.map(s => (
                   <option key={s.abbr} value={s.abbr}>{s.name}</option>
