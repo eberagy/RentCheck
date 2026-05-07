@@ -148,9 +148,13 @@ export default async function RenterProfilePage({ params }: RenterProfilePagePro
               return (
                 <article key={r.id} className="rounded-2xl border border-slate-200 bg-white p-5">
                   <div className="flex items-center gap-2 text-[12px] text-slate-500">
-                    <span className="inline-flex items-center gap-1">
+                    <span
+                      role="img"
+                      aria-label={`Rated ${r.rating_overall} out of 5 stars`}
+                      className="inline-flex items-center gap-1"
+                    >
                       {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} className={`h-3.5 w-3.5 ${i < r.rating_overall ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
+                        <Star key={i} aria-hidden="true" className={`h-3.5 w-3.5 ${i < r.rating_overall ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
                       ))}
                     </span>
                     <time dateTime={r.created_at}>{formatDate(r.created_at)}</time>

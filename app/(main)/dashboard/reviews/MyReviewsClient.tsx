@@ -131,9 +131,13 @@ export function MyReviewsClient({ reviews, statusFilter }: { reviews: MyReviewIt
                       <h2 className="text-[16px] font-bold text-slate-900">{r.title}</h2>
                       <p className="mt-1 text-[13.5px] leading-relaxed text-slate-600 line-clamp-3">{r.body}</p>
                       <div className="mt-2 flex items-center gap-3 text-[12.5px] text-slate-500">
-                        <span className="flex items-center gap-1">
+                        <span
+                          role="img"
+                          aria-label={`Rated ${r.rating_overall} out of 5 stars`}
+                          className="flex items-center gap-1"
+                        >
                           {Array.from({ length: 5 }).map((_, i) => (
-                            <Star key={i} className={`h-3.5 w-3.5 ${i < r.rating_overall ? 'fill-amber-400 text-amber-400' : 'text-slate-200 fill-slate-200'}`} />
+                            <Star key={i} aria-hidden="true" className={`h-3.5 w-3.5 ${i < r.rating_overall ? 'fill-amber-400 text-amber-400' : 'text-slate-200 fill-slate-200'}`} />
                           ))}
                         </span>
                         {r.landlord && (
