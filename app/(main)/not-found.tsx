@@ -47,11 +47,11 @@ export default function NotFound() {
               <Link
                 key={slug}
                 href={`/city/${state.toLowerCase()}/${slug}`}
-                className="group inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12.5px] text-slate-600 transition-colors hover:border-teal-300 hover:bg-teal-50 hover:text-teal-800"
+                className="group inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12.5px] text-slate-600 transition-colors hover:border-teal-300 hover:bg-teal-50 hover:text-teal-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
               >
-                <MapPin className="h-3 w-3 text-slate-400 group-hover:text-teal-600" />
+                <MapPin className="h-3 w-3 text-slate-400 group-hover:text-teal-600" aria-hidden="true" />
                 <span>{city}, {state}</span>
-                <ArrowRight className="h-3 w-3 text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-teal-600" />
+                <ArrowRight className="h-3 w-3 text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-teal-600" aria-hidden="true" />
               </Link>
             ))}
           </div>

@@ -64,11 +64,12 @@ export function CityAlertSignup({
   if (status === 'success') {
     return (
       <div
+        role="status"
         className={`mt-6 flex items-center gap-3 rounded-2xl border px-5 py-4 ${
           dark ? 'border-white/15 bg-white/[0.04] text-white' : 'border-teal-200 bg-teal-50 text-teal-900'
         }`}
       >
-        <CheckCircle2 className={`h-5 w-5 flex-shrink-0 ${dark ? 'text-teal-300' : 'text-teal-600'}`} />
+        <CheckCircle2 className={`h-5 w-5 flex-shrink-0 ${dark ? 'text-teal-300' : 'text-teal-600'}`} aria-hidden="true" />
         <div>
           <p className="text-[14px] font-semibold">You&apos;re on the list for {city.trim()}, {stateAbbr}.</p>
           <p className={`text-[12.5px] ${dark ? 'text-slate-400' : 'text-teal-800/80'}`}>
@@ -156,7 +157,7 @@ export function CityAlertSignup({
             dark ? 'bg-teal-500 text-white hover:bg-teal-400' : 'bg-teal-600 text-white hover:bg-teal-700'
           }`}
         >
-          {status === 'loading' ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Notify me'}
+          {status === 'loading' ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : 'Notify me'}
         </button>
       </form>
       {status === 'error' && errorMsg && (
