@@ -344,7 +344,11 @@ export default async function CityPage({ params }: CityPageProps) {
           </div>
         ) : (
           <>
-            <div className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">All landlords in {cityName}</div>
+            {/* h2 (was a styled <div>) — the LandlordCard list below
+                renders h3 per card. Without an h2 here the cards' h3s
+                were a heading-hierarchy gap (h1 → h3) for any city
+                without a "Top-rated landlords" section above. */}
+            <h2 className="mb-4 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">All landlords in {cityName}</h2>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
               {landlords.map((landlord: Landlord) => (
                 <LandlordCard key={landlord.id} landlord={landlord} />
