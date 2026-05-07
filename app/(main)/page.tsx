@@ -94,10 +94,15 @@ async function getRecentReviews(): Promise<RecentReview[]> {
 
 function StarDisplay({ rating }: { rating: number }) {
   return (
-    <div className="flex items-center gap-0.5">
+    <div
+      role="img"
+      aria-label={rating > 0 ? `Rated ${rating} out of 5 stars` : 'No rating'}
+      className="flex items-center gap-0.5"
+    >
       {Array.from({ length: 5 }).map((_, i) => (
         <Star
           key={i}
+          aria-hidden="true"
           className={`h-3 w-3 ${i < rating ? 'fill-amber-400 text-amber-400' : 'fill-slate-200 text-slate-200'}`}
         />
       ))}
