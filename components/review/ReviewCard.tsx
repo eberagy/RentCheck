@@ -77,7 +77,10 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
           {/* Hide reviewer photo when the review is anonymous so the avatar
               + display name read as a single privacy unit. */}
           {!review.is_anonymous && (
-            <AvatarImage src={review.reviewer?.avatar_url ?? undefined} />
+            // alt="" because the reviewer's display name is shown next to
+            // the avatar — announcing the image would just duplicate it
+            // for screen readers.
+            <AvatarImage src={review.reviewer?.avatar_url ?? undefined} alt="" />
           )}
           <AvatarFallback className="bg-navy-100 text-xs font-semibold text-navy-700">
             <User className="h-4 w-4" />

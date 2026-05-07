@@ -98,7 +98,10 @@ export function Navbar() {
                   )}
                 >
                   <Avatar className="h-7 w-7">
-                    <AvatarImage src={profile?.avatar_url ?? undefined} />
+                    {/* Decorative — the dropdown trigger has no other label,
+                        so the parent button's aria-label / accessible name
+                        already covers screen reader users. */}
+                    <AvatarImage src={profile?.avatar_url ?? undefined} alt="" />
                     <AvatarFallback className="bg-navy-100 text-navy-700 text-xs font-semibold">
                       {(profile?.full_name ?? user.email ?? 'U')[0]?.toUpperCase()}
                     </AvatarFallback>
