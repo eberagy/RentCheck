@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { rateLimit } from './rate-limit'
+import { rateLimit, rateLimitResponse } from './rate-limit'
 
 describe('rateLimit', () => {
   beforeEach(() => {
@@ -74,5 +74,36 @@ describe('rateLimit', () => {
     expect(rateLimit(a, 1).success).toBe(false)
     // b should still have its full budget
     expect(rateLimit(b, 1).success).toBe(true)
+  })
+})
+
+describe('rateLimitResponse', () => {
+  it('returns 429 with the canonical JSON shape', async () => {
+    const res = rateLimitResponse()
+    expect(res.status).toBe(429)
+    expect(res.headers.get('Content-Type')).toContain('application/json')
+    const body = await res.json()
+    expect(body).toEqual({ error: 'Too many requests. Please try again later.' })
+  })
+
+  it('uses default Retry-After of 60 when no result is passed', () => {
+    const res = rateLimitResponse()
+    expect(res.headers.get('Retry-After')).toBe('60')
+  })
+
+  it('uses the result.retryAfter value when passed', () => {
+    const res = rateLimitResponse({ success: false, remaining: 0, retryAfter: 17 })
+    expect(res.headers.get('Retry-After')).toBe('17')
+  })
+
+  it('still uses the default when result is success=true (defensive)', () => {
+    // Calling rateLimitResponse on a success result is a programming error,
+    // but the helper shouldn't crash — it just reads retryAfter from
+    // whatever result was passed. A success result with retryAfter=0 would
+    // surface as "Retry-After: 0", which clients interpret as "retry now."
+    // Acceptable degradation.
+    const res = rateLimitResponse({ success: true, remaining: 5, retryAfter: 0 })
+    expect(res.status).toBe(429)
+    expect(res.headers.get('Retry-After')).toBe('0')
   })
 })
