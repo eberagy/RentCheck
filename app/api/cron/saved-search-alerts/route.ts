@@ -6,6 +6,7 @@ import { cityPagePath } from '@/lib/cities'
 import { createUnsubscribeToken } from '@/lib/unsubscribe-token'
 import { getCityAliases } from '@/lib/cities'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
+import { captureException } from '@/lib/sentry'
 
 export const maxDuration = 300
 
@@ -38,11 +39,27 @@ export async function GET(req: NextRequest) {
   // 7-day window, falling back to 8d when a user hasn't been notified yet
   const defaultSince = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
 
-  const { data: subs } = await supabase
+  const { data: subs, error: subsErr } = await supabase
     .from('saved_searches')
     .select('id, user_id, city, state_abbr, notify_email, last_notified_at')
     .eq('notify_email', true)
     .returns<Subscription[]>()
+
+  // Without this branch a subs-query failure would silently mark the run
+  // 'success' below (subs?.length is falsy when subs is null/undefined,
+  // which is exactly what an error returns). Now we Sentry-capture and
+  // log status='error' so the sync_log + admin dashboard reflect reality.
+  if (subsErr) {
+    captureException(subsErr, { where: 'cron:saved-search-alerts:select-subs', logId })
+    if (logId) {
+      await supabase.from('sync_log').update({
+        status: 'error',
+        finished_at: new Date().toISOString(),
+        error_message: subsErr.message,
+      }).eq('id', logId)
+    }
+    return NextResponse.json({ error: 'Failed to load subscriptions' }, { status: 500 })
+  }
 
   if (!subs?.length) {
     if (logId) {
