@@ -190,7 +190,7 @@ export default function AddLandlordPage() {
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <Label htmlFor="display_name" className="text-sm font-medium">
-            Landlord / Property Management Name <span className="text-red-500">*</span>
+            Landlord / Property Management Name <span className="text-red-500" aria-hidden="true">*</span><span className="sr-only"> (required)</span>
           </Label>
           <Input
             id="display_name"

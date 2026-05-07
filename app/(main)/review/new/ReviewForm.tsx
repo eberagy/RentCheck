@@ -488,7 +488,7 @@ export default function ReviewForm() {
               {/* Overall rating */}
               <div>
                 <div className="flex items-baseline justify-between mb-2">
-                  <span className="text-[13px] font-semibold text-slate-900">Overall rating <span className="text-red-600">*</span></span>
+                  <span className="text-[13px] font-semibold text-slate-900">Overall rating <span className="text-red-600" aria-hidden="true">*</span></span>
                 </div>
                 <StarRating value={ratingOverall} onChange={v => setValue('ratingOverall', v)} size="lg" showLabel />
                 {errors.ratingOverall && <p className="text-xs text-red-600 mt-1">Please select a rating</p>}
@@ -497,7 +497,7 @@ export default function ReviewForm() {
               {/* Property address */}
               <div>
                 <div className="flex items-baseline justify-between mb-2">
-                  <span className="text-[13px] font-semibold text-slate-900">Property address <span className="text-red-600">*</span></span>
+                  <span className="text-[13px] font-semibold text-slate-900">Property address <span className="text-red-600" aria-hidden="true">*</span></span>
                   <span className="text-[11.5px] text-slate-400">The address you rented at</span>
                 </div>
                 <Input {...register('propertyAddress')} placeholder="123 Main St, Apt 4B, Pittsburgh, PA" autoComplete="street-address" aria-label="Property address" className="h-11 rounded-xl border-slate-200 text-[14px]" />
@@ -507,7 +507,7 @@ export default function ReviewForm() {
               {/* Title */}
               <div>
                 <div className="flex items-baseline justify-between mb-2">
-                  <span className="text-[13px] font-semibold text-slate-900">Headline <span className="text-red-600">*</span></span>
+                  <span className="text-[13px] font-semibold text-slate-900">Headline <span className="text-red-600" aria-hidden="true">*</span></span>
                   <span className="text-[11.5px] text-slate-400">A short, specific summary — like a subject line.</span>
                 </div>
                 <Input {...register('title')} placeholder="Summarize your experience" autoComplete="off" aria-label="Review headline" className="h-11 rounded-xl border-slate-200 text-[14px]" />
@@ -518,7 +518,7 @@ export default function ReviewForm() {
               {/* Body */}
               <div>
                 <div className="flex items-baseline justify-between mb-2">
-                  <span className="text-[13px] font-semibold text-slate-900">Your full review <span className="text-red-600">*</span></span>
+                  <span className="text-[13px] font-semibold text-slate-900">Your full review <span className="text-red-600" aria-hidden="true">*</span></span>
                   <span className="text-[11.5px] text-slate-400 max-w-[400px] text-right">Dates, documents, and specific interactions help other renters more than feelings.</span>
                 </div>
                 <Textarea
@@ -598,7 +598,7 @@ export default function ReviewForm() {
                   { key: 'ratingLeaseFairness', label: 'Lease Fairness' },
                 ].map(({ key, label }) => (
                   <div key={key}>
-                    <span className="text-[13px] font-semibold text-slate-900 mb-1 block">{label} <span className="text-red-600">*</span></span>
+                    <span className="text-[13px] font-semibold text-slate-900 mb-1 block">{label} <span className="text-red-600" aria-hidden="true">*</span></span>
                     <StarRating
                       value={watch(key as keyof ReviewFormData) as number ?? 0}
                       onChange={v => setValue(key as keyof ReviewFormData, v as never)}
