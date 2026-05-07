@@ -106,10 +106,11 @@ function DisputeForm() {
       )}
 
       <div>
-        <Label className="text-sm font-semibold text-slate-900 block mb-3">
-          Reason for dispute <span className="text-red-500">*</span>
-        </Label>
-        <div className="space-y-2">
+        <div id="dispute-reason-label" className="text-sm font-semibold text-slate-900 block mb-3">
+          Reason for dispute <span className="text-red-500" aria-hidden="true">*</span>
+          <span className="sr-only"> (required)</span>
+        </div>
+        <div role="radiogroup" aria-labelledby="dispute-reason-label" aria-required="true" className="space-y-2">
           {REASON_OPTIONS.map(opt => (
             <label key={opt} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
               reason === opt ? 'border-navy-400 bg-navy-50' : 'border-slate-200 hover:border-slate-300'
