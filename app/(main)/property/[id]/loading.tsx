@@ -4,7 +4,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 // sidebar on lg+) so the skeleton doesn't snap-shift on hydration.
 export default function PropertyLoading() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div role="status" aria-live="polite" aria-busy="true" className="min-h-screen bg-slate-50">
+      <span className="sr-only">Loading property profile…</span>
       <div className="mx-auto max-w-[1320px] px-4 py-8 sm:px-8">
         <Skeleton className="h-3.5 w-64 mb-6" />
 

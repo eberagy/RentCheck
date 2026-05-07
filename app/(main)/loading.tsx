@@ -5,7 +5,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 // page, while the server-rendered hero loads.
 export default function MainLoading() {
   return (
-    <div className="min-h-screen bg-ink">
+    <div role="status" aria-live="polite" aria-busy="true" className="min-h-screen bg-ink">
+      <span className="sr-only">Loading page…</span>
       <section className="relative overflow-hidden px-4 py-20 sm:px-8 sm:py-24 text-white">
         <div className="mx-auto max-w-[1100px] space-y-6">
           <Skeleton className="h-4 w-44 bg-white/10" />

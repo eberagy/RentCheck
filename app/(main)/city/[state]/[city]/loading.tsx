@@ -2,7 +2,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function CityLoading() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div role="status" aria-live="polite" aria-busy="true" className="min-h-screen bg-slate-50">
+      <span className="sr-only">Loading city profile…</span>
       <section
         className="relative isolate overflow-hidden text-white"
         style={{

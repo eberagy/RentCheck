@@ -6,7 +6,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 // breakpoints, which keeps the comparison readable side-by-side).
 export default function CompareLoading() {
   return (
-    <div className="max-w-5xl mx-auto px-4 py-8">
+    <div role="status" aria-live="polite" aria-busy="true" className="max-w-5xl mx-auto px-4 py-8">
+      <span className="sr-only">Loading comparison…</span>
       <Skeleton className="h-4 w-16 mb-6" />
       <Skeleton className="h-10 w-72 mb-2" />
       <Skeleton className="h-4 w-96 mb-8" />

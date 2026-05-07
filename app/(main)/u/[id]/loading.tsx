@@ -7,7 +7,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 // shape on hydration.
 export default function RenterProfileLoading() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div role="status" aria-live="polite" aria-busy="true" className="min-h-screen bg-slate-50">
+      <span className="sr-only">Loading reviewer profile…</span>
       <section className="border-b border-slate-200 bg-white px-7 py-12">
         <div className="mx-auto max-w-[820px] flex items-center gap-5">
           <Skeleton className="h-20 w-20 rounded-2xl flex-shrink-0" />

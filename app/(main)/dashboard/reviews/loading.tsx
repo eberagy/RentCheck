@@ -6,7 +6,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 // during the auth/fetch dance.
 export default function MyReviewsLoading() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div role="status" aria-live="polite" aria-busy="true" className="min-h-screen bg-slate-50">
+      <span className="sr-only">Loading your reviews…</span>
       <div className="mx-auto max-w-[1100px] px-6 py-10">
         <Skeleton className="h-3.5 w-32 mb-5" />
 

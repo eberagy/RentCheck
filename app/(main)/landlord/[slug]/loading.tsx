@@ -5,7 +5,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 // the skeleton doesn't snap to a different shape on hydration.
 export default function LandlordLoading() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div role="status" aria-live="polite" aria-busy="true" className="min-h-screen bg-slate-50">
+      <span className="sr-only">Loading landlord profile…</span>
       <div className="mx-auto max-w-[1320px] px-4 py-7 sm:px-8">
         <Skeleton className="h-3.5 w-48 mb-4" />
 

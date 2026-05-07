@@ -8,7 +8,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 // the result list downward.
 export default function SearchLoading() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div role="status" aria-live="polite" aria-busy="true" className="min-h-screen bg-slate-50">
+      <span className="sr-only">Loading search…</span>
       <section className="border-b border-slate-200 bg-white px-7 py-5">
         <div className="mx-auto max-w-[1320px]">
           <Skeleton className="h-7 w-full max-w-[760px] rounded-md" />

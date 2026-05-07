@@ -2,7 +2,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function SettingsLoading() {
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+    <div role="status" aria-live="polite" aria-busy="true" className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+      <span className="sr-only">Loading settings…</span>
       <Skeleton className="h-4 w-40" />
       <Skeleton className="h-9 w-72" />
       <Skeleton className="h-4 w-96" />

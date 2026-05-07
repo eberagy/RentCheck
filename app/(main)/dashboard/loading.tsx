@@ -5,7 +5,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 // skeleton snaps to a totally different shape on hydration.
 export default function DashboardLoading() {
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div role="status" aria-live="polite" aria-busy="true" className="min-h-screen bg-slate-50">
+      <span className="sr-only">Loading dashboard…</span>
       <section className="relative overflow-hidden bg-ink px-4 py-14 sm:px-8 text-white">
         <div className="relative mx-auto flex max-w-[1320px] flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-3">
