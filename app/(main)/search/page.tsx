@@ -372,7 +372,15 @@ async function SearchResults({
   if (verifiedOnly) query = query.eq('is_verified', true)
   if (hasViolationsOnly) query = query.gt('open_violation_count', 0)
 
-  const { data: landlords, count } = await query
+  const { data: landlords, count, error: queryError } = await query
+  // Without surfacing this, a query failure would render the same
+  // 'No landlords found' empty state below — visitors would think
+  // their filters returned nothing rather than seeing a transient
+  // backend issue. Sentry capture so we know about persistent
+  // failures before users tweet about them.
+  if (queryError) {
+    captureException(queryError, { where: 'search:browse', sort, city, state })
+  }
   const total = count ?? 0
 
   if (!landlords || landlords.length === 0) {
