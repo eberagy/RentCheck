@@ -332,7 +332,7 @@ export default function ReviewForm() {
               onChange={e => { setSearchQuery(e.target.value); searchLandlords(e.target.value) }}
             />
           </div>
-          {searching && <div className="text-center py-4"><Loader2 className="h-5 w-5 animate-spin mx-auto text-slate-400" /></div>}
+          {searching && <div className="text-center py-4"><Loader2 className="h-5 w-5 animate-spin mx-auto text-slate-400" aria-hidden="true" /></div>}
           {searchResults.length > 0 && (
             <div className="rounded-[16px] border border-slate-200 overflow-hidden">
               {searchResults.map((l: Landlord) => (
@@ -345,7 +345,7 @@ export default function ReviewForm() {
                     <p className="font-bold text-[14px] text-slate-900">{l.display_name}</p>
                     {l.city && <p className="text-[12.5px] text-slate-500 mt-0.5">{l.city}, {l.state_abbr}</p>}
                   </div>
-                  <ArrowRight className="h-4 w-4 text-slate-400" />
+                  <ArrowRight className="h-4 w-4 text-slate-400" aria-hidden="true" />
                 </button>
               ))}
             </div>
@@ -440,7 +440,7 @@ export default function ReviewForm() {
                   onClick={handleLeaseUpload}
                   disabled={leaseStatus === 'uploading'}
                 >
-                  {leaseStatus === 'uploading' ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Uploading…</> : <><Upload className="h-4 w-4 mr-2" /> Upload & Continue</>}
+                  {leaseStatus === 'uploading' ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Uploading…</> : <><Upload className="h-4 w-4 mr-2" aria-hidden="true" /> Upload & Continue</>}
                 </Button>
               )}
             </div>
@@ -610,7 +610,7 @@ export default function ReviewForm() {
             <div className="mt-7 flex items-center justify-between">
               <button type="button" onClick={() => setStep(1)} className="text-[13px] font-medium text-slate-500 hover:text-slate-700">&larr; Back</button>
               <Button type="submit" className="rounded-full bg-teal px-6 hover:bg-teal-500 text-white" disabled={leaseStatus !== 'uploaded'}>
-                Continue to confirm <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                Continue to confirm <ArrowRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
               </Button>
             </div>
           </div>
@@ -688,7 +688,7 @@ export default function ReviewForm() {
             <div className="flex items-center justify-between">
               <button type="button" onClick={() => setStep(2)} className="text-[13px] font-medium text-slate-500 hover:text-slate-700">&larr; Back</button>
               <Button type="submit" className="rounded-full bg-teal px-6 hover:bg-teal-500 text-white" disabled={submitting}>
-                {submitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Submitting…</> : <>Submit Review <ArrowRight className="ml-1.5 h-3.5 w-3.5" /></>}
+                {submitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Submitting…</> : <>Submit Review <ArrowRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" /></>}
               </Button>
             </div>
           </div>
@@ -699,7 +699,7 @@ export default function ReviewForm() {
       {step === 4 && (
         <div className="rounded-[28px] border border-slate-200 bg-white p-9 shadow-[0_1px_2px_rgba(15,23,42,0.04)] text-center">
           <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-teal-50">
-            <CheckCircle2 className="h-8 w-8 text-teal" />
+            <CheckCircle2 className="h-8 w-8 text-teal" aria-hidden="true" />
           </div>
           <h1 className="text-[clamp(28px,5.5vw,36px)] font-extrabold tracking-tight text-slate-900">Review Submitted!</h1>
           <p className="mt-2 max-w-md mx-auto text-[14.5px] text-slate-500 leading-relaxed">
