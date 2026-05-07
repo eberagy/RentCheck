@@ -126,7 +126,7 @@ export default async function AdminEmailLeadsPage({
           Apply
         </button>
         {(params.city || params.source) && (
-          <Link href="/admin/email-leads" className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-700">
+          <Link href="/admin/email-leads" className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 focus-visible:ring-offset-2">
             Clear
           </Link>
         )}
@@ -149,7 +149,7 @@ export default async function AdminEmailLeadsPage({
               rows.map(r => (
                 <tr key={r.id} className="hover:bg-slate-50">
                   <td className="px-4 py-2.5 font-mono text-[12.5px] text-slate-900">
-                    <a href={`mailto:${r.email}`} className="hover:underline">{r.email}</a>
+                    <a href={`mailto:${r.email}`} className="hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">{r.email}</a>
                   </td>
                   <td className="px-4 py-2.5 text-slate-700">
                     {r.city && r.state_abbr ? (
