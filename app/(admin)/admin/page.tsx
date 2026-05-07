@@ -287,7 +287,7 @@ export default async function AdminDashboardPage() {
           <CardHeader className="pb-3 border-b border-orange-100">
             <div className="flex items-center justify-between">
               <CardTitle as="h2" className="text-base flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-orange-500" />
+                <TrendingUp className="h-4 w-4 text-orange-500" aria-hidden="true" />
                 Pending Landlord Submissions
                 <Badge className="bg-orange-100 text-orange-800 border-orange-200 text-xs ml-1">
                   {pendingSubmissions} pending
@@ -323,7 +323,7 @@ export default async function AdminDashboardPage() {
                     </div>
                     <Link href="/admin/submissions">
                       <Button size="sm" variant="outline" className="h-7 text-xs border-orange-300 text-orange-700 hover:bg-orange-100">
-                        <Eye className="h-3 w-3 mr-1" /> Review
+                        <Eye className="h-3 w-3 mr-1" aria-hidden="true" /> Review
                       </Button>
                     </Link>
                   </div>
@@ -343,7 +343,7 @@ export default async function AdminDashboardPage() {
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <CardTitle as="h2" className="text-base flex items-center gap-2">
-                <Clock className="h-4 w-4 text-amber-500" />
+                <Clock className="h-4 w-4 text-amber-500" aria-hidden="true" />
                 Recent Activity
                 {(pendingReviews ?? 0) > 0 && (
                   <Badge className="bg-amber-100 text-amber-800 border-amber-200 text-xs ml-1">
@@ -359,7 +359,7 @@ export default async function AdminDashboardPage() {
           <CardContent className="p-0">
             {(recentPendingReviews ?? []).length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 text-center px-4">
-                <CheckCircle2 className="h-8 w-8 text-teal-400 mb-2" />
+                <CheckCircle2 className="h-8 w-8 text-teal-400 mb-2" aria-hidden="true" />
                 <p className="text-sm font-medium text-slate-700">Queue is clear</p>
                 <p className="text-xs text-slate-400 mt-1">No pending reviews right now</p>
               </div>
