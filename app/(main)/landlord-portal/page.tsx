@@ -525,10 +525,10 @@ export default function LandlordPortalPage() {
                             <button
                               type="button"
                               onClick={() => deleteTemplate(t.id)}
-                              className="flex-shrink-0 rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-600"
+                              className="flex-shrink-0 rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
                               aria-label={`Delete ${t.label}`}
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="h-4 w-4" aria-hidden="true" />
                             </button>
                           </li>
                         ))}
@@ -680,8 +680,8 @@ export default function LandlordPortalPage() {
                                     <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
                                       <div className="mb-1.5 flex items-center justify-between">
                                         <span className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">Insert a template</span>
-                                        <button type="button" aria-label="Close template picker" onClick={() => setShowTemplatePicker(false)} className="text-slate-400 hover:text-slate-600">
-                                          <X className="h-3.5 w-3.5" />
+                                        <button type="button" aria-label="Close template picker" onClick={() => setShowTemplatePicker(false)} className="text-slate-400 hover:text-slate-600 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
+                                          <X className="h-3.5 w-3.5" aria-hidden="true" />
                                         </button>
                                       </div>
                                       <div className="flex flex-wrap gap-1.5">
@@ -690,7 +690,7 @@ export default function LandlordPortalPage() {
                                             key={t.id}
                                             type="button"
                                             onClick={() => applyTemplate(t.body)}
-                                            className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] text-slate-700 hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700"
+                                            className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] text-slate-700 hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
                                             title={t.body.slice(0, 120)}
                                           >
                                             {t.label}
