@@ -28,6 +28,7 @@ import { isValidPropertyId } from '@/lib/url-guards'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
 import { TrackPageView } from '@/components/analytics/TrackPageView'
 import { buildPropertySummary } from '@/lib/summaries'
+import { captureException } from '@/lib/sentry'
 import { cityPagePath, getCanonicalCity } from '@/lib/cities'
 import type { Review, PublicRecord } from '@/types'
 
@@ -97,7 +98,10 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   const property = await getProperty(p.id)
   if (!property) notFound()
 
-  const [{ data: reviews }, { data: records }] = await Promise.all([
+  const [
+    { data: reviews, error: reviewsErr },
+    { data: records, error: recordsErr },
+  ] = await Promise.all([
     supabase
       .from('reviews')
       .select(PUBLIC_REVIEW_SELECT)
@@ -112,6 +116,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       .order('filed_date', { ascending: false })
       .limit(200),
   ])
+
+  // Without these captures a query failure would silently render the
+  // property page as "0 reviews / 0 records" — same shape as a real
+  // empty property. Capture so we know about transient failures.
+  if (reviewsErr) captureException(reviewsErr, { where: 'property:[id]:reviews', propertyId: property.id })
+  if (recordsErr) captureException(recordsErr, { where: 'property:[id]:records', propertyId: property.id })
 
   const landlord = property.landlord as
     | { id: string; display_name: string; slug: string; city: string | null; state_abbr: string | null; is_claimed: boolean; is_verified: boolean }

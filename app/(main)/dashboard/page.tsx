@@ -13,6 +13,7 @@ import { SavedSearchUnsubscribeButton } from '@/components/dashboard/SavedSearch
 import { getGradeLetter } from '@/lib/grade'
 import { formatDate } from '@/lib/utils'
 import { cityPagePath } from '@/lib/cities'
+import { captureException } from '@/lib/sentry'
 
 export const metadata: Metadata = { title: 'Dashboard' }
 
@@ -29,11 +30,11 @@ export default async function DashboardPage() {
   if (!user) redirect('/login?redirectTo=/dashboard')
 
   const [
-    { data: profile },
-    { data: reviews },
-    { data: watchlist },
-    { data: submissions },
-    { data: savedSearches },
+    { data: profile, error: profileErr },
+    { data: reviews, error: reviewsErr },
+    { data: watchlist, error: watchlistErr },
+    { data: submissions, error: submissionsErr },
+    { data: savedSearches, error: savedSearchesErr },
   ] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase
@@ -61,6 +62,18 @@ export default async function DashboardPage() {
       .order('created_at', { ascending: false })
       .limit(20),
   ])
+
+  // Without these the dashboard would silently render every user's data
+  // as 0 reviews / 0 watchlist / 0 submissions on a Supabase hiccup —
+  // looking exactly like a brand-new account. Capture each independently
+  // so the page still renders the partial result and we hear about
+  // failures in Sentry. PGRST116 on profile is "no row", expected for
+  // brand-new accounts; suppress to avoid noise.
+  if (profileErr && profileErr.code !== 'PGRST116') captureException(profileErr, { where: 'dashboard:profile', userId: user.id })
+  if (reviewsErr) captureException(reviewsErr, { where: 'dashboard:reviews', userId: user.id })
+  if (watchlistErr) captureException(watchlistErr, { where: 'dashboard:watchlist', userId: user.id })
+  if (submissionsErr) captureException(submissionsErr, { where: 'dashboard:submissions', userId: user.id })
+  if (savedSearchesErr) captureException(savedSearchesErr, { where: 'dashboard:saved-searches', userId: user.id })
 
   type DashboardReview = {
     id: string
