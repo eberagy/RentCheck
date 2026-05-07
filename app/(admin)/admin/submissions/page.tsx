@@ -137,10 +137,10 @@ export default function AdminSubmissionsPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" /></div>
+        <div className="flex items-center justify-center py-20"><Loader2 className="h-8 w-8 animate-spin text-navy-500" aria-hidden="true" /></div>
       ) : submissions.length === 0 ? (
         <div className="text-center py-20 text-slate-500">
-          <Building2 className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+          <Building2 className="h-10 w-10 text-slate-300 mx-auto mb-3" aria-hidden="true" />
           <p className="font-medium">No {filter} submissions</p>
         </div>
       ) : (
@@ -210,7 +210,7 @@ export default function AdminSubmissionsPage() {
                         onClick={() => moderate(sub, 'approved')}
                         disabled={processing === sub.id}
                       >
-                        {processing === sub.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" />}
+                        {processing === sub.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
                         Approve &amp; Add to Vett
                       </Button>
                       <Button
@@ -220,7 +220,7 @@ export default function AdminSubmissionsPage() {
                         onClick={() => moderate(sub, 'duplicate')}
                         disabled={processing === sub.id}
                       >
-                        <Copy className="h-3.5 w-3.5 mr-1" />
+                        <Copy className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                         Mark Duplicate
                       </Button>
                       <Button
@@ -230,7 +230,7 @@ export default function AdminSubmissionsPage() {
                         onClick={() => moderate(sub, 'rejected')}
                         disabled={processing === sub.id}
                       >
-                        <XCircle className="h-3.5 w-3.5 mr-1" />
+                        <XCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                         Reject
                       </Button>
                     </div>
