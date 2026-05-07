@@ -36,10 +36,11 @@ export function AdminNav() {
           <Logo size="sm" href="/admin" />
           <Link
             href="/"
-            className="inline-flex items-center gap-1 rounded-md border border-navy-600 bg-navy-800 px-2 py-1 text-[11px] font-medium text-navy-200 hover:bg-navy-700 hover:text-white"
+            className="inline-flex items-center gap-1 rounded-md border border-navy-600 bg-navy-800 px-2 py-1 text-[11px] font-medium text-navy-200 hover:bg-navy-700 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-navy-900"
             title="Open the public site"
+            aria-label="Open the public site"
           >
-            <ExternalLink className="h-3 w-3" /> Site
+            <ExternalLink className="h-3 w-3" aria-hidden="true" /> Site
           </Link>
         </div>
         <span className="text-xs text-navy-300 mt-1 block">Admin Panel</span>
@@ -68,9 +69,9 @@ export function AdminNav() {
       <div className="p-3 border-t border-navy-700">
         <Link
           href="/"
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-navy-400 hover:text-white hover:bg-navy-800 transition-colors"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-navy-400 hover:text-white hover:bg-navy-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-navy-900"
         >
-          <Home className="h-4 w-4" /> Back to Site
+          <Home className="h-4 w-4" aria-hidden="true" /> Back to Site
         </Link>
       </div>
     </aside>
