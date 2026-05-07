@@ -223,7 +223,7 @@ export default async function AboutPage() {
                 <h3 className="font-display text-[22px] leading-tight tracking-tight text-slate-900">How reviews work</h3>
                 <p className="mt-3 text-[15.5px] leading-relaxed text-slate-600">
                   Every review on Vett goes through a moderation process. Reviewers upload their lease before publication, and our founders or moderators manually confirm it. All published reviews carry a &ldquo;Lease Verified&rdquo; badge and are screened for our{' '}
-                  <Link href="/terms" className="font-medium text-teal-700 underline-offset-4 hover:underline">content guidelines</Link> before publication.
+                  <Link href="/terms" className="font-medium text-teal-700 underline-offset-4 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">content guidelines</Link> before publication.
                 </p>
               </div>
 
@@ -238,12 +238,12 @@ export default async function AboutPage() {
                 <h3 className="font-display text-[22px] leading-tight tracking-tight text-slate-900">Legal &amp; compliance</h3>
                 <p className="mt-3 text-[15.5px] leading-relaxed text-slate-600">
                   Vett operates under Section 230 of the Communications Decency Act for user-generated content. We are not a consumer reporting agency and our platform does not constitute a &ldquo;consumer report&rdquo; under the FCRA. For more, see our{' '}
-                  <Link href="/fcra-notice" className="font-medium text-teal-700 underline-offset-4 hover:underline">FCRA Notice</Link>.
+                  <Link href="/fcra-notice" className="font-medium text-teal-700 underline-offset-4 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">FCRA Notice</Link>.
                 </p>
                 <p className="mt-3 text-[15.5px] leading-relaxed text-slate-600">
                   If you believe any information on our platform is inaccurate, you can{' '}
-                  <Link href="/faq#disputes" className="font-medium text-teal-700 underline-offset-4 hover:underline">submit a dispute</Link>. Landlords can{' '}
-                  <Link href="/landlord-portal/claim" className="font-medium text-teal-700 underline-offset-4 hover:underline">claim their profiles</Link> to respond to reviews and correct business information.
+                  <Link href="/faq#disputes" className="font-medium text-teal-700 underline-offset-4 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">submit a dispute</Link>. Landlords can{' '}
+                  <Link href="/landlord-portal/claim" className="font-medium text-teal-700 underline-offset-4 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">claim their profiles</Link> to respond to reviews and correct business information.
                 </p>
               </div>
             </div>

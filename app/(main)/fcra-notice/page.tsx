@@ -39,7 +39,7 @@ export default function FcraNoticePage() {
             <li>Insurance underwriting decisions</li>
             <li>Any other purpose described in FCRA § 1681b(a)(3)</li>
           </ul>
-          <p className="mt-2">Using Vett as a tenant screening tool violates our <Link href="/terms" className="text-navy-600 hover:underline">Terms of Service</Link> and may violate federal and state law.</p>
+          <p className="mt-2">Using Vett as a tenant screening tool violates our <Link href="/terms" className="text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">Terms of Service</Link> and may violate federal and state law.</p>
         </section>
 
         <section>

@@ -94,7 +94,7 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
             <p className="text-sm font-semibold text-slate-700">Your watchlist is empty</p>
             <p className="mt-1 text-[13px] text-slate-500">Find a landlord and tap &ldquo;Watch Landlord&rdquo; on their profile to track updates.</p>
             <div className="mt-4">
-              <Link href="/search" className="text-[12.5px] font-medium text-teal hover:underline">
+              <Link href="/search" className="text-[12.5px] font-medium text-teal hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
                 Browse landlords &rarr;
               </Link>
             </div>
@@ -129,7 +129,7 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <Link href={`/landlord/${l.slug}`} className="text-[17px] font-bold text-slate-900 hover:text-navy-700 hover:underline">
+                          <Link href={`/landlord/${l.slug}`} className="text-[17px] font-bold text-slate-900 hover:text-navy-700 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                             {l.display_name}
                           </Link>
                           {l.is_verified && (

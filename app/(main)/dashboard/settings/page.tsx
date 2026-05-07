@@ -305,7 +305,7 @@ export default function SettingsPage() {
               {publicProfile && profile && (
                 <p className="mt-2 text-[12px]">
                   Share link:{' '}
-                  <Link href={`/u/${profile.id}`} className="text-teal-700 hover:underline break-all">
+                  <Link href={`/u/${profile.id}`} className="text-teal-700 hover:underline break-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
                     vettrentals.com/u/{profile.id}
                   </Link>
                 </p>

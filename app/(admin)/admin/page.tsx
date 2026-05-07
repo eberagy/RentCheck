@@ -293,7 +293,7 @@ export default async function AdminDashboardPage() {
                   {pendingSubmissions} pending
                 </Badge>
               </CardTitle>
-              <Link href="/admin/submissions" className="text-xs text-navy-600 hover:underline">
+              <Link href="/admin/submissions" className="text-xs text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                 Review all →
               </Link>
             </div>
@@ -351,7 +351,7 @@ export default async function AdminDashboardPage() {
                   </Badge>
                 )}
               </CardTitle>
-              <Link href="/admin/reviews" className="text-xs text-navy-600 hover:underline">
+              <Link href="/admin/reviews" className="text-xs text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                 View all →
               </Link>
             </div>
@@ -427,7 +427,7 @@ export default async function AdminDashboardPage() {
                   <Badge className="bg-red-100 text-red-700 border-red-200 text-xs ml-1">Needs attention</Badge>
                 )}
               </CardTitle>
-              <Link href="/admin/data-sync" className="text-xs text-navy-600 hover:underline">
+              <Link href="/admin/data-sync" className="text-xs text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                 Manage →
               </Link>
             </div>
