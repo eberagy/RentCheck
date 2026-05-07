@@ -15,6 +15,7 @@ import { AnimatedCounter } from '@/components/ui/AnimatedCounter'
 import { CityAlertSignup } from '@/components/marketing/CityAlertSignup'
 import { Button } from '@/components/ui/button'
 import { createServiceClient } from '@/lib/supabase/service'
+import { captureException } from '@/lib/sentry'
 import { COLLEGE_CITIES } from '@/types'
 
 export const revalidate = 60
@@ -55,7 +56,12 @@ async function getStats() {
       records: recordCount ?? 0,
       cities: Number(cityCountResult ?? 0) || 21,
     }
-  } catch {
+  } catch (err) {
+    // Homepage is the highest-traffic page on the site — a sustained
+    // failure here would mean every visitor sees zeroed-out hero stats.
+    // Surface to Sentry so we know within minutes instead of via "why
+    // does Vett say there are 0 landlords" tweets.
+    captureException(err, { where: 'home:getStats' })
     return { reviews: 0, landlords: 0, records: 0, cities: 21 }
   }
 }
@@ -79,7 +85,9 @@ async function getRecentReviews(): Promise<RecentReview[]> {
       .order('created_at', { ascending: false })
       .limit(6)
     return (data ?? []) as unknown as RecentReview[]
-  } catch {
+  } catch (err) {
+    // Same rationale as getStats — homepage failure visible to everyone.
+    captureException(err, { where: 'home:getRecentReviews' })
     return []
   }
 }
