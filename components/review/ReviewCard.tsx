@@ -18,12 +18,10 @@ import type { Review } from '@/types'
 
 interface ReviewCardProps {
   review: Review
-  onMarkHelpful?: (id: string) => void
-  onFlag?: (id: string) => void
   isOwn?: boolean
 }
 
-export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: ReviewCardProps) {
+export function ReviewCard({ review, isOwn }: ReviewCardProps) {
   const [helpfulCount, setHelpfulCount] = useState(review.helpful_count)
   const [didVote, setDidVote] = useState(false)
   const [voting, setVoting] = useState(false)
@@ -70,7 +68,6 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
     } finally {
       setVoting(false)
     }
-    onMarkHelpful?.(review.id)
   }
 
   return (
