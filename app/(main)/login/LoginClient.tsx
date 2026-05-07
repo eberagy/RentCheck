@@ -228,18 +228,22 @@ export default function LoginClient() {
               </div>
 
               {/* Mode toggle */}
-              <div className="flex rounded-lg border border-slate-200 p-0.5 bg-slate-50">
+              <div role="tablist" aria-label="Sign-in method" className="flex rounded-lg border border-slate-200 p-0.5 bg-slate-50">
                 <button
                   type="button"
+                  role="tab"
+                  aria-selected={mode === 'password'}
                   onClick={() => setMode('password')}
-                  className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-colors ${mode === 'password' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 ${mode === 'password' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
                 >
                   Email & password
                 </button>
                 <button
                   type="button"
+                  role="tab"
+                  aria-selected={mode === 'magic'}
                   onClick={() => setMode('magic')}
-                  className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-colors ${mode === 'magic' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`flex-1 rounded-md py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 ${mode === 'magic' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
                 >
                   Magic link
                 </button>
