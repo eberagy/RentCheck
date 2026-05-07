@@ -368,7 +368,7 @@ export default async function HomePage() {
                 </p>
               </div>
               <Link href="/search" className="group hidden items-center gap-1.5 text-[13px] font-medium text-navy-600 hover:text-navy-800 sm:inline-flex">
-                Browse all <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                Browse all <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
               </Link>
             </div>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -395,7 +395,7 @@ export default async function HomePage() {
                       </div>
                     </div>
                     <div className="mt-4 flex items-center gap-2 border-t border-slate-100 pt-3 text-[12px] text-slate-500">
-                      <Building2 className="h-3.5 w-3.5 text-slate-400" />
+                      <Building2 className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
                       <span className="truncate">
                         {review.landlord?.display_name ?? 'Unknown'}
                         {review.landlord?.city && <span className="text-slate-400"> · {review.landlord.city}</span>}
@@ -427,7 +427,7 @@ export default async function HomePage() {
             </p>
             <Button asChild size="sm" className="mt-7 bg-white text-slate-900 font-semibold hover:bg-slate-100 rounded-md h-10 px-5">
               <Link href="/review/new">
-                Write a review <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                Write a review <ArrowRight className="ml-2 h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             </Button>
           </div>
@@ -441,7 +441,7 @@ export default async function HomePage() {
             </p>
             <Button asChild size="sm" className="mt-7 bg-white text-teal-700 font-semibold hover:bg-teal-50 rounded-md h-10 px-5">
               <Link href="/add-landlord">
-                Add a landlord <ArrowRight className="ml-2 h-3.5 w-3.5" />
+                Add a landlord <ArrowRight className="ml-2 h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             </Button>
           </div>
@@ -459,7 +459,7 @@ export default async function HomePage() {
               <p className="mt-1.5 text-[14px] text-slate-500">Search landlord reviews near your university.</p>
             </div>
             <Link href="/search" className="group inline-flex items-center gap-1 text-[13px] font-medium text-navy-600 hover:text-navy-800">
-              All cities <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              All cities <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
