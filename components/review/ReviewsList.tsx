@@ -45,7 +45,7 @@ export function ReviewsList({ reviews, landlordId, totalReviews }: ReviewsListPr
   if (reviews.length === 0) {
     return (
       <div className="rounded-xl border border-slate-200 bg-white py-16 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
-        <MessageSquare className="mx-auto mb-3 h-10 w-10 text-slate-200" />
+        <MessageSquare className="mx-auto mb-3 h-10 w-10 text-slate-200" aria-hidden="true" />
         <p className="font-medium text-slate-700">No reviews yet</p>
         <p className="mt-1 text-sm text-slate-500">Be the first to review this landlord</p>
         <Button asChild size="sm" className="mt-4 rounded-full bg-slate-950 text-white hover:bg-navy-700">
@@ -84,7 +84,7 @@ export function ReviewsList({ reviews, landlordId, totalReviews }: ReviewsListPr
           </div>
           <Button asChild size="sm" className="rounded-full bg-slate-950 text-white hover:bg-navy-700">
             <Link href={`/review/new?landlord=${landlordId}`}>
-              Write a Review <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+              Write a Review <ArrowRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" />
             </Link>
           </Button>
         </div>

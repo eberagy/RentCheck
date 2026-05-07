@@ -51,7 +51,11 @@ export function Chip({ children, tone = 'neutral', dark = false, icon, className
         className
       )}
     >
-      {icon}
+      {/* The icon prop is decorative — children supply the chip's
+          accessible name. Wrap in aria-hidden span so all Chip
+          consumers don't have to remember to set it on the lucide
+          element they pass in. */}
+      {icon != null && <span aria-hidden="true" className="inline-flex items-center">{icon}</span>}
       {children}
     </span>
   )
