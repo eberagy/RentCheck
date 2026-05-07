@@ -201,6 +201,8 @@ export default function AdminSubmissionsPage() {
                       value={adminNotes[sub.id] ?? ''}
                       onChange={e => setAdminNotes(prev => ({ ...prev, [sub.id]: e.target.value }))}
                       rows={2}
+                      aria-label="Optional rejection reason"
+                      autoComplete="off"
                       className="text-sm"
                     />
                     <div className="flex flex-wrap gap-2">

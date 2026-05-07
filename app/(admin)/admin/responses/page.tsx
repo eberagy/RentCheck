@@ -107,7 +107,9 @@ export default function AdminResponsesPage() {
                           onChange={e => setReason(e.target.value)}
                           placeholder="Optional reason (will be included in rejection email to the landlord)"
                           rows={2}
-                          className="w-full rounded-lg border border-red-200 bg-red-50/50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-red-400 focus:outline-none"
+                          aria-label="Rejection reason (optional)"
+                          autoComplete="off"
+                          className="w-full rounded-lg border border-red-200 bg-red-50/50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-red-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
                         />
                         <div className="flex gap-2">
                           <Button

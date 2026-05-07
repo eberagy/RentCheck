@@ -175,12 +175,14 @@ export default function AdminDisputesPage() {
                         </Select>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500 mb-1 font-medium">Admin Notes</p>
+                        <label htmlFor={`dispute-notes-${dispute.id}`} className="text-xs text-slate-500 mb-1 font-medium block">Admin Notes</label>
                         <Textarea
+                          id={`dispute-notes-${dispute.id}`}
                           placeholder="Internal notes or message to disputer..."
                           value={notes[dispute.id] ?? ''}
                           onChange={e => setNotes(prev => ({ ...prev, [dispute.id]: e.target.value }))}
                           rows={2}
+                          autoComplete="off"
                           className="text-sm"
                         />
                       </div>

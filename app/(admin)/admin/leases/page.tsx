@@ -139,12 +139,14 @@ export default function AdminLeasesPage() {
                     </button>
 
                     <div className="mb-3">
-                      <p className="text-xs text-slate-500 mb-1 font-medium">Rejection reason (if applicable)</p>
+                      <label htmlFor={`lease-rejection-${item.id}`} className="text-xs text-slate-500 mb-1 font-medium block">Rejection reason (if applicable)</label>
                       <Textarea
+                        id={`lease-rejection-${item.id}`}
                         placeholder="Document unclear, name doesn't match, wrong property, etc."
                         value={notes[item.id] ?? ''}
                         onChange={e => setNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
                         rows={2}
+                        autoComplete="off"
                         className="text-sm"
                       />
                     </div>
