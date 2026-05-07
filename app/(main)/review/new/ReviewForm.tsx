@@ -536,13 +536,19 @@ export default function ReviewForm() {
               {/* Tenancy dates */}
               <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <span className="text-[13px] font-semibold text-slate-900 mb-2 block">Move-in <span className="text-red-600">*</span></span>
-                  <Input type="month" {...register('rentalPeriodStart')} className="h-11 rounded-xl border-slate-200 text-[14px]" />
+                  <label htmlFor="rental-start" className="text-[13px] font-semibold text-slate-900 mb-2 block">
+                    Move-in <span className="text-red-600" aria-hidden="true">*</span>
+                    <span className="sr-only"> (required)</span>
+                  </label>
+                  <Input id="rental-start" type="month" {...register('rentalPeriodStart')} className="h-11 rounded-xl border-slate-200 text-[14px]" />
                   {errors.rentalPeriodStart && <p className="text-xs text-red-600 mt-1">{errors.rentalPeriodStart.message}</p>}
                 </div>
                 <div>
-                  <span className="text-[13px] font-semibold text-slate-900 mb-2 block">Move-out <span className="text-red-600">*</span></span>
-                  <Input type="month" {...register('rentalPeriodEnd')} className="h-11 rounded-xl border-slate-200 text-[14px]" disabled={watch('isCurrentTenant')} />
+                  <label htmlFor="rental-end" className="text-[13px] font-semibold text-slate-900 mb-2 block">
+                    Move-out <span className="text-red-600" aria-hidden="true">*</span>
+                    <span className="sr-only"> (required)</span>
+                  </label>
+                  <Input id="rental-end" type="month" {...register('rentalPeriodEnd')} className="h-11 rounded-xl border-slate-200 text-[14px]" disabled={watch('isCurrentTenant')} />
                   {errors.rentalPeriodEnd && <p className="text-xs text-red-600 mt-1">{errors.rentalPeriodEnd.message}</p>}
                 </div>
                 <div className="flex items-end pb-2">
