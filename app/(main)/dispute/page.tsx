@@ -152,6 +152,7 @@ function DisputeForm() {
           placeholder="Provide any context that will help us investigate — e.g. case was dismissed, violation was fixed on [date], property was sold..."
           rows={4}
           maxLength={2000}
+          autoComplete="off"
           className="text-sm resize-none"
         />
         <p className="text-xs text-slate-400 text-right mt-0.5">{detail.length}/2000</p>
