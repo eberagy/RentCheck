@@ -1,6 +1,16 @@
 import { Suspense } from 'react'
+import type { Metadata } from 'next'
 import { Loader2 } from 'lucide-react'
 import LoginClient from './LoginClient'
+
+// Auth pages aren't useful in search results — the landing target is the
+// auth client, not the page. noindex keeps Google from surfacing
+// "Sign in to Vett" results above more relevant content.
+export const metadata: Metadata = {
+  title: 'Sign in',
+  description: 'Sign in to Vett to write lease-verified reviews, save searches, and watch landlords.',
+  robots: { index: false, follow: false },
+}
 
 export default function LoginPage() {
   return (

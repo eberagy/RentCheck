@@ -1,6 +1,15 @@
 import { Suspense } from 'react'
+import type { Metadata } from 'next'
 import { Loader2 } from 'lucide-react'
 import ReviewForm from './ReviewForm'
+
+// noindex: this is an auth-required form — Google indexing it would surface
+// "Write a review" landing pages that immediately gate behind sign-in.
+export const metadata: Metadata = {
+  title: 'Write a review',
+  description: 'Share your lease-verified rental experience on Vett.',
+  robots: { index: false, follow: false },
+}
 
 export default function NewReviewPage() {
   return (
