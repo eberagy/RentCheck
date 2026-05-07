@@ -14,6 +14,7 @@ import {
   gradeColor,
   gradeBgLight,
   formatDate,
+  formatDateRelative,
   formatRentalPeriod,
   detectFileType,
   pluralize,
@@ -241,6 +242,31 @@ describe('severityColor', () => {
   it('critical is red, low is blue (semantic colors)', () => {
     expect(severityColor('critical')).toContain('red')
     expect(severityColor('low')).toContain('blue')
+  })
+})
+
+describe('formatDateRelative', () => {
+  it('returns empty string for null / undefined / empty input', () => {
+    expect(formatDateRelative(null)).toBe('')
+    expect(formatDateRelative(undefined)).toBe('')
+    expect(formatDateRelative('')).toBe('')
+  })
+
+  it('renders a date in relative form with the "ago" suffix', () => {
+    // We don't pin a specific phrase since date-fns renders bracketed
+    // ranges (e.g. "about 1 hour ago" vs "1 minute ago") depending on
+    // the gap. Just verify the output is non-empty and contains "ago"
+    // for a past date — that's the contract callers rely on.
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+    const out = formatDateRelative(yesterday)
+    expect(out).toMatch(/ago$/)
+    expect(out.length).toBeGreaterThan(0)
+  })
+
+  it('renders future dates with "in" prefix', () => {
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+    const out = formatDateRelative(tomorrow)
+    expect(out).toMatch(/^in /)
   })
 })
 
