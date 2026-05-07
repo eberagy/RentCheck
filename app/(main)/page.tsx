@@ -462,13 +462,13 @@ export default async function HomePage() {
               <Link
                 key={`${city}-${state}`}
                 href={`/city/${state.toLowerCase()}/${city.toLowerCase().replace(/\s+/g, '-')}`}
-                className="group flex items-center justify-between gap-2 rounded-md border border-slate-200 bg-white px-4 py-3.5 text-[13px] font-medium text-slate-700 transition-[border-color,color] duration-200 hover:border-teal-400 hover:text-teal-700"
+                className="group flex items-center justify-between gap-2 rounded-md border border-slate-200 bg-white px-4 py-3.5 text-[13px] font-medium text-slate-700 transition-[border-color,color] duration-200 hover:border-teal-400 hover:text-teal-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
               >
                 <span className="flex items-center gap-2">
-                  <MapPin className="h-3.5 w-3.5 text-slate-400 transition-colors group-hover:text-teal-500" />
+                  <MapPin className="h-3.5 w-3.5 text-slate-400 transition-colors group-hover:text-teal-500" aria-hidden="true" />
                   {city}, {state}
                 </span>
-                <ArrowRight className="h-3 w-3 text-slate-300 transition-[color,transform] duration-200 group-hover:text-teal-500 group-hover:translate-x-0.5" />
+                <ArrowRight className="h-3 w-3 text-slate-300 transition-[color,transform] duration-200 group-hover:text-teal-500 group-hover:translate-x-0.5" aria-hidden="true" />
               </Link>
             ))}
           </div>
