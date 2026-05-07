@@ -586,7 +586,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                       <Link
                         key={prop.id}
                         href={`/property/${prop.id}`}
-                        className="group relative block rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
+                        className="group relative block rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                       >
                         <span aria-hidden="true" className={
                           'absolute inset-y-3 left-0 w-[3px] rounded-r ' +
