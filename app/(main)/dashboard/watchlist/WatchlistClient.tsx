@@ -175,6 +175,7 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
                         <Button
                           variant="outline"
                           size="sm"
+                          aria-pressed={row.notify_email}
                           className={`h-8 rounded-full ${row.notify_email ? 'border-teal-300 text-teal-700 bg-teal-50 hover:bg-teal-100' : ''}`}
                           onClick={() => toggleNotify(row)}
                           disabled={processing === row.id}

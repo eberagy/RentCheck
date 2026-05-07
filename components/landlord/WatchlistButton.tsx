@@ -104,6 +104,7 @@ export function WatchlistButton({
       size="sm"
       onClick={toggle}
       disabled={loading}
+      aria-pressed={watching}
       className={watching ? 'border-teal-300 text-teal-700 bg-teal-50 hover:bg-teal-100' : 'border-slate-200 text-slate-600'}
     >
       {watching ? <BellOff className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" /> : <Bell className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />}

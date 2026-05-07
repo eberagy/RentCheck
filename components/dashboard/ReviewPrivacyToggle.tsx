@@ -47,6 +47,9 @@ export function ReviewPrivacyToggle({ reviewId, initialAnonymous }: Props) {
   return (
     <button
       type="button"
+      role="switch"
+      aria-checked={anonymous}
+      aria-label="Anonymous review"
       onClick={toggle}
       disabled={busy}
       title={anonymous ? 'Currently anonymous — click to show your name' : 'Currently showing your name — click to make anonymous'}
