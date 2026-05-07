@@ -152,7 +152,7 @@ export default function LoginClient() {
           <ul className="space-y-4">
             {BENEFITS.map((benefit) => (
               <li key={benefit} className="flex items-center gap-3 text-base text-white">
-                <CheckCircle2 className="h-5 w-5 text-teal-500 flex-shrink-0" />
+                <CheckCircle2 className="h-5 w-5 text-teal-500 flex-shrink-0" aria-hidden="true" />
                 <span>{benefit}</span>
               </li>
             ))}
@@ -209,7 +209,7 @@ export default function LoginClient() {
                 className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:opacity-60"
               >
                 {googleLoading ? (
-                  <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
+                  <Loader2 className="h-5 w-5 animate-spin text-slate-400" aria-hidden="true" />
                 ) : (
                   <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" aria-hidden>
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -321,7 +321,7 @@ export default function LoginClient() {
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                         tabIndex={-1}
                       >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                       </button>
                     </div>
                     <Button
@@ -331,7 +331,7 @@ export default function LoginClient() {
                     >
                       {loading ? (
                         <span className="flex items-center gap-2">
-                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                           {passwordTab === 'signup' ? 'Creating account…' : 'Signing in…'}
                         </span>
                       ) : (
@@ -377,12 +377,12 @@ export default function LoginClient() {
                   >
                     {loading ? (
                       <span className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
                         Sending…
                       </span>
                     ) : (
                       <span className="flex items-center gap-2">
-                        <Mail className="h-4 w-4" />
+                        <Mail className="h-4 w-4" aria-hidden="true" />
                         Send magic link
                       </span>
                     )}
