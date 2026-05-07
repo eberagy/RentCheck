@@ -549,22 +549,30 @@ export default function ReviewForm() {
 
               {/* Would rent again */}
               <div>
-                <span className="text-[13px] font-semibold text-slate-900 mb-2 block">Would you rent from them again? <span className="text-red-600">*</span></span>
-                <div className="flex gap-2.5">
-                  {(['yes', 'no', 'unsure'] as const).map(v => (
-                    <button
-                      key={v}
-                      type="button"
-                      onClick={() => setValue('wouldRentAgain', v)}
-                      className={`rounded-full px-5 py-2.5 text-[13px] font-semibold border transition-colors capitalize ${
-                        watch('wouldRentAgain') === v
-                          ? 'bg-slate-900 text-white border-slate-900'
-                          : 'border-slate-200 text-slate-600 bg-white hover:border-slate-300'
-                      }`}
-                    >
-                      {v}
-                    </button>
-                  ))}
+                <span id="would-rent-again-label" className="text-[13px] font-semibold text-slate-900 mb-2 block">
+                  Would you rent from them again? <span className="text-red-600" aria-hidden="true">*</span>
+                  <span className="sr-only"> (required)</span>
+                </span>
+                <div role="radiogroup" aria-labelledby="would-rent-again-label" aria-required="true" className="flex gap-2.5">
+                  {(['yes', 'no', 'unsure'] as const).map(v => {
+                    const selected = watch('wouldRentAgain') === v
+                    return (
+                      <button
+                        key={v}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        onClick={() => setValue('wouldRentAgain', v)}
+                        className={`rounded-full px-5 py-2.5 text-[13px] font-semibold border transition-colors capitalize focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2 ${
+                          selected
+                            ? 'bg-slate-900 text-white border-slate-900'
+                            : 'border-slate-200 text-slate-600 bg-white hover:border-slate-300'
+                        }`}
+                      >
+                        {v}
+                      </button>
+                    )
+                  })}
                 </div>
                 {errors.wouldRentAgain && <p className="text-xs text-red-600 mt-1">{errors.wouldRentAgain.message}</p>}
               </div>
