@@ -291,16 +291,16 @@ export default async function DashboardPage() {
                       key={s.id}
                       className={`grid grid-cols-[auto_1fr_auto_auto] items-center gap-3 py-3 px-1 ${i < savedSearchList.length - 1 ? 'border-b border-slate-100' : ''}`}
                     >
-                      <Link href={href} className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 hover:border-slate-300">
+                      <Link href={href} aria-label={`View ${s.city}, ${s.state_abbr}`} className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 hover:border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
                         <Bell className="h-3 w-3 text-teal-500" aria-hidden="true" />
                       </Link>
-                      <Link href={href} className="min-w-0 hover:opacity-80">
+                      <Link href={href} className="min-w-0 hover:opacity-80 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                         <p className="truncate text-[13px] font-bold text-slate-900">
                           {s.city}, {s.state_abbr}
                         </p>
                         <p className="mt-0.5 text-[12px] text-slate-500 truncate">{last}</p>
                       </Link>
-                      <Link href={href} className="text-[11px] text-slate-400 hover:text-slate-700">View →</Link>
+                      <Link href={href} className="text-[11px] text-slate-400 hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">View →</Link>
                       <SavedSearchUnsubscribeButton searchId={s.id} city={s.city} stateAbbr={s.state_abbr} />
                     </div>
                   )
