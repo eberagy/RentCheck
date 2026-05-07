@@ -622,8 +622,10 @@ export default function LandlordPortalPage() {
                         {/* Sub-ratings */}
                         {hasSubRatings && (
                           <button
+                            type="button"
                             onClick={() => setExpandedRatings(isExpanded ? null : review.id)}
-                            className="flex items-center gap-1 text-xs text-navy-600 hover:text-navy-800 mb-2"
+                            aria-expanded={isExpanded}
+                            className="flex items-center gap-1 text-xs text-navy-600 hover:text-navy-800 mb-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                           >
                             <BarChart2 className="h-3 w-3" />
                             {isExpanded ? 'Hide' : 'Show'} ratings
