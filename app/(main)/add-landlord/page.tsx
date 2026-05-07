@@ -119,7 +119,7 @@ export default function AddLandlordPage() {
     return (
       <div className="mx-auto max-w-md px-4 py-20 text-center">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-50">
-          <Building2 className="h-7 w-7 text-navy-600" />
+          <Building2 className="h-7 w-7 text-navy-600" aria-hidden="true" />
         </div>
         <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-[1.08] tracking-tight text-slate-900">Sign in to add a landlord</h1>
         <p className="mt-2 text-sm text-slate-500">
@@ -141,7 +141,7 @@ export default function AddLandlordPage() {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
         <div className="h-16 w-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <CheckCircle2 className="h-8 w-8 text-teal-600" />
+          <CheckCircle2 className="h-8 w-8 text-teal-600" aria-hidden="true" />
         </div>
         <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">This landlord already exists</h1>
         <p className="text-slate-600 mb-6">We found a matching profile. View it or leave your review directly.</p>
@@ -161,7 +161,7 @@ export default function AddLandlordPage() {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
         <div className="h-16 w-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <CheckCircle2 className="h-8 w-8 text-teal-600" />
+          <CheckCircle2 className="h-8 w-8 text-teal-600" aria-hidden="true" />
         </div>
         <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.25rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Submission received</h1>
         <p className="text-slate-600 mb-2">Our founders will review and add this landlord to Vett within 1–2 business days.</p>
@@ -178,8 +178,8 @@ export default function AddLandlordPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
-      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6">
-        <ArrowLeft className="h-4 w-4" /> Back
+      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back
       </Link>
 
       <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900 mb-3">Add a Missing Landlord</h1>
@@ -251,7 +251,7 @@ export default function AddLandlordPage() {
             <span className="ml-1.5 text-xs font-normal text-slate-500">(optional but speeds up approval)</span>
           </Label>
           <div className="mt-1.5 flex items-start gap-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 mb-2">
-            <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+            <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" aria-hidden="true" />
             <span>Upload a lease, deed, property tax record, or utility bill showing the landlord&apos;s name and property address. Reviewed by Vett founders and moderators only — never shared publicly.</span>
           </div>
           <div
