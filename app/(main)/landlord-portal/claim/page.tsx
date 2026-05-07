@@ -40,7 +40,7 @@ function StepIndicator({ current }: { current: 1 | 2 | 3 }) {
                     : 'bg-slate-100 text-slate-400'
                 }`}
               >
-                {isDone ? <CheckCircle2 className="h-4 w-4" /> : step.n}
+                {isDone ? <CheckCircle2 className="h-4 w-4" aria-hidden="true" /> : step.n}
               </div>
               <span
                 className={`text-xs font-medium whitespace-nowrap ${
@@ -192,7 +192,7 @@ export default function ClaimProfilePage() {
 
           <Button asChild className="bg-navy-600 hover:bg-navy-700 text-white px-8">
             <Link href="/landlord-portal">
-              Back to Portal <ArrowRight className="h-4 w-4 ml-2" />
+              Back to Portal <ArrowRight className="h-4 w-4 ml-2" aria-hidden="true" />
             </Link>
           </Button>
         </div>
@@ -243,7 +243,7 @@ export default function ClaimProfilePage() {
             <div className="flex items-center justify-between bg-teal-50 border border-teal-200 rounded-xl p-3.5">
               <div className="flex items-center gap-3">
                 <div className="h-8 w-8 bg-teal-100 rounded-lg flex items-center justify-center">
-                  <CheckCircle2 className="h-4 w-4 text-teal-600" />
+                  <CheckCircle2 className="h-4 w-4 text-teal-600" aria-hidden="true" />
                 </div>
                 <div>
                   <p className="font-semibold text-teal-900 text-sm">{selectedLandlord.display_name}</p>
@@ -258,7 +258,7 @@ export default function ClaimProfilePage() {
                 aria-label="Clear selected landlord"
                 className="text-teal-400 hover:text-teal-600 p-1 rounded hover:bg-teal-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
           ) : (
@@ -396,9 +396,9 @@ export default function ClaimProfilePage() {
           disabled={!selectedLandlord || !docFile || !docType || submitting}
         >
           {submitting ? (
-            <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Submitting…</>
+            <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Submitting…</>
           ) : (
-            <>Submit Claim Request <ArrowRight className="h-4 w-4 ml-2" /></>
+            <>Submit Claim Request <ArrowRight className="h-4 w-4 ml-2" aria-hidden="true" /></>
           )}
         </Button>
       </div>
