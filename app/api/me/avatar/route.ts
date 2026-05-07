@@ -4,6 +4,7 @@ import { assertSameOrigin } from '@/lib/origin'
 import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { captureException } from '@/lib/sentry'
 
 export const runtime = 'nodejs'
 export const maxDuration = 30
@@ -63,6 +64,7 @@ export async function POST(req: NextRequest) {
 
   if (uploadErr) {
     console.error('[avatar] storage upload failed:', uploadErr.message)
+    captureException(uploadErr, { where: 'me/avatar:upload' })
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
   }
 
@@ -82,7 +84,12 @@ export async function POST(req: NextRequest) {
     .eq('id', user.id)
 
   if (updateErr) {
+    // Already-uploaded avatar key is now orphaned in storage if this
+    // fails — same class of bug as the me/delete auth-admin failure
+    // (data on disk doesn't match the user's profile state). Sentry
+    // route so the orphan accrues visibly instead of silently.
     console.error('[avatar] profile update failed:', updateErr.message)
+    captureException(updateErr, { where: 'me/avatar:profile-update' })
     return NextResponse.json({ error: 'Database error' }, { status: 500 })
   }
 
