@@ -77,6 +77,11 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
         return
       }
       setDone(true)
+    } catch {
+      // Network failure — without this catch the button would silently
+      // re-enable with no toast, same UX hole as the dispute submit
+      // handler had before ca96fb8.
+      toast.error("Couldn't reach the server. Please try again.")
     } finally {
       setSubmitting(false)
     }
