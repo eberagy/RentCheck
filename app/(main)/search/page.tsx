@@ -610,7 +610,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               <Chip tone="neutral">{city}{state ? `, ${state}` : ''}</Chip>
             )}
           </div>
-          <div className="mt-3 text-[13px] text-slate-500">
+          {/* Page-level h1 — was previously a styled <div>, leaving the
+              entire /search page with no top-level heading. Screen reader
+              landmark navigation now finds the page title, and Google's
+              outline tools have a real h1 to anchor on. */}
+          <h1 className="mt-3 text-[13px] font-normal text-slate-500">
             {q ? (
               <>
                 Results matching &ldquo;<b className="text-slate-900">{q}</b>&rdquo;
@@ -621,7 +625,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             ) : (
               <>Browse landlords by city or search above</>
             )}
-          </div>
+          </h1>
           {/* City quick-links */}
           <div className="mt-3 flex flex-wrap gap-1.5">
             {priorityCities.map((priorityCity) => {
