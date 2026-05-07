@@ -16,11 +16,18 @@ export async function GET(_req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('watchlist')
     .select('*, landlord:landlords(display_name, slug, avg_rating, review_count), property:properties(address_line1, city, state_abbr)')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
+
+  // Without this check a query failure would silently render the user's
+  // watchlist as empty — they'd see "no watchlist entries" and assume
+  // their data was deleted. dbError surfaces 500 + Sentry capture so
+  // we know within minutes instead of via "where did my watchlist go"
+  // support emails.
+  if (error) return dbError('watchlist:list', error)
 
   return NextResponse.json({ watchlist: data ?? [] })
 }
