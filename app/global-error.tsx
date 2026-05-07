@@ -9,6 +9,7 @@ import { captureException } from '@/lib/sentry'
 // layout itself may have failed.
 export default function GlobalError({
   error,
+  reset,
 }: {
   error: Error & { digest?: string }
   reset: () => void
@@ -41,21 +42,39 @@ export default function GlobalError({
             Vett ran into a problem loading this page. We&apos;ve been notified.
             Try refreshing — if it keeps happening, head back to the homepage.
           </p>
-          <a
-            href="/"
-            style={{
-              display: 'inline-block',
-              padding: '10px 20px',
-              background: '#1e3a5f',
-              color: '#fff',
-              borderRadius: 8,
-              fontSize: 14,
-              fontWeight: 600,
-              textDecoration: 'none',
-            }}
-          >
-            Go home
-          </a>
+          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => reset()}
+              style={{
+                padding: '10px 20px',
+                background: '#0f7b6c',
+                color: '#fff',
+                border: 'none',
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              Try again
+            </button>
+            <a
+              href="/"
+              style={{
+                display: 'inline-block',
+                padding: '10px 20px',
+                background: '#1e3a5f',
+                color: '#fff',
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 600,
+                textDecoration: 'none',
+              }}
+            >
+              Go home
+            </a>
+          </div>
           {error.digest && (
             <p
               style={{
