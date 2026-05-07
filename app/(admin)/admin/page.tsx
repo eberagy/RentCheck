@@ -181,21 +181,21 @@ export default async function AdminDashboardPage() {
                 <BarChart3 className="h-5 w-5 text-navy-600" aria-hidden="true" />
               </div>
               <div>
-                <div className="text-2xl font-bold text-slate-900">{totalReviews.toLocaleString()}</div>
+                <div className="text-2xl font-bold tabular-nums text-slate-900">{totalReviews.toLocaleString()}</div>
                 <div className="text-xs text-slate-500">Total Reviews</div>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-100">
               <div className="text-center">
-                <div className="text-lg font-bold text-amber-600">{(pendingReviews ?? 0).toLocaleString()}</div>
+                <div className="text-lg font-bold tabular-nums text-amber-600">{(pendingReviews ?? 0).toLocaleString()}</div>
                 <div className="text-xs text-slate-500">Pending</div>
               </div>
               <div className="text-center border-x border-slate-100">
-                <div className="text-lg font-bold text-teal-600">{(approvedReviews ?? 0).toLocaleString()}</div>
+                <div className="text-lg font-bold tabular-nums text-teal-600">{(approvedReviews ?? 0).toLocaleString()}</div>
                 <div className="text-xs text-slate-500">Approved</div>
               </div>
               <div className="text-center">
-                <div className="text-lg font-bold text-red-500">{(rejectedReviews ?? 0).toLocaleString()}</div>
+                <div className="text-lg font-bold tabular-nums text-red-500">{(rejectedReviews ?? 0).toLocaleString()}</div>
                 <div className="text-xs text-slate-500">Rejected</div>
               </div>
             </div>
@@ -208,7 +208,7 @@ export default async function AdminDashboardPage() {
               <TrendingUp className="h-5 w-5 text-blue-600" aria-hidden="true" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-slate-900">{(totalLandlords ?? 0).toLocaleString()}</div>
+              <div className="text-2xl font-bold tabular-nums text-slate-900">{(totalLandlords ?? 0).toLocaleString()}</div>
               <div className="text-xs text-slate-500">Total Landlords</div>
             </div>
           </CardContent>
@@ -220,7 +220,7 @@ export default async function AdminDashboardPage() {
               <Users className="h-5 w-5 text-purple-600" aria-hidden="true" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-slate-900">{(totalUsers ?? 0).toLocaleString()}</div>
+              <div className="text-2xl font-bold tabular-nums text-slate-900">{(totalUsers ?? 0).toLocaleString()}</div>
               <div className="text-xs text-slate-500">Total Users</div>
             </div>
           </CardContent>
@@ -233,7 +233,7 @@ export default async function AdminDashboardPage() {
                 <Activity className="h-5 w-5 text-teal-600" aria-hidden="true" />
               </div>
               <div>
-                <div className="text-2xl font-bold text-slate-900">{(totalWatchlists ?? 0).toLocaleString()}</div>
+                <div className="text-2xl font-bold tabular-nums text-slate-900">{(totalWatchlists ?? 0).toLocaleString()}</div>
                 <div className="text-xs text-slate-500">Active Watchlists</div>
               </div>
             </div>
@@ -246,7 +246,7 @@ export default async function AdminDashboardPage() {
         <div className="flex items-center gap-3">
           <Database className="h-5 w-5 text-teal-400" aria-hidden="true" />
           <div>
-            <span className="font-semibold text-white">{(totalPublicRecords ?? 0).toLocaleString()}</span>
+            <span className="font-semibold tabular-nums text-white">{(totalPublicRecords ?? 0).toLocaleString()}</span>
             <span className="text-navy-200 text-sm ml-2">public records indexed</span>
           </div>
         </div>
@@ -273,7 +273,7 @@ export default async function AdminDashboardPage() {
                     <div aria-hidden="true" className="h-2 w-2 rounded-full bg-teal-400" />
                   )}
                 </div>
-                <div className={`text-3xl font-bold ${color}`}>{count}</div>
+                <div className={`text-3xl font-bold tabular-nums ${color}`}>{count}</div>
                 <div className="text-sm text-slate-600 mt-1">{label}</div>
               </CardContent>
             </Card>
