@@ -80,16 +80,16 @@ export async function POST(req: NextRequest) {
           reviewTitle: review.title ?? 'Your review',
           landlordName: landlord.display_name,
           landlordSlug: landlord.slug,
-        }).catch(console.error)
+        }).catch(err => console.error('[email] review-approved failed:', err))
 
         // Fire watchlist alerts for users watching this landlord (excluding the reviewer)
-        fireWatchlistAlerts(serviceClient, review.landlord_id, landlord.display_name, landlord.slug, review.title ?? 'A new review', review.reviewer_id ?? null).catch(console.error)
+        fireWatchlistAlerts(serviceClient, review.landlord_id, landlord.display_name, landlord.slug, review.title ?? 'A new review', review.reviewer_id ?? null).catch(err => console.error('[watchlist] alert fan-out failed:', err))
       } else {
         sendReviewRejectedEmail(reviewer.email, {
           firstName: reviewer.full_name?.split(' ')[0],
           reviewTitle: review.title ?? 'Your review',
           reason: adminNotes,
-        }).catch(console.error)
+        }).catch(err => console.error('[email] review-rejected failed:', err))
       }
     }
   }
@@ -126,6 +126,6 @@ async function fireWatchlistAlerts(
       alertType: 'new_review',
       summary,
       unsubscribeToken: createUnsubscribeToken(watcher.user_id as string),
-    }).catch(console.error)
+    }).catch(err => console.error('[email] watchlist-alert failed:', err))
   }
 }
