@@ -45,9 +45,10 @@ function ProofDocLink({ path }: { path: string }) {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 text-xs text-navy-600 hover:underline bg-navy-50 border border-navy-200 rounded-lg px-3 py-1.5"
+        aria-label="View proof document (opens in new tab)"
+        className="inline-flex items-center gap-1.5 text-xs text-navy-600 hover:underline bg-navy-50 border border-navy-200 rounded-lg px-3 py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
       >
-        <ExternalLink className="h-3.5 w-3.5" /> View Proof Document
+        <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" /> View Proof Document
       </a>
     </div>
   )
@@ -163,8 +164,14 @@ export default function AdminSubmissionsPage() {
                       {sub.city && <span>{sub.city}{sub.state_abbr ? `, ${sub.state_abbr}` : ''}</span>}
                       {sub.phone && <span>{sub.phone}</span>}
                       {sub.website && (
-                        <a href={sub.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-navy-600 hover:underline">
-                          <ExternalLink className="h-3 w-3" /> Website
+                        <a
+                          href={sub.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label="Submitted landlord website (opens in new tab)"
+                          className="flex items-center gap-1 text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
+                        >
+                          <ExternalLink className="h-3 w-3" aria-hidden="true" /> Website
                         </a>
                       )}
                     </div>

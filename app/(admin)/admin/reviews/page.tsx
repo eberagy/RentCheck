@@ -286,9 +286,10 @@ export default function AdminReviewsPage() {
                               href={`/api/admin/lease-url?reviewId=${encodeURIComponent(review.id)}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex items-center gap-1.5 text-sm text-navy-600 hover:underline"
+                              aria-label="View lease document (opens in new tab)"
+                              className="flex items-center gap-1.5 text-sm text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                             >
-                              <Eye className="h-3.5 w-3.5" />
+                              <Eye className="h-3.5 w-3.5" aria-hidden="true" />
                               {review.lease_filename ?? 'View Document'}
                             </a>
                           </div>
