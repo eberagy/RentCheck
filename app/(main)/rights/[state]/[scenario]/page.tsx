@@ -84,12 +84,12 @@ export default async function ScenarioPage({ params }: ScenarioPageProps) {
       </script>
 
       <article className="mx-auto max-w-[720px] px-7 py-12">
-        <nav className="mb-5 flex flex-wrap items-center gap-1.5 text-[12px] text-slate-500">
-          <Link href="/rights" className="hover:text-slate-700">Tenant rights</Link>
-          <span className="text-slate-300">›</span>
-          <Link href={`/rights/${p.state.toLowerCase()}`} className="hover:text-slate-700">{stateInfo.name}</Link>
-          <span className="text-slate-300">›</span>
-          <span className="text-slate-700">{scenario.title}</span>
+        <nav aria-label="Breadcrumb" className="mb-5 flex flex-wrap items-center gap-1.5 text-[12px] text-slate-500">
+          <Link href="/rights" className="hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">Tenant rights</Link>
+          <span className="text-slate-300" aria-hidden="true">›</span>
+          <Link href={`/rights/${p.state.toLowerCase()}`} className="hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">{stateInfo.name}</Link>
+          <span className="text-slate-300" aria-hidden="true">›</span>
+          <span aria-current="page" className="text-slate-700">{scenario.title}</span>
         </nav>
 
         <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-[12.5px] leading-relaxed text-amber-900">
@@ -152,7 +152,7 @@ export default async function ScenarioPage({ params }: ScenarioPageProps) {
           </p>
           <Link
             href="/search"
-            className="mt-3 inline-flex items-center gap-1 rounded-full bg-navy-600 px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-navy-700"
+            className="mt-3 inline-flex items-center gap-1 rounded-full bg-navy-600 px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-navy-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2"
           >
             Search landlords
           </Link>

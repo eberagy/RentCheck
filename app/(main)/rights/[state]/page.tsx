@@ -410,16 +410,16 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
       </Script>
       <TrackPageView event="rights_page_viewed" properties={{ state: stateAbbr }} />
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-1 text-xs text-slate-500 mb-6">
-        <Link href="/" className="hover:text-navy-700 hover:underline transition-colors">
+      <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-xs text-slate-500 mb-6">
+        <Link href="/" className="hover:text-navy-700 hover:underline transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
           Home
         </Link>
-        <ChevronRight className="h-3 w-3 text-slate-300" />
-        <Link href="/rights" className="hover:text-navy-700 hover:underline transition-colors">
+        <ChevronRight className="h-3 w-3 text-slate-300" aria-hidden="true" />
+        <Link href="/rights" className="hover:text-navy-700 hover:underline transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
           Tenant Rights
         </Link>
-        <ChevronRight className="h-3 w-3 text-slate-300" />
-        <span className="text-slate-700 font-medium">{stateInfo.name}</span>
+        <ChevronRight className="h-3 w-3 text-slate-300" aria-hidden="true" />
+        <span aria-current="page" className="text-slate-700 font-medium">{stateInfo.name}</span>
       </nav>
 
       {/* ── Page header ── */}
@@ -541,7 +541,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
             <Link
               key={s.slug}
               href={`/rights/${stateAbbr.toLowerCase()}/${s.slug}`}
-              className="group block rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:border-navy-300"
+              className="group block rounded-xl border border-slate-200 bg-white p-4 transition-colors hover:border-navy-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
             >
               <div className="text-[14.5px] font-semibold text-slate-900 group-hover:text-navy-700">
                 {s.title}
@@ -560,7 +560,8 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
             <Link
               key={s.abbr}
               href={`/rights/${s.abbr.toLowerCase()}`}
-              className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors ${
+              aria-current={s.abbr === stateAbbr ? 'page' : undefined}
+              className={`text-xs px-3 py-1.5 rounded-lg border font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2 ${
                 s.abbr === stateAbbr
                   ? 'bg-navy-700 text-white border-navy-700'
                   : 'border-slate-200 text-slate-700 hover:border-navy-300 hover:text-navy-700 bg-white'
@@ -571,7 +572,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
           ))}
           <Link
             href="/rights"
-            className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-500 hover:border-navy-300 hover:text-navy-700 bg-white font-medium transition-colors"
+            className="text-xs px-3 py-1.5 rounded-lg border border-slate-200 text-slate-500 hover:border-navy-300 hover:text-navy-700 bg-white font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
           >
             All states →
           </Link>
