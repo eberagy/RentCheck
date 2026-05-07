@@ -348,10 +348,10 @@ export default function LandlordPortalPage() {
 
         {/* ── Pending claim ── */}
         {claim && claim.status === 'pending' && (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
+          <div role="status" className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
             <div className="flex items-start gap-4">
               <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-amber-100">
-                <Clock className="h-5 w-5 text-amber-600" />
+                <Clock className="h-5 w-5 text-amber-600" aria-hidden="true" />
               </div>
               <div>
                 <h2 className="font-bold text-amber-900">Claim Under Review</h2>

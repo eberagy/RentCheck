@@ -100,7 +100,7 @@ export default function FAQPage() {
               <span className="font-semibold text-[14px] text-slate-900 transition-colors group-open:text-teal-700">
                 {faq.q}
               </span>
-              <ChevronDown className="h-4 w-4 flex-shrink-0 text-slate-300 transition-transform group-open:rotate-180 group-open:text-teal-500" />
+              <ChevronDown className="h-4 w-4 flex-shrink-0 text-slate-300 transition-transform group-open:rotate-180 group-open:text-teal-500" aria-hidden="true" />
             </summary>
             <div className="px-5 pb-5">
               <p className="text-[14px] text-slate-700 leading-relaxed">{faq.a}</p>

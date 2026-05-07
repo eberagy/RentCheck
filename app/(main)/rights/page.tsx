@@ -142,7 +142,7 @@ export default function TenantRightsIndexPage() {
                   </div>
                   <p className="text-[12px] text-slate-500">{state.name}</p>
                 </div>
-                <ChevronRight className="h-4 w-4 flex-shrink-0 text-slate-400 transition-colors group-hover:text-navy-600" />
+                <ChevronRight className="h-4 w-4 flex-shrink-0 text-slate-400 transition-colors group-hover:text-navy-600" aria-hidden="true" />
               </Link>
             ))}
           </div>
