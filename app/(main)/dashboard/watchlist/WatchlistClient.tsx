@@ -110,8 +110,10 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
               ].map(opt => (
                 <button
                   key={opt.key}
+                  type="button"
                   onClick={() => setSort(opt.key as typeof sort)}
-                  className={`rounded-full px-3 py-1 font-medium transition-colors ${sort === opt.key ? 'bg-slate-900 text-white' : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300'}`}
+                  aria-pressed={sort === opt.key}
+                  className={`rounded-full px-3 py-1 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2 ${sort === opt.key ? 'bg-slate-900 text-white' : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300'}`}
                 >
                   {opt.label}
                 </button>
