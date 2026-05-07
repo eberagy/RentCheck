@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
 import { Instrument_Serif } from 'next/font/google'
 import Script from 'next/script'
@@ -55,6 +55,20 @@ export const metadata: Metadata = {
       'max-video-preview': -1,
     },
   },
+}
+
+// Viewport export controls the address-bar tint on mobile browsers and the
+// scaling behavior of the meta viewport tag. The themeColor matches the
+// hero `bg-ink` (#07111f) so iOS/Android Chrome show a navy bar instead of
+// the default white that clashes with the dark hero on first paint.
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#07111f' },
+    { media: '(prefers-color-scheme: dark)', color: '#07111f' },
+  ],
+  colorScheme: 'light',
+  width: 'device-width',
+  initialScale: 1,
 }
 
 const siteUrl = canonicalSiteUrl()
