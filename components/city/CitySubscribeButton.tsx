@@ -38,7 +38,12 @@ export function CitySubscribeButton({ city, stateAbbr }: Props) {
         setStatus('idle')
       }
     }
-    void check()
+    // Network or auth failure here should leave the button in its default
+    // (unsubscribed) state — same pattern as WatchlistButton. We swallow
+    // the error rather than toast because this runs on every render of a
+    // public city page; a transient blip shouldn't surface noise to
+    // anonymous viewers who weren't trying to act.
+    check().catch(() => { if (!cancelled) setStatus('idle') })
     return () => { cancelled = true }
   }, [city, stateAbbr, supabase])
 
