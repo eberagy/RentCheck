@@ -291,7 +291,7 @@ export default function ReviewForm() {
                 }}
               />
               <div className={`text-[11px] font-semibold ${i <= step ? 'text-slate-900' : 'text-slate-400'}`}>
-                {i < step ? <Check className="inline h-[11px] w-[11px] text-teal" /> : `0${i + 1}`}
+                {i < step ? <Check className="inline h-[11px] w-[11px] text-teal" aria-hidden="true" /> : `0${i + 1}`}
                 <span className="ml-1">{s}</span>
               </div>
             </div>
@@ -303,7 +303,7 @@ export default function ReviewForm() {
       {selectedLandlord && step >= 1 && step < 4 && (
         <div className="mb-5 flex items-center gap-4 rounded-xl border border-navy-200 bg-gradient-to-br from-navy-50 to-slate-50 p-[18px]">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-navy-200 bg-white">
-            <Building2 className="h-5 w-5 text-navy-700" />
+            <Building2 className="h-5 w-5 text-navy-700" aria-hidden="true" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-navy-400">Writing about</div>

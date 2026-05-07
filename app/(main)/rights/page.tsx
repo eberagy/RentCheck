@@ -87,7 +87,7 @@ export default function TenantRightsIndexPage() {
       {/* Hero */}
       <section className="border-b border-slate-200 bg-white px-7 py-16">
         <div className="mx-auto max-w-[1320px]">
-          <Eyebrow tone="teal"><Shield className="inline h-3 w-3" /> Tenant rights guide</Eyebrow>
+          <Eyebrow tone="teal"><Shield className="inline h-3 w-3" aria-hidden="true" /> Tenant rights guide</Eyebrow>
           <h1 className="mt-[18px] font-display text-[clamp(2.4rem,5vw,4rem)] leading-[1.08] tracking-tight text-slate-900">
             Your rights as a renter,{' '}
             <span className="text-teal-600">
@@ -163,7 +163,7 @@ export default function TenantRightsIndexPage() {
                   <p className="text-sm font-bold text-slate-600 group-hover:text-slate-800">{state.abbr}</p>
                   <p className="max-w-[90px] truncate text-[11.5px] text-slate-400">{state.name}</p>
                 </div>
-                <ChevronRight className="h-3.5 w-3.5 text-slate-300 transition-colors group-hover:text-slate-500" />
+                <ChevronRight className="h-3.5 w-3.5 text-slate-300 transition-colors group-hover:text-slate-500" aria-hidden="true" />
               </Link>
             ))}
           </div>

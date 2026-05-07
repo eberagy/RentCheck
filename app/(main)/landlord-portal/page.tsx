@@ -745,7 +745,7 @@ export default function LandlordPortalPage() {
                                 className="rounded-full text-xs text-navy-700 border-navy-200 hover:bg-navy-50"
                                 onClick={() => { setResponding(review.id); setResponseText('') }}
                               >
-                                <MessageSquare className="mr-1.5 h-3 w-3" /> Reply
+                                <MessageSquare className="mr-1.5 h-3 w-3" aria-hidden="true" /> Reply
                               </Button>
                             )}
                           </div>

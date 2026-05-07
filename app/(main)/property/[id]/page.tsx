@@ -336,7 +336,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           {reviewList.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-16 text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
-                <MessageSquare className="h-7 w-7 text-slate-400" />
+                <MessageSquare className="h-7 w-7 text-slate-400" aria-hidden="true" />
               </div>
               <p className="text-base font-semibold text-slate-800">No reviews yet</p>
               <p className="mx-auto mt-1 max-w-xs text-sm text-slate-500">

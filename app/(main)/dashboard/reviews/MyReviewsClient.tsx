@@ -275,7 +275,7 @@ function EditReviewInline({ review, onCancel, onSaved }: {
                   className="p-0.5"
                   aria-label={`${v} star${v > 1 ? 's' : ''}`}
                 >
-                  <Star className={`h-5 w-5 transition-colors ${v <= ratingOverall ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} />
+                  <Star className={`h-5 w-5 transition-colors ${v <= ratingOverall ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} aria-hidden="true" />
                 </button>
               ))}
             </div>

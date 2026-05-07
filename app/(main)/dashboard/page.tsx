@@ -125,7 +125,7 @@ export default async function DashboardPage() {
             </p>
           </div>
           <Button asChild className="rounded-md bg-white px-5 hover:bg-slate-100 text-slate-900 font-semibold">
-            <Link href="/review/new"><Edit className="mr-2 h-3.5 w-3.5" /> Write a review</Link>
+            <Link href="/review/new"><Edit className="mr-2 h-3.5 w-3.5" aria-hidden="true" /> Write a review</Link>
           </Button>
         </div>
       </section>
@@ -196,7 +196,7 @@ export default async function DashboardPage() {
             </div>
             {reviewList.length === 0 ? (
               <div className="py-10 text-center">
-                <FileText className="mx-auto mb-3 h-8 w-8 text-slate-200" />
+                <FileText className="mx-auto mb-3 h-8 w-8 text-slate-200" aria-hidden="true" />
                 <p className="text-sm text-slate-600">No reviews yet.</p>
                 <Link href="/review/new" className="mt-1 inline-block text-[12.5px] font-medium text-teal hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
                   Write your first review &rarr;
@@ -213,7 +213,7 @@ export default async function DashboardPage() {
                       className={`grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 px-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2 ${i < reviewList.length - 1 ? 'border-b border-slate-100' : ''}`}
                     >
                       <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
-                        <Star className={`h-3 w-3 ${r.lease_verified ? 'text-amber-500 fill-amber-500' : 'text-slate-400'}`} />
+                        <Star className={`h-3 w-3 ${r.lease_verified ? 'text-amber-500 fill-amber-500' : 'text-slate-400'}`} aria-hidden="true" />
                       </div>
                       <div className="min-w-0">
                         <p className="truncate text-[13px] font-bold text-slate-900">{r.title}</p>

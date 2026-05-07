@@ -448,7 +448,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
       {/* General info banner for states without a full guide */}
       {!hasFullGuide && (
         <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 mb-6 text-sm text-amber-800">
-          <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
+          <Info className="h-4 w-4 flex-shrink-0 mt-0.5" aria-hidden="true" />
           <span>
             A detailed guide for {stateInfo.name} is coming soon. The information below reflects
             general US tenant rights — check your local municipality for specific rules.
@@ -459,7 +459,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
       {/* ── Quick Reference Card ── */}
       <div className="bg-navy-900 text-white rounded-2xl p-6 mb-8">
         <div className="flex items-center gap-2 mb-4">
-          <FileText className="h-4 w-4 text-teal-400" />
+          <FileText className="h-4 w-4 text-teal-400" aria-hidden="true" />
           <p className="text-sm font-semibold text-teal-300 uppercase tracking-wider">
             Quick Reference
           </p>

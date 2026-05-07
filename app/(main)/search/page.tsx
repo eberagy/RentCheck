@@ -602,7 +602,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <section className="border-b border-slate-200 bg-white px-7 py-5">
         <div className="mx-auto max-w-[1320px]">
           <div className="flex items-center gap-3 border-b-2 border-slate-200 pb-3 focus-within:border-navy-400 transition-[border-color] duration-200" style={{ maxWidth: 760 }}>
-            <Search className="h-[17px] w-[17px] text-slate-300 flex-shrink-0" />
+            <Search className="h-[17px] w-[17px] text-slate-300 flex-shrink-0" aria-hidden="true" />
             <div className="flex-1">
               <SearchBar inline />
             </div>

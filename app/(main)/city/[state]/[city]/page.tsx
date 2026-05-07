@@ -414,7 +414,7 @@ export default async function CityPage({ params }: CityPageProps) {
           <p className="mt-2 text-sm text-white/80">Help fellow renters by sharing your lease-verified experience.</p>
           <div className="mt-6 flex justify-center gap-3">
             <Button asChild className="rounded-full bg-white text-navy-700 font-semibold hover:bg-slate-100">
-              <Link href="/review/new">Write a Review <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link href="/review/new">Write a Review <ArrowRight className="ml-2 h-4 w-4" aria-hidden="true" /></Link>
             </Button>
             <Button asChild variant="outline" className="rounded-full border-white/40 bg-white/10 text-white font-semibold hover:bg-white/20 hover:text-white">
               <Link href="/add-landlord">Add Missing Landlord</Link>

@@ -370,7 +370,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                 )}
                 <div className="flex flex-wrap gap-2 pt-1">
                   {landlord.website && (
-                    <Chip icon={<Globe className="h-3 w-3" />}>
+                    <Chip icon={<Globe className="h-3 w-3" aria-hidden="true" />}>
                       <a
                         href={landlord.website}
                         target="_blank"
@@ -383,7 +383,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                     </Chip>
                   )}
                   {landlord.phone && (
-                    <Chip icon={<Phone className="h-3 w-3" />}>
+                    <Chip icon={<Phone className="h-3 w-3" aria-hidden="true" />}>
                       <a
                         href={`tel:${landlord.phone.replace(/[^\d+]/g, '')}`}
                         className="hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
@@ -393,9 +393,9 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                       </a>
                     </Chip>
                   )}
-                  <Chip tone="teal" icon={<Building2 className="h-3 w-3" />}>{(properties ?? []).length} properties</Chip>
+                  <Chip tone="teal" icon={<Building2 className="h-3 w-3" aria-hidden="true" />}>{(properties ?? []).length} properties</Chip>
                   {businessRegistration?.filed_date && (
-                    <Chip icon={<Building2 className="h-3 w-3" />}>
+                    <Chip icon={<Building2 className="h-3 w-3" aria-hidden="true" />}>
                       Filed {new Date(businessRegistration.filed_date).getFullYear()}
                     </Chip>
                   )}
@@ -568,7 +568,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
           <TabsContent value="properties" keepMounted>
             {(properties ?? []).length === 0 ? (
               <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 py-12 text-center">
-                <Building2 className="mx-auto mb-3 h-8 w-8 text-slate-300" />
+                <Building2 className="mx-auto mb-3 h-8 w-8 text-slate-300" aria-hidden="true" />
                 <p className="text-sm font-medium text-slate-600">No properties linked yet</p>
                 <p className="mt-1 text-xs text-slate-400">Properties get linked automatically as public records are synced from government databases.</p>
               </div>

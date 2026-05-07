@@ -91,7 +91,7 @@ export default function BlogIndex() {
                   {post.excerpt ?? post.description}
                 </p>
                 <span className="mt-3 inline-flex items-center gap-1 text-[12.5px] font-medium text-teal-700">
-                  Read the post <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                  Read the post <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
                 </span>
               </Link>
             ))}
