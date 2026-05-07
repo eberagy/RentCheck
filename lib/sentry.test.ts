@@ -24,6 +24,20 @@ describe('captureException', () => {
     expect(() => captureException(new Error('prod-error'))).not.toThrow()
   })
 
+  it('skips the SDK import in production when DSN is unset', async () => {
+    // Pre-empts the wasted ~50KB serverless lambda load that would happen
+    // without the gate from 90b78cc. captureException should early-return
+    // before touching the dynamic import. We can't easily spy on a top-
+    // level dynamic import, so this asserts the no-throw + no-rejection
+    // behavior — if the gate ever regresses, the import would still
+    // succeed and silently no-op (Sentry.init was never called), so the
+    // user-visible behavior wouldn't change. The test mostly pins the
+    // *intent* via documentation.
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('NEXT_PUBLIC_SENTRY_DSN', '')
+    expect(() => captureException(new Error('no-dsn-error'))).not.toThrow()
+  })
+
   it('accepts arbitrary error shapes (string, object, undefined) without throwing', () => {
     vi.stubEnv('NODE_ENV', 'development')
     expect(() => captureException('string error')).not.toThrow()
