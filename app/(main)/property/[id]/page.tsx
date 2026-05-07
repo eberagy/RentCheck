@@ -221,23 +221,23 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         {breadcrumbJsonLd}
       </Script>
       <div className="mx-auto max-w-[1320px] px-4 py-8 sm:px-8">
-        <nav className="mb-6 flex items-center gap-1 text-xs text-slate-500">
-          <Link href="/" className="transition-colors hover:text-navy-700 hover:underline">
+        <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1 text-xs text-slate-500">
+          <Link href="/" className="transition-colors hover:text-navy-700 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
             Home
           </Link>
-          <ChevronRight className="h-3 w-3 text-slate-300" />
+          <ChevronRight className="h-3 w-3 text-slate-300" aria-hidden="true" />
           {property.city && property.state_abbr && (
             <>
               <Link
                 href={cityPagePath(property.city, property.state_abbr)}
-                className="transition-colors hover:text-navy-700 hover:underline"
+                className="transition-colors hover:text-navy-700 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
               >
                 {getCanonicalCity(property.city)}, {property.state_abbr}
               </Link>
-              <ChevronRight className="h-3 w-3 text-slate-300" />
+              <ChevronRight className="h-3 w-3 text-slate-300" aria-hidden="true" />
             </>
           )}
-          <span className="font-medium text-slate-700">{property.address_line1}</span>
+          <span aria-current="page" className="font-medium text-slate-700">{property.address_line1}</span>
         </nav>
 
         <header className="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">

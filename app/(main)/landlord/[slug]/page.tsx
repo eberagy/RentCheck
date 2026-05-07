@@ -322,18 +322,18 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       <div className="min-h-screen bg-slate-50">
         <div className="mx-auto max-w-[1320px] px-4 py-7 sm:px-8">
         {/* Breadcrumb */}
-        <nav className="mb-4 flex items-center gap-1 text-xs text-slate-500">
-          <Link href="/" className="transition-colors hover:text-navy-700 hover:underline">Home</Link>
-          <span className="text-slate-300">›</span>
+        <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-1 text-xs text-slate-500">
+          <Link href="/" className="transition-colors hover:text-navy-700 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">Home</Link>
+          <span className="text-slate-300" aria-hidden="true">›</span>
           {landlord.city && landlord.state_abbr && (
             <>
-              <Link href={cityPagePath(landlord.city, landlord.state_abbr)} className="transition-colors hover:text-navy-700 hover:underline">
+              <Link href={cityPagePath(landlord.city, landlord.state_abbr)} className="transition-colors hover:text-navy-700 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                 {getCanonicalCity(landlord.city)}, {landlord.state_abbr}
               </Link>
-              <span className="text-slate-300">›</span>
+              <span className="text-slate-300" aria-hidden="true">›</span>
             </>
           )}
-          <span className="font-medium text-slate-700">{landlord.display_name}</span>
+          <span aria-current="page" className="font-medium text-slate-700">{landlord.display_name}</span>
         </nav>
 
         {/* Hero card. Same chrome as the property page: rounded-2xl,
