@@ -6,6 +6,10 @@ export function captureException(error: unknown, context?: Record<string, unknow
     console.error('[Sentry]', error, context)
     return
   }
+  // Skip the SDK import entirely when DSN isn't set — instrumentation.ts
+  // gates init on the same flag, so a load here would just no-op anyway
+  // but pays the chunk cost. Matches the env-blocker check in /api/health.
+  if (!process.env.NEXT_PUBLIC_SENTRY_DSN) return
   // Dynamic import to avoid bundling Sentry in dev
   import('@sentry/nextjs').then(({ captureException: capture }) => {
     capture(error, { extra: context })
@@ -18,6 +22,7 @@ export function captureException(error: unknown, context?: Record<string, unknow
 // retention window. The id alone is enough to count "users impacted" on
 // any issue; cross-reference with Supabase if a specific report needs it.
 export function setUser(id: string) {
+  if (!process.env.NEXT_PUBLIC_SENTRY_DSN) return
   import('@sentry/nextjs').then(({ setUser: set }) => {
     set({ id })
   }).catch(() => {})
