@@ -374,19 +374,21 @@ function RecordGroup({ type, records }: { type: string; records: EnrichedRecord[
         <button
           type="button"
           onClick={() => setExpanded(true)}
+          aria-expanded={false}
           className="mt-3 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
           Show {hidden.toLocaleString()} more
-          <ChevronDown className="h-3 w-3" />
+          <ChevronDown className="h-3 w-3" aria-hidden="true" />
         </button>
       )}
       {expanded && records.length > COLLAPSED && (
         <button
           type="button"
           onClick={() => setExpanded(false)}
+          aria-expanded={true}
           className="mt-3 inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[12px] font-medium text-slate-500 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
         >
-          Show fewer <ChevronUp className="h-3 w-3" />
+          Show fewer <ChevronUp className="h-3 w-3" aria-hidden="true" />
         </button>
       )}
     </section>
