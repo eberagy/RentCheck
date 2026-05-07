@@ -7,12 +7,8 @@ import {
   titleCase,
   truncate,
   formatCount,
-  ratingToLabel,
-  ratingToColor,
   severityLabel,
   severityColor,
-  gradeColor,
-  gradeBgLight,
   formatDate,
   formatDateRelative,
   formatRentalPeriod,
@@ -143,21 +139,6 @@ describe('formatCount', () => {
   })
 })
 
-describe('ratingToLabel', () => {
-  it('matches the cutoff bands', () => {
-    expect(ratingToLabel(5.0)).toBe('Excellent')
-    expect(ratingToLabel(4.5)).toBe('Excellent')
-    expect(ratingToLabel(4.4)).toBe('Good')
-    expect(ratingToLabel(3.5)).toBe('Good')
-    expect(ratingToLabel(3.4)).toBe('Fair')
-    expect(ratingToLabel(2.5)).toBe('Fair')
-    expect(ratingToLabel(2.4)).toBe('Poor')
-    expect(ratingToLabel(1.5)).toBe('Poor')
-    expect(ratingToLabel(1.4)).toBe('Very Poor')
-    expect(ratingToLabel(0)).toBe('Very Poor')
-  })
-})
-
 describe('severityLabel', () => {
   it('returns "Closed" when isClosed flag is set, regardless of severity', () => {
     expect(severityLabel('critical', true)).toBe('Closed')
@@ -176,32 +157,6 @@ describe('severityLabel', () => {
   })
 })
 
-describe('gradeColor / gradeBgLight', () => {
-  it('returns a class string for every grade letter A-F', () => {
-    for (const letter of ['A', 'B', 'C', 'D', 'F'] as const) {
-      const c = gradeColor(letter)
-      expect(c).toMatch(/text-white/)
-      expect(c.split(' ').length).toBeGreaterThanOrEqual(2)
-
-      const lt = gradeBgLight(letter)
-      expect(lt).toMatch(/border-/)
-      expect(lt).toMatch(/text-/)
-    }
-  })
-
-  it('returns a sane fallback for null grade (no styling guess)', () => {
-    expect(gradeColor(null)).toBe('bg-slate-200 text-slate-600')
-    expect(gradeBgLight(null)).toBe('bg-slate-50 border-slate-200 text-slate-600')
-  })
-
-  it('A grade is teal (positive), F is red (negative)', () => {
-    expect(gradeColor('A')).toContain('teal')
-    expect(gradeColor('F')).toContain('red')
-    expect(gradeBgLight('A')).toContain('teal')
-    expect(gradeBgLight('F')).toContain('red')
-  })
-})
-
 describe('formatDate', () => {
   it('formats an ISO date as "MMM d, yyyy"', () => {
     expect(formatDate('2026-04-15T00:00:00.000Z')).toMatch(/Apr (14|15), 2026/) // tz-tolerant
@@ -212,19 +167,6 @@ describe('formatDate', () => {
     expect(formatDate(null)).toBe('Unknown')
     expect(formatDate(undefined)).toBe('Unknown')
     expect(formatDate('')).toBe('Unknown')
-  })
-})
-
-describe('ratingToColor', () => {
-  it('teal for 4+, amber for 3+, orange for 2+, red below', () => {
-    expect(ratingToColor(5)).toMatch(/teal/)
-    expect(ratingToColor(4)).toMatch(/teal/)
-    expect(ratingToColor(3.9)).toMatch(/amber/)
-    expect(ratingToColor(3)).toMatch(/amber/)
-    expect(ratingToColor(2.9)).toMatch(/orange/)
-    expect(ratingToColor(2)).toMatch(/orange/)
-    expect(ratingToColor(1.9)).toMatch(/red/)
-    expect(ratingToColor(0)).toMatch(/red/)
   })
 })
 

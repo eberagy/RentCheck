@@ -1,7 +1,7 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import { formatDistanceToNow, format } from 'date-fns'
-import type { LandlordGrade, Severity } from '@/types'
+import type { Severity } from '@/types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -25,47 +25,6 @@ export function formatRentalPeriod(start?: string | null, end?: string | null, i
   if (isCurrent) return `${s} – Present`
   if (!end) return `${s} – Present`
   return `${s} – ${format(new Date(end), 'MMM yyyy')}`
-}
-
-// ─── RATING HELPERS ──────────────────────────────────────────
-
-export function ratingToLabel(rating: number): string {
-  if (rating >= 4.5) return 'Excellent'
-  if (rating >= 3.5) return 'Good'
-  if (rating >= 2.5) return 'Fair'
-  if (rating >= 1.5) return 'Poor'
-  return 'Very Poor'
-}
-
-export function ratingToColor(rating: number): string {
-  if (rating >= 4) return 'text-teal-500'
-  if (rating >= 3) return 'text-amber-500'
-  if (rating >= 2) return 'text-orange-500'
-  return 'text-red-600'
-}
-
-// ─── GRADE HELPERS ───────────────────────────────────────────
-
-export function gradeColor(grade: LandlordGrade | null): string {
-  switch (grade) {
-    case 'A': return 'bg-teal-500 text-white'
-    case 'B': return 'bg-green-500 text-white'
-    case 'C': return 'bg-amber-500 text-white'
-    case 'D': return 'bg-orange-500 text-white'
-    case 'F': return 'bg-red-600 text-white'
-    default: return 'bg-slate-200 text-slate-600'
-  }
-}
-
-export function gradeBgLight(grade: LandlordGrade | null): string {
-  switch (grade) {
-    case 'A': return 'bg-teal-50 border-teal-200 text-teal-800'
-    case 'B': return 'bg-green-50 border-green-200 text-green-800'
-    case 'C': return 'bg-amber-50 border-amber-200 text-amber-800'
-    case 'D': return 'bg-orange-50 border-orange-200 text-orange-800'
-    case 'F': return 'bg-red-50 border-red-200 text-red-800'
-    default: return 'bg-slate-50 border-slate-200 text-slate-600'
-  }
 }
 
 // ─── SEVERITY HELPERS ────────────────────────────────────────
@@ -166,4 +125,3 @@ export const ALLOWED_LEASE_TYPES = [
 ]
 
 export const MAX_LEASE_SIZE = 10 * 1024 * 1024  // 10MB
-export const MAX_EVIDENCE_SIZE = 10 * 1024 * 1024 // 10MB
