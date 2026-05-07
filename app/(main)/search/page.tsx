@@ -234,7 +234,7 @@ async function SearchResults({
           <div className="border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white px-6 py-5">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-navy-50 text-navy-600">
-                <Search className="h-5 w-5" />
+                <Search className="h-5 w-5" aria-hidden="true" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-slate-900">No results found</p>
@@ -512,7 +512,7 @@ function SearchResultCard({ result }: { result: SearchPageResult }) {
           <div className="mt-2.5 flex flex-wrap items-center gap-3 text-[12.5px] text-slate-600">
             {(result.city || result.state_abbr) && (
               <span className="inline-flex items-center gap-1">
-                <MapPin className="h-3 w-3 text-slate-400" />
+                <MapPin className="h-3 w-3 text-slate-400" aria-hidden="true" />
                 {[result.city, result.state_abbr].filter(Boolean).join(', ')}
               </span>
             )}
@@ -532,9 +532,9 @@ function SearchResultCard({ result }: { result: SearchPageResult }) {
             )}
             {violationCount > 0 && (
               <>
-                <span className="text-slate-300">&middot;</span>
+                <span className="text-slate-300" aria-hidden="true">&middot;</span>
                 <span className="inline-flex items-center gap-1 font-semibold text-red-900">
-                  <Flag className="h-[11px] w-[11px] text-red-600" /> {violationCount} open
+                  <Flag className="h-[11px] w-[11px] text-red-600" aria-hidden="true" /> {violationCount} open
                 </span>
               </>
             )}
