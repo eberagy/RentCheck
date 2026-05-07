@@ -279,18 +279,27 @@ export default function ReviewForm() {
 
   return (
     <div className="mx-auto max-w-[980px] px-7 py-8">
-      {/* Progress bar */}
-      <div className="mb-6 rounded-xl border border-slate-200 bg-white px-6 py-[18px]">
+      {/* Progress bar — role=progressbar so AT users hear 'Step 3 of 5:
+          Write Review' alongside the eyebrow's verbose label. */}
+      <div
+        role="progressbar"
+        aria-valuenow={step + 1}
+        aria-valuemin={1}
+        aria-valuemax={STEPS.length}
+        aria-valuetext={`Step ${step + 1} of ${STEPS.length}: ${STEPS[step]}`}
+        className="mb-6 rounded-xl border border-slate-200 bg-white px-6 py-[18px]"
+      >
         <div className="grid gap-[6px]" style={{ gridTemplateColumns: `repeat(${STEPS.length}, 1fr)` }}>
           {STEPS.map((s, i) => (
             <div key={s} className="flex flex-col gap-2">
               <div
+                aria-hidden="true"
                 className="h-1 rounded-full"
                 style={{
                   background: i <= step ? 'linear-gradient(90deg, #0F7B6C, #1AAB97)' : '#E2E8F0',
                 }}
               />
-              <div className={`text-[11px] font-semibold ${i <= step ? 'text-slate-900' : 'text-slate-400'}`}>
+              <div aria-hidden="true" className={`text-[11px] font-semibold ${i <= step ? 'text-slate-900' : 'text-slate-400'}`}>
                 {i < step ? <Check className="inline h-[11px] w-[11px] text-teal" aria-hidden="true" /> : `0${i + 1}`}
                 <span className="ml-1">{s}</span>
               </div>
