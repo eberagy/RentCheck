@@ -199,6 +199,7 @@ export default function AddLandlordPage() {
             onChange={set('display_name')}
             className="mt-1.5"
             required
+            autoComplete="off"
           />
         </div>
 
@@ -210,13 +211,14 @@ export default function AddLandlordPage() {
             value={form.business_name}
             onChange={set('business_name')}
             className="mt-1.5"
+            autoComplete="off"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="city" className="text-sm font-medium">City</Label>
-            <Input id="city" placeholder="Baltimore" value={form.city} onChange={set('city')} className="mt-1.5" />
+            <Input id="city" placeholder="Baltimore" value={form.city} onChange={set('city')} className="mt-1.5" autoComplete="off" />
           </div>
           <div>
             <Label className="text-sm font-medium">State</Label>
@@ -236,11 +238,11 @@ export default function AddLandlordPage() {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="phone" className="text-sm font-medium">Phone (optional)</Label>
-            <Input id="phone" placeholder="(410) 555-0100" value={form.phone} onChange={set('phone')} className="mt-1.5" />
+            <Input id="phone" type="tel" inputMode="tel" placeholder="(410) 555-0100" value={form.phone} onChange={set('phone')} className="mt-1.5" autoComplete="off" />
           </div>
           <div>
             <Label htmlFor="website" className="text-sm font-medium">Website (optional)</Label>
-            <Input id="website" placeholder="https://..." value={form.website} onChange={set('website')} className="mt-1.5" />
+            <Input id="website" type="url" inputMode="url" placeholder="https://..." value={form.website} onChange={set('website')} className="mt-1.5" autoComplete="off" />
           </div>
         </div>
 
