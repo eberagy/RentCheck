@@ -540,7 +540,7 @@ export default function ReviewForm() {
                     Move-in <span className="text-red-600" aria-hidden="true">*</span>
                     <span className="sr-only"> (required)</span>
                   </label>
-                  <Input id="rental-start" type="month" {...register('rentalPeriodStart')} className="h-11 rounded-xl border-slate-200 text-[14px]" />
+                  <Input id="rental-start" type="month" autoComplete="off" {...register('rentalPeriodStart')} className="h-11 rounded-xl border-slate-200 text-[14px]" />
                   {errors.rentalPeriodStart && <p role="alert" className="text-xs text-red-600 mt-1">{errors.rentalPeriodStart.message}</p>}
                 </div>
                 <div>
@@ -548,7 +548,7 @@ export default function ReviewForm() {
                     Move-out <span className="text-red-600" aria-hidden="true">*</span>
                     <span className="sr-only"> (required)</span>
                   </label>
-                  <Input id="rental-end" type="month" {...register('rentalPeriodEnd')} className="h-11 rounded-xl border-slate-200 text-[14px]" disabled={watch('isCurrentTenant')} />
+                  <Input id="rental-end" type="month" autoComplete="off" {...register('rentalPeriodEnd')} className="h-11 rounded-xl border-slate-200 text-[14px]" disabled={watch('isCurrentTenant')} />
                   {errors.rentalPeriodEnd && <p role="alert" className="text-xs text-red-600 mt-1">{errors.rentalPeriodEnd.message}</p>}
                 </div>
                 <div className="flex items-end pb-2">
