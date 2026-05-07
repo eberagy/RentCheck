@@ -20,6 +20,9 @@ export function Grade({ letter, size = 'md', className }: GradeProps) {
 
   return (
     <div
+      role="img"
+      aria-label={`Vett grade ${letter}`}
+      title={`Vett grade ${letter}`}
       className={cn(
         'inline-flex items-center justify-center font-extrabold tracking-tight',
         sizes[size],
@@ -31,7 +34,7 @@ export function Grade({ letter, size = 'md', className }: GradeProps) {
         color: style.fg,
       }}
     >
-      {letter}
+      <span aria-hidden="true">{letter}</span>
     </div>
   )
 }
