@@ -138,16 +138,16 @@ export default async function DashboardPage() {
               <h2 className="text-[16px] font-bold text-slate-900">
                 Your watchlist <span className="font-normal text-slate-400">&middot; {watchList.length}</span>
               </h2>
-              <Link href="/search" className="text-[12.5px] text-slate-500 hover:text-slate-700">Manage &rarr;</Link>
+              <Link href="/search" className="text-[12.5px] text-slate-500 hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">Manage &rarr;</Link>
             </div>
             {watchList.length === 0 ? (
               <div className="py-10 text-center">
-                <Eye className="mx-auto mb-3 h-8 w-8 text-slate-200" />
+                <Eye className="mx-auto mb-3 h-8 w-8 text-slate-200" aria-hidden="true" />
                 <p className="text-sm text-slate-600">No landlords watched yet.</p>
                 <p className="mt-1 text-[12.5px] text-slate-400">
                   Get notified when watched landlords get new reviews or violations.
                 </p>
-                <Link href="/search" className="mt-3 inline-block text-[12.5px] font-medium text-teal hover:underline">
+                <Link href="/search" className="mt-3 inline-block text-[12.5px] font-medium text-teal hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
                   Find a landlord to watch &rarr;
                 </Link>
               </div>
@@ -161,7 +161,7 @@ export default async function DashboardPage() {
                     <Link
                       key={w.id}
                       href={`/landlord/${landlord.slug}`}
-                      className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 rounded-[16px] border border-slate-200 bg-white p-4 transition-colors hover:border-slate-300"
+                      className="grid grid-cols-[auto_1fr_auto_auto] items-center gap-4 rounded-[16px] border border-slate-200 bg-white p-4 transition-colors hover:border-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                     >
                       {grade ? <Grade letter={grade} size="sm" /> : (
                         <div className="h-8 w-8 rounded-lg inline-flex items-center justify-center bg-slate-100 border border-slate-200 text-[10px] font-semibold text-slate-400">—</div>
@@ -192,13 +192,13 @@ export default async function DashboardPage() {
               <h2 className="text-[16px] font-bold text-slate-900">
                 Your reviews <span className="font-normal text-slate-400">&middot; {reviewList.length}</span>
               </h2>
-              <Link href="/review/new" className="text-[12.5px] text-slate-500 hover:text-slate-700">Write new &rarr;</Link>
+              <Link href="/review/new" className="text-[12.5px] text-slate-500 hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">Write new &rarr;</Link>
             </div>
             {reviewList.length === 0 ? (
               <div className="py-10 text-center">
                 <FileText className="mx-auto mb-3 h-8 w-8 text-slate-200" />
                 <p className="text-sm text-slate-600">No reviews yet.</p>
-                <Link href="/review/new" className="mt-1 inline-block text-[12.5px] font-medium text-teal hover:underline">
+                <Link href="/review/new" className="mt-1 inline-block text-[12.5px] font-medium text-teal hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
                   Write your first review &rarr;
                 </Link>
               </div>
@@ -210,7 +210,7 @@ export default async function DashboardPage() {
                     <Link
                       key={r.id}
                       href={landlord?.slug ? `/landlord/${landlord.slug}` : '#'}
-                      className={`grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 px-1 ${i < reviewList.length - 1 ? 'border-b border-slate-100' : ''}`}
+                      className={`grid grid-cols-[auto_1fr_auto] items-center gap-3 py-3 px-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2 ${i < reviewList.length - 1 ? 'border-b border-slate-100' : ''}`}
                     >
                       <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
                         <Star className={`h-3 w-3 ${r.lease_verified ? 'text-amber-500 fill-amber-500' : 'text-slate-400'}`} />
@@ -238,7 +238,7 @@ export default async function DashboardPage() {
                 <h2 className="text-[16px] font-bold text-slate-900">
                   Submitted landlords <span className="font-normal text-slate-400">&middot; {submissionList.length}</span>
                 </h2>
-                <Link href="/add-landlord" className="text-[12.5px] text-slate-500 hover:text-slate-700">Submit new &rarr;</Link>
+                <Link href="/add-landlord" className="text-[12.5px] text-slate-500 hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">Submit new &rarr;</Link>
               </div>
               <div className="grid gap-1">
                 {submissionList.map((s, i) => (
