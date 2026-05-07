@@ -298,8 +298,8 @@ export default function AdminUsersPage() {
                         disabled={processing === user.id}
                       >
                         {processing === user.id
-                          ? <Loader2 className="h-3 w-3 animate-spin" />
-                          : <Ban className="h-3 w-3 mr-1" />
+                          ? <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
+                          : <Ban className="h-3 w-3 mr-1" aria-hidden="true" />
                         }
                         {user.is_banned ? 'Unban' : 'Ban'}
                       </Button>
@@ -313,7 +313,7 @@ export default function AdminUsersPage() {
                         onClick={() => promoteToAdmin(user.id)}
                         disabled={processing === user.id}
                       >
-                        <Shield className="h-3 w-3 mr-1" />
+                        <Shield className="h-3 w-3 mr-1" aria-hidden="true" />
                         Make Admin
                       </Button>
                     )}

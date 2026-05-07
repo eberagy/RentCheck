@@ -154,7 +154,7 @@ export default async function AdminEmailLeadsPage({
                   <td className="px-4 py-2.5 text-slate-700">
                     {r.city && r.state_abbr ? (
                       <span className="inline-flex items-center gap-1">
-                        <MapPin className="h-3 w-3 text-slate-400" /> {r.city}, {r.state_abbr}
+                        <MapPin className="h-3 w-3 text-slate-400" aria-hidden="true" /> {r.city}, {r.state_abbr}
                       </span>
                     ) : (
                       <span className="text-slate-400">—</span>

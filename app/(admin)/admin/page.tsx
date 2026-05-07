@@ -401,7 +401,7 @@ export default async function AdminDashboardPage() {
                             variant="outline"
                             className="h-7 text-xs border-slate-200 text-slate-600 hover:bg-slate-100"
                           >
-                            <Eye className="h-3 w-3 mr-1" />
+                            <Eye className="h-3 w-3 mr-1" aria-hidden="true" />
                             Review
                           </Button>
                         </Link>
@@ -496,9 +496,9 @@ function InlineModerateButton({ action }: { reviewId: string; action: 'approved'
       }`}
     >
       {isApprove ? (
-        <><CheckCircle2 className="h-3 w-3" /> Approve</>
+        <><CheckCircle2 className="h-3 w-3" aria-hidden="true" /> Approve</>
       ) : (
-        <><XCircle className="h-3 w-3" /> Reject</>
+        <><XCircle className="h-3 w-3" aria-hidden="true" /> Reject</>
       )}
     </Link>
   )

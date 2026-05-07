@@ -150,8 +150,9 @@ export default function AdminDisputesPage() {
                     </div>
                     {dispute.record.source_url && (
                       <a href={dispute.record.source_url} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs text-navy-600 hover:underline mt-1">
-                        <ExternalLink className="h-3 w-3" /> View source
+                        aria-label="View source record (opens in new tab)"
+                        className="inline-flex items-center gap-1 text-xs text-navy-600 hover:underline mt-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
+                        <ExternalLink className="h-3 w-3" aria-hidden="true" /> View source
                       </a>
                     )}
                   </div>

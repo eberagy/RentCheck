@@ -290,8 +290,8 @@ export default function AdminDataSyncPage() {
                       className="text-xs px-3"
                     >
                       {isTriggering
-                        ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        : <><Play className="h-3 w-3 mr-1" />Run</>
+                        ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                        : <><Play className="h-3 w-3 mr-1" aria-hidden="true" />Run</>
                       }
                     </Button>
                   </div>
