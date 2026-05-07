@@ -377,7 +377,15 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                     </Chip>
                   )}
                   {landlord.phone && (
-                    <Chip icon={<Phone className="h-3 w-3" />}>{landlord.phone}</Chip>
+                    <Chip icon={<Phone className="h-3 w-3" />}>
+                      <a
+                        href={`tel:${landlord.phone.replace(/[^\d+]/g, '')}`}
+                        className="hover:underline"
+                        aria-label={`Call ${landlord.display_name} at ${landlord.phone}`}
+                      >
+                        {landlord.phone}
+                      </a>
+                    </Chip>
                   )}
                   <Chip tone="teal" icon={<Building2 className="h-3 w-3" />}>{(properties ?? []).length} properties</Chip>
                   {businessRegistration?.filed_date && (
