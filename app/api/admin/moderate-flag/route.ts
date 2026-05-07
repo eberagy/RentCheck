@@ -49,7 +49,11 @@ export async function POST(req: NextRequest) {
   if (action === 'remove_review') {
     if (!reviewId) return NextResponse.json({ error: 'reviewId required' }, { status: 422 })
     const { error: updErr } = await service.from('reviews').update({ status: 'flagged' }).eq('id', reviewId)
-    if (updErr) return NextResponse.json({ error: updErr.message }, { status: 500 })
+    // Was leaking the raw Postgres error message in the response body —
+    // schema disclosure risk plus lost Sentry visibility. Route through
+    // dbError instead, which returns the canonical "Database error"
+    // shape and captures to Sentry.
+    if (updErr) return dbError('admin/moderate-flag:update', updErr)
     await service.from('review_flags').delete().eq('review_id', reviewId)
     logAdminAction({
       adminId: admin.id,
