@@ -66,10 +66,10 @@ export function ViolationChart({ records }: ViolationChartProps) {
         </div>
         <div className="flex flex-wrap items-center gap-3 text-[12px] text-slate-600">
           <span className="inline-flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-sm bg-red-500" /> Open
+            <span className="h-2.5 w-2.5 rounded-sm bg-red-500" aria-hidden="true" /> Open
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-sm bg-slate-300" /> Closed
+            <span className="h-2.5 w-2.5 rounded-sm bg-slate-300" aria-hidden="true" /> Closed
           </span>
         </div>
       </header>
@@ -78,7 +78,7 @@ export function ViolationChart({ records }: ViolationChartProps) {
       <div className="mb-5 grid grid-cols-3 gap-2">
         <div className="rounded-xl border border-red-100 bg-red-50/60 px-3 py-2.5">
           <div className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-red-700">
-            <AlertTriangle className="h-3 w-3" /> Open
+            <AlertTriangle className="h-3 w-3" aria-hidden="true" /> Open
           </div>
           <div className="mt-0.5 font-display text-[22px] font-semibold leading-none tracking-tight text-red-700 tabular-nums">
             {totals.open.toLocaleString()}
@@ -86,7 +86,7 @@ export function ViolationChart({ records }: ViolationChartProps) {
         </div>
         <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
           <div className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-slate-600">
-            <CheckCircle2 className="h-3 w-3" /> Closed
+            <CheckCircle2 className="h-3 w-3" aria-hidden="true" /> Closed
           </div>
           <div className="mt-0.5 font-display text-[22px] font-semibold leading-none tracking-tight text-slate-700 tabular-nums">
             {totals.closed.toLocaleString()}
@@ -94,7 +94,7 @@ export function ViolationChart({ records }: ViolationChartProps) {
         </div>
         <div className="rounded-xl border border-amber-100 bg-amber-50/60 px-3 py-2.5">
           <div className="flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-amber-700">
-            <TrendingUp className="h-3 w-3" /> Peak year
+            <TrendingUp className="h-3 w-3" aria-hidden="true" /> Peak year
           </div>
           <div className="mt-0.5 font-display text-[22px] font-semibold leading-none tracking-tight text-amber-700 tabular-nums">
             {peakYear.year}
