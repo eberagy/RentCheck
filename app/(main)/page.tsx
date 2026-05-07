@@ -178,7 +178,7 @@ export default async function HomePage() {
                     <Link
                       key={`${city.city}-${city.state}`}
                       href={`/city/${city.state.toLowerCase()}/${slug}`}
-                      className="rounded-full bg-white/[0.06] px-3 py-1 text-[12px] text-slate-400 transition-colors hover:bg-white/[0.12] hover:text-slate-200"
+                      className="rounded-full bg-white/[0.06] px-3 py-1 text-[12px] text-slate-400 transition-colors hover:bg-white/[0.12] hover:text-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
                     >
                       {city.city}, {city.state}
                     </Link>
