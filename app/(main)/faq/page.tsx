@@ -114,9 +114,9 @@ export default function FAQPage() {
         <p className="leading-relaxed">
           Vett&apos;s public records data is sourced from official government databases and is provided for
           informational purposes only. We are not responsible for errors in source data. Read our{' '}
-          <Link href="/fcra-notice" className="text-teal-600 hover:underline">FCRA Notice</Link>,{' '}
-          <Link href="/privacy" className="text-teal-600 hover:underline">Privacy Policy</Link>, and{' '}
-          <Link href="/terms" className="text-teal-600 hover:underline">Terms of Service</Link>.
+          <Link href="/fcra-notice" className="text-teal-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">FCRA Notice</Link>,{' '}
+          <Link href="/privacy" className="text-teal-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">Privacy Policy</Link>, and{' '}
+          <Link href="/terms" className="text-teal-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">Terms of Service</Link>.
         </p>
       </div>
     </div>
