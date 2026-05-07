@@ -105,14 +105,14 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
           type="button"
           aria-label="Close flag review dialog"
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
         >
-          <X className="h-5 w-5" />
+          <X className="h-5 w-5" aria-hidden="true" />
         </button>
 
         {done ? (
           <div className="text-center py-4">
-            <CheckCircle2 className="h-12 w-12 text-teal-500 mx-auto mb-3" />
+            <CheckCircle2 className="h-12 w-12 text-teal-500 mx-auto mb-3" aria-hidden="true" />
             <h2 className="text-lg font-bold text-slate-900 mb-1">Report submitted</h2>
             <p className="text-sm text-slate-500 mb-4">Our team will review this within 48 hours.</p>
             <Button onClick={onClose} className="bg-navy-500 hover:bg-navy-600 text-white">Done</Button>
@@ -121,7 +121,7 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
           <>
             <div className="flex items-center gap-2 mb-4">
               <div className="h-8 w-8 bg-red-50 rounded-lg flex items-center justify-center">
-                <Flag className="h-4 w-4 text-red-500" />
+                <Flag className="h-4 w-4 text-red-500" aria-hidden="true" />
               </div>
               <h2 id="flag-review-title" className="text-lg font-bold text-slate-900">Flag this review</h2>
             </div>
@@ -171,7 +171,7 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
                 disabled={!reason || submitting}
                 className="flex-1 bg-red-600 hover:bg-red-700 text-white"
               >
-                {submitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Submitting…</> : 'Submit Report'}
+                {submitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Submitting…</> : 'Submit Report'}
               </Button>
             </div>
           </>
