@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { verifyCronSecret } from '@/lib/data-sync/utils'
+import { captureException } from '@/lib/sentry'
 
 // Refresh the city_stats cache so /city/[state]/[city] pages can serve
 // record counts from a sub-ms lookup instead of running the 1-20s
@@ -28,6 +29,7 @@ export async function GET(req: NextRequest) {
   const { error } = await service.rpc('refresh_city_stats')
   if (error) {
     console.error('[refresh-city-stats] failed:', error.message)
+    captureException(error, { where: 'cron:refresh-city-stats', logId })
     if (logId) {
       await service.from('sync_log').update({
         status: 'error',

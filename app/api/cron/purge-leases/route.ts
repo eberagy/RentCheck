@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/service'
 import { verifyCronSecret } from '@/lib/data-sync/utils'
+import { captureException } from '@/lib/sentry'
 
 export const maxDuration = 60
 
@@ -40,6 +41,7 @@ export async function GET(req: NextRequest) {
 
   if (error) {
     console.error("[db]", error)
+    captureException(error, { where: 'cron:purge-leases:select', logId })
     if (logId) {
       await service.from('sync_log').update({
         status: 'error',
@@ -84,6 +86,7 @@ export async function GET(req: NextRequest) {
 
   if (updateErr) {
     console.error('[cron/purge-leases] update failed:', updateErr.message)
+    captureException(updateErr, { where: 'cron:purge-leases:update', logId, rowCount: rows.length })
     if (logId) {
       await service.from('sync_log').update({
         status: 'error',
