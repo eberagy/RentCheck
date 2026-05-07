@@ -409,7 +409,7 @@ export default function LandlordPortalPage() {
                       setProfileDescription(landlord.description ?? '')
                     }} disabled={savingProfile}>Cancel</Button>
                     <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white" onClick={saveProfile} disabled={savingProfile}>
-                      {savingProfile ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" /> : null}
+                      {savingProfile ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : null}
                       Save
                     </Button>
                   </div>
@@ -484,7 +484,7 @@ export default function LandlordPortalPage() {
             {/* Response templates — locked until verified */}
             {!landlord.is_verified && (
               <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50 p-5 text-[13px] text-slate-500 flex items-start gap-3">
-                <BookTemplate className="h-4 w-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                <BookTemplate className="h-4 w-4 text-slate-400 mt-0.5 flex-shrink-0" aria-hidden="true" />
                 <div>
                   <p className="font-semibold text-slate-700">Response templates unlock after verification.</p>
                   <p className="mt-0.5">Once your claim is verified you&apos;ll be able to save canned replies and insert them when responding to reviews.</p>
@@ -496,7 +496,7 @@ export default function LandlordPortalPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h2 className="text-[17px] font-bold text-slate-900 flex items-center gap-2">
-                      <BookTemplate className="h-4 w-4 text-teal-600" /> Response templates
+                      <BookTemplate className="h-4 w-4 text-teal-600" aria-hidden="true" /> Response templates
                     </h2>
                     <p className="text-[12.5px] text-slate-500 mt-0.5">
                       Save canned replies and insert them when responding to reviews.
@@ -605,7 +605,7 @@ export default function LandlordPortalPage() {
                               <span className="font-bold text-[14px] text-slate-900">{review.title}</span>
                               {review.lease_verified && (
                                 <Badge className="bg-teal-50 text-teal-800 border-teal-200 text-[10.5px]">
-                                  <CheckCircle2 className="h-2.5 w-2.5 mr-1" /> Verified
+                                  <CheckCircle2 className="h-2.5 w-2.5 mr-1" aria-hidden="true" /> Verified
                                 </Badge>
                               )}
                             </div>
@@ -627,9 +627,9 @@ export default function LandlordPortalPage() {
                             aria-expanded={isExpanded}
                             className="flex items-center gap-1 text-xs text-navy-600 hover:text-navy-800 mb-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                           >
-                            <BarChart2 className="h-3 w-3" />
+                            <BarChart2 className="h-3 w-3" aria-hidden="true" />
                             {isExpanded ? 'Hide' : 'Show'} ratings
-                            {isExpanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                            {isExpanded ? <ChevronUp className="h-3 w-3" aria-hidden="true" /> : <ChevronDown className="h-3 w-3" aria-hidden="true" />}
                           </button>
                         )}
                         {isExpanded && hasSubRatings && (
@@ -645,7 +645,7 @@ export default function LandlordPortalPage() {
                         {review.landlord_response && (
                           <div className="mt-2 rounded-xl border border-navy-100 bg-navy-50 p-4">
                             <div className="mb-2 flex items-center gap-2">
-                              <MessageSquare className="h-3.5 w-3.5 text-navy-600" />
+                              <MessageSquare className="h-3.5 w-3.5 text-navy-600" aria-hidden="true" />
                               <span className="text-xs font-bold text-navy-700">Your Response</span>
                               {review.landlord_response_status === 'approved' && (
                                 <Badge className="ml-auto bg-teal-50 text-teal-700 border-teal-200 text-[10.5px]">Live</Badge>
@@ -664,7 +664,7 @@ export default function LandlordPortalPage() {
                             {responding === review.id ? (
                               <div className="overflow-hidden rounded-xl border border-navy-200">
                                 <div className="flex items-center gap-2 border-b border-navy-100 bg-navy-50 px-4 py-2">
-                                  <MessageSquare className="h-3.5 w-3.5 text-navy-600" />
+                                  <MessageSquare className="h-3.5 w-3.5 text-navy-600" aria-hidden="true" />
                                   <span className="text-xs font-semibold text-navy-700">Write a professional response</span>
                                 </div>
                                 <div className="p-3">
@@ -742,7 +742,7 @@ export default function LandlordPortalPage() {
 
                         {!landlord.is_verified && !review.landlord_response && (
                           <p className="mt-2 flex items-center gap-1.5 text-xs text-slate-400">
-                            <Flag className="h-3 w-3" /> Profile verification required to respond
+                            <Flag className="h-3 w-3" aria-hidden="true" /> Profile verification required to respond
                           </p>
                         )}
                       </div>
