@@ -16,6 +16,14 @@ export function useAuth() {
       setUser(user)
       if (user) loadProfile(user.id)
       else setLoading(false)
+    }).catch(() => {
+      // Auth lookup failed (network, expired refresh token, etc.) — treat
+      // as signed-out instead of leaving loading=true forever. The user
+      // can still try to sign in fresh; the only cost is a brief blank
+      // navbar instead of one stuck on its skeleton.
+      setUser(null)
+      setProfile(null)
+      setLoading(false)
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {

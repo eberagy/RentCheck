@@ -36,8 +36,10 @@ function PostHogPageview() {
 //
 //  - PostHog: stitches anonymous pre-signin events (search_performed,
 //    landlord_viewed) to the same person record after they sign in.
-//  - Sentry: tags any client-side error capture with { id, email } so
+//  - Sentry: tags any client-side error capture with the user id so
 //    the Issues view can show "X users impacted" instead of "anonymous".
+//    Email is intentionally NOT passed to Sentry — see lib/sentry.ts
+//    for the no-PII rationale (90-day retention window).
 //
 // Both helpers are no-ops when their respective SDKs aren't loaded
 // (NEXT_PUBLIC_POSTHOG_KEY / NEXT_PUBLIC_SENTRY_DSN gates).
