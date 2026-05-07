@@ -713,7 +713,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               </select>
             </div>
 
-            <button type="submit" className="rounded-full bg-teal px-4 py-2.5 text-[12.5px] font-semibold text-white transition-colors hover:bg-teal-500">
+            <button type="submit" className="rounded-full bg-teal px-4 py-2.5 text-[12.5px] font-semibold text-white transition-colors hover:bg-teal-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
               Apply Filters
             </button>
           </form>
@@ -721,7 +721,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           {(state || minRating > 0 || verifiedOnly || hasViolationsOnly) && (
             <Link
               href={q ? `/search?q=${encodeURIComponent(q)}` : '/search'}
-              className="self-start rounded-full border border-slate-200 bg-white px-3.5 py-2 text-[12.5px] text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700"
+              className="self-start rounded-full border border-slate-200 bg-white px-3.5 py-2 text-[12.5px] text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
             >
               Clear filters
             </Link>
