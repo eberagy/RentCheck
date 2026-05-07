@@ -54,7 +54,7 @@ export function Footer() {
               Lease-verified renter reviews and public records on landlords in major cities and growing coverage nationwide.
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
-              <Chip dark tone="neutral">Not a CRA — <Link href="/fcra-notice" className="underline hover:text-white">FCRA notice</Link></Chip>
+              <Chip dark tone="neutral">Not a CRA — <Link href="/fcra-notice" className="underline hover:text-white rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink">FCRA notice</Link></Chip>
             </div>
           </div>
 
