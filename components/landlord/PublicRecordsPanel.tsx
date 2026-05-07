@@ -218,21 +218,21 @@ function RecordRow({ record }: { record: EnrichedRecord }) {
           <MetaPill
             icon={<Calendar className="h-3 w-3" aria-hidden="true" />}
             label="Filed"
-            value={formatDate(record.filed_date)}
+            value={<time dateTime={record.filed_date}>{formatDate(record.filed_date)}</time>}
           />
         )}
         {details.inspectionDate && (
           <MetaPill
-            icon={<BadgeCheck className="h-3 w-3" />}
+            icon={<BadgeCheck className="h-3 w-3" aria-hidden="true" />}
             label="Inspected"
-            value={formatDate(details.inspectionDate)}
+            value={<time dateTime={details.inspectionDate}>{formatDate(details.inspectionDate)}</time>}
           />
         )}
         {details.correctByDate && (
           <MetaPill
             icon={<Clock className="h-3 w-3" aria-hidden="true" />}
             label="Correct by"
-            value={formatDate(details.correctByDate)}
+            value={<time dateTime={details.correctByDate}>{formatDate(details.correctByDate)}</time>}
             tone={overdue ? 'red' : open ? 'amber' : 'neutral'}
           />
         )}
@@ -240,7 +240,7 @@ function RecordRow({ record }: { record: EnrichedRecord }) {
           <MetaPill
             icon={<Calendar className="h-3 w-3" aria-hidden="true" />}
             label="Closed"
-            value={formatDate(record.closed_date)}
+            value={<time dateTime={record.closed_date}>{formatDate(record.closed_date)}</time>}
             tone="teal"
           />
         )}

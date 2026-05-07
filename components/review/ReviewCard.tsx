@@ -139,7 +139,7 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
 
         <div className="flex-shrink-0 text-right">
           <StarRating value={review.rating_overall} readonly size="sm" />
-          <p className="text-xs text-slate-400 mt-0.5">{formatDate(review.created_at)}</p>
+          <p className="text-xs text-slate-400 mt-0.5"><time dateTime={review.created_at}>{formatDate(review.created_at)}</time></p>
         </div>
       </div>
 
@@ -163,7 +163,7 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
       {review.landlord_response && review.landlord_response_status === 'approved' && (
         <div className="mt-3 rounded-2xl border border-navy-200 bg-navy-50 px-4 py-3">
           <p className="mb-1 text-xs font-semibold text-navy-700">
-            Landlord Response · {formatDate(review.landlord_response_at)}
+            Landlord Response · <time dateTime={review.landlord_response_at}>{formatDate(review.landlord_response_at)}</time>
           </p>
           <p className="text-sm leading-relaxed text-navy-800">{review.landlord_response}</p>
         </div>
