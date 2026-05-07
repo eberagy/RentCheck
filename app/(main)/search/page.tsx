@@ -54,9 +54,11 @@ function applySort<T extends { avg_rating?: number | null; review_count?: number
 
 export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
   const params = await searchParams
-  const q = params.q ?? ''
-  const city = params.city ?? ''
-  const state = params.state ?? ''
+  // Match the truncation in SearchPage so canonical URL + title don't
+  // diverge from the rendered query.
+  const q = (params.q ?? '').slice(0, 200)
+  const city = (params.city ?? '').slice(0, 100)
+  const state = (params.state ?? '').slice(0, 2)
   const title = city && state
     ? `Rental Research in ${city}, ${state}`
     : q
@@ -562,9 +564,13 @@ function SearchResultCard({ result }: { result: SearchPageResult }) {
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams
-  const q = params.q ?? ''
-  const city = params.city ?? ''
-  const state = params.state ?? ''
+  // Cap q at 200 chars to match the /api/search Zod schema. Without this,
+  // a malicious /search?q=AAAA...(10MB) request would hit the DB with the
+  // full payload — the page is dynamic + has no IP rate limit (the API
+  // does), so this is a thin DoS vector worth closing.
+  const q = (params.q ?? '').slice(0, 200)
+  const city = (params.city ?? '').slice(0, 100)
+  const state = (params.state ?? '').slice(0, 2)
   const minRating = parseFloat(params.rating ?? '0')
   const verifiedOnly = params.verified === 'true'
   const hasViolationsOnly = params.violations === 'true'
