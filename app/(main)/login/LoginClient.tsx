@@ -362,12 +362,16 @@ export default function LoginClient() {
                 </div>
               ) : (
                 <form onSubmit={handleMagicLink} className="space-y-3">
+                  <label htmlFor="magic-link-email" className="sr-only">Email</label>
                   <input
+                    id="magic-link-email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
                     required
+                    autoComplete="email"
+                    inputMode="email"
                     className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3.5 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-navy-500 focus:ring-2 focus:ring-navy-500/20"
                   />
                   <Button

@@ -110,16 +110,22 @@ export default async function AdminEmailLeadsPage({
 
       {/* Filters */}
       <form className="mb-4 flex items-center gap-2 text-sm">
+        <label htmlFor="filter-city" className="sr-only">Filter by city</label>
         <input
+          id="filter-city"
           name="city"
           defaultValue={params.city ?? ''}
           placeholder="Filter by city…"
+          autoComplete="off"
           className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm"
         />
+        <label htmlFor="filter-source" className="sr-only">Filter by source</label>
         <input
+          id="filter-source"
           name="source"
           defaultValue={params.source ?? ''}
           placeholder="Filter by source…"
+          autoComplete="off"
           className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm"
         />
         <button type="submit" className="rounded-lg bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-700 focus-visible:ring-offset-2">
