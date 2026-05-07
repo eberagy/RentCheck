@@ -285,8 +285,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
           </div>
 
           {openViolations > 0 && (
-            <div className="flex items-start gap-2.5 border-t border-slate-100 bg-red-50/50 px-5 py-4 sm:px-8">
-              <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600" />
+            <div role="status" className="flex items-start gap-2.5 border-t border-slate-100 bg-red-50/50 px-5 py-4 sm:px-8">
+              <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600" aria-hidden="true" />
               <div>
                 <p className="text-[14px] font-semibold text-red-700">
                   {openViolations} open violation{openViolations !== 1 ? 's' : ''}

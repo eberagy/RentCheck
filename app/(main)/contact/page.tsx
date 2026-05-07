@@ -78,7 +78,7 @@ export default function ContactPage() {
       </div>
 
       <div className="mt-10 flex items-start gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-200 text-sm text-slate-600">
-        <Shield className="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" />
+        <Shield className="h-4 w-4 text-slate-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
         <p>
           Vett is not a consumer reporting agency under the FCRA. For review disputes or removal requests,
           email <a href="mailto:legal@vettrentals.com" className="text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">legal@vettrentals.com</a> with

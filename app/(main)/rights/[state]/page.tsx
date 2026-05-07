@@ -425,7 +425,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
       {/* ── Page header ── */}
       <div className="flex items-start gap-4 mb-6">
         <div className="h-12 w-12 rounded-2xl bg-navy-100 flex items-center justify-center flex-shrink-0">
-          <Shield className="h-6 w-6 text-navy-600" />
+          <Shield className="h-6 w-6 text-navy-600" aria-hidden="true" />
         </div>
         <div>
           <div className="flex items-center gap-2 flex-wrap">

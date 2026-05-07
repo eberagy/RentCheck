@@ -248,11 +248,11 @@ export default async function DashboardPage() {
                   >
                     <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
                       {s.status === 'approved' ? (
-                        <CheckCircle2 className="h-3 w-3 text-teal-500" />
+                        <CheckCircle2 className="h-3 w-3 text-teal-500" aria-hidden="true" />
                       ) : s.status === 'rejected' ? (
-                        <AlertTriangle className="h-3 w-3 text-red-400" />
+                        <AlertTriangle className="h-3 w-3 text-red-400" aria-hidden="true" />
                       ) : (
-                        <Clock className="h-3 w-3 text-amber-500" />
+                        <Clock className="h-3 w-3 text-amber-500" aria-hidden="true" />
                       )}
                     </div>
                     <div className="min-w-0">

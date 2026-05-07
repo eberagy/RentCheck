@@ -13,7 +13,7 @@ export default function FcraNoticePage() {
     <div className="max-w-2xl mx-auto px-4 py-12">
       <div className="mb-6">
         <div className="h-12 w-12 bg-amber-100 ring-1 ring-amber-200 rounded-2xl flex items-center justify-center mb-5 text-amber-600">
-          <AlertTriangle className="h-6 w-6" />
+          <AlertTriangle className="h-6 w-6" aria-hidden="true" />
         </div>
         <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900">FCRA Notice</h1>
       </div>
