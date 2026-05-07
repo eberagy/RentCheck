@@ -101,7 +101,7 @@ export function MyReviewsClient({ reviews, statusFilter }: { reviews: MyReviewIt
 
         {reviews.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-16 text-center">
-            <Star className="mx-auto mb-3 h-8 w-8 text-slate-300" />
+            <Star className="mx-auto mb-3 h-8 w-8 text-slate-300" aria-hidden="true" />
             <p className="text-sm font-semibold text-slate-700">No {statusFilter === 'all' ? '' : `${statusFilter} `}reviews yet</p>
             <p className="mt-1 text-[13px] text-slate-500">Your reviews live here once you submit them.</p>
           </div>
@@ -157,13 +157,13 @@ export function MyReviewsClient({ reviews, statusFilter }: { reviews: MyReviewIt
                       {r.status === 'approved' && r.landlord?.slug && (
                         <Button asChild variant="outline" size="sm" className="h-8 rounded-full">
                           <Link href={`/landlord/${r.landlord.slug}`}>
-                            <Eye className="mr-1 h-3.5 w-3.5" /> View
+                            <Eye className="mr-1 h-3.5 w-3.5" aria-hidden="true" /> View
                           </Link>
                         </Button>
                       )}
                       {canEditOrDelete && !isEditing && (
                         <Button variant="outline" size="sm" className="h-8 rounded-full" onClick={() => setEditing(r.id)}>
-                          <Edit3 className="mr-1 h-3.5 w-3.5" /> Edit
+                          <Edit3 className="mr-1 h-3.5 w-3.5" aria-hidden="true" /> Edit
                         </Button>
                       )}
                       {canEditOrDelete && (
@@ -174,7 +174,7 @@ export function MyReviewsClient({ reviews, statusFilter }: { reviews: MyReviewIt
                           onClick={() => handleDelete(r.id, r.title)}
                           disabled={processing === r.id}
                         >
-                          <Trash2 className="mr-1 h-3.5 w-3.5" /> Delete
+                          <Trash2 className="mr-1 h-3.5 w-3.5" aria-hidden="true" /> Delete
                         </Button>
                       )}
                     </div>
