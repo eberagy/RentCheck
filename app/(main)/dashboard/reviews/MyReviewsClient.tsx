@@ -245,6 +245,7 @@ function EditReviewInline({ review, onCancel, onSaved }: {
             value={title}
             onChange={e => setTitle(e.target.value)}
             maxLength={150}
+            autoComplete="off"
             className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-100"
           />
           <span className="mt-1 text-[11px] text-slate-400">{title.length}/150</span>
@@ -256,6 +257,7 @@ function EditReviewInline({ review, onCancel, onSaved }: {
             onChange={e => setBody(e.target.value)}
             rows={6}
             maxLength={2000}
+            autoComplete="off"
             className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-100"
           />
           <span className="mt-1 text-[11px] text-slate-400">{body.length}/2000</span>
