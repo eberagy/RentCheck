@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { detectFileType, ALLOWED_LEASE_TYPES, MAX_LEASE_SIZE } from '@/lib/utils'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { captureException } from '@/lib/sentry'
 
 const schema = z.object({
   reviewId: z.string().uuid().optional(),
@@ -54,6 +55,11 @@ export async function POST(req: NextRequest) {
     .download(docPath)
 
   if (downloadError || !fileData) {
+    // 400 is the right user-facing status (the file the client uploaded
+    // can't be read), but the cause might be a real Supabase Storage
+    // outage on our side, in which case every lease verification breaks.
+    // Worth capturing distinctly from "user uploaded garbage."
+    if (downloadError) captureException(downloadError, { where: 'verify-lease:download' })
     return NextResponse.json({ error: 'Could not access file' }, { status: 400 })
   }
 
@@ -80,7 +86,10 @@ export async function POST(req: NextRequest) {
       .eq('id', reviewId)
       .eq('reviewer_id', user.id)
 
-    if (updateError) return NextResponse.json({ error: 'Failed to update review' }, { status: 500 })
+    if (updateError) {
+      captureException(updateError, { where: 'verify-lease:review-update' })
+      return NextResponse.json({ error: 'Failed to update review' }, { status: 500 })
+    }
   }
 
   return NextResponse.json({
