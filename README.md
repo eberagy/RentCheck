@@ -21,8 +21,8 @@ Lease-verified renter reviews + public government records on landlords nationwid
 ### 1. Install dependencies
 
 ```bash
-cd Vett
-npm install
+cd vett
+pnpm install
 ```
 
 ### 2. Create Supabase project
@@ -86,7 +86,7 @@ cp .env.example .env.local
 ### 4. Run locally
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 - App: `http://localhost:3000`
