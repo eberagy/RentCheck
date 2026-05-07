@@ -368,7 +368,7 @@ export default function ReviewForm() {
           {searchQuery.length >= 2 && !searching && searchResults.length > 0 && (
             <p className="text-center text-[12.5px] text-slate-400 mt-3">
               Don&apos;t see your landlord?{' '}
-              <button type="button" className="text-teal-600 font-medium hover:underline" onClick={() => router.push(`/add-landlord?name=${encodeURIComponent(searchQuery)}`)}>
+              <button type="button" className="text-teal-600 font-medium hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2" onClick={() => router.push(`/add-landlord?name=${encodeURIComponent(searchQuery)}`)}>
                 Add them to Vett
               </button>
             </p>
