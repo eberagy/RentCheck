@@ -20,7 +20,7 @@ import { captureException } from '@/lib/sentry'
 type SortKey = 'reviewed' | 'highest' | 'lowest' | 'violations'
 
 interface SearchPageProps {
-  searchParams: { q?: string; city?: string; state?: string; rating?: string; verified?: string; violations?: string; page?: string; sort?: string }
+  searchParams: Promise<{ q?: string; city?: string; state?: string; rating?: string; verified?: string; violations?: string; page?: string; sort?: string }>
 }
 
 const SORT_OPTIONS: { key: SortKey; label: string }[] = [
