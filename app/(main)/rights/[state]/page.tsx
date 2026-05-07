@@ -489,7 +489,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
         {sections.map(({ title, icon: Icon, content, color, bg, border }) => (
           <Card key={title} className={`border ${border} shadow-none`}>
             <CardHeader className="pb-2 pt-4 px-5">
-              <CardTitle className={`text-sm font-semibold flex items-center gap-2.5 ${color}`}>
+              <CardTitle as="h2" className={`text-sm font-semibold flex items-center gap-2.5 ${color}`}>
                 <div
                   className={`h-8 w-8 rounded-lg ${bg} flex items-center justify-center flex-shrink-0`}
                 >
@@ -508,7 +508,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
       {/* ── Legal Resources ── */}
       <Card className="border-navy-200 bg-navy-50 mb-8 shadow-none">
         <CardHeader className="pb-3 px-5 pt-5">
-          <CardTitle className="text-sm font-bold text-navy-900 flex items-center gap-2">
+          <CardTitle as="h2" className="text-sm font-bold text-navy-900 flex items-center gap-2">
             <ExternalLink className="h-4 w-4" />
             Legal Resources in {stateInfo.name}
           </CardTitle>

@@ -33,9 +33,17 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+// CardTitle is a heading by default — h3 fits the typical card-as-
+// subsection-of-page pattern. Pass `as="h2"` to elevate it (e.g. for
+// top-level page sections like the rights guide). Avoids hierarchy
+// gaps that show up when card grids render directly under the h1.
+function CardTitle({
+  className,
+  as: Tag = "h3",
+  ...props
+}: React.ComponentProps<"div"> & { as?: "h2" | "h3" | "h4" | "div" }) {
   return (
-    <div
+    <Tag
       data-slot="card-title"
       className={cn(
         "text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
