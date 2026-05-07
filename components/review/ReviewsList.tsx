@@ -69,8 +69,10 @@ export function ReviewsList({ reviews, landlordId, totalReviews }: ReviewsListPr
             {(Object.keys(SORT_LABELS) as SortOption[]).map(opt => (
               <button
                 key={opt}
+                type="button"
                 onClick={() => setSort(opt)}
-                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                aria-pressed={sort === opt}
+                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2 ${
                   sort === opt
                     ? 'border-slate-950 bg-slate-950 text-white'
                     : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
