@@ -52,7 +52,7 @@ export function Logo({ size = 'md', href = '/', className = '', inverted = false
 
   if (href) {
     return (
-      <Link href={href} aria-label="Vett home" className="focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 rounded-sm">
+      <Link href={href} aria-label="Vett home" className="focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 rounded-sm">
         {el}
       </Link>
     )

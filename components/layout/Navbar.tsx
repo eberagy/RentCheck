@@ -169,10 +169,10 @@ export function Navbar() {
             aria-label="Open navigation menu"
             onClick={() => setMobileOpen(true)}
             className={cn(
-              'rounded-full border p-2 transition-colors md:hidden',
+              'rounded-full border p-2 transition-colors md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
               isDark
-                ? 'border-white/10 bg-white/5 text-white'
-                : 'border-slate-200 bg-white text-slate-600 shadow-sm hover:bg-slate-50'
+                ? 'border-white/10 bg-white/5 text-white focus-visible:ring-teal-400 focus-visible:ring-offset-ink'
+                : 'border-slate-200 bg-white text-slate-600 shadow-sm hover:bg-slate-50 focus-visible:ring-navy-500'
             )}
           >
             <Menu className="h-5 w-5" aria-hidden="true" />
@@ -194,7 +194,7 @@ export function Navbar() {
                     onClick={() => setMobileOpen(false)}
                     aria-current={active ? 'page' : undefined}
                     className={cn(
-                      'rounded-2xl px-3 py-2.5 text-sm font-medium',
+                      'rounded-2xl px-3 py-2.5 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2',
                       active
                         ? 'bg-slate-950 text-white'
                         : 'text-slate-700 hover:bg-white'
@@ -208,14 +208,14 @@ export function Navbar() {
               {user ? (
                 <>
                   <div className="truncate px-3 py-1 text-xs text-slate-500">{user.email}</div>
-                  <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-white">
+                  <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                     <LayoutDashboard className="h-4 w-4" aria-hidden="true" /> My Dashboard
                   </Link>
-                  <Link href="/review/new" onClick={() => setMobileOpen(false)} className="rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-white">
+                  <Link href="/review/new" onClick={() => setMobileOpen(false)} className="rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                     Write a Review
                   </Link>
                   {profile?.user_type === 'admin' && (
-                    <Link href="/admin" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-white">
+                    <Link href="/admin" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 rounded-2xl px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                       <Settings className="h-4 w-4" aria-hidden="true" /> Admin
                     </Link>
                   )}
