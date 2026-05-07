@@ -545,6 +545,8 @@ export default function LandlordPortalPage() {
                           value={newTplLabel}
                           onChange={e => setNewTplLabel(e.target.value.slice(0, 80))}
                           maxLength={80}
+                          aria-label="Template label"
+                          autoComplete="off"
                         />
                         <Textarea
                           placeholder="The full response text to insert…"
@@ -552,6 +554,8 @@ export default function LandlordPortalPage() {
                           onChange={e => setNewTplBody(e.target.value.slice(0, 1000))}
                           rows={4}
                           maxLength={1000}
+                          aria-label="Template body"
+                          autoComplete="off"
                         />
                         <div className="flex items-center justify-between">
                           <span className="text-[11px] text-slate-400">{newTplBody.length}/1000</span>
@@ -674,6 +678,8 @@ export default function LandlordPortalPage() {
                                     onChange={e => setResponseText(e.target.value)}
                                     rows={4}
                                     maxLength={MAX_RESPONSE_LENGTH}
+                                    aria-label="Your professional response to this review"
+                                    autoComplete="off"
                                     className="border-0 p-0 text-sm shadow-none focus-visible:ring-0 resize-none"
                                   />
                                   {templates.length > 0 && showTemplatePicker && (
