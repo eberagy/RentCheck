@@ -134,6 +134,8 @@ function DisputeForm() {
             value={customReason}
             onChange={e => setCustomReason(e.target.value)}
             required
+            aria-label="Other reason — describe"
+            autoComplete="off"
           />
         )}
       </div>
@@ -163,6 +165,8 @@ function DisputeForm() {
         <Input
           id="evidence"
           type="url"
+          inputMode="url"
+          autoComplete="off"
           value={evidenceUrl}
           onChange={e => setEvidenceUrl(e.target.value)}
           placeholder="https://... (link to government portal, court ruling, etc.)"

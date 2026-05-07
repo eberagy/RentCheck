@@ -229,10 +229,14 @@ export default function ClaimProfilePage() {
           <div className="relative mb-2">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" aria-hidden="true" />
             <Input
+              type="search"
+              inputMode="search"
               className="pl-9 pr-9"
               placeholder="Search your name or management company..."
               value={searchQuery}
               onChange={e => { setSearchQuery(e.target.value); searchLandlords(e.target.value) }}
+              aria-label="Search landlords by name or management company"
+              autoComplete="off"
             />
             {searching && (
               <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-slate-400" />
