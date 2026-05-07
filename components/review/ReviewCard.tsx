@@ -83,7 +83,7 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
             <AvatarImage src={review.reviewer?.avatar_url ?? undefined} alt="" />
           )}
           <AvatarFallback className="bg-navy-100 text-xs font-semibold text-navy-700">
-            <User className="h-4 w-4" />
+            <User className="h-4 w-4" aria-hidden="true" />
           </AvatarFallback>
         </Avatar>
 
@@ -96,7 +96,7 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
             </span>
             {review.lease_verified ? (
               <span className="inline-flex items-center gap-1 rounded-full border border-teal-200 bg-teal-50 px-2 py-0.5 text-xs font-medium text-teal-700">
-                <CheckCircle2 className="h-3 w-3" /> Lease Verified
+                <CheckCircle2 className="h-3 w-3" aria-hidden="true" /> Lease Verified
               </span>
             ) : (
               <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700">
@@ -127,9 +127,9 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
             </p>
             {!(review.is_anonymous) && (review.property_address || review.property) && (
               <>
-                <span className="text-xs text-slate-300">·</span>
+                <span className="text-xs text-slate-300" aria-hidden="true">·</span>
                 <span className="flex items-center gap-0.5 text-xs text-slate-400">
-                  <Home className="h-3 w-3" />
+                  <Home className="h-3 w-3" aria-hidden="true" />
                   {review.property_address ?? `${review.property?.address_line1}${review.property?.city ? `, ${review.property.city}` : ''}`}
                 </span>
               </>
