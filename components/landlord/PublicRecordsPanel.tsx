@@ -135,7 +135,7 @@ function RecordRow({ record }: { record: EnrichedRecord }) {
       <div className="ml-2 flex flex-wrap items-start gap-2">
         {informational ? (
           <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wide text-slate-500">
-            <Info className="h-3 w-3" /> Informational
+            <Info className="h-3 w-3" aria-hidden="true" /> Informational
           </span>
         ) : (
           <ViolationBadge
@@ -147,12 +147,12 @@ function RecordRow({ record }: { record: EnrichedRecord }) {
         )}
         {details.rentImpairing && (
           <span className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-red-100 px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wide text-red-700">
-            <AlertOctagon className="h-3 w-3" /> Rent-impairing
+            <AlertOctagon className="h-3 w-3" aria-hidden="true" /> Rent-impairing
           </span>
         )}
         {overdue && (
           <span className="inline-flex items-center gap-1 rounded-full border border-red-300 bg-red-100 px-2 py-0.5 text-[10.5px] font-bold uppercase tracking-wide text-red-700">
-            <Clock className="h-3 w-3" /> Overdue {Math.abs(correctIn!)}d
+            <Clock className="h-3 w-3" aria-hidden="true" /> Overdue {Math.abs(correctIn!)}d
           </span>
         )}
         {(details.caseId ?? record.case_number) && (
@@ -183,7 +183,7 @@ function RecordRow({ record }: { record: EnrichedRecord }) {
               className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-600 hover:border-slate-300 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
             >
               {expanded ? 'Less' : 'Details'}
-              {expanded ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+              {expanded ? <ChevronUp className="h-3 w-3" aria-hidden="true" /> : <ChevronDown className="h-3 w-3" aria-hidden="true" />}
             </button>
           )}
         </div>
