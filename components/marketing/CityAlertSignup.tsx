@@ -105,6 +105,7 @@ export function CityAlertSignup({
             required
             maxLength={100}
             aria-label="City"
+            autoComplete="address-level2"
             className={`flex-1 bg-transparent text-[14px] outline-none ${
               dark ? 'text-white placeholder:text-slate-500' : 'text-slate-900 placeholder:text-slate-400'
             }`}
@@ -115,6 +116,7 @@ export function CityAlertSignup({
           onChange={e => setStateAbbr(e.target.value)}
           required
           aria-label="State"
+          autoComplete="address-level1"
           className={`rounded-xl border px-3 py-2.5 text-[14px] outline-none ${
             dark
               ? 'border-white/10 bg-white/[0.04] text-white focus:border-teal-300'
