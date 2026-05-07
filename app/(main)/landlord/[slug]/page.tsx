@@ -2,11 +2,18 @@ import { cache } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import Script from 'next/script'
+import dynamic from 'next/dynamic'
 import type { Metadata } from 'next'
 import { MapPin, Globe, Phone, MessageSquare, Flag, Building2 } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/service'
 import { PublicRecordsPanel } from '@/components/landlord/PublicRecordsPanel'
-import { ViolationChart } from '@/components/landlord/ViolationChart'
+// Lazy-load the chart so recharts (~100KB gzipped) doesn't ship in the
+// initial JS bundle. The records tab is below the fold and rarely the
+// landing focus; the small fallback box keeps layout from jumping when
+// the chunk hydrates.
+const ViolationChart = dynamic(() =>
+  import('@/components/landlord/ViolationChart').then(m => ({ default: m.ViolationChart }))
+)
 import { VerifiedBadge } from '@/components/vett/VerifiedBadge'
 import { Grade } from '@/components/vett/Grade'
 import { RatingBar } from '@/components/vett/RatingBar'

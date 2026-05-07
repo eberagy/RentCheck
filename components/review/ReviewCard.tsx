@@ -163,7 +163,7 @@ export function ReviewCard({ review, onMarkHelpful, onFlag: _onFlag, isOwn }: Re
       {review.landlord_response && review.landlord_response_status === 'approved' && (
         <div className="mt-3 rounded-2xl border border-navy-200 bg-navy-50 px-4 py-3">
           <p className="mb-1 text-xs font-semibold text-navy-700">
-            Landlord Response · <time dateTime={review.landlord_response_at}>{formatDate(review.landlord_response_at)}</time>
+            Landlord Response{review.landlord_response_at ? <> · <time dateTime={review.landlord_response_at}>{formatDate(review.landlord_response_at)}</time></> : null}
           </p>
           <p className="text-sm leading-relaxed text-navy-800">{review.landlord_response}</p>
         </div>
