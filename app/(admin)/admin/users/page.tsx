@@ -269,17 +269,20 @@ export default function AdminUsersPage() {
 
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <button
+                      type="button"
                       onClick={async () => {
                         const opening = expanded !== user.id
                         setExpanded(opening ? user.id : null)
                         if (opening) await loadUserReviews(user.id)
                       }}
-                      className="text-slate-400 hover:text-slate-600 p-1 rounded hover:bg-slate-100 transition-colors"
+                      aria-expanded={expanded === user.id}
+                      aria-label={expanded === user.id ? 'Collapse user reviews' : 'View user reviews'}
+                      className="text-slate-400 hover:text-slate-600 p-1 rounded hover:bg-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
                       title={expanded === user.id ? 'Collapse' : 'View reviews'}
                     >
                       {expanded === user.id
-                        ? <ChevronUp className="h-4 w-4" />
-                        : <ChevronDown className="h-4 w-4" />
+                        ? <ChevronUp className="h-4 w-4" aria-hidden="true" />
+                        : <ChevronDown className="h-4 w-4" aria-hidden="true" />
                       }
                     </button>
 
