@@ -113,7 +113,7 @@ export default function AdminFlagsPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-2">
-                      <Flag className="h-4 w-4 text-red-500" />
+                      <Flag className="h-4 w-4 text-red-500" aria-hidden="true" />
                       <Badge variant="outline" className="text-red-700 border-red-300">
                         {reasonLabels[item.reason] ?? item.reason}
                       </Badge>

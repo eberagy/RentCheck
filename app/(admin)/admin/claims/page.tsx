@@ -124,7 +124,7 @@ export default function AdminClaimsPage() {
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <Building2 className="h-4 w-4 text-navy-500" />
+                      <Building2 className="h-4 w-4 text-navy-500" aria-hidden="true" />
                       <span className="font-semibold text-slate-900">{claim.landlord?.display_name ?? 'Unknown Landlord'}</span>
                       <Badge variant="outline" className={
                         claim.status === 'approved' ? 'text-teal-700 border-teal-300' :

@@ -124,7 +124,7 @@ export default function AdminDisputesPage() {
                 <div className="flex items-start justify-between gap-4 mb-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <AlertTriangle className="h-4 w-4 text-amber-500" />
+                      <AlertTriangle className="h-4 w-4 text-amber-500" aria-hidden="true" />
                       <span className="font-semibold text-slate-900">Dispute: {dispute.reason}</span>
                       <Badge variant="outline" className={
                         dispute.status === 'open' ? 'text-amber-700 border-amber-300' : 'text-teal-700 border-teal-300'

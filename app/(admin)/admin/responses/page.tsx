@@ -84,7 +84,7 @@ export default function AdminResponsesPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-2">
-                      <MessageSquare className="h-4 w-4 text-navy-500" />
+                      <MessageSquare className="h-4 w-4 text-navy-500" aria-hidden="true" />
                       <span className="font-semibold text-slate-900">{item.landlord?.display_name ?? 'Unknown Landlord'}</span>
                       <span className="text-xs text-slate-400">responded to</span>
                       <span className="text-sm text-slate-700">&ldquo;{item.title}&rdquo;</span>

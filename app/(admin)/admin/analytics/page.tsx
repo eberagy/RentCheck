@@ -82,7 +82,7 @@ export default async function AdminAnalyticsPage() {
     <div className="p-8">
       <div className="mb-6 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white">
-          <BarChart3 className="h-5 w-5" />
+          <BarChart3 className="h-5 w-5" aria-hidden="true" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
@@ -169,7 +169,7 @@ function Metric({ icon: Icon, label, value, sub, tone = 'slate' }: {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-5">
       <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
-        <Icon className="h-4.5 w-4.5" />
+        <Icon className="h-4.5 w-4.5" aria-hidden="true" />
       </div>
       <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-500">{label}</div>
       <div className={`mt-1.5 text-[28px] font-extrabold tracking-tight tabular-nums ${valueClass}`}>{value}</div>

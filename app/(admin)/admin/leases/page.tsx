@@ -117,7 +117,7 @@ export default function AdminLeasesPage() {
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <FileText className="h-4 w-4 text-navy-500" />
+                      <FileText className="h-4 w-4 text-navy-500" aria-hidden="true" />
                       <span className="font-semibold text-slate-900">{item.title}</span>
                     </div>
                     <div className="text-sm text-slate-600 space-y-0.5 mb-3">

@@ -64,7 +64,7 @@ export default async function AdminEmailLeadsPage({
     <div className="p-4 sm:p-8">
       <div className="mb-6 flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white">
-          <Mail className="h-5 w-5" />
+          <Mail className="h-5 w-5" aria-hidden="true" />
         </div>
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Email leads</h1>

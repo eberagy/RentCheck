@@ -421,7 +421,7 @@ export default async function AdminDashboardPage() {
           <CardHeader className="pb-3 border-b border-slate-100">
             <div className="flex items-center justify-between">
               <CardTitle as="h2" className="text-base flex items-center gap-2">
-                <Database className="h-4 w-4 text-navy-600" />
+                <Database className="h-4 w-4 text-navy-600" aria-hidden="true" />
                 Data Health
                 {hasDataErrors && (
                   <Badge className="bg-red-100 text-red-700 border-red-200 text-xs ml-1">Needs attention</Badge>
