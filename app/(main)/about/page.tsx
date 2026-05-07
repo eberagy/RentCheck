@@ -60,8 +60,11 @@ async function loadStats() {
 }
 
 function formatCount(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
-  if (n >= 1_000)     return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1)}k`
+  // Same edge-case fix as lib/utils.formatCount (ee21e74) — without
+  // the lower threshold, 999_999 rendered as "1000k" (4-digit K is
+  // visually broken; bump into the M bucket instead).
+  if (n >= 999_500) return `${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000)   return `${(n / 1_000).toFixed(n >= 10_000 ? 0 : 1)}k`
   return String(n)
 }
 
