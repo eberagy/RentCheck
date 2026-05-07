@@ -334,7 +334,7 @@ export default function LandlordPortalPage() {
         {!claim && (
           <div className="rounded-[24px] border border-slate-200 bg-white p-10 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
             <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-navy-50">
-              <Shield className="h-8 w-8 text-navy-400" />
+              <Shield className="h-8 w-8 text-navy-400" aria-hidden="true" />
             </div>
             <h2 className="font-display text-[22px] font-semibold tracking-tight text-slate-900">Claim your landlord profile</h2>
             <p className="mx-auto mt-2 max-w-sm text-[14px] leading-relaxed text-slate-500">

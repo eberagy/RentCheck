@@ -340,7 +340,7 @@ export default function ClaimProfilePage() {
               {docFile ? (
                 <div className="flex flex-col items-center gap-2">
                   <div className="h-12 w-12 bg-teal-100 rounded-xl flex items-center justify-center mb-1">
-                    <FileText className="h-6 w-6 text-teal-600" />
+                    <FileText className="h-6 w-6 text-teal-600" aria-hidden="true" />
                   </div>
                   <span className="text-sm font-semibold text-slate-900">{docFile.name}</span>
                   <span className="text-xs text-slate-500">
@@ -349,23 +349,24 @@ export default function ClaimProfilePage() {
                   <button
                     type="button"
                     onClick={e => { e.stopPropagation(); setDocFile(null) }}
-                    className="mt-1 flex items-center gap-1 text-xs text-red-500 hover:text-red-700 transition-colors"
+                    aria-label={`Remove ${docFile.name}`}
+                    className="mt-1 flex items-center gap-1 text-xs text-red-500 hover:text-red-700 transition-colors rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
                   >
-                    <X className="h-3 w-3" />
+                    <X className="h-3 w-3" aria-hidden="true" />
                     Remove file
                   </button>
                 </div>
               ) : isDragActive ? (
                 <div className="flex flex-col items-center gap-2">
                   <div className="h-12 w-12 bg-navy-100 rounded-xl flex items-center justify-center mb-1">
-                    <Upload className="h-6 w-6 text-navy-500 animate-bounce" />
+                    <Upload className="h-6 w-6 text-navy-500 animate-bounce" aria-hidden="true" />
                   </div>
                   <p className="text-sm font-semibold text-navy-700">Drop to upload</p>
                 </div>
               ) : (
                 <div className="flex flex-col items-center gap-2">
                   <div className="h-12 w-12 bg-slate-100 rounded-xl flex items-center justify-center mb-1">
-                    <Upload className="h-6 w-6 text-slate-400" />
+                    <Upload className="h-6 w-6 text-slate-400" aria-hidden="true" />
                   </div>
                   <p className="text-sm font-semibold text-slate-700">Drag & drop your document here</p>
                   <p className="text-xs text-slate-400">or click to browse files</p>
@@ -380,7 +381,7 @@ export default function ClaimProfilePage() {
             </div>
 
             <div className="flex items-start gap-2 mt-3 p-3 bg-amber-50 border border-amber-100 rounded-xl">
-              <AlertTriangle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <AlertTriangle className="h-3.5 w-3.5 text-amber-500 flex-shrink-0 mt-0.5" aria-hidden="true" />
               <p className="text-xs text-amber-700">
                 Documents are reviewed by Vett founders and moderators only and are never shared publicly or shown to renters.
               </p>
