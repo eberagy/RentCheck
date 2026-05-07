@@ -4,6 +4,7 @@ import { COLLEGE_CITIES, US_STATES } from '@/types'
 import { getAllPosts } from '@/lib/blog'
 import { getAllScenarios } from '@/lib/rights-scenarios'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
+import { citySlug } from '@/lib/cities'
 
 export const revalidate = 3600
 
@@ -12,10 +13,6 @@ export const revalidate = 3600
 // If we ever grow past 50k, swap to the Next.js `generateSitemaps` sharding
 // pattern (docs: https://nextjs.org/docs/app/api-reference/functions/generate-sitemaps).
 const MAX_URLS_PER_SET = 50_000
-
-function citySlug(city: string) {
-  return city.toLowerCase().replace(/\s+/g, '-')
-}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = canonicalSiteUrl()
