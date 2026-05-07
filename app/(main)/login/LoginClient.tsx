@@ -248,18 +248,22 @@ export default function LoginClient() {
               {mode === 'password' ? (
                 <div>
                   {/* Sign in / Sign up tabs */}
-                  <div className="flex border-b border-slate-200 mb-4">
+                  <div role="tablist" aria-label="Authentication mode" className="flex border-b border-slate-200 mb-4">
                     <button
                       type="button"
+                      role="tab"
+                      aria-selected={passwordTab === 'signin'}
                       onClick={() => setPasswordTab('signin')}
-                      className={`flex-1 pb-2 text-sm font-medium transition-colors ${passwordTab === 'signin' ? 'text-navy-700 border-b-2 border-navy-700' : 'text-slate-400 hover:text-slate-600'}`}
+                      className={`flex-1 pb-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2 rounded ${passwordTab === 'signin' ? 'text-navy-700 border-b-2 border-navy-700' : 'text-slate-400 hover:text-slate-600'}`}
                     >
                       Sign in
                     </button>
                     <button
                       type="button"
+                      role="tab"
+                      aria-selected={passwordTab === 'signup'}
                       onClick={() => setPasswordTab('signup')}
-                      className={`flex-1 pb-2 text-sm font-medium transition-colors ${passwordTab === 'signup' ? 'text-navy-700 border-b-2 border-navy-700' : 'text-slate-400 hover:text-slate-600'}`}
+                      className={`flex-1 pb-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2 rounded ${passwordTab === 'signup' ? 'text-navy-700 border-b-2 border-navy-700' : 'text-slate-400 hover:text-slate-600'}`}
                     >
                       Create account
                     </button>
