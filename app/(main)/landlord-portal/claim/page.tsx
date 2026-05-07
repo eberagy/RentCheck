@@ -253,8 +253,10 @@ export default function ClaimProfilePage() {
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedLandlord(null)}
-                className="text-teal-400 hover:text-teal-600 p-1 rounded hover:bg-teal-100 transition-colors"
+                aria-label="Clear selected landlord"
+                className="text-teal-400 hover:text-teal-600 p-1 rounded hover:bg-teal-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -265,7 +267,8 @@ export default function ClaimProfilePage() {
                 {searchResults.map(l => (
                   <button
                     key={l.id}
-                    className="w-full text-left px-4 py-3.5 hover:bg-navy-50 border-b last:border-0 transition-colors"
+                    type="button"
+                    className="w-full text-left px-4 py-3.5 hover:bg-navy-50 border-b last:border-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-navy-500"
                     onClick={() => { setSelectedLandlord(l); setSearchResults([]) }}
                   >
                     <p className="font-semibold text-slate-900 text-sm">{l.display_name}</p>
