@@ -50,18 +50,18 @@ export function ReviewPrivacyToggle({ reviewId, initialAnonymous }: Props) {
       onClick={toggle}
       disabled={busy}
       title={anonymous ? 'Currently anonymous — click to show your name' : 'Currently showing your name — click to make anonymous'}
-      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10.5px] font-medium transition-colors ${
+      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10.5px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2 ${
         anonymous
           ? 'border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300'
           : 'border-teal-200 bg-teal-50 text-teal-700 hover:border-teal-300'
       } disabled:cursor-not-allowed disabled:opacity-60`}
     >
       {busy ? (
-        <Loader2 className="h-3 w-3 animate-spin" />
+        <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
       ) : anonymous ? (
-        <EyeOff className="h-3 w-3" />
+        <EyeOff className="h-3 w-3" aria-hidden="true" />
       ) : (
-        <Eye className="h-3 w-3" />
+        <Eye className="h-3 w-3" aria-hidden="true" />
       )}
       {anonymous ? 'Anonymous' : 'Showing name'}
     </button>
