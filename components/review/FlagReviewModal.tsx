@@ -125,11 +125,11 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
               </div>
               <h2 id="flag-review-title" className="text-lg font-bold text-slate-900">Flag this review</h2>
             </div>
-            <p className="text-sm text-slate-500 mb-4">
+            <p id="flag-reason-instructions" className="text-sm text-slate-500 mb-4">
               Select why you think this review violates our guidelines. We review all flags within 48 hours.
             </p>
 
-            <div className="space-y-2 mb-4">
+            <div role="radiogroup" aria-labelledby="flag-review-title" aria-describedby="flag-reason-instructions" aria-required="true" className="space-y-2 mb-4">
               {REASONS.map(r => (
                 <label key={r.value} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
                   reason === r.value ? 'border-navy-400 bg-navy-50' : 'border-slate-200 hover:border-slate-300'
