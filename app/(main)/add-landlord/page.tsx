@@ -265,7 +265,7 @@ export default function AddLandlordPage() {
             <input {...getInputProps()} />
             {proofFile ? (
               <div className="flex items-center justify-center gap-3">
-                <FileText className="h-5 w-5 text-teal-600" />
+                <FileText className="h-5 w-5 text-teal-600" aria-hidden="true" />
                 <div className="text-left">
                   <p className="font-medium text-slate-900 text-sm">{proofFile.name}</p>
                   <p className="text-xs text-slate-500">{(proofFile.size / 1024 / 1024).toFixed(2)} MB</p>
@@ -273,20 +273,21 @@ export default function AddLandlordPage() {
                 <button
                   type="button"
                   onClick={e => { e.stopPropagation(); setProofFile(null) }}
-                  className="ml-2 text-slate-400 hover:text-red-500"
+                  aria-label={`Remove ${proofFile.name}`}
+                  className="ml-2 text-slate-400 hover:text-red-500 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
                 >
-                  <X className="h-4 w-4" />
+                  <X className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
             ) : (
               <>
-                <Upload className="h-6 w-6 text-slate-400 mx-auto mb-2" />
+                <Upload className="h-6 w-6 text-slate-400 mx-auto mb-2" aria-hidden="true" />
                 <p className="text-sm font-medium text-slate-700">Drag & drop or click to upload</p>
                 <p className="text-xs text-slate-400 mt-0.5">PDF, JPG, PNG · Max 10MB</p>
               </>
             )}
           </div>
-          {proofError && <p className="mt-1.5 text-sm text-red-600">{proofError}</p>}
+          {proofError && <p role="alert" className="mt-1.5 text-sm text-red-600">{proofError}</p>}
         </div>
 
         <div>
