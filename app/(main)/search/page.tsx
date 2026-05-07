@@ -732,8 +732,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         {/* Results */}
         <div className="min-w-0">
           <Suspense fallback={
-            <div className="grid gap-3">
+            <div role="status" aria-live="polite" className="grid gap-3">
               {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
+              <span className="sr-only">Loading search results…</span>
             </div>
           }>
             <SearchResults q={q} city={city} state={state} minRating={minRating} verifiedOnly={verifiedOnly} hasViolationsOnly={hasViolationsOnly} page={page} sort={sort} />
