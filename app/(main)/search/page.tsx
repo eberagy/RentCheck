@@ -634,7 +634,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                 <Link
                   key={`${priorityCity.city}-${priorityCity.state}`}
                   href={`/search?city=${encodeURIComponent(priorityCity.city)}&state=${priorityCity.state}`}
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                  aria-current={active ? 'page' : undefined}
+                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2 ${
                     active
                       ? 'bg-slate-900 text-white'
                       : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-800'
