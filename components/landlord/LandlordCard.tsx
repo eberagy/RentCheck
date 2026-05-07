@@ -41,7 +41,7 @@ export function LandlordCard({ landlord, className }: LandlordCardProps) {
               )}
               {(landlord.city || landlord.state_abbr) && (
                 <div className="mt-1.5 flex items-center gap-1 text-xs text-slate-500">
-                  <MapPin className="h-3 w-3 flex-shrink-0" />
+                  <MapPin className="h-3 w-3 flex-shrink-0" aria-hidden="true" />
                   <span>{[landlord.city, landlord.state_abbr].filter(Boolean).join(', ')}</span>
                 </div>
               )}
@@ -55,13 +55,13 @@ export function LandlordCard({ landlord, className }: LandlordCardProps) {
                 <>
                   <StarRating value={landlord.avg_rating} readonly size="sm" />
                   <div className="flex items-center gap-1 text-xs text-slate-500">
-                    <MessageSquare className="h-3 w-3" />
+                    <MessageSquare className="h-3 w-3" aria-hidden="true" />
                     <span>{landlord.review_count} {landlord.review_count === 1 ? 'review' : 'reviews'}</span>
                   </div>
                 </>
               ) : (
                 <span className="inline-flex items-center gap-1 rounded-full border border-dashed border-slate-300 bg-slate-50 px-2 py-1 text-[11px] font-medium text-slate-500">
-                  <MessageSquare className="h-3 w-3" />
+                  <MessageSquare className="h-3 w-3" aria-hidden="true" />
                   Be the first to review
                 </span>
               )}
@@ -77,7 +77,7 @@ export function LandlordCard({ landlord, className }: LandlordCardProps) {
                   }`}
                   title="Share of published reviews this landlord has responded to"
                 >
-                  <Reply className="h-3 w-3" />
+                  <Reply className="h-3 w-3" aria-hidden="true" />
                   <span>{landlord.response_rate}% responds</span>
                 </div>
               )}
