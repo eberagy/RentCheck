@@ -98,8 +98,8 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6">
-        <ArrowLeft className="h-4 w-4" /> Back
+      <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
+        <ArrowLeft className="h-4 w-4" aria-hidden="true" /> Back
       </Link>
 
       <h1 className="font-display text-[clamp(2rem,4vw,3rem)] leading-[1.08] tracking-tight text-slate-900 mb-2">Landlord Comparison</h1>
@@ -109,7 +109,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
         <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
           Neither landlord has renter reviews yet. Comparison is limited to public records.
           {' '}
-          <Link href="/review/new" className="font-semibold underline underline-offset-2 hover:text-amber-950">
+          <Link href="/review/new" className="font-semibold underline underline-offset-2 hover:text-amber-950 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2">
             Be the first to write a review
           </Link>.
         </div>
@@ -129,7 +129,7 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
             )}
             <div className="flex items-start justify-between gap-2">
               <div>
-                <Link href={`/landlord/${landlord.slug}`} className="font-bold text-slate-900 hover:text-navy-600 hover:underline text-lg">
+                <Link href={`/landlord/${landlord.slug}`} className="font-bold text-slate-900 hover:text-navy-600 hover:underline text-lg rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
                   {landlord.display_name}
                 </Link>
                 {landlord.is_verified && <VerifiedBadge />}

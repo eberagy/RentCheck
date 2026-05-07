@@ -138,8 +138,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         {JSON.stringify(breadcrumbJsonLd)}
       </script>
       <article className="mx-auto max-w-[720px] px-7 py-14">
-        <Link href="/blog" className="mb-6 inline-flex items-center gap-1.5 text-[13px] text-slate-500 hover:text-slate-700">
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to blog
+        <Link href="/blog" className="mb-6 inline-flex items-center gap-1.5 text-[13px] text-slate-500 hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" /> Back to blog
         </Link>
         <div className="flex flex-wrap items-center gap-2 text-[12px] text-slate-500">
           <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
