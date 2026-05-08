@@ -135,39 +135,50 @@ export default function AdminUsersPage() {
 
   async function toggleBan(userId: string, isBanned: boolean) {
     setProcessing(userId)
-    const res = await fetch('/api/admin/ban-user', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, banned: !isBanned }),
-    })
-    if (!res.ok) {
-      const json = await res.json().catch(() => ({}))
-      toast.error(json.error ?? 'Failed to update')
+    try {
+      const res = await fetch('/api/admin/ban-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, banned: !isBanned }),
+      })
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}))
+        toast.error(json.error ?? 'Failed to update')
+        return
+      }
+      toast.success(isBanned ? 'User unbanned' : 'User banned')
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_banned: !isBanned } : u))
+    } catch {
+      // Network failure — without this catch the row stayed stuck on
+      // its disabled spinner forever and the admin couldn't retry
+      // without refreshing the page.
+      toast.error("Couldn't reach the server. Please try again.")
+    } finally {
       setProcessing(null)
-      return
     }
-    toast.success(isBanned ? 'User unbanned' : 'User banned')
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_banned: !isBanned } : u))
-    setProcessing(null)
   }
 
   async function promoteToAdmin(userId: string) {
     if (!confirm('Promote this user to admin? This gives full platform access.')) return
     setProcessing(userId)
-    const res = await fetch('/api/admin/promote-user', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, userType: 'admin' }),
-    })
-    if (!res.ok) {
-      const json = await res.json().catch(() => ({}))
-      toast.error(json.error ?? 'Failed to promote')
+    try {
+      const res = await fetch('/api/admin/promote-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, userType: 'admin' }),
+      })
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}))
+        toast.error(json.error ?? 'Failed to promote')
+        return
+      }
+      toast.success('User promoted to admin')
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, user_type: 'admin' } : u))
+    } catch {
+      toast.error("Couldn't reach the server. Please try again.")
+    } finally {
       setProcessing(null)
-      return
     }
-    toast.success('User promoted to admin')
-    setUsers(prev => prev.map(u => u.id === userId ? { ...u, user_type: 'admin' } : u))
-    setProcessing(null)
   }
 
   // Client-side filter on top of DB results

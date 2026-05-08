@@ -72,24 +72,28 @@ export default function AdminLeasesPage() {
 
   async function verifyLease(reviewId: string, verified: boolean) {
     setProcessing(reviewId)
-    const res = await fetch('/api/admin/verify-lease', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        reviewId,
-        verified,
-        rejectionReason: !verified ? (notes[reviewId] || undefined) : undefined,
-      }),
-    })
-    if (!res.ok) {
-      const json = await res.json().catch(() => ({}))
-      toast.error(json.error ?? 'Update failed')
+    try {
+      const res = await fetch('/api/admin/verify-lease', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reviewId,
+          verified,
+          rejectionReason: !verified ? (notes[reviewId] || undefined) : undefined,
+        }),
+      })
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}))
+        toast.error(json.error ?? 'Update failed')
+        return
+      }
+      toast.success(verified ? 'Lease verified' : 'Lease rejected')
+      setItems(prev => prev.filter(r => r.id !== reviewId))
+    } catch {
+      toast.error("Couldn't reach the server. Please try again.")
+    } finally {
       setProcessing(null)
-      return
     }
-    toast.success(verified ? 'Lease verified' : 'Lease rejected')
-    setItems(prev => prev.filter(r => r.id !== reviewId))
-    setProcessing(null)
   }
 
   function formatBytes(bytes: number | null) {

@@ -91,25 +91,29 @@ export default function AdminReviewsPage() {
 
   async function moderate(reviewId: string, action: 'approved' | 'rejected') {
     setProcessing(reviewId)
-    const res = await fetch('/api/admin/moderate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reviewId, action, adminNotes: notes[reviewId] }),
-    })
-    if (!res.ok) {
-      const data = await res.json().catch(() => null)
-      toast.error(data?.error ?? 'Failed to update')
+    try {
+      const res = await fetch('/api/admin/moderate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewId, action, adminNotes: notes[reviewId] }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => null)
+        toast.error(data?.error ?? 'Failed to update')
+        return
+      }
+      toast.success(`Review ${action} — email sent to reviewer`)
+      setReviews(prev => prev.filter(r => r.id !== reviewId))
+      setSelected(prev => {
+        const next = new Set(prev)
+        next.delete(reviewId)
+        return next
+      })
+    } catch {
+      toast.error("Couldn't reach the server. Please try again.")
+    } finally {
       setProcessing(null)
-      return
     }
-    toast.success(`Review ${action} — email sent to reviewer`)
-    setReviews(prev => prev.filter(r => r.id !== reviewId))
-    setSelected(prev => {
-      const next = new Set(prev)
-      next.delete(reviewId)
-      return next
-    })
-    setProcessing(null)
   }
 
   async function bulkModerate(action: 'approved' | 'rejected', ids: string[]) {

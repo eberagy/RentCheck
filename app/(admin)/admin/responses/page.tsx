@@ -49,21 +49,28 @@ export default function AdminResponsesPage() {
 
   async function moderate(reviewId: string, action: 'approved' | 'rejected', rejectionReason?: string) {
     setProcessing(reviewId)
-    const res = await fetch('/api/admin/moderate-response', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ reviewId, action, adminNotes: rejectionReason?.trim() || undefined }),
-    })
-    if (!res.ok) {
-      toast.error('Failed to update')
+    try {
+      const res = await fetch('/api/admin/moderate-response', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewId, action, adminNotes: rejectionReason?.trim() || undefined }),
+      })
+      if (!res.ok) {
+        toast.error('Failed to update')
+        return
+      }
+      toast.success(action === 'approved' ? 'Response approved — now visible on review' : 'Response rejected and removed')
+      setItems(prev => prev.filter(r => r.id !== reviewId))
+      setRejectingId(null)
+      setReason('')
+    } catch {
+      // Network failure — without this catch the row stayed stuck on
+      // its disabled spinner forever. Same shape as the toggleBan/
+      // promoteToAdmin handlers.
+      toast.error("Couldn't reach the server. Please try again.")
+    } finally {
       setProcessing(null)
-      return
     }
-    toast.success(action === 'approved' ? 'Response approved — now visible on review' : 'Response rejected and removed')
-    setItems(prev => prev.filter(r => r.id !== reviewId))
-    setProcessing(null)
-    setRejectingId(null)
-    setReason('')
   }
 
   return (
