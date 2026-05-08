@@ -27,12 +27,14 @@ export function AuthErrorHandler() {
       toast.error(decodeURIComponent(errorDesc.replace(/\+/g, ' ')))
     }
 
-    // Clean the error params from the URL without navigating away
+    // Clean the error params from the URL without navigating away.
+    // Preserve hash so deep-linked anchors (#email-preferences,
+    // #public-profile) survive the cleanup.
     const url = new URL(window.location.href)
     url.searchParams.delete('error')
     url.searchParams.delete('error_code')
     url.searchParams.delete('error_description')
-    router.replace(url.pathname + url.search, { scroll: false })
+    router.replace(url.pathname + url.search + url.hash, { scroll: false })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return null
