@@ -229,6 +229,7 @@ export default function LoginClient() {
                 type="button"
                 onClick={handleGoogleSignIn}
                 disabled={googleLoading}
+                aria-busy={googleLoading || undefined}
                 className="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-300 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
               >
                 {googleLoading ? (
@@ -350,6 +351,7 @@ export default function LoginClient() {
                     <Button
                       type="submit"
                       disabled={loading || !email.trim() || !password}
+                      aria-busy={loading || undefined}
                       className="w-full h-11 bg-navy-700 text-white hover:bg-navy-800 text-sm font-semibold"
                     >
                       {loading ? (
@@ -400,6 +402,7 @@ export default function LoginClient() {
                   <Button
                     type="submit"
                     disabled={loading || !email.trim()}
+                    aria-busy={loading || undefined}
                     className="w-full h-11 bg-navy-700 text-white hover:bg-navy-800 text-sm font-semibold"
                   >
                     {loading ? (
