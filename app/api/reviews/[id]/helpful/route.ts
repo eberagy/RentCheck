@@ -26,11 +26,18 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   })
   if (error) return dbError('reviews/helpful:rpc', error)
 
-  const { data: review } = await supabase
+  const { data: review, error: reviewErr } = await supabase
     .from('reviews')
     .select('helpful_count')
     .eq('id', id)
     .single()
+  // The UI uses the returned count to update the button immediately;
+  // a silently-dropped error here returned helpful_count: 0 even
+  // though toggle_helpful_vote had already succeeded — making the
+  // button visibly snap to 0 right after the user clicked it. Surface
+  // the failure as a 500 so the client knows to refetch instead of
+  // trusting the bogus zero.
+  if (reviewErr) return dbError('reviews/helpful:reread', reviewErr)
 
   return NextResponse.json({ voted, helpful_count: review?.helpful_count ?? 0 })
 }

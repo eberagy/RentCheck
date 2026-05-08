@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
+import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { z } from 'zod'
@@ -28,11 +29,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (!parsed.success) return NextResponse.json({ error: 'Invalid input' }, { status: 422 })
 
   const service = createServiceClient()
-  const { data: review } = await service
+  const { data: review, error: lookupErr } = await service
     .from('reviews')
     .select('id, reviewer_id')
     .eq('id', id)
     .single()
+  // Distinguish "no rows" (legitimate 404) from a real DB failure
+  // that would otherwise masquerade as "Not found" — the user would
+  // see the privacy toggle visibly reset and a confusing 404 even
+  // though their review still exists.
+  if (lookupErr && lookupErr.code !== 'PGRST116') return dbError('reviews/privacy:lookup', lookupErr)
   if (!review) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   if (review.reviewer_id !== user.id) return NextResponse.json({ error: 'Not yours' }, { status: 403 })
 
@@ -44,9 +50,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     .update({ is_anonymous: parsed.data.isAnonymous })
     .eq('id', id)
 
-  if (error) {
-    console.error('[db]', error)
-    return NextResponse.json({ error: 'Database error' }, { status: 500 })
-  }
+  if (error) return dbError('reviews/privacy:update', error)
   return NextResponse.json({ ok: true, isAnonymous: parsed.data.isAnonymous })
 }
