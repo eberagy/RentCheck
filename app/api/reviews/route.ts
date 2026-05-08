@@ -9,6 +9,7 @@ import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { sendSubmissionReceivedEmail } from '@/lib/email'
 import { PUBLIC_REVIEW_SELECT, stripPrivateReviewFields } from '@/lib/reviews/public'
 import { checkReviewContent } from '@/lib/content-filter'
+import { captureException } from '@/lib/sentry'
 
 const createSchema = z.object({
   landlordId: z.string().uuid(),
@@ -172,7 +173,11 @@ export async function POST(req: NextRequest) {
         })
       }
     } catch (err) {
+      // Swallowed throw stays off the response. Capture so we know
+      // when reviewers aren't getting their submission ack — same
+      // shape as the landlord-response ack fix in 14a546f.
       console.error('[reviews] ack email failed:', err)
+      captureException(err, { where: 'reviews:ack' })
     }
   })()
 
