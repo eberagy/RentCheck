@@ -130,13 +130,24 @@ export default function ReviewForm() {
       try {
         const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=landlord&limit=10`, { signal: ac.signal })
         if (ac.signal.aborted) return
+        // Match the hardening from hooks/useSearch.ts and
+        // landlord-portal/claim search: a 429/5xx from the rate
+        // limiter or DB outage clears the dropdown rather than
+        // crashing on .filter when data.results is missing.
+        if (!res.ok) {
+          if (!ac.signal.aborted) setSearchResults([])
+          return
+        }
         const data = await res.json() as { results?: Array<Landlord & { result_type: string }> }
         if (!ac.signal.aborted) {
-          setSearchResults(data.results?.filter(r => r.result_type === 'landlord') ?? [])
+          const hits = Array.isArray(data?.results) ? data.results : []
+          setSearchResults(hits.filter(r => r.result_type === 'landlord'))
         }
       } catch (err) {
         if ((err as Error).name === 'AbortError') return
-        // Network error — leave results as-is, the user can retype
+        // Network error — clear results so the user doesn't see stale
+        // matches from a prior keystroke.
+        if (!ac.signal.aborted) setSearchResults([])
       } finally {
         if (searchAbortRef.current === ac) setSearching(false)
       }
