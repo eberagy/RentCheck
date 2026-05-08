@@ -10,7 +10,8 @@ const schema = z.object({
   recordId: z.string().uuid(),
   reason: z.string().min(10).max(500),
   detail: z.string().max(2000).optional(),
-  evidenceUrl: z.string().url().optional(),
+  // Restrict to http/https to prevent stored XSS — see lib/safe-url.
+  evidenceUrl: z.string().url().regex(/^https?:\/\//i, 'Must be http(s) URL').optional(),
 })
 
 export async function POST(req: NextRequest) {
