@@ -31,12 +31,15 @@ export async function POST(req: NextRequest) {
   const service = createServiceClient()
 
   // Get the submission
-  const { data: submission } = await service
+  const { data: submission, error: submissionErr } = await service
     .from('landlord_submissions')
     .select('*')
     .eq('id', submissionId)
     .single()
 
+  // PGRST116 → real 404. Anything else is a DB failure that
+  // shouldn't be masked — same shape as 3f31b0c et al.
+  if (submissionErr && submissionErr.code !== 'PGRST116') return dbError('admin/moderate-submission:lookup', submissionErr)
   if (!submission) return NextResponse.json({ error: 'Submission not found' }, { status: 404 })
   if (submission.status !== 'pending') {
     return NextResponse.json({ error: 'Already moderated' }, { status: 409 })

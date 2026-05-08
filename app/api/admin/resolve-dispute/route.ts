@@ -30,11 +30,16 @@ export async function POST(req: NextRequest) {
   const service = createServiceClient()
 
   // Look up submitter + record label before touching anything, for the email later
-  const { data: dispute } = await service
+  const { data: dispute, error: disputeErr } = await service
     .from('record_disputes')
     .select('disputed_by, record:public_records(title, description)')
     .eq('id', disputeId)
     .single()
+  // Real DB error here means we'd UPDATE blind below — the moderator's
+  // decision still lands on the record_disputes row, but no email
+  // ever fires (later branches gate on `dispute`). Without surfacing
+  // it the disputer never hears back.
+  if (disputeErr && disputeErr.code !== 'PGRST116') return dbError('admin/resolve-dispute:lookup', disputeErr)
 
   const { error } = await service
     .from('record_disputes')

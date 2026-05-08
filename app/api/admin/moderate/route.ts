@@ -30,11 +30,17 @@ export async function POST(req: NextRequest) {
 
   // Get review + reviewer + landlord info before updating
   const serviceClient = createServiceClient()
-  const { data: review } = await serviceClient
+  const { data: review, error: reviewErr } = await serviceClient
     .from('reviews')
     .select('id, title, reviewer_id, landlord_id, lease_verified, reviewer:profiles!reviews_reviewer_id_fkey(full_name, email), landlord:landlords(display_name, slug)')
     .eq('id', reviewId)
     .single()
+  // Real DB error: refuse to proceed. The lease_verified gate below
+  // would otherwise treat any error case as "lease not verified" and
+  // refuse to approve — which is fine for action=approved but for
+  // action=rejected we'd silently update the row blind. Surface the
+  // failure either way.
+  if (reviewErr && reviewErr.code !== 'PGRST116') return dbError('admin/moderate:lookup', reviewErr)
 
   if (action === 'approved' && !review?.lease_verified) {
     return NextResponse.json({ error: 'Lease must be verified before a review can be approved' }, { status: 409 })

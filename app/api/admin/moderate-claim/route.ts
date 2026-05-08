@@ -29,13 +29,16 @@ export async function POST(req: NextRequest) {
 
   const serviceClient = createServiceClient()
 
-  // Fetch claim with relations
-  const { data: claim } = await serviceClient
+  // Fetch claim with relations. Same PGRST116 split as the rest of
+  // the API — moderators were getting confused 404s on transient DB
+  // errors when the claim row in question still existed.
+  const { data: claim, error: claimErr } = await serviceClient
     .from('landlord_claims')
     .select('id, claimed_by, landlord_id, landlord:landlords(id, display_name, slug), claimer:profiles!landlord_claims_claimed_by_fkey(full_name, email)')
     .eq('id', claimId)
     .single()
 
+  if (claimErr && claimErr.code !== 'PGRST116') return dbError('admin/moderate-claim:lookup', claimErr)
   if (!claim) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   // Update claim status

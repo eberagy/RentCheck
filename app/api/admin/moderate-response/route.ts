@@ -28,11 +28,17 @@ export async function POST(req: NextRequest) {
   const { reviewId, action, adminNotes } = parsed.data
 
   const serviceClient = createServiceClient()
-  const { data: review } = await serviceClient
+  const { data: review, error: reviewErr } = await serviceClient
     .from('reviews')
     .select('id, title, landlord:landlords(display_name, slug, claimed_by)')
     .eq('id', reviewId)
     .single()
+  // PGRST116 ("review missing") falls through — the UPDATE below is
+  // idempotent and matches 0 rows in that case; we don't need a 404
+  // gate here. But a real DB error should surface to Sentry instead
+  // of being silently treated as "review missing" — the route would
+  // otherwise UPDATE blind, send no email, and report success.
+  if (reviewErr && reviewErr.code !== 'PGRST116') return dbError('admin/moderate-response:lookup', reviewErr)
 
   const updates: Record<string, unknown> = {
     landlord_response_status: action,
