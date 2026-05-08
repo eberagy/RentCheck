@@ -21,7 +21,12 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     .eq('status', 'approved')
     .single()
 
-  if (error || !data) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  // PGRST116 → real 404 (review missing or not approved). Anything
+  // else is a DB failure; without splitting, a transient hiccup hid
+  // the existence of the review. Public read so dbError() still gives
+  // a 500 + Sentry capture.
+  if (error && error.code !== 'PGRST116') return dbError('reviews:[id]:get', error)
+  if (!data) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   type ReviewWithLandlord = { landlord_response?: string | null; landlord_response_status?: string | null }
   return NextResponse.json({ review: stripPrivateReviewFields(data as unknown as ReviewWithLandlord) })
 }
@@ -47,11 +52,15 @@ async function assertOwnerOfPending(reviewId: string) {
   if (profile?.is_banned) return { error: NextResponse.json({ error: 'Account suspended' }, { status: 403 }) as NextResponse }
 
   const service = createServiceClient()
-  const { data: review } = await service
+  const { data: review, error: reviewErr } = await service
     .from('reviews')
     .select('id, reviewer_id, status, lease_doc_path')
     .eq('id', reviewId)
     .single()
+  // Same PGRST116 vs real-error split as the GET above. A
+  // transient DB error otherwise told the review-author "Review not
+  // found" while they were staring at the edit form for that review.
+  if (reviewErr && reviewErr.code !== 'PGRST116') return { error: dbError('reviews:[id]:owner-lookup', reviewErr) }
   if (!review) return { error: NextResponse.json({ error: 'Review not found' }, { status: 404 }) as NextResponse }
   if (review.reviewer_id !== user.id) return { error: NextResponse.json({ error: 'Not yours to edit' }, { status: 403 }) as NextResponse }
   if (review.status !== 'pending') return { error: NextResponse.json({ error: 'Only pending reviews can be edited' }, { status: 409 }) as NextResponse }
