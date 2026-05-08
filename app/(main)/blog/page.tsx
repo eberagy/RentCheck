@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { jsonLdSafe } from '@/lib/json-ld'
 import Script from 'next/script'
 import { ArrowRight } from 'lucide-react'
 import { getAllPosts } from '@/lib/blog'
@@ -30,7 +31,7 @@ export default function BlogIndex() {
   // Blog index JSON-LD — declares this as a Blog page with each post
   // surfaced as a BlogPosting. Helps Google's article carousels pick up
   // posts and link them with consistent date metadata.
-  const blogJsonLd = JSON.stringify({
+  const blogJsonLd = jsonLdSafe({
     '@context': 'https://schema.org',
     '@type': 'Blog',
     name: 'Vett Blog',

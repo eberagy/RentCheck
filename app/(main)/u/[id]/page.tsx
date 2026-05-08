@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { jsonLdSafe } from '@/lib/json-ld'
 import Image from 'next/image'
 import Script from 'next/script'
 import { notFound } from 'next/navigation'
@@ -86,7 +87,7 @@ export default async function RenterProfilePage({ params }: RenterProfilePagePro
   // elsewhere on the site (LocalBusiness review.author entries reference
   // the same Person via consistent name).
   const siteUrl = canonicalSiteUrl()
-  const profileJsonLd = JSON.stringify({
+  const profileJsonLd = jsonLdSafe({
     '@context': 'https://schema.org',
     '@type': 'ProfilePage',
     url: `${siteUrl}/u/${profile.id}`,

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { jsonLdSafe } from '@/lib/json-ld'
 import { notFound } from 'next/navigation'
 import { ArrowRight, Building2, GraduationCap } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/service'
@@ -178,7 +179,7 @@ export default async function CityPage({ params }: CityPageProps) {
   // CollectionPage JSON-LD — tells Google this is a directory page for
   // a specific locale, so it ranks for "{city} landlords" queries.
   const siteUrl = canonicalSiteUrl()
-  const cityJsonLd = JSON.stringify({
+  const cityJsonLd = jsonLdSafe({
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: `Landlord Reviews in ${cityName}, ${stateAbbr}`,
@@ -224,7 +225,7 @@ export default async function CityPage({ params }: CityPageProps) {
   // top of the city hierarchy. Mirrors landlord/property breadcrumb
   // shape so Google's sitelink heuristics see one consistent pattern
   // across the site.
-  const breadcrumbJsonLd = JSON.stringify({
+  const breadcrumbJsonLd = jsonLdSafe({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [

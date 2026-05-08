@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { jsonLdSafe } from '@/lib/json-ld'
 import Script from 'next/script'
 import { ChevronDown } from 'lucide-react'
 
@@ -64,7 +65,7 @@ const FAQS = [
 ]
 
 export default function FAQPage() {
-  const faqJsonLd = JSON.stringify({
+  const faqJsonLd = jsonLdSafe({
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: FAQS.map(faq => ({

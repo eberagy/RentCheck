@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import localFont from 'next/font/local'
+import { jsonLdSafe } from '@/lib/json-ld'
 import { Instrument_Serif } from 'next/font/google'
 import Script from 'next/script'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -73,7 +74,7 @@ export const viewport: Viewport = {
 
 const siteUrl = canonicalSiteUrl()
 
-const siteJsonLd = JSON.stringify({
+const siteJsonLd = jsonLdSafe({
   '@context': 'https://schema.org',
   '@graph': [
     {

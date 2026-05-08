@@ -1,5 +1,6 @@
 import { cache } from 'react'
 import { notFound } from 'next/navigation'
+import { jsonLdSafe } from '@/lib/json-ld'
 import Link from 'next/link'
 import Script from 'next/script'
 import dynamic from 'next/dynamic'
@@ -283,7 +284,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
     }
   })
   const cityPath = landlord.city && landlord.state_abbr ? cityPagePath(landlord.city, landlord.state_abbr) : null
-  const breadcrumbJsonLd = JSON.stringify({
+  const breadcrumbJsonLd = jsonLdSafe({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [

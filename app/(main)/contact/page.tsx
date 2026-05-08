@@ -1,5 +1,6 @@
 import { Mail, Shield } from 'lucide-react'
 import type { Metadata } from 'next'
+import { jsonLdSafe } from '@/lib/json-ld'
 import Script from 'next/script'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
 
@@ -33,7 +34,7 @@ export default function ContactPage() {
   // surface for the Vett organization, with each routing email surfaced
   // as a ContactPoint. Helps the org card in SERPs show real contacts
   // instead of "no info available".
-  const contactJsonLd = JSON.stringify({
+  const contactJsonLd = jsonLdSafe({
     '@context': 'https://schema.org',
     '@type': 'ContactPage',
     url: `${siteUrl}/contact`,

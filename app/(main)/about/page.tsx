@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { jsonLdSafe } from '@/lib/json-ld'
 import Script from 'next/script'
 import { Shield, Search, BarChart3, Scale, ArrowRight } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/service'
@@ -69,7 +70,7 @@ function formatCount(n: number): string {
 }
 
 const aboutSiteUrl = canonicalSiteUrl()
-const aboutJsonLd = JSON.stringify({
+const aboutJsonLd = jsonLdSafe({
   '@context': 'https://schema.org',
   '@type': 'AboutPage',
   name: 'About Vett',

@@ -1,5 +1,6 @@
 import { cache } from 'react'
 import { notFound } from 'next/navigation'
+import { jsonLdSafe } from '@/lib/json-ld'
 import Link from 'next/link'
 import Script from 'next/script'
 import type { Metadata } from 'next'
@@ -169,7 +170,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       reviewBody: r.body ?? undefined,
     }
   })
-  const propertyJsonLd = JSON.stringify({
+  const propertyJsonLd = jsonLdSafe({
     '@context': 'https://schema.org',
     '@type': (property.unit_count ?? 1) > 1 ? 'ApartmentComplex' : 'Apartment',
     name: property.address_line1,
@@ -199,7 +200,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
   // Breadcrumb: Home → {city}, {state} → {address}. Mirrors the
   // landlord page's pattern. Drops the city segment if state/city are
   // missing so the trail still validates.
-  const breadcrumbJsonLd = JSON.stringify({
+  const breadcrumbJsonLd = jsonLdSafe({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [

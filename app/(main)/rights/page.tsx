@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { jsonLdSafe } from '@/lib/json-ld'
 import Script from 'next/script'
 import { Shield, ChevronRight, Home, DollarSign, BellRing, ShieldAlert } from 'lucide-react'
 import { Eyebrow } from '@/components/vett/Eyebrow'
@@ -61,7 +62,7 @@ export default function TenantRightsIndexPage() {
   // CollectionPage JSON-LD — surfaces the per-state guides as an
   // ItemList for Google's "Things to know" panels and breadcrumb hint.
   const siteUrl = canonicalSiteUrl()
-  const rightsJsonLd = JSON.stringify({
+  const rightsJsonLd = jsonLdSafe({
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
     name: 'Tenant Rights by State',

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { jsonLdSafe } from '@/lib/json-ld'
 import Link from 'next/link'
 import {
   Shield,
@@ -370,7 +371,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
   // WebPage + breadcrumbs is the honest framing.
   const siteUrl = canonicalSiteUrl()
   const pagePath = `/rights/${stateAbbr.toLowerCase()}`
-  const webPageJsonLd = JSON.stringify({
+  const webPageJsonLd = jsonLdSafe({
     '@context': 'https://schema.org',
     '@type': 'WebPage',
     '@id': `${siteUrl}${pagePath}#webpage`,
@@ -390,7 +391,7 @@ export default async function TenantRightsPage({ params }: TenantRightsPageProps
       })),
     },
   })
-  const breadcrumbJsonLd = JSON.stringify({
+  const breadcrumbJsonLd = jsonLdSafe({
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
