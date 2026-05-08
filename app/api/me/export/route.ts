@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { captureException } from '@/lib/sentry'
 
 // GET /api/me/export
 // Returns a JSON download of every row the signed-in user owns across Vett.
@@ -16,6 +17,47 @@ export async function GET(_req: NextRequest) {
 
   const service = createServiceClient()
 
+  const results = await Promise.all([
+    service.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+    service.from('reviews').select('*').eq('reviewer_id', user.id),
+    service.from('watchlist').select('*').eq('user_id', user.id),
+    service.from('landlord_claims').select('*').eq('claimed_by', user.id),
+    service.from('landlord_submissions').select('*').eq('submitted_by', user.id),
+    service.from('record_disputes').select('*').eq('disputed_by', user.id),
+    service.from('review_flags').select('*').eq('flagged_by', user.id),
+    (async () => {
+      try { return await service.from('review_helpful_votes').select('*').eq('user_id', user.id) }
+      catch { return { data: null, error: null } }
+    })(),
+    service.from('saved_searches').select('*').eq('user_id', user.id),
+    service.from('response_templates').select('*').eq('created_by', user.id),
+    // email_leads doesn't have user_id (anon capture path), but if the
+    // user submitted while signed in their email matches profile.email.
+    user.email
+      ? service.from('email_leads').select('*').eq('email', user.email.toLowerCase())
+      : Promise.resolve({ data: [], error: null }),
+  ])
+
+  // Per-section export status. CCPA §1798.100(d) and GDPR Art. 15
+  // both require that a data subject access response be *complete*.
+  // Silently dropping a failed query would hand the user a truncated
+  // file and tell them it's their full record. Surface failures both
+  // to Sentry (so we know to fix) and into the export envelope (so
+  // the user sees the gap and can re-request).
+  const sectionNames = [
+    'profile', 'reviews', 'watchlist', 'landlord_claims',
+    'landlord_submissions', 'record_disputes', 'review_flags',
+    'review_helpful_votes', 'saved_searches', 'response_templates',
+    'email_leads',
+  ]
+  const failedSections: string[] = []
+  for (let i = 0; i < results.length; i++) {
+    const err = (results[i] as { error?: unknown })?.error
+    if (err) {
+      captureException(err, { where: `me:export:${sectionNames[i]}`, userId: user.id })
+      failedSections.push(sectionNames[i]!)
+    }
+  }
   const [
     { data: profile },
     { data: reviews },
@@ -28,26 +70,7 @@ export async function GET(_req: NextRequest) {
     { data: savedSearches },
     { data: responseTemplates },
     { data: emailLeads },
-  ] = await Promise.all([
-    service.from('profiles').select('*').eq('id', user.id).maybeSingle(),
-    service.from('reviews').select('*').eq('reviewer_id', user.id),
-    service.from('watchlist').select('*').eq('user_id', user.id),
-    service.from('landlord_claims').select('*').eq('claimed_by', user.id),
-    service.from('landlord_submissions').select('*').eq('submitted_by', user.id),
-    service.from('record_disputes').select('*').eq('disputed_by', user.id),
-    service.from('review_flags').select('*').eq('flagged_by', user.id),
-    (async () => {
-      try { return await service.from('review_helpful_votes').select('*').eq('user_id', user.id) }
-      catch { return { data: null } }
-    })(),
-    service.from('saved_searches').select('*').eq('user_id', user.id),
-    service.from('response_templates').select('*').eq('created_by', user.id),
-    // email_leads doesn't have user_id (anon capture path), but if the
-    // user submitted while signed in their email matches profile.email.
-    user.email
-      ? service.from('email_leads').select('*').eq('email', user.email.toLowerCase())
-      : Promise.resolve({ data: [] }),
-  ])
+  ] = results
 
   const payload = {
     meta: {
@@ -55,6 +78,13 @@ export async function GET(_req: NextRequest) {
       exported_at: new Date().toISOString(),
       user_id: user.id,
       note: 'This export contains every row in Vett\'s database owned by your account. Public reviews remain on the site even after account deletion but are disassociated from your identity.',
+      // GDPR/CCPA require completeness; if any section query failed,
+      // surface that here so the user knows to retry — silently
+      // serving a partial export is non-compliant.
+      ...(failedSections.length > 0 && {
+        warning: `Some sections could not be exported and are missing: ${failedSections.join(', ')}. Please retry; if the issue persists, email privacy@vettrentals.com.`,
+        failed_sections: failedSections,
+      }),
     },
     profile: profile ?? null,
     reviews: reviews ?? [],
