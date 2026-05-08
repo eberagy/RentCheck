@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useId, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, X, MapPin, Building2, Loader2 } from 'lucide-react'
 import { useSearch } from '@/hooks/useSearch'
@@ -23,6 +23,12 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
   const [open, setOpen] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  // Stable, hydration-safe id for the listbox + ARIA combobox wiring.
+  // useId is React 18's hydration-safe id generator — Math.random in a
+  // useRef would have produced a different value on SSR vs client and
+  // tripped a hydration mismatch on the input's aria-controls attr.
+  const listboxId = useId()
+  const isOpen = open && results.length > 0
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -96,6 +102,16 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
             // the hero on first paint. Desktops still get the focus.
             autoFocus={autoFocus && typeof window !== 'undefined' && !window.matchMedia?.('(pointer: coarse)').matches}
             aria-label="Search landlords, properties, and cities"
+            // Combobox wiring: tells AT this is an autocomplete input that
+            // owns a listbox, what its current state is, and which listbox
+            // it controls. Without these the screen-reader announcement
+            // is just "edit text" with no signal that a dropdown of
+            // suggestions has appeared.
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={isOpen}
+            aria-controls={isOpen ? listboxId : undefined}
+            aria-haspopup="listbox"
             className={cn(
               'flex-1 min-w-0 bg-transparent outline-none',
               size === 'lg' ? 'text-[17px]' : size === 'md' ? 'text-[15px]' : 'text-sm',
@@ -125,8 +141,9 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
       </form>
 
       {/* Autocomplete dropdown */}
-      {open && results.length > 0 && (
+      {isOpen && (
         <div
+          id={listboxId}
           role="listbox"
           aria-label="Search suggestions"
           className={cn(
