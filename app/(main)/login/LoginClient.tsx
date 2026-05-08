@@ -73,55 +73,62 @@ export default function LoginClient() {
     setLoading(true)
     const supabase = createClient()
 
-    if (passwordTab === 'signin') {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
-      })
-      setLoading(false)
-      if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          toast.error('Wrong email or password.')
-        } else if (error.message.includes('Email not confirmed')) {
-          toast.error('Please confirm your email first.')
+    try {
+      if (passwordTab === 'signin') {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        })
+        if (error) {
+          if (error.message.includes('Invalid login credentials')) {
+            toast.error('Wrong email or password.')
+          } else if (error.message.includes('Email not confirmed')) {
+            toast.error('Please confirm your email first.')
+          } else {
+            // Don't leak Supabase internals to the user. Log for debug, show generic.
+            console.error('[login] signInWithPassword:', error.message)
+            toast.error('Sign in failed. Please try again.')
+          }
         } else {
-          // Don't leak Supabase internals to the user. Log for debug, show generic.
-          console.error('[login] signInWithPassword:', error.message)
-          toast.error('Sign in failed. Please try again.')
+          router.push(redirectTo)
         }
       } else {
-        router.push(redirectTo)
-      }
-    } else {
-      if (!fullName.trim()) {
-        toast.error('Please enter your full name.')
-        setLoading(false)
-        return
-      }
-      const { error } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-        options: {
-          data: { full_name: fullName.trim() },
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
-        },
-      })
-      setLoading(false)
-      if (error) {
-        console.error('[login] signUp:', error.message)
-        // Surface only known-safe Supabase errors; otherwise generic.
-        if (error.message.toLowerCase().includes('already registered')) {
-          toast.error('An account with that email already exists.')
-        } else if (error.message.toLowerCase().includes('password')) {
-          toast.error('Password must be at least 6 characters.')
-        } else {
-          toast.error('Could not create account. Please try again.')
+        if (!fullName.trim()) {
+          toast.error('Please enter your full name.')
+          return
         }
-      } else {
-        toast.success('Account created! Check your email to confirm, then sign in.')
-        setPasswordTab('signin')
-        setPassword('')
+        const { error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+          options: {
+            data: { full_name: fullName.trim() },
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+          },
+        })
+        if (error) {
+          console.error('[login] signUp:', error.message)
+          // Surface only known-safe Supabase errors; otherwise generic.
+          if (error.message.toLowerCase().includes('already registered')) {
+            toast.error('An account with that email already exists.')
+          } else if (error.message.toLowerCase().includes('password')) {
+            toast.error('Password must be at least 6 characters.')
+          } else {
+            toast.error('Could not create account. Please try again.')
+          }
+        } else {
+          toast.success('Account created! Check your email to confirm, then sign in.')
+          setPasswordTab('signin')
+          setPassword('')
+        }
       }
+    } catch {
+      // Throw path — supabase.auth.signInWithPassword / signUp can
+      // reject on network failure (DNS, TLS handshake, captive portal).
+      // Without this catch the form button stayed stuck on its
+      // spinner with no toast.
+      toast.error("Couldn't reach the auth service. Please try again.")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -130,17 +137,22 @@ export default function LoginClient() {
     if (!email.trim()) return
     setLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithOtp({
-      email: email.trim(),
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
-      },
-    })
-    setLoading(false)
-    if (error) {
-      toast.error('Could not send magic link. Please try again.')
-    } else {
-      setMagicSent(true)
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: email.trim(),
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+        },
+      })
+      if (error) {
+        toast.error('Could not send magic link. Please try again.')
+      } else {
+        setMagicSent(true)
+      }
+    } catch {
+      toast.error("Couldn't reach the auth service. Please try again.")
+    } finally {
+      setLoading(false)
     }
   }
 
