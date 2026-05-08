@@ -42,23 +42,31 @@ export async function POST(req: NextRequest) {
   const { reviewId, reason, note: rawNote } = parsed.data
   const note = rawNote ? sanitizeText(rawNote) : undefined
 
-  // Check review exists and is approved
-  const { data: review } = await supabase
+  // Check review exists and is approved. PGRST116 → real 404
+  // (review missing or not approved). Anything else is a DB failure
+  // that shouldn't be masked. Same fix as c581dd8.
+  const { data: review, error: reviewErr } = await supabase
     .from('reviews')
     .select('id')
     .eq('id', reviewId)
     .eq('status', 'approved')
     .single()
-
+  if (reviewErr && reviewErr.code !== 'PGRST116') return dbError('flag:review-lookup', reviewErr)
   if (!review) return NextResponse.json({ error: 'Review not found' }, { status: 404 })
 
-  // Check for duplicate flag
-  const { data: existing } = await supabase
+  // Check for duplicate flag. maybeSingle so 0 rows returns
+  // data=null,error=null cleanly. The previous .single() destructured
+  // `data` only — a transient DB hiccup landed as data=null and
+  // bypassed the dedup, letting a single user flag the same review
+  // multiple times. With AUTO_HIDE_FLAG_THRESHOLD=3 that's a one-user
+  // path to hiding any approved review.
+  const { data: existing, error: existingErr } = await supabase
     .from('review_flags')
     .select('id')
     .eq('review_id', reviewId)
     .eq('flagged_by', user.id)
-    .single()
+    .maybeSingle()
+  if (existingErr) return dbError('flag:dedup', existingErr)
 
   if (existing) return NextResponse.json({ error: 'You have already flagged this review' }, { status: 409 })
 
