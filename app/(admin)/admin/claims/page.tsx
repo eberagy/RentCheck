@@ -60,13 +60,22 @@ export default function AdminClaimsPage() {
     setLoading(false)
   }
 
-  async function getDocUrl(claimId: string, path: string) {
+  // Routes through /api/admin/verification-doc-url so the view is
+  // audit-logged. Was using a client-side createSignedUrl which
+  // bypassed the audit trail.
+  async function getDocUrl(claimId: string, _path: string) {
     if (docUrls[claimId]) { window.open(docUrls[claimId], '_blank'); return }
-    const { data } = await supabase.storage.from('landlord-verification-docs').createSignedUrl(path, 3600)
-    if (data?.signedUrl) {
-      setDocUrls(prev => ({ ...prev, [claimId]: data.signedUrl }))
-      window.open(data.signedUrl, '_blank')
-    } else {
+    try {
+      const res = await fetch(`/api/admin/verification-doc-url?claimId=${encodeURIComponent(claimId)}`)
+      if (!res.ok) throw new Error('Failed to load doc')
+      const json = await res.json()
+      if (json.signedUrl) {
+        setDocUrls(prev => ({ ...prev, [claimId]: json.signedUrl }))
+        window.open(json.signedUrl, '_blank')
+      } else {
+        toast.error('Could not generate document URL')
+      }
+    } catch {
       toast.error('Could not generate document URL')
     }
   }

@@ -28,21 +28,15 @@ type Submission = {
   submitter: { full_name: string | null; email: string | null } | null
 }
 
-function ProofDocLink({ path }: { path: string }) {
-  const supabase = createClient()
-  const [url, setUrl] = useState<string | null>(null)
-
-  useEffect(() => {
-    supabase.storage.from('landlord-verification-docs').createSignedUrl(path, 3600).then(({ data }) => {
-      if (data?.signedUrl) setUrl(data.signedUrl)
-    })
-  }, [path]) // eslint-disable-line
-
-  if (!url) return null
+// Now routes through /api/admin/verification-doc-url so each view is
+// audit-logged. Was eagerly auto-generating signed URLs on every page
+// render (50 submissions × 50 silent createSignedUrl calls × no audit
+// trail) — replaced with on-click navigation that the API handles.
+function ProofDocLink({ submissionId }: { submissionId: string }) {
   return (
     <div className="mb-3">
       <a
-        href={url}
+        href={`/api/admin/verification-doc-url?submissionId=${encodeURIComponent(submissionId)}`}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="View proof document (opens in new tab)"
@@ -185,7 +179,7 @@ export default function AdminSubmissionsPage() {
                 </div>
 
                 {sub.proof_doc_url && (
-                  <ProofDocLink path={sub.proof_doc_url} />
+                  <ProofDocLink submissionId={sub.id} />
                 )}
 
                 {sub.notes && (
