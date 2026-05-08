@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/admin-auth'
 import { logAdminAction } from '@/lib/audit'
@@ -39,7 +40,12 @@ export async function GET(req: NextRequest) {
       .select('lease_doc_path')
       .eq('id', reviewId)
       .single()
-    if (lookupErr || !review) {
+    // Same PGRST116-vs-real-error split applied across the API.
+    // Without this, a transient DB error told the moderator "Review
+    // not found" while the review was sitting right there in their
+    // queue.
+    if (lookupErr && lookupErr.code !== 'PGRST116') return dbError('admin/lease-url:review-lookup', lookupErr)
+    if (!review) {
       return NextResponse.json({ error: 'Review not found' }, { status: 404 })
     }
     if (!review.lease_doc_path) {

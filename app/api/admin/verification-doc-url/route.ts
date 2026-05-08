@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/admin-auth'
 import { logAdminAction } from '@/lib/audit'
@@ -35,7 +36,8 @@ export async function GET(req: NextRequest) {
       .select('proof_doc_url')
       .eq('id', submissionId)
       .single()
-    if (error || !sub?.proof_doc_url) {
+    if (error && error.code !== 'PGRST116') return dbError('admin/verification-doc-url:submission-lookup', error)
+    if (!sub || !sub.proof_doc_url) {
       return NextResponse.json({ error: 'Submission not found or no doc' }, { status: 404 })
     }
     path = sub.proof_doc_url
@@ -50,7 +52,8 @@ export async function GET(req: NextRequest) {
       .select('doc_url')
       .eq('id', claimId)
       .single()
-    if (error || !claim?.doc_url) {
+    if (error && error.code !== 'PGRST116') return dbError('admin/verification-doc-url:claim-lookup', error)
+    if (!claim || !claim.doc_url) {
       return NextResponse.json({ error: 'Claim not found or no doc' }, { status: 404 })
     }
     path = claim.doc_url
