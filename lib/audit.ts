@@ -3,7 +3,7 @@ import { captureException } from '@/lib/sentry'
 
 export type AdminActionType =
   | 'review.approved'     | 'review.rejected'     | 'review.flagged'
-  | 'lease.verified'      | 'lease.rejected'
+  | 'lease.verified'      | 'lease.rejected'      | 'lease.viewed'
   | 'claim.approved'      | 'claim.rejected'
   | 'submission.approved' | 'submission.rejected' | 'submission.duplicate'
   | 'response.approved'   | 'response.rejected'
