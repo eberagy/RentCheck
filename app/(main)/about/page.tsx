@@ -5,6 +5,7 @@ import Script from 'next/script'
 import { Shield, Search, BarChart3, Scale, ArrowRight } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/service'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
+import { captureException } from '@/lib/sentry'
 
 // Refresh once per hour. The numbers come from the city_stats cache,
 // which is itself refreshed nightly via cron, so anything tighter would
@@ -24,10 +25,10 @@ async function loadStats() {
   // live tables — city_stats only sums records that have a landlord_id, so
   // it under-counted by ~6x after the property-backfill (103k vs 610k actual).
   const [
-    { data: agg },
-    { count: reviewCount },
-    { count: recordCount },
-    { count: landlordCount },
+    { data: agg, error: aggErr },
+    { count: reviewCount, error: reviewsErr },
+    { count: recordCount, error: recordsErr },
+    { count: landlordCount, error: landlordsErr },
   ] = await Promise.all([
     service
       .from('city_stats')
@@ -43,6 +44,15 @@ async function loadStats() {
       .from('landlords')
       .select('*', { count: 'planned', head: true }),
   ])
+
+  // /about renders the "by the numbers" headline strip (Cities / Records
+  // / Landlords / Reviews). Without per-query capture, a silent failure
+  // on any one of these would just drop a 0 into the marketing copy
+  // ("0 reviews verified") which looks broken to visitors.
+  if (aggErr) captureException(aggErr, { where: 'about:cities-aggregate' })
+  if (reviewsErr) captureException(reviewsErr, { where: 'about:reviews' })
+  if (recordsErr) captureException(recordsErr, { where: 'about:records' })
+  if (landlordsErr) captureException(landlordsErr, { where: 'about:landlords' })
 
   const states = new Set<string>()
   const cities = new Set<string>()
