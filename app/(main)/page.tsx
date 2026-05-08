@@ -33,10 +33,10 @@ async function getStats() {
   try {
     const supabase = createServiceClient()
     const [
-      { count: reviewCount },
-      { count: landlordCount },
-      { count: recordCount },
-      { data: cityCountResult },
+      { count: reviewCount, error: reviewErr },
+      { count: landlordCount, error: landlordErr },
+      { count: recordCount, error: recordErr },
+      { data: cityCountResult, error: cityErr },
     ] = await Promise.all([
       supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
       supabase.from('landlords').select('*', { count: 'exact', head: true }),
@@ -49,6 +49,14 @@ async function getStats() {
       // PostgREST API gets capped at 1000 silently, so use an RPC.
       supabase.rpc('count_cities_with_landlords', { min_landlords: 5 }),
     ])
+    // Capture per-query errors so we can tell which specific stat is
+    // failing when the homepage hero shows degraded numbers. Try/catch
+    // below only catches thrown exceptions (network/timeout); PostgREST
+    // returns query errors via { error } and was silently swallowing them.
+    if (reviewErr) captureException(reviewErr, { where: 'home:getStats:reviews' })
+    if (landlordErr) captureException(landlordErr, { where: 'home:getStats:landlords' })
+    if (recordErr) captureException(recordErr, { where: 'home:getStats:records' })
+    if (cityErr) captureException(cityErr, { where: 'home:getStats:cities' })
 
     return {
       reviews: reviewCount ?? 0,
