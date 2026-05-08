@@ -80,10 +80,14 @@ export async function POST(req: NextRequest) {
   const gate = await requireVerifiedClaimant(user.id, landlordId)
   if ('error' in gate) return NextResponse.json({ error: gate.error }, { status: gate.status })
 
-  const { count } = await gate.service
+  const { count, error: countErr } = await gate.service
     .from('response_templates')
     .select('id', { count: 'exact', head: true })
     .eq('landlord_id', landlordId)
+  // Fail closed if the count query errors — without this the 25-template
+  // cap silently disables on a transient Postgres failure (count=null,
+  // ?? 0 => 0 < 25 => bypass). Same pattern as db232a7.
+  if (countErr) return dbError('landlord-response-templates:count-cap', countErr)
   if ((count ?? 0) >= 25) {
     return NextResponse.json({ error: 'Template limit reached (25 per landlord).' }, { status: 422 })
   }
