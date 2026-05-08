@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 type Profile = {
   id: string
@@ -107,6 +108,11 @@ export default function SettingsPage() {
       .eq('id', profile.id)
 
     if (error) {
+      // Capture so we know if a profile-update RLS regression or
+      // schema drift breaks settings save for everyone — without
+      // this, the user sees the toast and the team only finds out
+      // through "I can't save my settings" support emails.
+      captureException(error, { where: 'dashboard/settings:save', userId: profile.id })
       toast.error('Failed to save changes')
     } else {
       toast.success('Settings saved')
