@@ -67,7 +67,11 @@ export function AnimatedCounter({
     return () => observer.disconnect()
   }, [target, duration])
 
-  const formatted = separator ? count.toLocaleString() : String(count)
+  // Pin to en-US so SSR (Node, defaults to en-US) and CSR (browser locale)
+  // produce identical output. Without the locale arg, a German visitor
+  // would get "5.000" client-side vs "5,000" server-side and React would
+  // throw a hydration mismatch warning.
+  const formatted = separator ? count.toLocaleString('en-US') : String(count)
 
   return (
     <span
