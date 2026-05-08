@@ -5,6 +5,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { sendSubmissionReceivedEmail } from '@/lib/email'
+import { captureException } from '@/lib/sentry'
 
 const schema = z.object({
   landlordId: z.string().uuid(),
@@ -92,7 +93,11 @@ export async function POST(req: NextRequest) {
         })
       }
     } catch (err) {
+      // Same swallowed-throw treatment as the reviews ack (db00347)
+      // and landlord-response ack (14a546f). Capture so we know if a
+      // claimer-lookup or template render breaks the ack chain.
       console.error('[landlord-claim] ack email failed:', err)
+      captureException(err, { where: 'landlord-claim:ack' })
     }
   })()
 
