@@ -28,15 +28,26 @@ async function sendEmail(to: string, subject: string, react: React.ReactElement)
     console.warn('[email] RESEND_API_KEY not set — email not sent')
     return
   }
-  const html = await render(react)
-  const { error } = await getResend().emails.send({ from: FROM, to, subject, html })
-  if (error) {
-    console.error('[email] Send error:', error)
-    // Resend errors (bounces, domain not verified, rate limits) are
-    // otherwise invisible — pipe to Sentry so on-call sees the failure.
-    // Subject is logged but `to` is not, since renter email addresses
-    // are PII that we keep out of Sentry's 90-day retention window.
-    captureException(error, { where: 'sendEmail', subject })
+  try {
+    const html = await render(react)
+    const { error } = await getResend().emails.send({ from: FROM, to, subject, html })
+    if (error) {
+      console.error('[email] Send error:', error)
+      // Resend returned-error path: bounces, domain not verified, rate
+      // limits. PII note: subject is logged but `to` is not, since
+      // renter email addresses are PII that we keep out of Sentry's
+      // 90-day retention window. Same in the throw branch below.
+      captureException(error, { where: 'sendEmail', subject })
+    }
+  } catch (err) {
+    // Throw path: react-email render failure, network error to Resend,
+    // unexpected SDK exception. Without this branch, callers using the
+    // .catch(err => console.error(...)) idiom (see admin moderate
+    // routes) caught the error but it never reached Sentry — so a
+    // template change that broke render() would only surface via
+    // missing emails. Re-throw so callers' .catch still fires.
+    captureException(err, { where: 'sendEmail:throw', subject })
+    throw err
   }
 }
 
