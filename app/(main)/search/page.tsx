@@ -138,9 +138,9 @@ async function SearchResults({
     const propertyIds = rawResults.filter((r) => r.result_type === 'property').map((r) => r.id)
 
     const [
-      { data: landlords },
-      { data: properties },
-      { data: propertyRecords },
+      { data: landlords, error: landlordsErr },
+      { data: properties, error: propertiesErr },
+      { data: propertyRecords, error: propertyRecordsErr },
     ] = await Promise.all([
       landlordIds.length
         ? supabase
@@ -161,6 +161,14 @@ async function SearchResults({
             .in('property_id', propertyIds)
         : Promise.resolve({ data: [] as Record<string, unknown>[], error: null }),
     ])
+
+    // Without these captures a hydration-query failure would render result
+    // cards missing display_name / address_line1 / record badges — a
+    // visibly broken page that looks like a UI bug. Capture so the real
+    // cause (transient Postgres error) gets surfaced.
+    if (landlordsErr) captureException(landlordsErr, { where: 'search:hydrate-landlords', query: q })
+    if (propertiesErr) captureException(propertiesErr, { where: 'search:hydrate-properties', query: q })
+    if (propertyRecordsErr) captureException(propertyRecordsErr, { where: 'search:hydrate-records', query: q })
 
     type LandlordRow = Pick<Landlord, 'id' | 'display_name' | 'avg_rating' | 'review_count' | 'open_violation_count' | 'total_violation_count' | 'eviction_count' | 'city' | 'state_abbr' | 'is_verified' | 'is_claimed' | 'slug' | 'response_rate'>
     type PropertyRow = Pick<Property, 'id' | 'address_line1' | 'avg_rating' | 'review_count' | 'city' | 'state_abbr'> & {
