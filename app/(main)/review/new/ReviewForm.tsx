@@ -549,8 +549,16 @@ export default function ReviewForm() {
                   <span className="text-[13px] font-semibold text-slate-900">Property address <span className="text-red-600" aria-hidden="true">*</span></span>
                   <span className="text-[11.5px] text-slate-400">The address you rented at</span>
                 </div>
-                <Input {...register('propertyAddress')} placeholder="123 Main St, Apt 4B, Pittsburgh, PA" autoComplete="street-address" aria-label="Property address" className="h-11 rounded-xl border-slate-200 text-[14px]" />
-                {errors.propertyAddress && <p role="alert" className="text-xs text-red-600 mt-1">{errors.propertyAddress.message}</p>}
+                <Input
+                  {...register('propertyAddress')}
+                  placeholder="123 Main St, Apt 4B, Pittsburgh, PA"
+                  autoComplete="street-address"
+                  aria-label="Property address"
+                  aria-invalid={!!errors.propertyAddress}
+                  aria-describedby={errors.propertyAddress ? 'review-address-error' : undefined}
+                  className="h-11 rounded-xl border-slate-200 text-[14px]"
+                />
+                {errors.propertyAddress && <p id="review-address-error" role="alert" className="text-xs text-red-600 mt-1">{errors.propertyAddress.message}</p>}
               </div>
 
               {/* Title */}
@@ -599,16 +607,33 @@ export default function ReviewForm() {
                     Move-in <span className="text-red-600" aria-hidden="true">*</span>
                     <span className="sr-only"> (required)</span>
                   </label>
-                  <Input id="rental-start" type="month" autoComplete="off" {...register('rentalPeriodStart')} className="h-11 rounded-xl border-slate-200 text-[14px]" />
-                  {errors.rentalPeriodStart && <p role="alert" className="text-xs text-red-600 mt-1">{errors.rentalPeriodStart.message}</p>}
+                  <Input
+                    id="rental-start"
+                    type="month"
+                    autoComplete="off"
+                    {...register('rentalPeriodStart')}
+                    aria-invalid={!!errors.rentalPeriodStart}
+                    aria-describedby={errors.rentalPeriodStart ? 'review-rental-start-error' : undefined}
+                    className="h-11 rounded-xl border-slate-200 text-[14px]"
+                  />
+                  {errors.rentalPeriodStart && <p id="review-rental-start-error" role="alert" className="text-xs text-red-600 mt-1">{errors.rentalPeriodStart.message}</p>}
                 </div>
                 <div>
                   <label htmlFor="rental-end" className="text-[13px] font-semibold text-slate-900 mb-2 block">
                     Move-out <span className="text-red-600" aria-hidden="true">*</span>
                     <span className="sr-only"> (required)</span>
                   </label>
-                  <Input id="rental-end" type="month" autoComplete="off" {...register('rentalPeriodEnd')} className="h-11 rounded-xl border-slate-200 text-[14px]" disabled={watch('isCurrentTenant')} />
-                  {errors.rentalPeriodEnd && <p role="alert" className="text-xs text-red-600 mt-1">{errors.rentalPeriodEnd.message}</p>}
+                  <Input
+                    id="rental-end"
+                    type="month"
+                    autoComplete="off"
+                    {...register('rentalPeriodEnd')}
+                    aria-invalid={!!errors.rentalPeriodEnd}
+                    aria-describedby={errors.rentalPeriodEnd ? 'review-rental-end-error' : undefined}
+                    className="h-11 rounded-xl border-slate-200 text-[14px]"
+                    disabled={watch('isCurrentTenant')}
+                  />
+                  {errors.rentalPeriodEnd && <p id="review-rental-end-error" role="alert" className="text-xs text-red-600 mt-1">{errors.rentalPeriodEnd.message}</p>}
                 </div>
                 <div className="flex items-end pb-2">
                   <label className="flex items-center gap-2 cursor-pointer">
