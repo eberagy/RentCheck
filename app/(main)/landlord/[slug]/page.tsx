@@ -301,7 +301,15 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
     url: `${siteUrl}/landlord/${landlord.slug}`,
     ...(landlord.business_name && { legalName: landlord.business_name }),
     ...(landlord.phone && { telephone: landlord.phone }),
-    ...(landlord.website && { sameAs: [landlord.website] }),
+    // safeExternalUrl drops any javascript:/data:/file: stored value
+    // before it lands in the schema.org sameAs blob. Even though the
+    // <script type="application/ld+json"> tag won't execute the URL,
+    // we still don't want to publish a malicious link to Google's
+    // knowledge graph. Matches the link rendered in the page body.
+    ...((() => {
+      const safe = safeExternalUrl(landlord.website)
+      return safe ? { sameAs: [safe] } : {}
+    })()),
     ...(landlord.city && {
       address: {
         '@type': 'PostalAddress',
