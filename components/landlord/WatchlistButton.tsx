@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Bell, BellOff } from 'lucide-react'
+import { Bell, BellOff, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
@@ -105,9 +105,18 @@ export function WatchlistButton({
       onClick={toggle}
       disabled={loading}
       aria-pressed={watching}
+      // aria-busy lets SR users know the toggle is mid-flight rather
+      // than just disabled. Sibling buttons (CitySubscribeButton,
+      // SavedSearchUnsubscribeButton) already show a spinner during
+      // busy; match the visual + a11y here for parity.
+      aria-busy={loading || undefined}
       className={watching ? 'border-teal-300 text-teal-700 bg-teal-50 hover:bg-teal-100' : 'border-slate-200 text-slate-600'}
     >
-      {watching ? <BellOff className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" /> : <Bell className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />}
+      {loading
+        ? <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" aria-hidden="true" />
+        : watching
+          ? <BellOff className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+          : <Bell className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />}
       {watching ? 'Watching' : restLabel}
     </Button>
   )
