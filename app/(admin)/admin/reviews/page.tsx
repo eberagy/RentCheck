@@ -122,7 +122,12 @@ export default function AdminReviewsPage() {
     if (!confirm(`${verb} ${ids.length} review${ids.length === 1 ? '' : 's'}? Emails go out for each one.`)) return
 
     setBulkRunning(true)
-    let ok = 0
+    // Track per-id outcomes so the optimistic filter only drops the
+    // ones that actually succeeded. The previous version dropped ALL
+    // ids when any one succeeded, then loadReviews() re-fetched the
+    // failures back — visibly correct but caused a confusing flicker
+    // where failing rows briefly disappeared.
+    const succeeded = new Set<string>()
     let failed = 0
     for (const id of ids) {
       try {
@@ -131,16 +136,17 @@ export default function AdminReviewsPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ reviewId: id, action, adminNotes: notes[id] }),
         })
-        if (res.ok) ok++
+        if (res.ok) succeeded.add(id)
         else failed++
       } catch {
         failed++
       }
     }
     setBulkRunning(false)
+    const ok = succeeded.size
     if (ok > 0) toast.success(`${ok} review${ok === 1 ? '' : 's'} ${action}`)
     if (failed > 0) toast.error(`${failed} review${failed === 1 ? '' : 's'} failed`)
-    setReviews(prev => prev.filter(r => !ids.includes(r.id) || !ok))
+    setReviews(prev => prev.filter(r => !succeeded.has(r.id)))
     setSelected(new Set())
     loadReviews()
   }
