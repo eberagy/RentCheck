@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 type SyncJob = {
   id: string
@@ -104,11 +105,19 @@ export default function AdminDataSyncPage() {
 
   async function loadLogs() {
     setLoading(true)
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('sync_log')
       .select('*')
       .order('started_at', { ascending: false })
       .limit(200)
+
+    // Without surfacing this, an RLS regression or transient query
+    // failure leaves every source pill blank ("never run") — looks
+    // identical to a fresh deploy, hides real broken state.
+    if (error) {
+      captureException(error, { where: 'admin:data-sync:loadLogs' })
+      toast.error('Could not load sync logs')
+    }
 
     const grouped: Record<string, SyncJob[]> = {}
     for (const log of (data ?? []) as SyncJob[]) {

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { BarChart3, Clock, CheckCircle2, TrendingUp, Users } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/server'
+import { captureException } from '@/lib/sentry'
 
 export const metadata: Metadata = {
   title: 'Admin analytics',
@@ -16,16 +17,7 @@ export default async function AdminAnalyticsPage() {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
   const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString()
 
-  const [
-    { data: recent },
-    { data: prior },
-    { count: totalReviews },
-    { count: approvedCount },
-    { count: rejectedCount },
-    { count: flaggedCount },
-    { count: landlords },
-    { count: leads },
-  ] = await Promise.all([
+  const results = await Promise.all([
     service
       .from('reviews')
       .select('status, created_at, moderated_at, admin_notes')
@@ -42,6 +34,30 @@ export default async function AdminAnalyticsPage() {
     service.from('landlords').select('*', { count: 'exact', head: true }),
     service.from('email_leads').select('*', { count: 'exact', head: true }),
   ])
+
+  // Capture per-query errors. The histograms + median-turnaround
+  // calculations below silently degrade to 0 / "—" if a query fails;
+  // without this we'd never know an underlying RLS or perf regression
+  // had broken the dashboard.
+  const queryNames = [
+    'reviews:recent_30d', 'reviews:prior_30d',
+    'reviews:total', 'reviews:approved', 'reviews:rejected', 'reviews:flagged',
+    'landlords:total', 'email_leads:total',
+  ]
+  for (let i = 0; i < results.length; i++) {
+    const err = results[i]?.error
+    if (err) captureException(err, { where: `admin:analytics:${queryNames[i]}` })
+  }
+  const [
+    { data: recent },
+    { data: prior },
+    { count: totalReviews },
+    { count: approvedCount },
+    { count: rejectedCount },
+    { count: flaggedCount },
+    { count: landlords },
+    { count: leads },
+  ] = results
 
   const recentReviews = recent ?? []
   const reviewsLast30 = recentReviews.length
