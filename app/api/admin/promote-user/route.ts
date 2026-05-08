@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
 import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/admin-auth'
 import { logAdminAction } from '@/lib/audit'
 import { z } from 'zod'
 
@@ -9,13 +10,6 @@ const schema = z.object({
   userId: z.string().uuid(),
   userType: z.enum(['admin', 'renter', 'landlord']),
 })
-
-async function requireAdmin(supabase: Awaited<ReturnType<typeof createClient>>) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return null
-  const { data: profile } = await supabase.from('profiles').select('user_type').eq('id', user.id).single()
-  return profile?.user_type === 'admin' ? user : null
-}
 
 export async function POST(req: NextRequest) {
   const csrf = assertSameOrigin(req)

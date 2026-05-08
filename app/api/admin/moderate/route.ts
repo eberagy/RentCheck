@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { assertSameOrigin } from '@/lib/origin'
 import { dbError } from '@/lib/api-errors'
-import { createClient } from '@/lib/supabase/server'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { requireAdmin } from '@/lib/admin-auth'
 import { sendReviewApprovedEmail, sendReviewRejectedEmail, sendWatchlistAlertEmail } from '@/lib/email'
 import { logAdminAction } from '@/lib/audit'
 import { createUnsubscribeToken } from '@/lib/unsubscribe-token'
@@ -13,13 +13,6 @@ const schema = z.object({
   action: z.enum(['approved', 'rejected']),
   adminNotes: z.string().max(1000).optional(),
 })
-
-async function requireAdmin(supabase: Awaited<ReturnType<typeof createClient>>) {
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return null
-  const { data: profile } = await supabase.from('profiles').select('user_type').eq('id', user.id).single()
-  return profile?.user_type === 'admin' ? user : null
-}
 
 export async function POST(req: NextRequest) {
   const csrf = assertSameOrigin(req)
