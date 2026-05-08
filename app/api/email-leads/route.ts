@@ -81,15 +81,21 @@ export async function POST(req: NextRequest) {
       const userClient = await createClient()
       const { data: { user } } = await userClient.auth.getUser()
       if (user) {
-        await service
+        const { error: upsertErr } = await service
           .from('saved_searches')
           .upsert(
             { user_id: user.id, city: cleanCity, state_abbr: cleanState, notify_email: true },
             { onConflict: 'user_id,city,state_abbr' },
           )
+        // Best-effort behaviorally, but surface the failure so we
+        // know if a saved_searches RLS or schema regression silently
+        // breaks the dashboard sync. The user still got their lead
+        // captured + confirmation email above.
+        if (upsertErr) captureException(upsertErr, { where: 'email-leads:saved-search-upsert', userId: user.id })
       }
     } catch (err) {
       console.error('[email-leads] saved_search upsert failed:', err)
+      captureException(err, { where: 'email-leads:saved-search-throw' })
     }
   }
 
