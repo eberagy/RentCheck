@@ -46,18 +46,36 @@ export default async function UnsubscribePage({ searchParams }: UnsubscribePageP
     }
 
     const service = createServiceClient()
-    const { error: updateErr } = await service
-      .from('profiles')
-      .update({ email_reviews: false, email_watchlist: false })
-      .eq('id', payload.userId)
+    let updateErr: { message?: string } | null = null
+    if (payload.kind === 'user') {
+      const r = await service
+        .from('profiles')
+        .update({ email_reviews: false, email_watchlist: false })
+        .eq('id', payload.userId)
+      updateErr = r.error
+    } else {
+      // Email-based: city alert recipients (no Vett account). Hard-
+      // delete every email_leads row matching their email so the
+      // weekly digest cron stops including them. Lower-cased on both
+      // sides at token issue time + verify, so a case-mismatch
+      // doesn't strand them.
+      const r = await service
+        .from('email_leads')
+        .delete()
+        .eq('email', payload.email)
+      updateErr = r.error
+    }
 
     if (updateErr) {
       // Failed unsubscribes are a CAN-SPAM / GDPR liability — if Vett can't
       // honor opt-outs, we need to know within minutes, not via inbound
-      // complaints. Tag with the user id so the team can manually flip
-      // their prefs while the bug is being chased.
+      // complaints. Tag with the user id (or email kind, no PII in tag)
+      // so the team can manually flip their prefs while the bug is chased.
       console.error('[unsubscribe] update failed:', updateErr.message)
-      captureException(updateErr, { where: 'unsubscribe:update', userId: payload.userId })
+      const ctx = payload.kind === 'user'
+        ? { where: 'unsubscribe:update', kind: 'user', userId: payload.userId }
+        : { where: 'unsubscribe:update', kind: 'email' }
+      captureException(updateErr, ctx)
       return (
         <div className="mx-auto max-w-md px-4 py-20 text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50">

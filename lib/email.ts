@@ -165,7 +165,7 @@ export async function sendDisputeResolvedEmail(to: string, props: {
   await sendEmail(to, DISPUTE_SUBJECTS[props.decision], DisputeResolvedEmail(props) as React.ReactElement)
 }
 
-export async function sendCityAlertConfirmationEmail(to: string, props: { city: string; stateAbbr: string }) {
+export async function sendCityAlertConfirmationEmail(to: string, props: { city: string; stateAbbr: string; unsubscribeToken?: string }) {
   await sendEmail(
     to,
     `You're on the list for ${props.city}, ${props.stateAbbr}`,

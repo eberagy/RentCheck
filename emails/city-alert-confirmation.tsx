@@ -7,9 +7,11 @@ import { EmailFooter } from './_components/Footer'
 interface CityAlertConfirmationEmailProps {
   city: string
   stateAbbr: string
+  /** Email-based unsubscribe token (lib/unsubscribe-token.ts createEmailUnsubscribeToken). */
+  unsubscribeToken?: string
 }
 
-export default function CityAlertConfirmationEmail({ city, stateAbbr }: CityAlertConfirmationEmailProps) {
+export default function CityAlertConfirmationEmail({ city, stateAbbr, unsubscribeToken }: CityAlertConfirmationEmailProps) {
   return (
     <Html>
       <Head />
@@ -50,6 +52,7 @@ export default function CityAlertConfirmationEmail({ city, stateAbbr }: CityAler
 
             <EmailFooter
               note={`We sent this because you signed up for ${city} alerts at vettrentals.com. We won't share your email.`}
+              unsubscribeToken={unsubscribeToken}
             />
           </Section>
         </Container>

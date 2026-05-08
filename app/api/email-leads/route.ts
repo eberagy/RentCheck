@@ -4,6 +4,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { sanitizeText } from '@/lib/sanitize'
 import { sendCityAlertConfirmationEmail } from '@/lib/email'
+import { createEmailUnsubscribeToken } from '@/lib/unsubscribe-token'
 import { captureException } from '@/lib/sentry'
 import { z } from 'zod'
 
@@ -63,7 +64,12 @@ export async function POST(req: NextRequest) {
   // city + state to confirm, and (c) RESEND_API_KEY is set. Fire-and-forget
   // so the API responds fast even if Resend is slow.
   if (!isDuplicate && cleanCity && cleanState && process.env.RESEND_API_KEY) {
-    void sendCityAlertConfirmationEmail(cleanEmail, { city: cleanCity, stateAbbr: cleanState })
+    // Mint an email-based unsubscribe token so the confirmation footer
+    // has a one-click opt-out — these recipients have no Vett account
+    // and the previous /unsubscribe page sent them in circles asking
+    // them to "sign in to manage." That was a CAN-SPAM gap.
+    const unsubscribeToken = createEmailUnsubscribeToken(cleanEmail)
+    void sendCityAlertConfirmationEmail(cleanEmail, { city: cleanCity, stateAbbr: cleanState, unsubscribeToken })
       .catch(err => console.error('[email-leads] confirmation send failed:', err))
   }
 
