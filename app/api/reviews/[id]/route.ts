@@ -6,6 +6,7 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { sanitizeText } from '@/lib/sanitize'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { PUBLIC_REVIEW_SELECT, stripPrivateReviewFields } from '@/lib/reviews/public'
+import { captureException } from '@/lib/sentry'
 import { z } from 'zod'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -131,7 +132,12 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         await service.storage.from('lease-docs').remove([leasePath])
       }
     } catch (err) {
+      // Swallowed throw stays off the response, but failures here
+      // accrue orphaned lease docs in storage. Capture so the
+      // accumulation shows up in Sentry rather than disappearing
+      // into Vercel logs.
       console.error('[reviews DELETE] storage cleanup failed:', err)
+      captureException(err, { where: 'reviews/[id]:delete-storage-cleanup' })
     }
   })()
 
