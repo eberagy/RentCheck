@@ -6,6 +6,7 @@ import { requireAdmin } from '@/lib/admin-auth'
 import { sendReviewApprovedEmail, sendReviewRejectedEmail, sendWatchlistAlertEmail } from '@/lib/email'
 import { logAdminAction } from '@/lib/audit'
 import { createUnsubscribeToken } from '@/lib/unsubscribe-token'
+import { captureException } from '@/lib/sentry'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -81,8 +82,15 @@ export async function POST(req: NextRequest) {
           landlordSlug: landlord.slug,
         }).catch(err => console.error('[email] review-approved failed:', err))
 
-        // Fire watchlist alerts for users watching this landlord (excluding the reviewer)
-        fireWatchlistAlerts(serviceClient, review.landlord_id, landlord.display_name, landlord.slug, review.title ?? 'A new review', review.reviewer_id ?? null).catch(err => console.error('[watchlist] alert fan-out failed:', err))
+        // Fire watchlist alerts for users watching this landlord (excluding the reviewer).
+        // .catch logs to Vercel; capture to Sentry too so a fan-out
+        // failure (Resend rate-limit, watchers query timeout) shows up
+        // alongside the rest of the review-approval failure modes
+        // instead of disappearing into logs.
+        fireWatchlistAlerts(serviceClient, review.landlord_id, landlord.display_name, landlord.slug, review.title ?? 'A new review', review.reviewer_id ?? null).catch(err => {
+          console.error('[watchlist] alert fan-out failed:', err)
+          captureException(err, { where: 'admin/moderate:fireWatchlistAlerts', landlordId: review.landlord_id })
+        })
       } else {
         sendReviewRejectedEmail(reviewer.email, {
           firstName: reviewer.full_name?.split(' ')[0],

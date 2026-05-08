@@ -5,6 +5,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { sanitizeText } from '@/lib/sanitize'
 import { sendSubmissionReceivedEmail } from '@/lib/email'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { captureException } from '@/lib/sentry'
 import { z } from 'zod'
 
 const MAX_RESPONSE_LENGTH = 1000
@@ -80,7 +81,13 @@ export async function POST(req: NextRequest) {
         })
       }
     } catch (err) {
+      // The IIFE swallows the throw to avoid leaking it to the
+      // response. Without capture, a failed claimer-lookup or ack
+      // email send (which lib/email.ts now captures separately) only
+      // surfaces in Vercel logs — and the *lookup* failure doesn't
+      // reach lib/email.ts at all.
       console.error('[landlord-response] ack email failed:', err)
+      captureException(err, { where: 'landlord-response:ack' })
     }
   })()
 
