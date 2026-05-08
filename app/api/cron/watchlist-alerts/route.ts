@@ -128,34 +128,50 @@ export async function GET(req: NextRequest) {
 
   // Landlord-watch alerts.
   for (const [landlordId, info] of Array.from(byLandlord)) {
-    const { data: landlord } = await supabase
+    const { data: landlord, error: landlordErr } = await supabase
       .from('landlords')
       .select('display_name, slug')
       .eq('id', landlordId)
       .single()
 
+    // Capture the lookup failure but keep iterating — one broken
+    // landlord row shouldn't poison the whole cron run. Same logic
+    // for the watchers query and the email send below.
+    if (landlordErr && landlordErr.code !== 'PGRST116') {
+      captureException(landlordErr, { where: 'cron:watchlist-alerts:landlord-lookup', landlordId })
+    }
     if (!landlord) continue
 
-    const { data: watchers } = await supabase
+    const { data: watchers, error: watchersErr } = await supabase
       .from('watchlist')
       .select('user_id, notify_email, user:profiles(full_name, email, email_watchlist)')
       .eq('landlord_id', landlordId)
 
+    if (watchersErr) {
+      captureException(watchersErr, { where: 'cron:watchlist-alerts:watchers-by-landlord', landlordId })
+    }
     if (!watchers?.length) continue
 
     for (const watcher of watchers) {
       const profile = (watcher.user as unknown) as { full_name: string | null; email: string | null; email_watchlist: boolean } | null
       if (!profile?.email || profile.email_watchlist === false || watcher.notify_email === false) continue
 
-      await sendWatchlistAlertEmail(profile.email, {
-        firstName: profile.full_name?.split(' ')[0],
-        landlordName: landlord.display_name,
-        landlordSlug: landlord.slug,
-        alertType: info.type as 'new_review' | 'new_violation' | 'new_court_case',
-        summary: info.summary,
-        unsubscribeToken: createUnsubscribeToken(watcher.user_id as string),
-      })
-      alertsSent++
+      // try/catch the send so one Resend failure (rate limit, bounce,
+      // domain reject) doesn't break out of the for loop and skip
+      // every remaining watcher.
+      try {
+        await sendWatchlistAlertEmail(profile.email, {
+          firstName: profile.full_name?.split(' ')[0],
+          landlordName: landlord.display_name,
+          landlordSlug: landlord.slug,
+          alertType: info.type as 'new_review' | 'new_violation' | 'new_court_case',
+          summary: info.summary,
+          unsubscribeToken: createUnsubscribeToken(watcher.user_id as string),
+        })
+        alertsSent++
+      } catch (err) {
+        captureException(err, { where: 'cron:watchlist-alerts:landlord-send', landlordId })
+      }
     }
   }
 
@@ -163,12 +179,15 @@ export async function GET(req: NextRequest) {
   // commit 529825a; without this loop, property-watchers never get email
   // even when a new violation lands at their watched address.
   for (const [propertyId, info] of Array.from(newByProperty)) {
-    const { data: property } = await supabase
+    const { data: property, error: propertyErr } = await supabase
       .from('properties')
       .select('id, address_line1, city, state_abbr, landlord:landlords(display_name, slug)')
       .eq('id', propertyId)
       .single()
 
+    if (propertyErr && propertyErr.code !== 'PGRST116') {
+      captureException(propertyErr, { where: 'cron:watchlist-alerts:property-lookup', propertyId })
+    }
     if (!property) continue
     const landlordRel = (property.landlord as unknown as { display_name: string; slug: string } | null)
 
@@ -178,11 +197,14 @@ export async function GET(req: NextRequest) {
     // run picks up the same record via the landlord-id branch.)
     if (!landlordRel) continue
 
-    const { data: watchers } = await supabase
+    const { data: watchers, error: watchersErr } = await supabase
       .from('watchlist')
       .select('user_id, notify_email, user:profiles(full_name, email, email_watchlist)')
       .eq('property_id', propertyId)
 
+    if (watchersErr) {
+      captureException(watchersErr, { where: 'cron:watchlist-alerts:watchers-by-property', propertyId })
+    }
     if (!watchers?.length) continue
 
     const addressLabel = `${property.address_line1}, ${property.city}, ${property.state_abbr}`
@@ -190,15 +212,19 @@ export async function GET(req: NextRequest) {
       const profile = (watcher.user as unknown) as { full_name: string | null; email: string | null; email_watchlist: boolean } | null
       if (!profile?.email || profile.email_watchlist === false || watcher.notify_email === false) continue
 
-      await sendWatchlistAlertEmail(profile.email, {
-        firstName: profile.full_name?.split(' ')[0],
-        landlordName: landlordRel.display_name,
-        landlordSlug: landlordRel.slug,
-        alertType: alertType(info.record_type) as 'new_review' | 'new_violation' | 'new_court_case',
-        summary: info.title ?? info.description ?? `A new public record was added at ${addressLabel}`,
-        unsubscribeToken: createUnsubscribeToken(watcher.user_id as string),
-      })
-      alertsSent++
+      try {
+        await sendWatchlistAlertEmail(profile.email, {
+          firstName: profile.full_name?.split(' ')[0],
+          landlordName: landlordRel.display_name,
+          landlordSlug: landlordRel.slug,
+          alertType: alertType(info.record_type) as 'new_review' | 'new_violation' | 'new_court_case',
+          summary: info.title ?? info.description ?? `A new public record was added at ${addressLabel}`,
+          unsubscribeToken: createUnsubscribeToken(watcher.user_id as string),
+        })
+        alertsSent++
+      } catch (err) {
+        captureException(err, { where: 'cron:watchlist-alerts:property-send', propertyId })
+      }
     }
   }
 

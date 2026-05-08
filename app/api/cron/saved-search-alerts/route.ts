@@ -157,7 +157,12 @@ export async function GET(req: NextRequest) {
 
       emailed++
     } catch (err) {
+      // Per-subscription failures used to only console.error — so a
+      // pattern of failures (e.g. Resend bouncing for one tenant of a
+      // multi-tenant deploy) was invisible. Capture each one with the
+      // sub id so we can spot the pattern in Sentry.
       console.error(`[saved-search-alerts] failed for ${sub.id}:`, err)
+      captureException(err, { where: 'cron:saved-search-alerts:per-sub', subId: sub.id })
     }
   }
 
