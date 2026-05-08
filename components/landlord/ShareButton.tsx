@@ -50,16 +50,24 @@ export function ShareButton({ name }: ShareButtonProps) {
   }
 
   return (
-    <Button
-      variant="outline"
-      size="sm"
-      onClick={handleShare}
-      className="text-slate-600 border-slate-200 hover:border-slate-300"
-    >
-      {copied
-        ? <><Check className="h-3.5 w-3.5 mr-1.5 text-teal-600" aria-hidden="true" /> Copied!</>
-        : <><Share2 className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" /> Share</>
-      }
-    </Button>
+    <>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleShare}
+        className="text-slate-600 border-slate-200 hover:border-slate-300"
+      >
+        {copied
+          ? <><Check className="h-3.5 w-3.5 mr-1.5 text-teal-600" aria-hidden="true" /> Copied!</>
+          : <><Share2 className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" /> Share</>
+        }
+      </Button>
+      {/* Polite SR announcement when the copy succeeds. The button's
+          accessible name change alone isn't reliably re-announced by
+          AT — a separate live region guarantees a beep. */}
+      <span role="status" aria-live="polite" className="sr-only">
+        {copied ? 'Link copied to clipboard' : ''}
+      </span>
+    </>
   )
 }
