@@ -776,19 +776,31 @@ export default function ReviewForm() {
 
             <div className="space-y-4 mb-6">
               <label className="flex items-start gap-3 cursor-pointer">
-                <input type="checkbox" {...register('confirmedGenuine')} className="mt-0.5 rounded accent-teal" />
+                <input
+                  type="checkbox"
+                  {...register('confirmedGenuine')}
+                  aria-invalid={!!errors.confirmedGenuine}
+                  aria-describedby={errors.confirmedGenuine ? 'review-confirmed-genuine-error' : undefined}
+                  className="mt-0.5 rounded accent-teal"
+                />
                 <span className="text-[13px] text-slate-700 leading-relaxed">
                   I confirm this review is based on my genuine experience as a tenant or former tenant of this landlord.
                 </span>
               </label>
-              {errors.confirmedGenuine && <p role="alert" className="text-xs text-red-600 ml-6">{errors.confirmedGenuine.message}</p>}
+              {errors.confirmedGenuine && <p id="review-confirmed-genuine-error" role="alert" className="text-xs text-red-600 ml-6">{errors.confirmedGenuine.message}</p>}
               <label className="flex items-start gap-3 cursor-pointer">
-                <input type="checkbox" {...register('confirmedLiability')} className="mt-0.5 rounded accent-teal" />
+                <input
+                  type="checkbox"
+                  {...register('confirmedLiability')}
+                  aria-invalid={!!errors.confirmedLiability}
+                  aria-describedby={errors.confirmedLiability ? 'review-confirmed-liability-error' : undefined}
+                  className="mt-0.5 rounded accent-teal"
+                />
                 <span className="text-[13px] text-slate-700 leading-relaxed">
                   I understand that submitting a false or defamatory review may result in removal of my account and potential legal liability.
                 </span>
               </label>
-              {errors.confirmedLiability && <p role="alert" className="text-xs text-red-600 ml-6">{errors.confirmedLiability.message}</p>}
+              {errors.confirmedLiability && <p id="review-confirmed-liability-error" role="alert" className="text-xs text-red-600 ml-6">{errors.confirmedLiability.message}</p>}
             </div>
 
             <p className="text-[12px] text-slate-400 mb-7">
