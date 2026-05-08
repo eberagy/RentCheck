@@ -114,6 +114,7 @@ export function CitySubscribeButton({ city, stateAbbr }: Props) {
         type="button"
         onClick={unsubscribe}
         disabled={busy}
+        aria-busy={busy || undefined}
         className="inline-flex items-center gap-1.5 rounded-full border border-teal-400/40 bg-teal-500/15 px-3.5 py-1.5 text-[12px] font-semibold text-teal-200 hover:bg-teal-500/25 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
       >
         {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : <Check className="h-3.5 w-3.5" aria-hidden="true" />}
@@ -127,6 +128,7 @@ export function CitySubscribeButton({ city, stateAbbr }: Props) {
       type="button"
       onClick={subscribe}
       disabled={busy}
+      aria-busy={busy || undefined}
       className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-[12px] font-semibold text-white hover:bg-white/20 disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400 focus-visible:ring-offset-2 focus-visible:ring-offset-ink"
     >
       {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : <Bell className="h-3.5 w-3.5" aria-hidden="true" />}

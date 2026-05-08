@@ -45,6 +45,7 @@ export function SavedSearchUnsubscribeButton({ searchId, city, stateAbbr }: Prop
       type="button"
       onClick={handle}
       disabled={busy}
+      aria-busy={busy || undefined}
       title={`Unsubscribe from ${city}, ${stateAbbr}`}
       aria-label={`Unsubscribe from ${city}, ${stateAbbr}`}
       className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"

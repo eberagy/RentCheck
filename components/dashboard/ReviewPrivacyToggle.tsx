@@ -49,6 +49,7 @@ export function ReviewPrivacyToggle({ reviewId, initialAnonymous }: Props) {
       type="button"
       role="switch"
       aria-checked={anonymous}
+      aria-busy={busy || undefined}
       aria-label="Anonymous review"
       onClick={toggle}
       disabled={busy}
