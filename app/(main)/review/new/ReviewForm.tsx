@@ -559,9 +559,17 @@ export default function ReviewForm() {
                   <span className="text-[13px] font-semibold text-slate-900">Headline <span className="text-red-600" aria-hidden="true">*</span></span>
                   <span className="text-[11.5px] text-slate-400">A short, specific summary — like a subject line.</span>
                 </div>
-                <Input {...register('title')} placeholder="Summarize your experience" autoComplete="off" aria-label="Review headline" className="h-11 rounded-xl border-slate-200 text-[14px]" />
+                <Input
+                  {...register('title')}
+                  placeholder="Summarize your experience"
+                  autoComplete="off"
+                  aria-label="Review headline"
+                  aria-invalid={!!errors.title}
+                  aria-describedby={errors.title ? 'review-title-error' : undefined}
+                  className="h-11 rounded-xl border-slate-200 text-[14px]"
+                />
                 <div className="mt-1.5 text-[11.5px] text-slate-400">{watch('title')?.length ?? 0} / 150 characters</div>
-                {errors.title && <p role="alert" className="text-xs text-red-600 mt-1">{errors.title.message}</p>}
+                {errors.title && <p id="review-title-error" role="alert" className="text-xs text-red-600 mt-1">{errors.title.message}</p>}
               </div>
 
               {/* Body */}
@@ -575,11 +583,13 @@ export default function ReviewForm() {
                   placeholder="Share your experience. What went well? What could have been better? Be specific."
                   rows={6}
                   aria-label="Your full review"
+                  aria-invalid={!!errors.body}
+                  aria-describedby={errors.body ? 'review-body-error' : undefined}
                   autoComplete="off"
                   className="rounded-xl border-slate-200 text-[14px] leading-relaxed resize-y"
                 />
                 <div className="mt-1.5 text-[11.5px] text-slate-400">{watch('body')?.length ?? 0} / 2000 characters</div>
-                {errors.body && <p role="alert" className="text-xs text-red-600 mt-1">{errors.body.message}</p>}
+                {errors.body && <p id="review-body-error" role="alert" className="text-xs text-red-600 mt-1">{errors.body.message}</p>}
               </div>
 
               {/* Tenancy dates */}
