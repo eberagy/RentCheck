@@ -38,12 +38,16 @@ export async function POST(req: NextRequest) {
   const detail = rawDetail ? sanitizeText(rawDetail) : undefined
 
   // Verify record exists
-  const { data: record } = await supabase
+  const { data: record, error: recordErr } = await supabase
     .from('public_records')
     .select('id')
     .eq('id', recordId)
     .single()
 
+  // Same PGRST116-vs-real-error split — keeps a transient DB error
+  // from masquerading as "Record not found" and giving the disputer
+  // the wrong impression that their target record disappeared.
+  if (recordErr && recordErr.code !== 'PGRST116') return dbError('dispute:lookup', recordErr)
   if (!record) return NextResponse.json({ error: 'Record not found' }, { status: 404 })
 
   // Check for existing open dispute from this user for same record.

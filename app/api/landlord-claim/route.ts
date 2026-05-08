@@ -40,12 +40,17 @@ export async function POST(req: NextRequest) {
   }
 
   // Check the landlord exists and is unclaimed
-  const { data: landlord } = await supabase
+  const { data: landlord, error: landlordErr } = await supabase
     .from('landlords')
     .select('id, is_claimed, display_name')
     .eq('id', landlordId)
     .single()
 
+  // PGRST116 ("no rows") → real 404. Anything else is a DB failure
+  // that shouldn't masquerade as 404; otherwise a transient hiccup
+  // tells the user "Landlord not found" when in fact their lookup
+  // crashed. Same split as the response-templates fix in c2b8186.
+  if (landlordErr && landlordErr.code !== 'PGRST116') return dbError('landlord-claim:lookup', landlordErr)
   if (!landlord) return NextResponse.json({ error: 'Landlord not found' }, { status: 404 })
   if (landlord.is_claimed) return NextResponse.json({ error: 'This profile has already been claimed' }, { status: 409 })
 

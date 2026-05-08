@@ -43,27 +43,33 @@ export async function POST(req: NextRequest) {
   const sanitized = sanitizeStrings(parsed.data)
   const { display_name, business_name, city, state_abbr, zip, website, phone, notes, proof_doc_url } = sanitized
 
-  // Check if landlord already exists (fuzzy — just check ilike)
-  const { data: existing } = await supabase
+  // Check if landlord already exists (fuzzy — just check ilike).
+  // maybeSingle so a 0-row result is data=null, error=null instead
+  // of PGRST116. Then a real error stays distinguishable from "no
+  // match" — without this split a transient DB hiccup would slip
+  // past the dedup guard and create a duplicate submission row.
+  const { data: existing, error: existingErr } = await supabase
     .from('landlords')
     .select('id, slug')
     .ilike('display_name', display_name)
     .limit(1)
-    .single()
+    .maybeSingle()
+  if (existingErr) return dbError('landlords:submit:dedup-landlord', existingErr)
 
   if (existing) {
     return NextResponse.json({ exists: true, slug: existing.slug }, { status: 200 })
   }
 
   // Check for duplicate pending submission from same user
-  const { data: dupe } = await supabase
+  const { data: dupe, error: dupeErr } = await supabase
     .from('landlord_submissions')
     .select('id')
     .eq('submitted_by', user.id)
     .ilike('display_name', display_name)
     .eq('status', 'pending')
     .limit(1)
-    .single()
+    .maybeSingle()
+  if (dupeErr) return dbError('landlords:submit:dedup-pending', dupeErr)
 
   if (dupe) {
     return NextResponse.json({ pending: true }, { status: 200 })
