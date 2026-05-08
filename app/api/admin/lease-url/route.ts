@@ -9,6 +9,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 // allow alphanumerics, dashes, underscores, dots, and a single forward
 // slash separator. Reject empty segments and any traversal attempt.
 const LEASE_PATH_RE = /^[a-zA-Z0-9_-]+(?:\.[a-zA-Z0-9]+|\/[a-zA-Z0-9._-]+)?$/
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient()
@@ -18,17 +19,53 @@ export async function GET(req: NextRequest) {
   const { data: profile } = await supabase.from('profiles').select('user_type').eq('id', user.id).single()
   if (profile?.user_type !== 'admin') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
 
-  const path = req.nextUrl.searchParams.get('path')
-  if (!path) return NextResponse.json({ error: 'path required' }, { status: 400 })
+  // Two acceptance shapes:
+  //  - ?reviewId=<uuid>  — preferred. /admin/leases + /admin/reviews
+  //    use this; the route resolves the lease_doc_path from the DB so
+  //    callers don't have to fuss with paths.
+  //  - ?path=<lease-key> — legacy. Kept for direct access during
+  //    migrations / debugging.
+  const reviewId = req.nextUrl.searchParams.get('reviewId')
+  let path = req.nextUrl.searchParams.get('path')
+
+  // Use service client — private buckets need service role for signed URLs.
+  const serviceClient = createServiceClient()
+
+  if (reviewId) {
+    if (!UUID_RE.test(reviewId)) {
+      return NextResponse.json({ error: 'Invalid reviewId' }, { status: 400 })
+    }
+    const { data: review, error: lookupErr } = await serviceClient
+      .from('reviews')
+      .select('lease_doc_path')
+      .eq('id', reviewId)
+      .single()
+    if (lookupErr || !review) {
+      return NextResponse.json({ error: 'Review not found' }, { status: 404 })
+    }
+    if (!review.lease_doc_path) {
+      return NextResponse.json({ error: 'No lease document on this review' }, { status: 404 })
+    }
+    path = review.lease_doc_path
+  }
+
+  if (!path) return NextResponse.json({ error: 'reviewId or path required' }, { status: 400 })
   if (!LEASE_PATH_RE.test(path) || path.includes('..')) {
     return NextResponse.json({ error: 'Invalid path' }, { status: 400 })
   }
 
-  // Use service client — private buckets need service role for signed URLs
-  const serviceClient = createServiceClient()
   const { data, error } = await serviceClient.storage.from('lease-docs').createSignedUrl(path, 3600)
   if (error || !data) return NextResponse.json({ error: 'Could not generate URL' }, { status: 500 })
 
-  // Return the URL as JSON so the client can open it
+  // Direct browser access (e.g. <a href="..." target="_blank">) gets a 302
+  // redirect to the signed URL so the lease opens directly. Programmatic
+  // fetch() callers (admin/leases page) get the JSON shape they expect.
+  // Distinguish via Accept header: a fetch() without an explicit Accept
+  // header gets `*/*`; an <a> tag navigation gets `text/html,...`.
+  const accept = req.headers.get('accept') ?? ''
+  if (accept.includes('text/html')) {
+    return NextResponse.redirect(data.signedUrl, 302)
+  }
+
   return NextResponse.json({ signedUrl: data.signedUrl })
 }
