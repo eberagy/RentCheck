@@ -201,6 +201,7 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
               <Button
                 onClick={handleSubmit}
                 disabled={!reason || submitting}
+                aria-busy={submitting || undefined}
                 className="flex-1 bg-red-600 hover:bg-red-700 text-white"
               >
                 {submitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Submitting…</> : 'Submit Report'}

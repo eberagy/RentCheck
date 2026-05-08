@@ -183,6 +183,7 @@ function DisputeForm() {
       <Button
         type="submit"
         disabled={submitting || !recordId || !finalReason.trim()}
+        aria-busy={submitting || undefined}
         className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold"
       >
         {submitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Submitting…</> : 'Submit Dispute'}

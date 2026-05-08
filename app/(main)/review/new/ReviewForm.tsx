@@ -809,7 +809,7 @@ export default function ReviewForm() {
 
             <div className="flex items-center justify-between">
               <button type="button" onClick={() => setStep(2)} className="text-[13px] font-medium text-slate-500 hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">&larr; Back</button>
-              <Button type="submit" className="rounded-full bg-teal px-6 hover:bg-teal-500 text-white" disabled={submitting}>
+              <Button type="submit" className="rounded-full bg-teal px-6 hover:bg-teal-500 text-white" disabled={submitting} aria-busy={submitting || undefined}>
                 {submitting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Submitting…</> : <>Submit Review <ArrowRight className="ml-1.5 h-3.5 w-3.5" aria-hidden="true" /></>}
               </Button>
             </div>
