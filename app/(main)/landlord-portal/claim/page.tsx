@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useDropzone } from 'react-dropzone'
 import { Search, Upload, FileText, X, CheckCircle2, Loader2, AlertTriangle, ArrowRight } from 'lucide-react'
@@ -96,17 +96,42 @@ export default function ClaimProfilePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Debounce + abort: same pattern as ReviewForm. Without this, fast typing
+  // fires concurrent /api/search calls with no ordering guarantee — older
+  // responses could overwrite newer ones, plus burns rate limit budget.
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const searchAbortRef = useRef<AbortController | null>(null)
+  useEffect(() => () => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
+    searchAbortRef.current?.abort()
+  }, [])
   async function searchLandlords(q: string) {
-    if (q.length < 2) { setSearchResults([]); return }
-    setSearching(true)
-    try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=landlord&limit=10`)
-      const data = await res.json()
-      type SearchHit = Landlord & { result_type?: string }
-      setSearchResults(((data.results ?? []) as SearchHit[]).filter(r => r.result_type === 'landlord' && !r.is_claimed))
-    } finally {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
+    if (q.length < 2) {
+      searchAbortRef.current?.abort()
+      setSearchResults([])
       setSearching(false)
+      return
     }
+    searchDebounceRef.current = setTimeout(async () => {
+      searchAbortRef.current?.abort()
+      const ac = new AbortController()
+      searchAbortRef.current = ac
+      setSearching(true)
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=landlord&limit=10`, { signal: ac.signal })
+        if (ac.signal.aborted) return
+        const data = await res.json()
+        type SearchHit = Landlord & { result_type?: string }
+        if (!ac.signal.aborted) {
+          setSearchResults(((data.results ?? []) as SearchHit[]).filter(r => r.result_type === 'landlord' && !r.is_claimed))
+        }
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') return
+      } finally {
+        if (searchAbortRef.current === ac) setSearching(false)
+      }
+    }, 250)
   }
 
   const onDrop = useCallback((files: File[]) => {
