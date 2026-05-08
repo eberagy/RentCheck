@@ -8,6 +8,7 @@ import slugify from 'slugify'
 import { US_STATES } from '@/types'
 import { sendSubmissionApprovedEmail, sendSubmissionRejectedEmail } from '@/lib/email'
 import { logAdminAction } from '@/lib/audit'
+import { captureException } from '@/lib/sentry'
 
 const schema = z.object({
   submissionId: z.string().uuid(),
@@ -98,11 +99,14 @@ export async function POST(req: NextRequest) {
 
     // Notify the submitter via email
     if (submission.submitted_by) {
-      const { data: submitter } = await service
+      const { data: submitter, error: submitterErr } = await service
         .from('profiles')
         .select('email, full_name')
         .eq('id', submission.submitted_by)
         .single()
+      if (submitterErr && submitterErr.code !== 'PGRST116') {
+        captureException(submitterErr, { where: 'admin/moderate-submission:submitter-lookup-approve', submittedBy: submission.submitted_by })
+      }
       if (submitter?.email) {
         sendSubmissionApprovedEmail(submitter.email, {
           firstName: submitter.full_name?.split(' ')[0],
@@ -136,11 +140,14 @@ export async function POST(req: NextRequest) {
     .eq('id', submissionId)
 
   if (submission.submitted_by) {
-    const { data: submitter } = await service
+    const { data: submitter, error: submitterErr } = await service
       .from('profiles')
       .select('email, full_name')
       .eq('id', submission.submitted_by)
       .single()
+    if (submitterErr && submitterErr.code !== 'PGRST116') {
+      captureException(submitterErr, { where: 'admin/moderate-submission:submitter-lookup-reject', submittedBy: submission.submitted_by })
+    }
     if (submitter?.email) {
       sendSubmissionRejectedEmail(submitter.email, {
         firstName: submitter.full_name?.split(' ')[0],

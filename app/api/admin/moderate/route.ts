@@ -119,8 +119,14 @@ async function fireWatchlistAlerts(
     .select('user_id, notify_email, user:profiles(full_name, email, email_watchlist)')
     .eq('landlord_id', landlordId)
   if (excludeUserId) query = query.neq('user_id', excludeUserId)
-  const { data: watchers } = await query
+  const { data: watchers, error: watchersErr } = await query
 
+  // Without surfacing the .error here, a watchers query failure looks
+  // identical to "nobody watching this landlord" — the alert fan-out
+  // silently skips and no Sentry breadcrumb gets dropped.
+  if (watchersErr) {
+    captureException(watchersErr, { where: 'admin/moderate:watchers-fanout-query', landlordId })
+  }
   if (!watchers?.length) return
 
   for (const watcher of watchers) {

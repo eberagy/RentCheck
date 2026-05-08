@@ -5,6 +5,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/admin-auth'
 import { sendResponseApprovedEmail, sendResponseRejectedEmail } from '@/lib/email'
 import { logAdminAction } from '@/lib/audit'
+import { captureException } from '@/lib/sentry'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -70,11 +71,18 @@ export async function POST(req: NextRequest) {
       { display_name: string; slug: string; claimed_by: string | null } | null
 
     if (landlord?.claimed_by) {
-      const { data: owner } = await serviceClient
+      const { data: owner, error: ownerErr } = await serviceClient
         .from('profiles')
         .select('email, full_name')
         .eq('id', landlord.claimed_by)
         .single()
+      // Same PGRST116-vs-real-error split as the rest of the API. A
+      // transient lookup failure here means we silently skip notifying
+      // the landlord that their response was approved/rejected — no
+      // bounce, no log line, just no email.
+      if (ownerErr && ownerErr.code !== 'PGRST116') {
+        captureException(ownerErr, { where: 'admin/moderate-response:owner-lookup', claimedBy: landlord.claimed_by })
+      }
 
       if (owner?.email) {
         if (action === 'approved') {

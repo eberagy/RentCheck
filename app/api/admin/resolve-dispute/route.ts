@@ -5,6 +5,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/admin-auth'
 import { sendDisputeResolvedEmail } from '@/lib/email'
 import { logAdminAction } from '@/lib/audit'
+import { captureException } from '@/lib/sentry'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -78,11 +79,14 @@ export async function POST(req: NextRequest) {
   if (dispute?.disputed_by) {
     void (async () => {
       try {
-        const { data: submitter } = await service
+        const { data: submitter, error: submitterErr } = await service
           .from('profiles')
           .select('full_name, email')
           .eq('id', dispute.disputed_by)
           .single()
+        if (submitterErr && submitterErr.code !== 'PGRST116') {
+          captureException(submitterErr, { where: 'admin/resolve-dispute:submitter-lookup', disputedBy: dispute.disputed_by })
+        }
         if (submitter?.email) {
           const rec = (dispute.record as unknown) as { title: string | null; description: string | null } | null
           const label = rec?.title || rec?.description?.slice(0, 60) || undefined
@@ -94,7 +98,11 @@ export async function POST(req: NextRequest) {
           })
         }
       } catch (err) {
+        // The void IIFE swallows the throw to keep it off the response.
+        // captureException so the disputer-not-notified case shows up
+        // in Sentry instead of vanishing into Vercel logs.
         console.error('[resolve-dispute] notify failed:', err)
+        captureException(err, { where: 'admin/resolve-dispute:notify' })
       }
     })()
   }
