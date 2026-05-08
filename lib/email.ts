@@ -1,5 +1,6 @@
 import { Resend } from 'resend'
 import { render } from '@react-email/render'
+import { captureException } from '@/lib/sentry'
 import WelcomeEmail from '@/emails/welcome'
 import ReviewApprovedEmail from '@/emails/review-approved'
 import ReviewRejectedEmail from '@/emails/review-rejected'
@@ -29,7 +30,14 @@ async function sendEmail(to: string, subject: string, react: React.ReactElement)
   }
   const html = await render(react)
   const { error } = await getResend().emails.send({ from: FROM, to, subject, html })
-  if (error) console.error('[email] Send error:', error)
+  if (error) {
+    console.error('[email] Send error:', error)
+    // Resend errors (bounces, domain not verified, rate limits) are
+    // otherwise invisible — pipe to Sentry so on-call sees the failure.
+    // Subject is logged but `to` is not, since renter email addresses
+    // are PII that we keep out of Sentry's 90-day retention window.
+    captureException(error, { where: 'sendEmail', subject })
+  }
 }
 
 export async function sendWelcomeEmail(to: string, firstName?: string) {
