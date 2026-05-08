@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useDropzone } from 'react-dropzone'
 import { useForm } from 'react-hook-form'
@@ -102,16 +102,45 @@ export default function ReviewForm() {
   }, [])
 
   // Step 0: search for landlord
+  // Debounce + abort: typing fast (e.g. 'abc' three keystrokes) used to
+  // fire 3 concurrent /api/search requests with no ordering guarantee
+  // on the responses. Stale results could overwrite fresh ones. Now we
+  // delay 250ms after each keystroke and abort any in-flight request
+  // when a newer one starts. Mirrors the pattern in hooks/useSearch.ts
+  // which the autocomplete dropdown uses.
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const searchAbortRef = useRef<AbortController | null>(null)
+  useEffect(() => () => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
+    searchAbortRef.current?.abort()
+  }, [])
   async function searchLandlords(q: string) {
-    if (q.length < 2) { setSearchResults([]); return }
-    setSearching(true)
-    try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=landlord&limit=10`)
-      const data = await res.json() as { results?: Array<Landlord & { result_type: string }> }
-      setSearchResults(data.results?.filter(r => r.result_type === 'landlord') ?? [])
-    } finally {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current)
+    if (q.length < 2) {
+      searchAbortRef.current?.abort()
+      setSearchResults([])
       setSearching(false)
+      return
     }
+    searchDebounceRef.current = setTimeout(async () => {
+      searchAbortRef.current?.abort()
+      const ac = new AbortController()
+      searchAbortRef.current = ac
+      setSearching(true)
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=landlord&limit=10`, { signal: ac.signal })
+        if (ac.signal.aborted) return
+        const data = await res.json() as { results?: Array<Landlord & { result_type: string }> }
+        if (!ac.signal.aborted) {
+          setSearchResults(data.results?.filter(r => r.result_type === 'landlord') ?? [])
+        }
+      } catch (err) {
+        if ((err as Error).name === 'AbortError') return
+        // Network error — leave results as-is, the user can retype
+      } finally {
+        if (searchAbortRef.current === ac) setSearching(false)
+      }
+    }, 250)
   }
 
   // Step 1: lease upload
