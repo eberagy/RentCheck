@@ -35,18 +35,23 @@ export async function POST(req: NextRequest) {
 
   const service = createServiceClient()
 
-  const { data: review } = await service
+  const { data: review, error: reviewErr } = await service
     .from('reviews')
     .select('id, landlord_id')
     .eq('id', reviewId)
     .single()
+  // PGRST116 → real 404. Anything else is a DB failure that
+  // shouldn't be masked as 'Review not found' — same fix shape as
+  // the landlord-claim/dispute routes (commit c581dd8).
+  if (reviewErr && reviewErr.code !== 'PGRST116') return dbError('landlord-response:review-lookup', reviewErr)
   if (!review) return NextResponse.json({ error: 'Review not found' }, { status: 404 })
 
-  const { data: landlord } = await service
+  const { data: landlord, error: landlordErr } = await service
     .from('landlords')
     .select('id, claimed_by, is_claimed, is_verified')
     .eq('id', review.landlord_id)
     .single()
+  if (landlordErr && landlordErr.code !== 'PGRST116') return dbError('landlord-response:landlord-lookup', landlordErr)
   if (!landlord) return NextResponse.json({ error: 'Landlord not found' }, { status: 404 })
 
   if (landlord.claimed_by !== user.id || !landlord.is_verified) {
