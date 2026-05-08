@@ -73,6 +73,10 @@ export async function GET(req: NextRequest) {
     console.error('[purge-leases] storage remove failed:', removeErr)
     // Continue anyway — null the columns so we don't try to re-delete missing
     // objects forever. The hash + verification audit remain on the row.
+    // But surface to Sentry: orphaned storage objects accumulate cost
+    // and cross retention-policy boundaries that a console-only error
+    // never paged.
+    captureException(removeErr, { where: 'cron:purge-leases:storage-remove', pathCount: paths.length })
   }
 
   const { error: updateErr } = await service

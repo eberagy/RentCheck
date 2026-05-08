@@ -78,7 +78,13 @@ export async function GET(req: NextRequest) {
       await sendAdminDigestEmail(email, counts)
       sent++
     } catch (err) {
+      // console.error alone meant a Resend pattern failure across the
+      // admin team disappeared into Vercel logs. Capture so it shows
+      // up alongside the other cron metrics in Sentry. PII note:
+      // recipient email omitted from the Sentry context, matching the
+      // policy in lib/sentry.ts.
       console.error('[admin-digest] send failed for', email, err)
+      captureException(err, { where: 'cron:admin-digest:send' })
     }
   }
 
