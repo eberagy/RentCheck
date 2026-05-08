@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { createClient } from '@/lib/supabase/client'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 type Review = {
   id: string
@@ -49,7 +50,11 @@ export default function AdminReviewsPage() {
       .select('id, title, body, rating_overall, status, created_at, lease_verified, lease_doc_path, lease_filename, admin_notes, property_address, reviewer:profiles!reviews_reviewer_id_fkey(full_name, email), landlord:landlords(display_name, slug), property:properties(address_line1, city)')
       .order('created_at', { ascending: true })
     if (filter !== 'all') q.eq('status', filter)
-    const { data } = await q.limit(50)
+    const { data, error } = await q.limit(50)
+    if (error) {
+      captureException(error, { where: 'admin:reviews:loadReviews', filter })
+      toast.error('Could not load reviews')
+    }
     setReviews((data ?? []) as unknown as Review[])
     setLoading(false)
   }

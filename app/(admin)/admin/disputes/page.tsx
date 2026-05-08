@@ -11,6 +11,7 @@ import { createClient } from '@/lib/supabase/client'
 import { formatDate } from '@/lib/utils'
 import { safeExternalUrl } from '@/lib/safe-url'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 type Dispute = {
   id: string
@@ -57,7 +58,11 @@ export default function AdminDisputesPage() {
       .select('id, status, reason, detail, created_at, admin_notes, admin_decision, submitter:profiles!record_disputes_disputed_by_fkey(full_name, email), record:public_records(id, record_type, description, source, source_url, landlord:landlords(display_name), property:properties(address_line1, city))')
       .order('created_at', { ascending: true })
     if (filter !== 'all') q.eq('status', filter)
-    const { data } = await q.limit(50)
+    const { data, error } = await q.limit(50)
+    if (error) {
+      captureException(error, { where: 'admin:disputes:load', filter })
+      toast.error('Could not load disputes')
+    }
     setDisputes((data ?? []) as unknown as Dispute[])
     setLoading(false)
   }

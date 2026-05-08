@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 type FlagItem = {
   id: string
@@ -36,11 +37,15 @@ export default function AdminFlagsPage() {
 
   async function loadItems() {
     setLoading(true)
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('review_flags')
       .select('id, reason, note, created_at, flagged_by, flagger:profiles!review_flags_flagged_by_fkey(full_name, email), review:reviews(id, title, body, status, reviewer:profiles!reviews_reviewer_id_fkey(full_name), landlord:landlords(display_name))')
       .order('created_at', { ascending: true })
       .limit(50)
+    if (error) {
+      captureException(error, { where: 'admin:flags:loadItems' })
+      toast.error('Could not load flags')
+    }
     setItems((data ?? []) as unknown as FlagItem[])
     setLoading(false)
   }

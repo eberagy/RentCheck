@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Mail, MapPin } from 'lucide-react'
 import { createServiceClient } from '@/lib/supabase/server'
 import { formatDate } from '@/lib/utils'
+import { captureException } from '@/lib/sentry'
 
 export const metadata: Metadata = {
   title: 'Email leads — Admin',
@@ -44,6 +45,10 @@ export default async function AdminEmailLeadsPage({
   if (params.city) query = query.ilike('city', `%${params.city}%`)
 
   const { data, error } = await query
+  // Empty leads set is plausible for a fresh source filter — surface a
+  // failure so we can tell apart "no leads yet" from "RLS broke and
+  // we're hiding all ~thousands of leads."
+  if (error) captureException(error, { where: 'admin:email-leads:list', source: params.source, city: params.city })
   const rows = (data ?? []) as Lead[]
 
   // Summary stats — group by city.

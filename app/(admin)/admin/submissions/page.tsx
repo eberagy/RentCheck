@@ -11,6 +11,7 @@ import { createClient } from '@/lib/supabase/client'
 import { formatDate } from '@/lib/utils'
 import { safeExternalUrl } from '@/lib/safe-url'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 type Submission = {
   id: string
@@ -73,10 +74,18 @@ export default function AdminSubmissionsPage() {
           .select('id, display_name, business_name, city, state_abbr, zip, website, phone, notes, proof_doc_url, status, admin_notes, created_at, submitter:profiles!landlord_submissions_submitted_by_fkey(full_name, email)')
           .order('created_at', { ascending: true })
         if (filter !== 'all') q.eq('status', filter)
-        const { data } = await q.limit(50)
+        const { data, error } = await q.limit(50)
+        if (error) {
+          captureException(error, { where: 'admin:submissions:fallback', filter })
+          toast.error('Could not load submissions')
+        }
         setSubmissions((data ?? []) as unknown as Submission[])
       }
-    } catch {
+    } catch (err) {
+      // Top-level catch — covers fetch / JSON parse failures from the
+      // primary path. Without surfacing this we'd just see an empty
+      // submissions list with no breadcrumb.
+      captureException(err, { where: 'admin:submissions:load', filter })
       setSubmissions([])
     }
     setLoading(false)

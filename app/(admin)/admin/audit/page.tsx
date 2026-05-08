@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createServiceClient } from '@/lib/supabase/server'
 import { formatDate } from '@/lib/utils'
 import { ScrollText } from 'lucide-react'
+import { captureException } from '@/lib/sentry'
 
 export const metadata: Metadata = {
   title: 'Admin Audit Log',
@@ -91,6 +92,11 @@ export default async function AdminAuditPage({
   const { data: actions, error } = await query
 
   const tableMissing = !!error && /does not exist|relation .* does not exist|admin_actions/.test(error.message)
+  // table-missing is the legitimate "fresh DB without admin_actions yet"
+  // case — already handled below with a banner. Anything else is real
+  // and should page; without this an RLS policy regression silently
+  // returns 0 audit rows.
+  if (error && !tableMissing) captureException(error, { where: 'admin:audit:list', filterAction })
   const rows = (actions ?? []) as unknown as AuditRow[]
 
   return (

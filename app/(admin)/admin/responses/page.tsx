@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 type ResponseItem = {
   id: string
@@ -31,13 +32,17 @@ export default function AdminResponsesPage() {
 
   async function loadItems() {
     setLoading(true)
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('reviews')
       .select('id, title, body, landlord_response, landlord_response_status, created_at, reviewer:profiles!reviews_reviewer_id_fkey(full_name), landlord:landlords(display_name, slug)')
       .eq('landlord_response_status', 'pending')
       .not('landlord_response', 'is', null)
       .order('created_at', { ascending: true })
       .limit(50)
+    if (error) {
+      captureException(error, { where: 'admin:responses:loadItems' })
+      toast.error('Could not load pending responses')
+    }
     setItems((data ?? []) as unknown as ResponseItem[])
     setLoading(false)
   }

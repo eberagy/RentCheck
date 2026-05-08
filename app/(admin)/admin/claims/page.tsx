@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { createClient } from '@/lib/supabase/client'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 const DOC_TYPE_LABELS: Record<string, string> = {
   utility_bill: 'Utility Bill',
@@ -55,7 +56,11 @@ export default function AdminClaimsPage() {
       .select('id, status, created_at, doc_url, doc_filename, verification_type, admin_notes, claimed_by, landlord:landlords(id, display_name, city, state_abbr, review_count), claimer:profiles!landlord_claims_claimed_by_fkey(full_name, email)')
       .order('created_at', { ascending: true })
     if (filter !== 'all') q.eq('status', filter)
-    const { data } = await q.limit(50)
+    const { data, error } = await q.limit(50)
+    if (error) {
+      captureException(error, { where: 'admin:claims:loadClaims', filter })
+      toast.error('Could not load claims')
+    }
     setClaims((data ?? []) as unknown as Claim[])
     setLoading(false)
   }

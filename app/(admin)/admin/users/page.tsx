@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input'
 import { createClient } from '@/lib/supabase/client'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 type UserProfile = {
   id: string
@@ -105,7 +106,11 @@ export default function AdminUsersPage() {
       }
     }
 
-    const { data } = await dbq
+    const { data, error } = await dbq
+    if (error) {
+      captureException(error, { where: 'admin:users:loadUsers', q: q ?? null })
+      toast.error('Could not load users')
+    }
     setUsers((data ?? []) as unknown as UserProfile[])
     setLoading(false)
     setSearching(false)
@@ -118,12 +123,13 @@ export default function AdminUsersPage() {
 
   async function loadUserReviews(userId: string) {
     if (userReviews[userId]) return
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('reviews')
       .select('id, title, status, rating_overall, created_at')
       .eq('reviewer_id', userId)
       .order('created_at', { ascending: false })
       .limit(10)
+    if (error) captureException(error, { where: 'admin:users:loadUserReviews', userId })
     setUserReviews(prev => ({ ...prev, [userId]: data ?? [] }))
   }
 

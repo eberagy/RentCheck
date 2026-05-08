@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { createClient } from '@/lib/supabase/client'
 import { formatDate } from '@/lib/utils'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 type LeaseReview = {
   id: string
@@ -38,13 +39,17 @@ export default function AdminLeasesPage() {
 
   async function loadItems() {
     setLoading(true)
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('reviews')
       .select('id, title, lease_doc_path, lease_filename, lease_verified, lease_file_size, created_at, property_address, reviewer:profiles!reviews_reviewer_id_fkey(full_name, email), landlord:landlords(display_name), property:properties(address_line1, city, state_abbr)')
       .not('lease_doc_path', 'is', null)
       .eq('lease_verified', false)
       .order('created_at', { ascending: true })
       .limit(50)
+    if (error) {
+      captureException(error, { where: 'admin:leases:loadItems' })
+      toast.error('Could not load lease queue')
+    }
     setItems((data ?? []) as unknown as LeaseReview[])
     setLoading(false)
   }
