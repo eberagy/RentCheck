@@ -64,10 +64,15 @@ export async function POST(req: NextRequest) {
 
   const service = createServiceClient()
 
-  const { count } = await service
+  const { count, error: countErr } = await service
     .from('saved_searches')
     .select('id', { count: 'exact', head: true })
     .eq('user_id', user.id)
+  // If the count query fails, fail closed: refuse the create. Without
+  // this branch, a transient error returns count=null, the `?? 0` falls
+  // through, and the 25-search cap silently disables — a user could
+  // theoretically create unlimited searches during a Postgres hiccup.
+  if (countErr) return dbError('saved-searches:count-cap', countErr)
   if ((count ?? 0) >= 25) {
     return NextResponse.json({ error: 'Limit reached (25 saved searches).' }, { status: 422 })
   }
