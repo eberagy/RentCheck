@@ -8,7 +8,8 @@ import { z } from 'zod'
 
 const schema = z.object({
   landlordId: z.string().uuid(),
-  website: z.string().url().max(300).optional().or(z.literal('')),
+  // Restrict to http/https — see lib/safe-url for the XSS rationale.
+  website: z.string().url().max(300).regex(/^https?:\/\//i, 'Must be http(s) URL').optional().or(z.literal('')),
   phone: z.string().max(30).optional().or(z.literal('')),
   description: z.string().max(1200).optional().or(z.literal('')),
 })

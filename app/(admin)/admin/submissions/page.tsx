@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { createClient } from '@/lib/supabase/client'
 import { formatDate } from '@/lib/utils'
+import { safeExternalUrl } from '@/lib/safe-url'
 import { toast } from 'sonner'
 
 type Submission = {
@@ -157,17 +158,20 @@ export default function AdminSubmissionsPage() {
                     <div className="flex flex-wrap gap-3 mt-1 text-xs text-slate-500">
                       {sub.city && <span>{sub.city}{sub.state_abbr ? `, ${sub.state_abbr}` : ''}</span>}
                       {sub.phone && <span>{sub.phone}</span>}
-                      {sub.website && (
-                        <a
-                          href={sub.website}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label="Submitted landlord website (opens in new tab)"
-                          className="flex items-center gap-1 text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
-                        >
-                          <ExternalLink className="h-3 w-3" aria-hidden="true" /> Website
-                        </a>
-                      )}
+                      {(() => {
+                        const safe = safeExternalUrl(sub.website)
+                        return safe ? (
+                          <a
+                            href={safe}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label="Submitted landlord website (opens in new tab)"
+                            className="flex items-center gap-1 text-navy-600 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
+                          >
+                            <ExternalLink className="h-3 w-3" aria-hidden="true" /> Website
+                          </a>
+                        ) : null
+                      })()}
                     </div>
                   </div>
                   <time className="text-xs text-slate-400 flex-shrink-0" dateTime={sub.created_at}>{formatDate(sub.created_at)}</time>

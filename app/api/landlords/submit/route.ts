@@ -12,7 +12,10 @@ const schema = z.object({
   city: z.string().max(100).optional(),
   state_abbr: z.string().length(2).optional(),
   zip: z.string().max(10).optional(),
-  website: z.string().url().optional().or(z.literal('')),
+  // Zod's .url() accepts ANY parseable URL incl. javascript:/data:/file:.
+  // Restrict to http/https so a stored landlord.website can't become a
+  // clickable XSS payload when rendered on the landlord page.
+  website: z.string().url().regex(/^https?:\/\//i, 'Must be http(s) URL').optional().or(z.literal('')),
   phone: z.string().max(20).optional(),
   notes: z.string().max(1000).optional(),
   proof_doc_url: z.string().max(500).optional().nullable(),

@@ -33,6 +33,7 @@ import { canonicalSiteUrl } from '@/lib/canonical-host'
 import { isValidLandlordSlug } from '@/lib/url-guards'
 import { TrackPageView } from '@/components/analytics/TrackPageView'
 import { captureException } from '@/lib/sentry'
+import { safeExternalUrl } from '@/lib/safe-url'
 import type { Review, PublicRecord, Property } from '@/types'
 
 interface LandlordPageProps {
@@ -381,19 +382,26 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
                   </div>
                 )}
                 <div className="flex flex-wrap gap-2 pt-1">
-                  {landlord.website && (
-                    <Chip icon={<Globe className="h-3 w-3" aria-hidden="true" />}>
-                      <a
-                        href={landlord.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`${landlord.display_name} website (opens in new tab)`}
-                        className="hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
-                      >
-                        {landlord.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-                      </a>
-                    </Chip>
-                  )}
+                  {(() => {
+                    // Defense-in-depth: safeExternalUrl drops any
+                    // javascript:/data:/file: stored value before it
+                    // becomes a clickable href. Belt-and-suspenders to
+                    // the write-time schema validation.
+                    const websiteHref = safeExternalUrl(landlord.website)
+                    return websiteHref ? (
+                      <Chip icon={<Globe className="h-3 w-3" aria-hidden="true" />}>
+                        <a
+                          href={websiteHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${landlord.display_name} website (opens in new tab)`}
+                          className="hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2"
+                        >
+                          {websiteHref.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                        </a>
+                      </Chip>
+                    ) : null
+                  })()}
                   {landlord.phone && (
                     <Chip icon={<Phone className="h-3 w-3" aria-hidden="true" />}>
                       <a
