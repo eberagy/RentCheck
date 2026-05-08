@@ -31,9 +31,17 @@ export function useSearch() {
     setLoading(true)
     try {
       const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&limit=8`, { signal: ac.signal })
+      // Treat any non-2xx as "no results" but don't blow up — 429
+      // (rate limit), 400 (invalid query), 5xx (DB) all pass through
+      // as empty so the UI can fall back to its empty state instead
+      // of showing stale results from a prior keystroke.
+      if (!res.ok) {
+        if (mountedRef.current && !ac.signal.aborted) setResults([])
+        return
+      }
       const data = await res.json()
       if (!mountedRef.current || ac.signal.aborted) return
-      setResults(data.results ?? [])
+      setResults(Array.isArray(data?.results) ? data.results : [])
     } catch (e) {
       if ((e as Error)?.name === 'AbortError') return
       if (mountedRef.current) setResults([])
