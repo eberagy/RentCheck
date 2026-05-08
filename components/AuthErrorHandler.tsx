@@ -23,8 +23,15 @@ export function AuthErrorHandler() {
       toast.error('Authentication failed. Please try again.')
     } else if (error === 'account_suspended') {
       toast.error('Your account is suspended. Email support@vettrentals.com if this is a mistake.', { duration: 8000 })
-    } else if (errorDesc) {
-      toast.error(decodeURIComponent(errorDesc.replace(/\+/g, ' ')))
+    } else {
+      // Don't reflect raw `error_description` from the query string —
+      // an attacker could craft a phishing link like
+      //   /?error=x&error_description=Visit+evil.tld+to+continue
+      // and the toast would display attacker-controlled copy on our
+      // domain. Always fall back to a generic message; the original
+      // errorDesc is still in the URL params if a developer needs it.
+      void errorDesc
+      toast.error('Sign-in failed. Please try again.')
     }
 
     // Clean the error params from the URL without navigating away.
