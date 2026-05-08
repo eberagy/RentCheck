@@ -26,6 +26,20 @@ export interface WatchlistRow {
     eviction_count: number
     is_verified: boolean
   } | null
+  property: {
+    id: string
+    address_line1: string | null
+    city: string | null
+    state_abbr: string | null
+    avg_rating: number | null
+    review_count: number
+    open_violation_count: number
+    landlord: {
+      display_name: string | null
+      slug: string | null
+      is_verified: boolean | null
+    } | null
+  } | null
 }
 
 export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
@@ -35,13 +49,13 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
   const [items, setItems] = useState(rows)
   const [sort, setSort] = useState<'recent' | 'violations' | 'name'>('recent')
 
+  // Sort comparators read either side of the polymorphic row. Property
+  // rows use their address as the sort name and their open_violation_count.
+  const rowName = (r: WatchlistRow) => r.landlord?.display_name ?? r.property?.address_line1 ?? ''
+  const rowViolations = (r: WatchlistRow) => r.landlord?.open_violation_count ?? r.property?.open_violation_count ?? 0
   const sorted = [...items].sort((a, b) => {
-    if (sort === 'violations') {
-      return (b.landlord?.open_violation_count ?? 0) - (a.landlord?.open_violation_count ?? 0)
-    }
-    if (sort === 'name') {
-      return (a.landlord?.display_name ?? '').localeCompare(b.landlord?.display_name ?? '')
-    }
+    if (sort === 'violations') return rowViolations(b) - rowViolations(a)
+    if (sort === 'name') return rowName(a).localeCompare(rowName(b))
     return new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   })
 
@@ -59,7 +73,8 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
   }
 
   async function remove(row: WatchlistRow) {
-    if (!confirm(`Remove ${row.landlord?.display_name ?? 'this landlord'} from your watchlist?`)) return
+    const targetName = row.landlord?.display_name ?? row.property?.address_line1 ?? 'this item'
+    if (!confirm(`Remove ${targetName} from your watchlist?`)) return
     setProcessing(row.id)
     const { error } = await supabase.from('watchlist').delete().eq('id', row.id)
     setProcessing(null)
@@ -80,7 +95,7 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
           <div>
             <h1 className="font-display text-[clamp(1.75rem,3.5vw,2.5rem)] leading-tight tracking-tight text-slate-900">My watchlist</h1>
             <p className="mt-1.5 text-[14px] text-slate-500">
-              {items.length} landlord{items.length === 1 ? '' : 's'} watched · Get email alerts when they get new reviews or violations.
+              {items.length} item{items.length === 1 ? '' : 's'} watched · Get email alerts when they get new reviews or violations.
             </p>
           </div>
           <Button asChild className="rounded-full bg-navy-600 hover:bg-navy-700 text-white">
@@ -92,7 +107,7 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
           <div className="rounded-2xl border border-dashed border-slate-300 bg-white py-16 text-center">
             <Bell className="mx-auto mb-3 h-8 w-8 text-slate-300" aria-hidden="true" />
             <p className="text-sm font-semibold text-slate-700">Your watchlist is empty</p>
-            <p className="mt-1 text-[13px] text-slate-500">Find a landlord and tap &ldquo;Watch Landlord&rdquo; on their profile to track updates.</p>
+            <p className="mt-1 text-[13px] text-slate-500">Tap &ldquo;Watch Landlord&rdquo; or &ldquo;Watch Property&rdquo; on any profile to track updates.</p>
             <div className="mt-4">
               <Link href="/search" className="text-[12.5px] font-medium text-teal hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
                 Browse landlords &rarr;
@@ -123,44 +138,65 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
             <div className="grid gap-3">
               {sorted.map(row => {
                 const l = row.landlord
-                if (!l) return null
+                const p = row.property
+                // Polymorphic card. Schema CHECK guarantees one of the two
+                // is set, but be defensive — a stale join could return both
+                // null if the underlying row was deleted between fetch and
+                // render. Skip in that case (no card is better than a
+                // broken card).
+                if (!l && !p) return null
+
+                const linkHref = l ? `/landlord/${l.slug}` : `/property/${p!.id}`
+                const titleText = l ? l.display_name : (p!.address_line1 ?? 'Property')
+                const subtitle = l ? l.business_name : (p!.landlord?.display_name ?? null)
+                const verified = l ? l.is_verified : !!p!.landlord?.is_verified
+                const cityState = l ? [l.city, l.state_abbr] : [p!.city, p!.state_abbr]
+                const rating = l ? l.avg_rating : p!.avg_rating
+                const reviewCount = l ? l.review_count : p!.review_count
+                const openViol = l ? l.open_violation_count : p!.open_violation_count
+                const evictions = l ? l.eviction_count : 0
+                const typeLabel = l ? 'Landlord' : 'Property'
+
                 return (
                   <div key={row.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <Link href={`/landlord/${l.slug}`} className="text-[17px] font-bold text-slate-900 hover:text-navy-700 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
-                            {l.display_name}
+                          <Link href={linkHref} className="text-[17px] font-bold text-slate-900 hover:text-navy-700 hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
+                            {titleText}
                           </Link>
-                          {l.is_verified && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10.5px] font-semibold text-slate-600">
+                            {typeLabel}
+                          </span>
+                          {verified && (
                             <span className="inline-flex items-center gap-1 rounded-full border border-teal-200 bg-teal-50 px-2 py-0.5 text-[10.5px] font-semibold text-teal-700">
                               Verified
                             </span>
                           )}
                         </div>
-                        {l.business_name && <p className="mt-0.5 text-[13px] text-slate-500">{l.business_name}</p>}
+                        {subtitle && <p className="mt-0.5 text-[13px] text-slate-500">{subtitle}</p>}
                         <div className="mt-2 flex flex-wrap items-center gap-3 text-[12.5px] text-slate-500">
-                          {(l.city || l.state_abbr) && (
+                          {(cityState[0] || cityState[1]) && (
                             <span className="inline-flex items-center gap-1">
                               <MapPin className="h-3.5 w-3.5" aria-hidden="true" />
-                              {[l.city, l.state_abbr].filter(Boolean).join(', ')}
+                              {cityState.filter(Boolean).join(', ')}
                             </span>
                           )}
                           <span className="inline-flex items-center gap-1">
                             <Star className="h-3.5 w-3.5 text-amber-400" aria-hidden="true" />
-                            {l.avg_rating != null && l.avg_rating > 0 ? l.avg_rating.toFixed(1) : '—'}
-                            <span className="text-slate-400">· {l.review_count} review{l.review_count === 1 ? '' : 's'}</span>
+                            {rating != null && rating > 0 ? rating.toFixed(1) : '—'}
+                            <span className="text-slate-400">· {reviewCount} review{reviewCount === 1 ? '' : 's'}</span>
                           </span>
-                          {l.open_violation_count > 0 && (
+                          {openViol > 0 && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 font-medium text-red-700">
                               <AlertTriangle className="h-3 w-3" aria-hidden="true" />
-                              {l.open_violation_count} open violation{l.open_violation_count === 1 ? '' : 's'}
+                              {openViol} open violation{openViol === 1 ? '' : 's'}
                             </span>
                           )}
-                          {l.eviction_count > 0 && (
+                          {evictions > 0 && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-orange-50 px-2 py-0.5 font-medium text-orange-700">
                               <Gavel className="h-3 w-3" aria-hidden="true" />
-                              {l.eviction_count} eviction{l.eviction_count === 1 ? '' : 's'}
+                              {evictions} eviction{evictions === 1 ? '' : 's'}
                             </span>
                           )}
                           <span className="text-slate-400">Added <time dateTime={row.created_at}>{formatDate(row.created_at)}</time></span>
@@ -168,7 +204,7 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
                       </div>
                       <div className="flex flex-shrink-0 items-center gap-1.5">
                         <Button asChild variant="outline" size="sm" className="h-8 rounded-full">
-                          <Link href={`/landlord/${l.slug}`}>
+                          <Link href={linkHref}>
                             <Eye className="mr-1 h-3.5 w-3.5" aria-hidden="true" /> View
                           </Link>
                         </Button>

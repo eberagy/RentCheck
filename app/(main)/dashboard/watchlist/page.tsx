@@ -14,9 +14,20 @@ export default async function WatchlistPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login?redirectTo=/dashboard/watchlist')
 
+  // The watchlist table holds either landlord-rooted or property-rooted
+  // rows (CHECK constraint: landlord_id IS NOT NULL OR property_id IS
+  // NOT NULL — see migration 004). The previous query only joined the
+  // landlord side, so any property a user clicked "Watch Property" on
+  // showed up as a row with all-null landlord and was silently dropped
+  // by the client (`if (!l) return null`). Fetch both sides and render
+  // both kinds of card.
   const { data, error } = await supabase
     .from('watchlist')
-    .select('id, created_at, notify_email, landlord:landlords(id, slug, display_name, business_name, city, state_abbr, avg_rating, review_count, open_violation_count, eviction_count, is_verified)')
+    .select(`
+      id, created_at, notify_email,
+      landlord:landlords(id, slug, display_name, business_name, city, state_abbr, avg_rating, review_count, open_violation_count, eviction_count, is_verified),
+      property:properties(id, address_line1, city, state_abbr, avg_rating, review_count, open_violation_count, landlord:landlords(display_name, slug, is_verified))
+    `)
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
