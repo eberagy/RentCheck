@@ -3,6 +3,7 @@ import { dbError } from '@/lib/api-errors'
 import { createServiceClient } from '@/lib/supabase/service'
 import { buildLandlordSummary, buildPropertySummary, truncateSummary } from '@/lib/summaries'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
+import { captureException } from '@/lib/sentry'
 import { z } from 'zod'
 import type { Landlord, Property } from '@/types'
 
@@ -53,9 +54,9 @@ export async function GET(req: NextRequest) {
   const propertyIds = rawResults.filter(r => r.result_type === 'property').map(r => r.id)
 
   const [
-    { data: landlords },
-    { data: properties },
-    { data: propertyRecords },
+    { data: landlords, error: landlordsErr },
+    { data: properties, error: propertiesErr },
+    { data: propertyRecords, error: recordsErr },
   ] = await Promise.all([
     landlordIds.length
       ? supabase
@@ -76,6 +77,14 @@ export async function GET(req: NextRequest) {
           .in('property_id', propertyIds) as unknown as Promise<{ data: RecordRow[] | null; error: unknown }>
       : Promise.resolve({ data: [] as RecordRow[], error: null }),
   ])
+
+  // Surface hydration-query failures to Sentry. Without this a query
+  // failure here renders search results with missing fields
+  // (slug, response_rate, address_line1, etc.) — visibly broken cards
+  // that look like a UI bug to anyone debugging from the surface.
+  if (landlordsErr) captureException(landlordsErr, { where: 'search:hydrate-landlords', q })
+  if (propertiesErr) captureException(propertiesErr, { where: 'search:hydrate-properties', q })
+  if (recordsErr) captureException(recordsErr, { where: 'search:hydrate-records', q })
 
   const landlordsById = new Map((landlords ?? []).map(landlord => [landlord.id, landlord]))
   const propertiesById = new Map((properties ?? []).map(property => [property.id, property]))
