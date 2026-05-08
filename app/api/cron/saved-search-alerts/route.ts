@@ -82,11 +82,18 @@ export async function GET(req: NextRequest) {
         : defaultSince
 
       // Profile + pref check (email_watchlist acts as the master opt-in for this too).
-      const { data: profile } = await supabase
+      const { data: profile, error: profileErr } = await supabase
         .from('profiles')
         .select('id, full_name, email, email_watchlist')
         .eq('id', sub.user_id)
         .single<Reviewer>()
+      // Same fix as the watchlist-alerts cron (b0e8be9). A real DB
+      // error here previously read as "profile missing → continue,"
+      // silently skipping the digest for that subscriber — they'd
+      // never get the email and we wouldn't know why.
+      if (profileErr && profileErr.code !== 'PGRST116') {
+        captureException(profileErr, { where: 'cron:saved-search-alerts:profile-lookup', subId: sub.id })
+      }
       if (!profile?.email || profile.email_watchlist === false) continue
 
       const rawAliases = getCityAliases(sub.city) ?? [sub.city]
@@ -100,12 +107,15 @@ export async function GET(req: NextRequest) {
 
       // Landlords in this city (multi-alias)
       const orClause = aliases.map(a => `city.ilike.%${a}%`).join(',')
-      const { data: landlordRows } = await supabase
+      const { data: landlordRows, error: landlordsErr } = await supabase
         .from('landlords')
         .select('id, display_name, slug, avg_rating, review_count, city')
         .eq('state_abbr', sub.state_abbr)
         .or(orClause)
 
+      if (landlordsErr) {
+        captureException(landlordsErr, { where: 'cron:saved-search-alerts:landlord-query', subId: sub.id })
+      }
       const landlordIds = (landlordRows ?? []).map(l => l.id)
       if (!landlordIds.length) continue
 
