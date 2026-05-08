@@ -317,6 +317,7 @@ export default function AdminUsersPage() {
                         }
                         onClick={() => toggleBan(user.id, user.is_banned)}
                         disabled={processing === user.id}
+                        aria-busy={processing === user.id || undefined}
                       >
                         {processing === user.id
                           ? <Loader2 className="h-3 w-3 animate-spin" aria-hidden="true" />
@@ -333,6 +334,7 @@ export default function AdminUsersPage() {
                         className="text-purple-700 border-purple-300 hover:bg-purple-50"
                         onClick={() => promoteToAdmin(user.id)}
                         disabled={processing === user.id}
+                        aria-busy={processing === user.id || undefined}
                       >
                         <Shield className="h-3 w-3 mr-1" aria-hidden="true" />
                         Make Admin
@@ -444,6 +446,7 @@ function AdminNotesEditor({ user, onSaved }: { user: UserProfile; onSaved: (next
           className="border-amber-300 bg-white text-amber-800 hover:bg-amber-100"
           onClick={save}
           disabled={saving || !dirty}
+          aria-busy={saving || undefined}
         >
           {saving ? <><Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" aria-hidden="true" /> Saving…</> : 'Save notes'}
         </Button>
