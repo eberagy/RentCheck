@@ -32,11 +32,14 @@ export async function POST(req: NextRequest) {
   const { landlordId, website, phone, description } = parsed.data
   const service = createServiceClient()
 
-  const { data: landlord } = await service
+  const { data: landlord, error: landlordErr } = await service
     .from('landlords')
     .select('id, claimed_by, is_verified')
     .eq('id', landlordId)
     .single()
+  // PGRST116 → real 404. Anything else is a DB failure that
+  // shouldn't masquerade as 404 — same fix shape as ffab874 et al.
+  if (landlordErr && landlordErr.code !== 'PGRST116') return dbError('landlord-profile:lookup', landlordErr)
   if (!landlord) return NextResponse.json({ error: 'Landlord not found' }, { status: 404 })
 
   if (landlord.claimed_by !== user.id || !landlord.is_verified) {
