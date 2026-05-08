@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { captureException } from '@/lib/sentry'
 import { AdminNav } from '@/components/layout/AdminNav'
 
 export const metadata: Metadata = { title: 'Admin', robots: 'noindex' }
@@ -10,12 +11,22 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login?redirectTo=/admin')
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileErr } = await supabase
     .from('profiles')
     .select('user_type')
     .eq('id', user.id)
     .single()
 
+  // PGRST116 = no profile row (legitimate non-admin); anything else is
+  // a real DB failure that shouldn't masquerade as "not admin." A
+  // transient lookup error previously evicted admins straight to /
+  // — same root pattern as the route-level requireAdmin fix in
+  // ba7e5b8 / d83ed01. Capture and redirect to /login so the user can
+  // retry instead of bouncing back to public marketing.
+  if (profileErr && profileErr.code !== 'PGRST116') {
+    captureException(profileErr, { where: 'admin-layout:profile-lookup', userId: user.id })
+    redirect('/login?redirectTo=/admin')
+  }
   if (profile?.user_type !== 'admin') redirect('/')
 
   return (
