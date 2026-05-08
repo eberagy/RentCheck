@@ -28,15 +28,45 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
   const [done, setDone] = useState(false)
   const dialogRef = useRef<HTMLDivElement>(null)
 
-  // Close on Escape, lock body scroll, and restore focus on close. The
-  // previous modal had none of these — keyboard users could not dismiss
-  // it without clicking the backdrop, the page scrolled behind the overlay
-  // on mobile, and after closing focus jumped to the top of the page
-  // instead of returning to the Flag button that triggered it.
+  // Close on Escape, lock body scroll, restore focus on close, and trap
+  // Tab inside the dialog. The previous modal had none of these —
+  // keyboard users could not dismiss it without clicking the backdrop,
+  // the page scrolled behind the overlay on mobile, focus jumped to the
+  // top of the page on close instead of returning to the trigger, and
+  // Tab cycled out of the dialog into the page below the overlay.
   useEffect(() => {
     const previouslyFocused = document.activeElement as HTMLElement | null
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose()
+      if (e.key === 'Escape') {
+        onClose()
+        return
+      }
+      // Focus trap. Without this, Tab from the last focusable element
+      // moves focus to body → into the page behind the overlay (which
+      // is hidden by aria-modal but still in the tab order). Cycle
+      // explicitly between first and last focusable inside the dialog.
+      if (e.key === 'Tab') {
+        const root = dialogRef.current
+        if (!root) return
+        const focusable = root.querySelectorAll<HTMLElement>(
+          'button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])',
+        )
+        const visible = Array.from(focusable).filter(el => !el.hasAttribute('disabled'))
+        if (visible.length === 0) return
+        const first = visible[0]!
+        const last = visible[visible.length - 1]!
+        if (e.shiftKey) {
+          if (document.activeElement === first || !root.contains(document.activeElement)) {
+            e.preventDefault()
+            last.focus()
+          }
+        } else {
+          if (document.activeElement === last) {
+            e.preventDefault()
+            first.focus()
+          }
+        }
+      }
     }
     document.addEventListener('keydown', onKey)
     const prevOverflow = document.body.style.overflow
