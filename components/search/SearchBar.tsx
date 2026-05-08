@@ -21,6 +21,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
   const router = useRouter()
   const { query, results, loading, handleQueryChange, clear } = useSearch()
   const [open, setOpen] = useState(false)
+  const [activeIndex, setActiveIndex] = useState(-1)
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   // Stable, hydration-safe id for the listbox + ARIA combobox wiring.
@@ -29,6 +30,9 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
   // tripped a hydration mismatch on the input's aria-controls attr.
   const listboxId = useId()
   const isOpen = open && results.length > 0
+  const activeOptionId = isOpen && activeIndex >= 0 && activeIndex < results.length
+    ? `${listboxId}-opt-${activeIndex}`
+    : undefined
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -40,6 +44,11 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  // Reset the highlighted option whenever the result list changes —
+  // otherwise an arrow-down on the prior list lands on a no-longer-
+  // visible row and the visible highlight disappears.
+  useEffect(() => { setActiveIndex(-1) }, [results])
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!query.trim()) return
@@ -50,10 +59,47 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
   function handleSelect(result: (typeof results)[number]) {
     clear()
     setOpen(false)
+    setActiveIndex(-1)
     if (result.result_type === 'landlord' && result.slug) {
       router.push(`/landlord/${result.slug}`)
     } else {
       router.push(`/property/${result.id}`)
+    }
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    // Power users expect arrow-key nav in autocompletes. Without this
+    // they were stuck mousing through results. Tab still moves out of
+    // the dropdown via natural focus order.
+    if (!isOpen) {
+      if (e.key === 'ArrowDown' && results.length > 0) {
+        e.preventDefault()
+        setOpen(true)
+        setActiveIndex(0)
+      }
+      return
+    }
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        setActiveIndex(i => (i + 1) % results.length)
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        setActiveIndex(i => (i <= 0 ? results.length - 1 : i - 1))
+        break
+      case 'Enter':
+        if (activeIndex >= 0 && activeIndex < results.length) {
+          e.preventDefault()
+          handleSelect(results[activeIndex]!)
+        }
+        // Otherwise fall through to form submit (search-all)
+        break
+      case 'Escape':
+        e.preventDefault()
+        setOpen(false)
+        setActiveIndex(-1)
+        break
     }
   }
 
@@ -97,6 +143,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
             value={query}
             onChange={e => { handleQueryChange(e.target.value); setOpen(true) }}
             onFocus={() => query.length >= 2 && setOpen(true)}
+            onKeyDown={handleKeyDown}
             placeholder={placeholder ?? (size === 'lg' ? 'Search landlord, address, or city...' : 'Search landlords, addresses, cities...')}
             // Skip autoFocus on touch devices so the keyboard doesn't cover
             // the hero on first paint. Desktops still get the focus.
@@ -112,6 +159,7 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
             aria-expanded={isOpen}
             aria-controls={isOpen ? listboxId : undefined}
             aria-haspopup="listbox"
+            aria-activedescendant={activeOptionId}
             className={cn(
               'flex-1 min-w-0 bg-transparent outline-none',
               size === 'lg' ? 'text-[17px]' : size === 'md' ? 'text-[15px]' : 'text-sm',
@@ -152,14 +200,21 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
             variant === 'dark' ? 'border-white/10' : 'border-slate-200'
           )}
         >
-          {results.map(result => (
+          {results.map((result, i) => {
+            const isActive = i === activeIndex
+            return (
             <button
               key={result.id}
+              id={`${listboxId}-opt-${i}`}
               type="button"
               role="option"
-              aria-selected="false"
+              aria-selected={isActive}
               onClick={() => handleSelect(result)}
-              className="flex w-full items-center gap-3 border-b border-slate-100 px-4 py-3 text-left transition-colors hover:bg-slate-50 last:border-0 focus:outline-none focus:bg-slate-50"
+              onMouseEnter={() => setActiveIndex(i)}
+              className={cn(
+                'flex w-full items-center gap-3 border-b border-slate-100 px-4 py-3 text-left transition-colors last:border-0 focus:outline-none',
+                isActive ? 'bg-slate-50' : 'hover:bg-slate-50',
+              )}
             >
               <div className={cn(
                 'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg',
@@ -187,7 +242,8 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
                 </span>
               )}
             </button>
-          ))}
+            )
+          })}
           <div className="border-t border-slate-100 bg-slate-50/50 px-4 py-2.5 rounded-b-2xl">
             <button
               type="button"
