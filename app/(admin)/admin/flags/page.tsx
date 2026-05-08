@@ -155,6 +155,7 @@ export default function AdminFlagsPage() {
                         variant="outline"
                         onClick={() => dismissFlag(item.id)}
                         disabled={processing === item.id}
+                        aria-busy={processing === item.id || undefined}
                       >
                         {processing === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : <XCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
                         Dismiss Flag
@@ -165,6 +166,7 @@ export default function AdminFlagsPage() {
                           className="bg-red-600 hover:bg-red-700 text-white"
                           onClick={() => removeReview(item.id, item.review!.id)}
                           disabled={processing === item.id}
+                          aria-busy={processing === item.id || undefined}
                         >
                           <Flag className="h-3.5 w-3.5 mr-1" />
                           Remove Review

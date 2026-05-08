@@ -329,6 +329,7 @@ export default function AdminReviewsPage() {
                             className="bg-teal-600 hover:bg-teal-700 text-white"
                             onClick={() => moderate(review.id, 'approved')}
                             disabled={processing === review.id || !review.lease_verified}
+                            aria-busy={processing === review.id || undefined}
                           >
                             {processing === review.id ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
                             Approve
@@ -339,6 +340,7 @@ export default function AdminReviewsPage() {
                             className="border-red-300 text-red-700 hover:bg-red-50"
                             onClick={() => moderate(review.id, 'rejected')}
                             disabled={processing === review.id}
+                            aria-busy={processing === review.id || undefined}
                           >
                             <XCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                             Reject

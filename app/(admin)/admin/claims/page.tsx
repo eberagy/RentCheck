@@ -199,6 +199,7 @@ export default function AdminClaimsPage() {
                         className="bg-teal-600 hover:bg-teal-700 text-white"
                         onClick={() => processClaim(claim.id, 'approved')}
                         disabled={processing === claim.id}
+                        aria-busy={processing === claim.id || undefined}
                       >
                         {processing === claim.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
                         Approve Claim
@@ -209,6 +210,7 @@ export default function AdminClaimsPage() {
                         className="border-red-300 text-red-700 hover:bg-red-50"
                         onClick={() => processClaim(claim.id, 'rejected')}
                         disabled={processing === claim.id}
+                        aria-busy={processing === claim.id || undefined}
                       >
                         <XCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                         Reject

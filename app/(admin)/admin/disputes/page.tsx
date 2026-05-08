@@ -201,6 +201,7 @@ export default function AdminDisputesPage() {
                       className="bg-navy-500 hover:bg-navy-600 text-white"
                       onClick={() => resolveDispute(dispute.id, dispute)}
                       disabled={processing === dispute.id || !decision[dispute.id]}
+                      aria-busy={processing === dispute.id || undefined}
                     >
                       {processing === dispute.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : null}
                       Resolve Dispute

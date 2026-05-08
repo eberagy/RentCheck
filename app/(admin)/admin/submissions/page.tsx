@@ -218,6 +218,7 @@ export default function AdminSubmissionsPage() {
                         className="bg-teal-600 hover:bg-teal-700 text-white"
                         onClick={() => moderate(sub, 'approved')}
                         disabled={processing === sub.id}
+                        aria-busy={processing === sub.id || undefined}
                       >
                         {processing === sub.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
                         Approve &amp; Add to Vett
@@ -228,6 +229,7 @@ export default function AdminSubmissionsPage() {
                         className="border-orange-300 text-orange-700 hover:bg-orange-50"
                         onClick={() => moderate(sub, 'duplicate')}
                         disabled={processing === sub.id}
+                        aria-busy={processing === sub.id || undefined}
                       >
                         <Copy className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                         Mark Duplicate
@@ -238,6 +240,7 @@ export default function AdminSubmissionsPage() {
                         className="border-red-300 text-red-700 hover:bg-red-50"
                         onClick={() => moderate(sub, 'rejected')}
                         disabled={processing === sub.id}
+                        aria-busy={processing === sub.id || undefined}
                       >
                         <XCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                         Reject

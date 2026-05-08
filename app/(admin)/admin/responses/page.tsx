@@ -129,6 +129,7 @@ export default function AdminResponsesPage() {
                             className="bg-red-600 hover:bg-red-700 text-white"
                             onClick={() => moderate(item.id, 'rejected', reason)}
                             disabled={processing === item.id}
+                            aria-busy={processing === item.id || undefined}
                           >
                             {processing === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : <XCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
                             Confirm Reject
@@ -138,6 +139,7 @@ export default function AdminResponsesPage() {
                             variant="outline"
                             onClick={() => { setRejectingId(null); setReason('') }}
                             disabled={processing === item.id}
+                            aria-busy={processing === item.id || undefined}
                           >
                             Cancel
                           </Button>
@@ -150,6 +152,7 @@ export default function AdminResponsesPage() {
                           className="bg-teal-600 hover:bg-teal-700 text-white"
                           onClick={() => moderate(item.id, 'approved')}
                           disabled={processing === item.id}
+                          aria-busy={processing === item.id || undefined}
                         >
                           {processing === item.id ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
                           Approve Response
@@ -160,6 +163,7 @@ export default function AdminResponsesPage() {
                           className="border-red-300 text-red-700 hover:bg-red-50"
                           onClick={() => setRejectingId(item.id)}
                           disabled={processing === item.id}
+                          aria-busy={processing === item.id || undefined}
                         >
                           <XCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                           Reject
