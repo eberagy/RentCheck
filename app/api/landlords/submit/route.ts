@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   const { data: profile } = await supabase.from('profiles').select('is_banned').eq('id', user.id).single()
   if (profile?.is_banned) return NextResponse.json({ error: 'Account suspended' }, { status: 403 })
 
-  const body = await req.json()
+  const body = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Invalid' }, { status: 422 })
 

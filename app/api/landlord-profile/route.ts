@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(`landlord-profile:${user.id}`, 20, 3600_000)
   if (!rl.success) return rateLimitResponse(rl)
 
-  const body = await req.json()
+  const body = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: 'Invalid input' }, { status: 422 })
 

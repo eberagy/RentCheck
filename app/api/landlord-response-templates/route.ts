@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(`response-templates:${user.id}`, 30, 3600_000)
   if (!rl.success) return rateLimitResponse(rl)
 
-  const body = await req.json()
+  const body = await req.json().catch(() => null)
   const parsed = createSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: 'Invalid input' }, { status: 422 })
 

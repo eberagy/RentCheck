@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   const rl = rateLimit(`verify-lease:${user.id}`, 20, 3600_000)
   if (!rl.success) return rateLimitResponse(rl)
 
-  const body = await req.json()
+  const body = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success || !parsed.data.docPath || !parsed.data.filename) {
     return NextResponse.json({ error: 'Invalid lease upload payload' }, { status: 422 })
