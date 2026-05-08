@@ -3,6 +3,7 @@ import { dbError } from '@/lib/api-errors'
 import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/admin-auth'
 import { logAdminAction } from '@/lib/audit'
+import { captureException } from '@/lib/sentry'
 
 // Verification docs (utility bills, govt IDs, deeds) uploaded by landlords
 // during the claim/submission flow are sensitive PII. This route is the
@@ -71,7 +72,13 @@ export async function GET(req: NextRequest) {
   const { data, error } = await serviceClient.storage
     .from('landlord-verification-docs')
     .createSignedUrl(path, 3600)
-  if (error || !data) return NextResponse.json({ error: 'Could not generate URL' }, { status: 500 })
+  // Storage signed-URL failure (bucket policy regression, expired
+  // service role, transient outage) was responding with a generic
+  // 500 and no Sentry breadcrumb. Capture before responding.
+  if (error || !data) {
+    if (error) captureException(error, { where: 'admin/verification-doc-url:storage', resourceType, resourceId })
+    return NextResponse.json({ error: 'Could not generate URL' }, { status: 500 })
+  }
 
   // Audit log: admin viewed a verification doc. Mirrors lease.viewed
   // pattern (added in 56a892c). Required for accountability when a

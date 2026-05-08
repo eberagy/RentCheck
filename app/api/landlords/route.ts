@@ -42,7 +42,13 @@ export async function GET(req: NextRequest) {
       .eq('id', id)
       .single()
 
-    if (error || !data) return NextResponse.json({ error: 'Landlord not found' }, { status: 404 })
+    // Same PGRST116 split as the rest of the API. Public read but
+    // the by-id route is consumed by ReviewForm's preselect lookup —
+    // a real DB error showing as 404 there told the user "Landlord
+    // not found" right after they clicked through from a working
+    // landlord page.
+    if (error && error.code !== 'PGRST116') return dbError('landlords:by-id', error)
+    if (!data) return NextResponse.json({ error: 'Landlord not found' }, { status: 404 })
     return NextResponse.json({ landlord: data })
   }
 
