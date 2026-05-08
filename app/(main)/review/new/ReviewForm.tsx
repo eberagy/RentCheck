@@ -656,7 +656,14 @@ export default function ReviewForm() {
                   Would you rent from them again? <span className="text-red-600" aria-hidden="true">*</span>
                   <span className="sr-only"> (required)</span>
                 </span>
-                <div role="radiogroup" aria-labelledby="would-rent-again-label" aria-required="true" className="flex gap-2.5">
+                <div
+                  role="radiogroup"
+                  aria-labelledby="would-rent-again-label"
+                  aria-required="true"
+                  aria-invalid={errors.wouldRentAgain ? true : undefined}
+                  aria-describedby={errors.wouldRentAgain ? 'review-would-rent-again-error' : undefined}
+                  className="flex gap-2.5"
+                >
                   {(['yes', 'no', 'unsure'] as const).map(v => {
                     const selected = watch('wouldRentAgain') === v
                     return (
@@ -677,7 +684,7 @@ export default function ReviewForm() {
                     )
                   })}
                 </div>
-                {errors.wouldRentAgain && <p role="alert" className="text-xs text-red-600 mt-1">{errors.wouldRentAgain.message}</p>}
+                {errors.wouldRentAgain && <p id="review-would-rent-again-error" role="alert" className="text-xs text-red-600 mt-1">{errors.wouldRentAgain.message}</p>}
               </div>
 
               {/* Sub-ratings */}
