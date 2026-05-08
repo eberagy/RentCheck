@@ -9,30 +9,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatDateRelative } from '@/lib/utils'
+import { captureException } from '@/lib/sentry'
 
 export const revalidate = 60
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
 
-  const [
-    { count: pendingReviews },
-    { count: approvedReviews },
-    { count: rejectedReviews },
-    { count: pendingClaims },
-    { count: openDisputes },
-    { count: pendingSubmissions },
-    { count: totalUsers },
-    { count: totalLandlords },
-    { count: totalWatchlists },
-    { count: totalPublicRecords },
-    { count: pendingLeases },
-    { count: pendingResponses },
-    { count: flaggedReviewCount },
-    { data: recentSyncs },
-    { data: recentPendingReviews },
-    { data: recentPendingSubmissions },
-  ] = await Promise.all([
+  const results = await Promise.all([
     supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
     supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'approved'),
     supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('status', 'rejected'),
@@ -60,6 +44,42 @@ export default async function AdminDashboardPage() {
       .order('created_at', { ascending: true })
       .limit(5),
   ])
+
+  // Surface per-query errors to Sentry. The previous version just
+  // destructured count/data and a silent .error meant the admin saw 0
+  // pending reviews / 0 disputes / 0 anything — which on this page is a
+  // happy state, so a hidden RLS/permission failure could leave the
+  // moderation queue invisible. Names match the destructure order.
+  const queryNames = [
+    'reviews:pending', 'reviews:approved', 'reviews:rejected',
+    'claims:pending', 'disputes:open', 'submissions:pending',
+    'profiles:total', 'landlords:total', 'watchlist:total',
+    'public_records:total', 'leases:pending', 'responses:pending',
+    'review_flags:total', 'sync_log:recent',
+    'reviews:recent_pending', 'submissions:recent_pending',
+  ]
+  for (let i = 0; i < results.length; i++) {
+    const err = results[i]?.error
+    if (err) captureException(err, { where: `admin:home:${queryNames[i]}` })
+  }
+  const [
+    { count: pendingReviews },
+    { count: approvedReviews },
+    { count: rejectedReviews },
+    { count: pendingClaims },
+    { count: openDisputes },
+    { count: pendingSubmissions },
+    { count: totalUsers },
+    { count: totalLandlords },
+    { count: totalWatchlists },
+    { count: totalPublicRecords },
+    { count: pendingLeases },
+    { count: pendingResponses },
+    { count: flaggedReviewCount },
+    { data: recentSyncs },
+    { data: recentPendingReviews },
+    { data: recentPendingSubmissions },
+  ] = results
 
   const totalReviews = (pendingReviews ?? 0) + (approvedReviews ?? 0) + (rejectedReviews ?? 0)
 
