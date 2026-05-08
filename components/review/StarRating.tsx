@@ -10,12 +10,15 @@ interface StarRatingProps {
   readonly?: boolean
   size?: 'sm' | 'md' | 'lg'
   showLabel?: boolean
+  /** Forward-pass through to the radiogroup so callers can wire up form errors. */
+  ariaInvalid?: boolean
+  ariaDescribedBy?: string
 }
 
 const LABELS = ['', 'Very Poor', 'Poor', 'Fair', 'Good', 'Excellent']
 const SIZES = { sm: 'h-3 w-3', md: 'h-5 w-5', lg: 'h-7 w-7' }
 
-export function StarRating({ value, onChange, readonly = false, size = 'md', showLabel = false }: StarRatingProps) {
+export function StarRating({ value, onChange, readonly = false, size = 'md', showLabel = false, ariaInvalid, ariaDescribedBy }: StarRatingProps) {
   const [hovered, setHovered] = useState(0)
   const display = readonly ? value : (hovered || value)
   const starSize = SIZES[size]
@@ -67,7 +70,13 @@ export function StarRating({ value, onChange, readonly = false, size = 'md', sho
   // announcements rather than 5 detached buttons.
   return (
     <div className="flex items-center gap-1">
-      <div className="flex items-center gap-0.5" role="radiogroup" aria-label="Rating">
+      <div
+        className="flex items-center gap-0.5"
+        role="radiogroup"
+        aria-label="Rating"
+        aria-invalid={ariaInvalid || undefined}
+        aria-describedby={ariaDescribedBy}
+      >
         {[1, 2, 3, 4, 5].map(star => {
           const filled = star <= display
           const halfFilled = !filled && star - 0.5 <= display

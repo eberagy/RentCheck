@@ -539,8 +539,15 @@ export default function ReviewForm() {
                 <div className="flex items-baseline justify-between mb-2">
                   <span className="text-[13px] font-semibold text-slate-900">Overall rating <span className="text-red-600" aria-hidden="true">*</span></span>
                 </div>
-                <StarRating value={ratingOverall} onChange={v => setValue('ratingOverall', v)} size="lg" showLabel />
-                {errors.ratingOverall && <p role="alert" className="text-xs text-red-600 mt-1">Please select a rating</p>}
+                <StarRating
+                  value={ratingOverall}
+                  onChange={v => setValue('ratingOverall', v)}
+                  size="lg"
+                  showLabel
+                  ariaInvalid={!!errors.ratingOverall}
+                  ariaDescribedBy={errors.ratingOverall ? 'review-rating-error' : undefined}
+                />
+                {errors.ratingOverall && <p id="review-rating-error" role="alert" className="text-xs text-red-600 mt-1">Please select a rating</p>}
               </div>
 
               {/* Property address */}
