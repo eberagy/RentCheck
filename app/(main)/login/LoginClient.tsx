@@ -49,9 +49,20 @@ export default function LoginClient() {
 
   async function handleGoogleSignIn() {
     setGoogleLoading(true)
-    const { error } = await signInWithGoogle(redirectTo)
-    if (error) {
-      toast.error('Sign in failed. Please try again.')
+    try {
+      const { error } = await signInWithGoogle(redirectTo)
+      if (error) {
+        toast.error('Sign in failed. Please try again.')
+        setGoogleLoading(false)
+      }
+      // Success path: signInWithOAuth navigates the browser to Google.
+      // Don't clear googleLoading — the page is about to unmount.
+    } catch {
+      // Throw path: network failure, popup blocker rejecting the
+      // OAuth redirect, etc. Without this catch the button stayed
+      // stuck on its spinner with no toast — the user couldn't tell
+      // if anything was happening.
+      toast.error("Couldn't reach Google. Please try again.")
       setGoogleLoading(false)
     }
   }
