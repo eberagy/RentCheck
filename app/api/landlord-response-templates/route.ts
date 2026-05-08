@@ -17,11 +17,15 @@ const createSchema = z.object({
 
 async function requireVerifiedClaimant(userId: string, landlordId: string) {
   const service = createServiceClient()
-  const { data: landlord } = await service
+  const { data: landlord, error } = await service
     .from('landlords')
     .select('id, claimed_by, is_verified')
     .eq('id', landlordId)
     .single()
+  // PGRST116 = "no rows" — that's the legitimate 404 case.
+  // Anything else is a real failure (network, perm) that should
+  // propagate as 500, not be masked as 404.
+  if (error && error.code !== 'PGRST116') return { error: 'Database error', status: 500 as const }
   if (!landlord) return { error: 'Landlord not found', status: 404 as const }
   if (landlord.claimed_by !== userId || !landlord.is_verified) {
     return { error: 'Only the verified claimant can manage templates.', status: 403 as const }
@@ -121,11 +125,16 @@ export async function DELETE(req: NextRequest) {
   if (!uuid.success) return NextResponse.json({ error: 'Invalid id' }, { status: 422 })
 
   const service = createServiceClient()
-  const { data: tpl } = await service
+  const { data: tpl, error: tplErr } = await service
     .from('response_templates')
     .select('id, landlord_id')
     .eq('id', id)
     .single()
+  // Same PGRST116 split as requireVerifiedClaimant — a transient DB
+  // error shouldn't masquerade as 404 ("template was deleted")
+  // because it'd let a malicious caller probe template IDs and infer
+  // existence from response timing.
+  if (tplErr && tplErr.code !== 'PGRST116') return dbError('landlord-response-templates:delete-lookup', tplErr)
   if (!tpl) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const gate = await requireVerifiedClaimant(user.id, tpl.landlord_id)
