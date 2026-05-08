@@ -62,7 +62,11 @@ async function getStats() {
       reviews: reviewCount ?? 0,
       landlords: landlordCount ?? 0,
       records: recordCount ?? 0,
-      cities: Number(cityCountResult ?? 0) || 21,
+      // Fallback floor for the cities counter on RPC failure. 23 is the
+      // verified live count as of 2026-05 (per session-state memory);
+      // bump conservatively when we cross the next threshold rather
+      // than letting the fallback drift further from reality.
+      cities: Number(cityCountResult ?? 0) || 23,
     }
   } catch (err) {
     // Homepage is the highest-traffic page on the site — a sustained
@@ -70,7 +74,7 @@ async function getStats() {
     // Surface to Sentry so we know within minutes instead of via "why
     // does Vett say there are 0 landlords" tweets.
     captureException(err, { where: 'home:getStats' })
-    return { reviews: 0, landlords: 0, records: 0, cities: 21 }
+    return { reviews: 0, landlords: 0, records: 0, cities: 23 }
   }
 }
 
