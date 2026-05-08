@@ -73,6 +73,21 @@ export async function DELETE(req: NextRequest) {
   const landlordId = searchParams.get('landlordId')
   const propertyId = searchParams.get('propertyId')
 
+  // Without one of these the delete becomes WHERE user_id = X with no
+  // further filter — wiping the user's entire watchlist. Reject as 422
+  // instead. UUID-shape is enforced by the .eq() round-trip; a bad
+  // value just won't match and produces "0 rows deleted" silently.
+  if (!landlordId && !propertyId) {
+    return NextResponse.json({ error: 'landlordId or propertyId required' }, { status: 422 })
+  }
+  const idSchema = z.string().uuid()
+  if (landlordId && !idSchema.safeParse(landlordId).success) {
+    return NextResponse.json({ error: 'Invalid landlordId' }, { status: 422 })
+  }
+  if (propertyId && !idSchema.safeParse(propertyId).success) {
+    return NextResponse.json({ error: 'Invalid propertyId' }, { status: 422 })
+  }
+
   let q = supabase.from('watchlist').delete().eq('user_id', user.id)
   if (landlordId) q = q.eq('landlord_id', landlordId)
   if (propertyId) q = q.eq('property_id', propertyId)
