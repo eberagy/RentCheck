@@ -49,6 +49,18 @@ export function SearchBar({ className, size = 'md', placeholder, autoFocus, vari
   // visible row and the visible highlight disappears.
   useEffect(() => { setActiveIndex(-1) }, [results])
 
+  // Scroll the highlighted option into view when arrow-keys move it.
+  // Without this, on a long result list, the visual highlight would
+  // disappear off the bottom of the dropdown viewport. block:'nearest'
+  // avoids jarring centered scrolls.
+  useEffect(() => {
+    if (activeIndex < 0) return
+    const el = containerRef.current?.querySelector<HTMLElement>(
+      `#${CSS.escape(listboxId)}-opt-${activeIndex}`,
+    )
+    el?.scrollIntoView({ block: 'nearest' })
+  }, [activeIndex, listboxId])
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!query.trim()) return

@@ -121,13 +121,25 @@ export default function ClaimProfilePage() {
       try {
         const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=landlord&limit=10`, { signal: ac.signal })
         if (ac.signal.aborted) return
+        // Non-2xx (rate limit, 5xx) → empty results instead of letting
+        // a malformed JSON body crash on `.results`. Same hardening as
+        // hooks/useSearch.ts.
+        if (!res.ok) {
+          if (!ac.signal.aborted) setSearchResults([])
+          return
+        }
         const data = await res.json()
         type SearchHit = Landlord & { result_type?: string }
         if (!ac.signal.aborted) {
-          setSearchResults(((data.results ?? []) as SearchHit[]).filter(r => r.result_type === 'landlord' && !r.is_claimed))
+          const hits = Array.isArray(data?.results) ? data.results as SearchHit[] : []
+          setSearchResults(hits.filter(r => r.result_type === 'landlord' && !r.is_claimed))
         }
       } catch (err) {
         if ((err as Error).name === 'AbortError') return
+        // Network failure: clear results so the user doesn't see stale
+        // matches from a prior keystroke. The empty-state copy already
+        // tells them how to add a missing landlord; no toast needed.
+        if (!ac.signal.aborted) setSearchResults([])
       } finally {
         if (searchAbortRef.current === ac) setSearching(false)
       }
