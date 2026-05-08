@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowUpRight, Scale } from 'lucide-react'
 import { US_STATES } from '@/types'
 import { getAllScenarios, getScenario } from '@/lib/rights-scenarios'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
+import { jsonLdSafe } from '@/lib/json-ld'
 
 interface ScenarioPageProps {
   params: Promise<{ state: string; scenario: string }>
@@ -77,10 +78,10 @@ export default async function ScenarioPage({ params }: ScenarioPageProps) {
   return (
     <div className="min-h-screen bg-slate-50">
       <script type="application/ld+json" suppressHydrationWarning>
-        {JSON.stringify(articleJsonLd)}
+        {jsonLdSafe(articleJsonLd)}
       </script>
       <script type="application/ld+json" suppressHydrationWarning>
-        {JSON.stringify(breadcrumbJsonLd)}
+        {jsonLdSafe(breadcrumbJsonLd)}
       </script>
 
       <article className="mx-auto max-w-[720px] px-7 py-12">

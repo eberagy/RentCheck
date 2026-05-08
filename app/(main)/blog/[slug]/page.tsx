@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
 import { getPost, getAllPosts } from '@/lib/blog'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
+import { jsonLdSafe } from '@/lib/json-ld'
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>
@@ -132,10 +133,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   return (
     <div className="min-h-screen bg-white">
       <script type="application/ld+json" suppressHydrationWarning>
-        {JSON.stringify(articleJsonLd)}
+        {jsonLdSafe(articleJsonLd)}
       </script>
       <script type="application/ld+json" suppressHydrationWarning>
-        {JSON.stringify(breadcrumbJsonLd)}
+        {jsonLdSafe(breadcrumbJsonLd)}
       </script>
       <article className="mx-auto max-w-[720px] px-7 py-14">
         <Link href="/blog" className="mb-6 inline-flex items-center gap-1.5 text-[13px] text-slate-500 hover:text-slate-700 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">

@@ -293,7 +293,7 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       { '@type': 'ListItem', position: cityPath ? 3 : 2, name: landlord.display_name, item: `${siteUrl}/landlord/${landlord.slug}` },
     ],
   })
-  const jsonLd = JSON.stringify({
+  const jsonLd = jsonLdSafe({
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     '@id': `${siteUrl}/landlord/${landlord.slug}`,
