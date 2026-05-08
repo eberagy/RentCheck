@@ -10,6 +10,7 @@ import { ViolationBadge } from './ViolationBadge'
 import { FCRADisclaimer } from '@/components/compliance/FCRADisclaimer'
 import { DataAccuracyNote } from '@/components/compliance/DataAccuracyNote'
 import { formatDate } from '@/lib/utils'
+import { safeExternalUrl } from '@/lib/safe-url'
 import { RECORD_TYPE_LABELS } from '@/types'
 import type { PublicRecord } from '@/types'
 import { extractRecordDetails } from '@/lib/records/extract'
@@ -162,9 +163,15 @@ function RecordRow({ record }: { record: EnrichedRecord }) {
         )}
 
         <div className="ml-auto flex items-center gap-1">
-          {(record.source_url ?? details.citationLink) && (
+          {(() => {
+            // safeExternalUrl drops any javascript:/data:/file: URL that
+            // might slip through from a government data feed. Defense-
+            // in-depth: gov data isn't normally malicious, but the data
+            // sync handlers don't sanitize URLs at write-time.
+            const sourceHref = safeExternalUrl((record.source_url ?? details.citationLink) as string | null)
+            return sourceHref ? (
             <a
-              href={(record.source_url ?? details.citationLink) as string}
+              href={sourceHref}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="View record on city portal (opens in new tab)"
@@ -174,7 +181,8 @@ function RecordRow({ record }: { record: EnrichedRecord }) {
               <ExternalLink className="h-3 w-3" aria-hidden="true" />
               City portal
             </a>
-          )}
+            ) : null
+          })()}
           {(record.description || details.inspectorComments) && (
             <button
               type="button"

@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { createClient } from '@/lib/supabase/client'
 import { formatDate } from '@/lib/utils'
+import { safeExternalUrl } from '@/lib/safe-url'
 import { toast } from 'sonner'
 
 type Dispute = {
@@ -148,13 +149,16 @@ export default function AdminDisputesPage() {
                       {dispute.record.landlord && <span>Landlord: {dispute.record.landlord.display_name}</span>}
                       {dispute.record.property && <span>{dispute.record.property.address_line1}, {dispute.record.property.city}</span>}
                     </div>
-                    {dispute.record.source_url && (
-                      <a href={dispute.record.source_url} target="_blank" rel="noopener noreferrer"
-                        aria-label="View source record (opens in new tab)"
-                        className="inline-flex items-center gap-1 text-xs text-navy-600 hover:underline mt-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
-                        <ExternalLink className="h-3 w-3" aria-hidden="true" /> View source
-                      </a>
-                    )}
+                    {(() => {
+                      const safe = safeExternalUrl(dispute.record.source_url)
+                      return safe ? (
+                        <a href={safe} target="_blank" rel="noopener noreferrer"
+                          aria-label="View source record (opens in new tab)"
+                          className="inline-flex items-center gap-1 text-xs text-navy-600 hover:underline mt-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-500 focus-visible:ring-offset-2">
+                          <ExternalLink className="h-3 w-3" aria-hidden="true" /> View source
+                        </a>
+                      ) : null
+                    })()}
                   </div>
                 )}
 
