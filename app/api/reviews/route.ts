@@ -100,14 +100,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Lease upload must belong to the signed-in renter' }, { status: 403 })
   }
 
-  // Check for duplicate submission (same user + landlord in last 30 days)
-  const { data: existingList } = await supabase
+  // Check for duplicate submission (same user + landlord in last 30
+  // days). Without surfacing .error a transient DB hiccup drops
+  // existingList to null and slips a duplicate past the dedup. Same
+  // pattern fixed in c581dd8 (landlords/submit) and 207f2b1 (flag).
+  const { data: existingList, error: existingErr } = await supabase
     .from('reviews')
     .select('id')
     .eq('reviewer_id', user.id)
     .eq('landlord_id', d.landlordId)
     .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
     .limit(1)
+  if (existingErr) return dbError('reviews:dedup', existingErr)
 
   if (existingList && existingList.length > 0) return NextResponse.json({ error: 'You recently submitted a review for this landlord' }, { status: 409 })
 

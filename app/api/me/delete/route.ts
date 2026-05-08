@@ -36,8 +36,22 @@ export async function POST(req: NextRequest) {
 
   // Admins can't self-delete. They'd lose access to the moderation queue
   // before we could audit the hand-off. Ask them to email support first.
-  const { data: profile } = await supabase.from('profiles').select('user_type').eq('id', user.id).single()
-  if (profile?.user_type === 'admin') {
+  const { data: profile, error: profileErr } = await supabase
+    .from('profiles')
+    .select('user_type')
+    .eq('id', user.id)
+    .single()
+  // Fail closed on any profile-lookup failure. Without splitting,
+  // a transient DB error left profile=null and the `=== 'admin'`
+  // check evaluated to false — letting an admin accidentally self-
+  // delete during DB instability. PGRST116 ("no profile row") is also
+  // unsafe to proceed on for the same reason: we can't confirm the
+  // user is non-admin. 503 prompts the caller to retry.
+  if (profileErr || !profile) {
+    captureException(profileErr ?? new Error('me/delete: missing profile'), { where: 'me/delete:profile-lookup', userId: user.id })
+    return NextResponse.json({ error: 'Could not verify account. Please retry in a moment.' }, { status: 503 })
+  }
+  if (profile.user_type === 'admin') {
     return NextResponse.json({ error: 'Admin accounts must be demoted by another admin before self-deletion. Email support@vettrentals.com.' }, { status: 403 })
   }
 
@@ -76,36 +90,50 @@ export async function POST(req: NextRequest) {
   // 3. Delete rows that don't cascade cleanly (some FK are SET NULL, some CASCADE).
   // Reviews: reviewer_id → SET NULL (review text stays, reviewer anonymized).
   // Everything else: owned by user, can be hard-deleted.
-  await Promise.all([
-    service.from('watchlist').delete().eq('user_id', user.id),
-    service.from('landlord_claims').delete().eq('claimed_by', user.id),
-    service.from('landlord_submissions').delete().eq('submitted_by', user.id),
-    service.from('record_disputes').delete().eq('disputed_by', user.id),
-    service.from('review_flags').delete().eq('flagged_by', user.id),
-    service.from('saved_searches').delete().eq('user_id', user.id),
-    service.from('response_templates').delete().eq('created_by', user.id),
+  const deleteOps = [
+    { name: 'watchlist', op: service.from('watchlist').delete().eq('user_id', user.id) },
+    { name: 'landlord_claims', op: service.from('landlord_claims').delete().eq('claimed_by', user.id) },
+    { name: 'landlord_submissions', op: service.from('landlord_submissions').delete().eq('submitted_by', user.id) },
+    { name: 'record_disputes', op: service.from('record_disputes').delete().eq('disputed_by', user.id) },
+    { name: 'review_flags', op: service.from('review_flags').delete().eq('flagged_by', user.id) },
+    { name: 'saved_searches', op: service.from('saved_searches').delete().eq('user_id', user.id) },
+    { name: 'response_templates', op: service.from('response_templates').delete().eq('created_by', user.id) },
     // email_leads has no user_id; match by email so anon-path captures
     // get cleaned up too. Best-effort.
-    user.email
-      ? service.from('email_leads').delete().eq('email', user.email.toLowerCase())
-      : Promise.resolve({ data: null }),
-    // review_helpful_votes may or may not exist depending on migrations; tolerate.
-    (async () => {
-      try { await service.from('review_helpful_votes').delete().eq('user_id', user.id) }
-      catch { /* table may not exist yet */ }
-    })(),
-  ])
+    {
+      name: 'email_leads',
+      op: user.email
+        ? service.from('email_leads').delete().eq('email', user.email.toLowerCase())
+        : Promise.resolve({ error: null }),
+    },
+  ]
+  // GDPR/CCPA require completeness — silent .error meant a delete that
+  // failed left rows the user thinks were purged. Capture per-table so
+  // we can hand-cleanup the survivors instead of waiting for an audit.
+  const deleteResults = await Promise.all(deleteOps.map(d => d.op))
+  for (let i = 0; i < deleteResults.length; i++) {
+    const r = deleteResults[i] as { error?: unknown } | undefined
+    if (r?.error) captureException(r.error, { where: `me/delete:${deleteOps[i]!.name}`, userId: user.id })
+  }
+  // review_helpful_votes may or may not exist depending on migrations; tolerate.
+  try { await service.from('review_helpful_votes').delete().eq('user_id', user.id) }
+  catch { /* table may not exist yet */ }
 
   // 4. Strip reviewer PII on reviews — this is what "anonymize" means.
   // FK is already SET NULL on delete, but we explicitly null it here so the
   // reviews row survives the auth.users delete below without racing.
-  await service
+  const { error: anonErr } = await service
     .from('reviews')
     .update({ reviewer_id: null })
     .eq('reviewer_id', user.id)
+  // Failure here is the worst kind of GDPR/CCPA gap — the user is
+  // told their account is gone but reviews still link back to their
+  // user_id. Capture so we can hand-fix.
+  if (anonErr) captureException(anonErr, { where: 'me/delete:reviews-anonymize', userId: user.id })
 
   // 5. Delete the profile row. This is the point of no return.
-  await service.from('profiles').delete().eq('id', user.id)
+  const { error: profileDelErr } = await service.from('profiles').delete().eq('id', user.id)
+  if (profileDelErr) captureException(profileDelErr, { where: 'me/delete:profile-delete', userId: user.id })
 
   // 6. Delete the Supabase Auth user. Without this the user could sign in
   // again with the same identity provider and see a broken account.
