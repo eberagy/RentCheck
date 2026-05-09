@@ -70,7 +70,10 @@ export async function POST(req: NextRequest) {
     // them to "sign in to manage." That was a CAN-SPAM gap.
     const unsubscribeToken = createEmailUnsubscribeToken(cleanEmail)
     void sendCityAlertConfirmationEmail(cleanEmail, { city: cleanCity, stateAbbr: cleanState, unsubscribeToken })
-      .catch(err => console.error('[email-leads] confirmation send failed:', err))
+      .catch(err => {
+        console.error('[email-leads] confirmation send failed:', err)
+        captureException(err, { where: 'email-leads:confirmation-send' })
+      })
   }
 
   // If a signed-in user submitted a city + state, also create a saved_search

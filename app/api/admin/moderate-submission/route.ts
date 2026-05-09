@@ -112,7 +112,10 @@ export async function POST(req: NextRequest) {
           firstName: submitter.full_name?.split(' ')[0],
           landlordName: submission.display_name,
           landlordSlug: newLandlord.slug,
-        }).catch(err => console.error('[email] submission-approved error:', err))
+        }).catch(err => {
+          console.error('[email] submission-approved error:', err)
+          captureException(err, { where: 'moderate-submission:approved-email' })
+        })
       }
     }
 
@@ -154,7 +157,10 @@ export async function POST(req: NextRequest) {
         landlordName: submission.display_name,
         reason: adminNotes,
         isDuplicate: action === 'duplicate',
-      }).catch(err => console.error('[email] submission-rejected error:', err))
+      }).catch(err => {
+        console.error('[email] submission-rejected error:', err)
+        captureException(err, { where: 'moderate-submission:rejected-email' })
+      })
     }
   }
 

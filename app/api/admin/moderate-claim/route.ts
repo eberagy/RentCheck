@@ -5,6 +5,7 @@ import { createClient, createServiceClient } from '@/lib/supabase/server'
 import { requireAdmin } from '@/lib/admin-auth'
 import { sendClaimApprovedEmail, sendClaimRejectedEmail } from '@/lib/email'
 import { logAdminAction } from '@/lib/audit'
+import { captureException } from '@/lib/sentry'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -86,7 +87,10 @@ export async function POST(req: NextRequest) {
           firstName: claimer.full_name?.split(' ')[0],
           landlordName: landlord.display_name,
           landlordSlug: landlord.slug,
-        }).catch(err => console.error('[email] claim-approved error:', err))
+        }).catch(err => {
+          console.error('[email] claim-approved error:', err)
+          captureException(err, { where: 'moderate-claim:approved-email' })
+        })
       }
     }
   } else if (action === 'rejected') {
@@ -95,7 +99,10 @@ export async function POST(req: NextRequest) {
         firstName: claimer.full_name?.split(' ')[0],
         landlordName: landlord.display_name,
         reason: adminNotes,
-      }).catch(err => console.error('[email] claim-rejected error:', err))
+      }).catch(err => {
+        console.error('[email] claim-rejected error:', err)
+        captureException(err, { where: 'moderate-claim:rejected-email' })
+      })
     }
   }
 

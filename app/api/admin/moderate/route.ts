@@ -80,7 +80,10 @@ export async function POST(req: NextRequest) {
           reviewTitle: review.title ?? 'Your review',
           landlordName: landlord.display_name,
           landlordSlug: landlord.slug,
-        }).catch(err => console.error('[email] review-approved failed:', err))
+        }).catch(err => {
+          console.error('[email] review-approved failed:', err)
+          captureException(err, { where: 'moderate:review-approved-email' })
+        })
 
         // Fire watchlist alerts for users watching this landlord (excluding the reviewer).
         // .catch logs to Vercel; capture to Sentry too so a fan-out
@@ -96,7 +99,10 @@ export async function POST(req: NextRequest) {
           firstName: reviewer.full_name?.split(' ')[0],
           reviewTitle: review.title ?? 'Your review',
           reason: adminNotes,
-        }).catch(err => console.error('[email] review-rejected failed:', err))
+        }).catch(err => {
+          console.error('[email] review-rejected failed:', err)
+          captureException(err, { where: 'moderate:review-rejected-email' })
+        })
       }
     }
   }
@@ -139,6 +145,9 @@ async function fireWatchlistAlerts(
       alertType: 'new_review',
       summary,
       unsubscribeToken: createUnsubscribeToken(watcher.user_id as string),
-    }).catch(err => console.error('[email] watchlist-alert failed:', err))
+    }).catch(err => {
+      console.error('[email] watchlist-alert failed:', err)
+      captureException(err, { where: 'moderate:watchlist-alert-email', userId: watcher.user_id as string })
+    })
   }
 }

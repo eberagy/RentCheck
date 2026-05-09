@@ -91,13 +91,19 @@ export async function POST(req: NextRequest) {
             landlordName: landlord.display_name,
             landlordSlug: landlord.slug,
             reviewTitle: review.title ?? undefined,
-          }).catch(err => console.error('[email] response-approved error:', err))
+          }).catch(err => {
+            console.error('[email] response-approved error:', err)
+            captureException(err, { where: 'moderate-response:approved-email' })
+          })
         } else {
           sendResponseRejectedEmail(owner.email, {
             firstName: owner.full_name?.split(' ')[0],
             landlordName: landlord.display_name,
             reason: adminNotes,
-          }).catch(err => console.error('[email] response-rejected error:', err))
+          }).catch(err => {
+            console.error('[email] response-rejected error:', err)
+            captureException(err, { where: 'moderate-response:rejected-email' })
+          })
         }
       }
     }
