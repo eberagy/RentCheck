@@ -38,6 +38,10 @@ export default function AdminReviewsPage() {
   const [processing, setProcessing] = useState<string | null>(null)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [bulkRunning, setBulkRunning] = useState(false)
+  // Bumping reloadKey re-fires the load effect — used by bulk-moderate to
+  // refetch after the optimistic local removal so any rows that failed
+  // server-side reappear in the queue.
+  const [reloadKey, setReloadKey] = useState(0)
   const supabase = createClient()
 
   useEffect(() => {
@@ -63,7 +67,7 @@ export default function AdminReviewsPage() {
     }
     loadReviews()
     return () => { cancelled = true }
-  }, [filter, supabase])
+  }, [filter, reloadKey, supabase])
 
   function toggleSelect(reviewId: string) {
     setSelected(prev => {
@@ -154,7 +158,7 @@ export default function AdminReviewsPage() {
     if (failed > 0) toast.error(`${failed} review${failed === 1 ? '' : 's'} failed`)
     setReviews(prev => prev.filter(r => !succeeded.has(r.id)))
     setSelected(new Set())
-    loadReviews()
+    setReloadKey(k => k + 1)
   }
 
   return (

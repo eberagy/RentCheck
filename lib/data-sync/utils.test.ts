@@ -28,7 +28,7 @@ function makeSupabase(
   plan: Record<string, Resp[]>,
 ): { client: SupabaseClient; calls: { from: ReturnType<typeof vi.fn> } } {
   const queues: Record<string, Resp[]> = {}
-  for (const k of Object.keys(plan)) queues[k] = [...plan[k]]
+  for (const [k, v] of Object.entries(plan)) queues[k] = [...v]
 
   function makeChain(next: Resp): Record<string, unknown> {
     const chain = {

@@ -10,9 +10,9 @@ import {
   Heading,
   Text,
   Button,
-  Hr,
   Link,
 } from '@react-email/components'
+import { EmailFooter } from './_components/Footer'
 
 interface WelcomeEmailProps {
   firstName?: string
@@ -115,23 +115,7 @@ export default function WelcomeEmail({ firstName }: WelcomeEmailProps) {
               </Button>
             </Section>
 
-            <Hr style={hr} />
-
-              <Text style={footer}>
-                You received this because you created a Vett account.
-                <br />
-              <Link href="https://www.vettrentals.com/unsubscribe" style={footerLink}>
-                Unsubscribe
-              </Link>{' '}
-              ·{' '}
-              <Link href="https://www.vettrentals.com/privacy" style={footerLink}>
-                Privacy Policy
-              </Link>{' '}
-              ·{' '}
-              <Link href="https://www.vettrentals.com" style={footerLink}>
-                vettrentals.com
-              </Link>
-            </Text>
+            <EmailFooter note="You received this because you created a Vett account." />
           </Section>
         </Container>
       </Body>
@@ -317,21 +301,3 @@ const ctaButton: React.CSSProperties = {
   letterSpacing: '-0.2px',
 }
 
-const hr: React.CSSProperties = {
-  borderColor: '#e5e7eb',
-  borderTopWidth: '1px',
-  margin: '24px 0',
-}
-
-const footer: React.CSSProperties = {
-  fontSize: '12px',
-  color: '#9ca3af',
-  lineHeight: '1.6',
-  textAlign: 'center' as const,
-  margin: '0',
-}
-
-const footerLink: React.CSSProperties = {
-  color: '#9ca3af',
-  textDecoration: 'underline',
-}

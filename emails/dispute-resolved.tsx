@@ -7,9 +7,9 @@ import {
   Section,
   Heading,
   Text,
-  Hr,
   Link,
 } from '@react-email/components'
+import { EmailFooter } from './_components/Footer'
 
 export type DisputeDecision = 'record_removed' | 'record_updated' | 'no_action' | 'refer_to_source'
 
@@ -72,12 +72,7 @@ export default function DisputeResolvedEmail({ firstName, decision, recordLabel,
               </Link>
             </Section>
 
-            <Hr style={hr} />
-            <Text style={footer}>
-              You received this because you submitted a record dispute on Vett.
-              <br />
-              <Link href="https://www.vettrentals.com/unsubscribe" style={footerLink}>Manage emails</Link>
-            </Text>
+            <EmailFooter note="You received this because you submitted a record dispute on Vett." />
           </Section>
         </Container>
       </Body>
@@ -100,6 +95,3 @@ const notesLabel: React.CSSProperties = { fontSize: '11px', fontWeight: '700', c
 const notesBody: React.CSSProperties = { fontSize: '13px', color: '#334155', lineHeight: '1.55', margin: 0 }
 const ctaSection: React.CSSProperties = { textAlign: 'center' as const, marginBottom: '16px' }
 const primaryButton: React.CSSProperties = { backgroundColor: '#0f7b6c', color: '#ffffff', borderRadius: '10px', padding: '13px 24px', textDecoration: 'none', fontSize: '14px', fontWeight: '700', display: 'inline-block' }
-const hr: React.CSSProperties = { borderColor: '#e5e7eb', borderTopWidth: '1px', margin: '24px 0 18px' }
-const footer: React.CSSProperties = { fontSize: '11px', color: '#9ca3af', lineHeight: '1.6', textAlign: 'center' as const, margin: 0 }
-const footerLink: React.CSSProperties = { color: '#9ca3af', textDecoration: 'underline' }

@@ -8,11 +8,11 @@ import {
   Heading,
   Text,
   Button,
-  Hr,
   Link,
   Row,
   Column,
 } from '@react-email/components'
+import { EmailFooter } from './_components/Footer'
 
 interface ReviewApprovedEmailProps {
   firstName?: string
@@ -114,19 +114,7 @@ export default function ReviewApprovedEmail({
               </div>
             </div>
 
-            <Hr style={hr} />
-
-            <Text style={footer}>
-              You received this because you submitted a review on Vett.
-              <br />
-              <Link href="https://www.vettrentals.com/privacy" style={footerLink}>
-                Privacy Policy
-              </Link>{' '}
-              ·{' '}
-              <Link href="https://www.vettrentals.com/unsubscribe" style={footerLink}>
-                Unsubscribe
-              </Link>
-            </Text>
+            <EmailFooter note="You received this because you submitted a review on Vett." />
           </Section>
         </Container>
       </Body>
@@ -374,21 +362,3 @@ const shareLinkText: React.CSSProperties = {
 }
 
 // Footer
-const hr: React.CSSProperties = {
-  borderColor: '#e5e7eb',
-  borderTopWidth: '1px',
-  margin: '24px 0',
-}
-
-const footer: React.CSSProperties = {
-  fontSize: '12px',
-  color: '#9ca3af',
-  lineHeight: '1.6',
-  textAlign: 'center' as const,
-  margin: '0',
-}
-
-const footerLink: React.CSSProperties = {
-  color: '#9ca3af',
-  textDecoration: 'underline',
-}
