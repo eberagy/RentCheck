@@ -25,13 +25,14 @@ export function CitySubscribeButton({ city, stateAbbr }: Props) {
       if (cancelled) return
       if (!user) { setStatus('signed-out'); return }
       const res = await fetch('/api/saved-searches')
+      if (cancelled) return
       if (!res.ok) { setStatus('idle'); return }
       const json = await res.json()
+      if (cancelled) return
       const existing = (json.searches ?? []).find(
         (s: { city: string; state_abbr: string; id: string }) =>
           s.city.toLowerCase() === city.toLowerCase() && s.state_abbr.toUpperCase() === stateAbbr.toUpperCase(),
       )
-      if (cancelled) return
       if (existing) {
         setStatus('subscribed')
         setSubscribedId(existing.id)

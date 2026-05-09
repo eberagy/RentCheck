@@ -47,23 +47,29 @@ export default function AdminClaimsPage() {
   const [docUrls, setDocUrls] = useState<Record<string, string>>({})
   const supabase = createClient()
 
-  useEffect(() => { loadClaims() }, [filter]) // eslint-disable-line
-
-  async function loadClaims() {
-    setLoading(true)
-    const q = supabase
-      .from('landlord_claims')
-      .select('id, status, created_at, doc_url, doc_filename, verification_type, admin_notes, claimed_by, landlord:landlords(id, display_name, city, state_abbr, review_count), claimer:profiles!landlord_claims_claimed_by_fkey(full_name, email)')
-      .order('created_at', { ascending: true })
-    if (filter !== 'all') q.eq('status', filter)
-    const { data, error } = await q.limit(50)
-    if (error) {
-      captureException(error, { where: 'admin:claims:loadClaims', filter })
-      toast.error('Could not load claims')
+  useEffect(() => {
+    // Race guard: rapid filter switches can otherwise let an older query
+    // resolve last and overwrite fresh data.
+    let cancelled = false
+    async function loadClaims() {
+      setLoading(true)
+      const q = supabase
+        .from('landlord_claims')
+        .select('id, status, created_at, doc_url, doc_filename, verification_type, admin_notes, claimed_by, landlord:landlords(id, display_name, city, state_abbr, review_count), claimer:profiles!landlord_claims_claimed_by_fkey(full_name, email)')
+        .order('created_at', { ascending: true })
+      if (filter !== 'all') q.eq('status', filter)
+      const { data, error } = await q.limit(50)
+      if (cancelled) return
+      if (error) {
+        captureException(error, { where: 'admin:claims:loadClaims', filter })
+        toast.error('Could not load claims')
+      }
+      setClaims((data ?? []) as unknown as Claim[])
+      setLoading(false)
     }
-    setClaims((data ?? []) as unknown as Claim[])
-    setLoading(false)
-  }
+    loadClaims()
+    return () => { cancelled = true }
+  }, [filter, supabase])
 
   // Routes through /api/admin/verification-doc-url so the view is
   // audit-logged. Was using a client-side createSignedUrl which

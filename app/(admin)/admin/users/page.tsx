@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { Search, User, Shield, Ban, Loader2, ChevronDown, ChevronUp, Star, Calendar, Mail } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -86,10 +86,13 @@ export default function AdminUsersPage() {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [userReviews, setUserReviews] = useState<Record<string, UserReviewSummary[]>>({})
   const supabase = createClient()
-
-  useEffect(() => { loadUsers() }, []) // eslint-disable-line
+  // Request-id pattern: bump on every call, drop results from anything but
+  // the latest request. Prevents an old slow query from clobbering fresh
+  // results when the admin types fast and earlier queries resolve last.
+  const requestIdRef = useRef(0)
 
   async function loadUsers(q?: string) {
+    const myId = ++requestIdRef.current
     setSearching(true)
     let dbq = supabase
       .from('profiles')
@@ -107,6 +110,7 @@ export default function AdminUsersPage() {
     }
 
     const { data, error } = await dbq
+    if (myId !== requestIdRef.current) return
     if (error) {
       captureException(error, { where: 'admin:users:loadUsers', q: q ?? null })
       toast.error('Could not load users')

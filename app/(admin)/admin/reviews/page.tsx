@@ -40,24 +40,30 @@ export default function AdminReviewsPage() {
   const [bulkRunning, setBulkRunning] = useState(false)
   const supabase = createClient()
 
-  useEffect(() => { loadReviews() }, [filter]) // eslint-disable-line
-
-  async function loadReviews() {
-    setLoading(true)
-    setSelected(new Set())
-    const q = supabase
-      .from('reviews')
-      .select('id, title, body, rating_overall, status, created_at, lease_verified, lease_doc_path, lease_filename, admin_notes, property_address, reviewer:profiles!reviews_reviewer_id_fkey(full_name, email), landlord:landlords(display_name, slug), property:properties(address_line1, city)')
-      .order('created_at', { ascending: true })
-    if (filter !== 'all') q.eq('status', filter)
-    const { data, error } = await q.limit(50)
-    if (error) {
-      captureException(error, { where: 'admin:reviews:loadReviews', filter })
-      toast.error('Could not load reviews')
+  useEffect(() => {
+    // Race guard: rapid filter switches can otherwise let an older query
+    // resolve last and overwrite fresh data with stale rows.
+    let cancelled = false
+    async function loadReviews() {
+      setLoading(true)
+      setSelected(new Set())
+      const q = supabase
+        .from('reviews')
+        .select('id, title, body, rating_overall, status, created_at, lease_verified, lease_doc_path, lease_filename, admin_notes, property_address, reviewer:profiles!reviews_reviewer_id_fkey(full_name, email), landlord:landlords(display_name, slug), property:properties(address_line1, city)')
+        .order('created_at', { ascending: true })
+      if (filter !== 'all') q.eq('status', filter)
+      const { data, error } = await q.limit(50)
+      if (cancelled) return
+      if (error) {
+        captureException(error, { where: 'admin:reviews:loadReviews', filter })
+        toast.error('Could not load reviews')
+      }
+      setReviews((data ?? []) as unknown as Review[])
+      setLoading(false)
     }
-    setReviews((data ?? []) as unknown as Review[])
-    setLoading(false)
-  }
+    loadReviews()
+    return () => { cancelled = true }
+  }, [filter, supabase])
 
   function toggleSelect(reviewId: string) {
     setSelected(prev => {

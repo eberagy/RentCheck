@@ -58,38 +58,48 @@ export default function AdminSubmissionsPage() {
   const [processing, setProcessing] = useState<string | null>(null)
   const supabase = createClient()
 
-  useEffect(() => { load() }, [filter]) // eslint-disable-line
-
-  async function load() {
-    setLoading(true)
-    try {
-      const res = await fetch(`/api/admin/submissions?status=${filter}`)
-      if (res.ok) {
-        const json = await res.json()
-        setSubmissions((json.submissions ?? []) as Submission[])
-      } else {
-        // Fallback to direct query
-        const q = supabase
-          .from('landlord_submissions')
-          .select('id, display_name, business_name, city, state_abbr, zip, website, phone, notes, proof_doc_url, status, admin_notes, created_at, submitter:profiles!landlord_submissions_submitted_by_fkey(full_name, email)')
-          .order('created_at', { ascending: true })
-        if (filter !== 'all') q.eq('status', filter)
-        const { data, error } = await q.limit(50)
-        if (error) {
-          captureException(error, { where: 'admin:submissions:fallback', filter })
-          toast.error('Could not load submissions')
+  useEffect(() => {
+    // Race guard: if the user switches filter twice in quick succession, the
+    // older request can resolve after the newer one and overwrite state with
+    // stale data. Drop everything from a stale run.
+    let cancelled = false
+    async function load() {
+      setLoading(true)
+      try {
+        const res = await fetch(`/api/admin/submissions?status=${filter}`)
+        if (cancelled) return
+        if (res.ok) {
+          const json = await res.json()
+          if (cancelled) return
+          setSubmissions((json.submissions ?? []) as Submission[])
+        } else {
+          // Fallback to direct query
+          const q = supabase
+            .from('landlord_submissions')
+            .select('id, display_name, business_name, city, state_abbr, zip, website, phone, notes, proof_doc_url, status, admin_notes, created_at, submitter:profiles!landlord_submissions_submitted_by_fkey(full_name, email)')
+            .order('created_at', { ascending: true })
+          if (filter !== 'all') q.eq('status', filter)
+          const { data, error } = await q.limit(50)
+          if (cancelled) return
+          if (error) {
+            captureException(error, { where: 'admin:submissions:fallback', filter })
+            toast.error('Could not load submissions')
+          }
+          setSubmissions((data ?? []) as unknown as Submission[])
         }
-        setSubmissions((data ?? []) as unknown as Submission[])
+      } catch (err) {
+        if (cancelled) return
+        // Top-level catch — covers fetch / JSON parse failures from the
+        // primary path. Without surfacing this we'd just see an empty
+        // submissions list with no breadcrumb.
+        captureException(err, { where: 'admin:submissions:load', filter })
+        setSubmissions([])
       }
-    } catch (err) {
-      // Top-level catch — covers fetch / JSON parse failures from the
-      // primary path. Without surfacing this we'd just see an empty
-      // submissions list with no breadcrumb.
-      captureException(err, { where: 'admin:submissions:load', filter })
-      setSubmissions([])
+      if (!cancelled) setLoading(false)
     }
-    setLoading(false)
-  }
+    load()
+    return () => { cancelled = true }
+  }, [filter, supabase])
 
   async function moderate(sub: Submission, action: 'approved' | 'rejected' | 'duplicate') {
     setProcessing(sub.id)

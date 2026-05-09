@@ -49,23 +49,29 @@ export default function AdminDisputesPage() {
   const [processing, setProcessing] = useState<string | null>(null)
   const supabase = createClient()
 
-  useEffect(() => { loadDisputes() }, [filter]) // eslint-disable-line
-
-  async function loadDisputes() {
-    setLoading(true)
-    const q = supabase
-      .from('record_disputes')
-      .select('id, status, reason, detail, created_at, admin_notes, admin_decision, submitter:profiles!record_disputes_disputed_by_fkey(full_name, email), record:public_records(id, record_type, description, source, source_url, landlord:landlords(display_name), property:properties(address_line1, city))')
-      .order('created_at', { ascending: true })
-    if (filter !== 'all') q.eq('status', filter)
-    const { data, error } = await q.limit(50)
-    if (error) {
-      captureException(error, { where: 'admin:disputes:load', filter })
-      toast.error('Could not load disputes')
+  useEffect(() => {
+    // Race guard: a slow first request can resolve after a faster second one
+    // when the user toggles filter, causing stale data to clobber fresh.
+    let cancelled = false
+    async function loadDisputes() {
+      setLoading(true)
+      const q = supabase
+        .from('record_disputes')
+        .select('id, status, reason, detail, created_at, admin_notes, admin_decision, submitter:profiles!record_disputes_disputed_by_fkey(full_name, email), record:public_records(id, record_type, description, source, source_url, landlord:landlords(display_name), property:properties(address_line1, city))')
+        .order('created_at', { ascending: true })
+      if (filter !== 'all') q.eq('status', filter)
+      const { data, error } = await q.limit(50)
+      if (cancelled) return
+      if (error) {
+        captureException(error, { where: 'admin:disputes:load', filter })
+        toast.error('Could not load disputes')
+      }
+      setDisputes((data ?? []) as unknown as Dispute[])
+      setLoading(false)
     }
-    setDisputes((data ?? []) as unknown as Dispute[])
-    setLoading(false)
-  }
+    loadDisputes()
+    return () => { cancelled = true }
+  }, [filter, supabase])
 
   async function resolveDispute(disputeId: string, d: Dispute) {
     const dec = decision[disputeId]
