@@ -179,6 +179,7 @@ export function ReviewCard({ review, isOwn }: ReviewCardProps) {
           onClick={handleHelpful}
           disabled={voting}
           aria-pressed={didVote}
+          aria-busy={voting || undefined}
           aria-label={didVote ? 'Unmark this review as helpful' : 'Mark this review as helpful'}
           className={`flex items-center gap-1.5 rounded text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ${
             didVote ? 'font-semibold text-navy-600' : 'text-slate-500 hover:text-navy-600'
