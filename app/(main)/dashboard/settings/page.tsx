@@ -210,6 +210,7 @@ export default function SettingsPage() {
                       variant="outline"
                       size="sm"
                       disabled={uploadingAvatar}
+                      aria-busy={uploadingAvatar || undefined}
                       onClick={() => fileInputRef.current?.click()}
                     >
                       {uploadingAvatar ? <><Loader2 className="h-4 w-4 mr-1.5 animate-spin" aria-hidden="true" /> Uploading…</> : <><Upload className="h-4 w-4 mr-1.5" aria-hidden="true" /> {profile?.avatar_url ? 'Change photo' : 'Upload photo'}</>}
@@ -220,6 +221,7 @@ export default function SettingsPage() {
                         variant="ghost"
                         size="sm"
                         disabled={uploadingAvatar}
+                        aria-busy={uploadingAvatar || undefined}
                         onClick={removeAvatar}
                         className="text-slate-500 hover:text-red-600"
                       >
