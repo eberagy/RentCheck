@@ -459,6 +459,7 @@ function AccountDeleteSection() {
               className="border-red-300 bg-red-600 text-white hover:bg-red-700 hover:text-white hover:border-red-700"
               onClick={handleDelete}
               disabled={deleting || confirm !== 'DELETE MY ACCOUNT'}
+              aria-busy={deleting || undefined}
             >
               {deleting ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Deleting…</> : <>Confirm delete</>}
             </Button>

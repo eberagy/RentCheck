@@ -215,6 +215,7 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
                           className={`h-8 rounded-full ${row.notify_email ? 'border-teal-300 text-teal-700 bg-teal-50 hover:bg-teal-100' : ''}`}
                           onClick={() => toggleNotify(row)}
                           disabled={processing === row.id}
+                          aria-busy={processing === row.id || undefined}
                         >
                           {row.notify_email ? <Bell className="mr-1 h-3.5 w-3.5" aria-hidden="true" /> : <BellOff className="mr-1 h-3.5 w-3.5" aria-hidden="true" />}
                           {row.notify_email ? 'Alerts on' : 'Alerts off'}
@@ -225,6 +226,7 @@ export function WatchlistClient({ rows }: { rows: WatchlistRow[] }) {
                           className="h-8 rounded-full border-red-200 text-red-700 hover:bg-red-50"
                           onClick={() => remove(row)}
                           disabled={processing === row.id}
+                          aria-busy={processing === row.id || undefined}
                         >
                           <Trash2 className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
                           Remove

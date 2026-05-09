@@ -741,6 +741,7 @@ export default function LandlordPortalPage() {
                                         className="h-8 rounded-full bg-teal text-xs text-white hover:bg-teal-500"
                                         onClick={() => submitResponse(review.id)}
                                         disabled={!responseText.trim() || responseText.length > MAX_RESPONSE_LENGTH || submittingResponse}
+                                        aria-busy={submittingResponse || undefined}
                                       >
                                         {submittingResponse ? <><Loader2 className="mr-1 h-3 w-3 animate-spin" aria-hidden="true" /> Submitting…</> : 'Submit Response'}
                                       </Button>

@@ -443,6 +443,7 @@ export default function ClaimProfilePage() {
           className="w-full bg-navy-600 hover:bg-navy-700 text-white h-11 text-sm font-semibold"
           onClick={handleSubmit}
           disabled={!selectedLandlord || !docFile || !docType || submitting}
+          aria-busy={submitting || undefined}
         >
           {submitting ? (
             <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Submitting…</>
