@@ -155,6 +155,7 @@ export function CityAlertSignup({
         <button
           type="submit"
           disabled={status === 'loading' || !city.trim() || !stateAbbr || !email.trim()}
+          aria-busy={status === 'loading' || undefined}
           className={`inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-[13.5px] font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
             dark ? 'bg-teal-500 text-white hover:bg-teal-400 focus-visible:ring-teal-300 focus-visible:ring-offset-ink' : 'bg-teal-600 text-white hover:bg-teal-700 focus-visible:ring-teal-500'
           }`}
