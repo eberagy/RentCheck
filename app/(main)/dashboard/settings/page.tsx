@@ -327,6 +327,7 @@ export default function SettingsPage() {
             onClick={saveProfile}
             className="bg-teal-600 hover:bg-teal-700 text-white"
             disabled={saving}
+            aria-busy={saving || undefined}
           >
             {saving ? (
               <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Saving...</>
@@ -368,6 +369,7 @@ export default function SettingsPage() {
             }}
             variant="outline"
             disabled={savingPassword || newPassword.length < 8}
+            aria-busy={savingPassword || undefined}
             className="text-sm"
           >
             {savingPassword ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" aria-hidden="true" /> Updating...</> : 'Update Password'}

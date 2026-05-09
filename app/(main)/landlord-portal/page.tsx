@@ -415,7 +415,7 @@ export default function LandlordPortalPage() {
                       setProfilePhone(landlord.phone ?? '')
                       setProfileDescription(landlord.description ?? '')
                     }} disabled={savingProfile}>Cancel</Button>
-                    <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white" onClick={saveProfile} disabled={savingProfile}>
+                    <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white" onClick={saveProfile} disabled={savingProfile} aria-busy={savingProfile || undefined}>
                       {savingProfile ? <><Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /><span className="sr-only">Saving… </span></> : null}
                       Save
                     </Button>
@@ -577,6 +577,7 @@ export default function LandlordPortalPage() {
                             size="sm"
                             className="rounded-full bg-teal text-white hover:bg-teal-500"
                             disabled={savingTpl || !newTplLabel.trim() || !newTplBody.trim()}
+                            aria-busy={savingTpl || undefined}
                             onClick={createTemplate}
                           >
                             {savingTpl ? <><Loader2 className="mr-1 h-3 w-3 animate-spin" aria-hidden="true" /> Saving…</> : <><Plus className="mr-1 h-3 w-3" aria-hidden="true" /> Save template</>}

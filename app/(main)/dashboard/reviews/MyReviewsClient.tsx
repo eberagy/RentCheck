@@ -174,6 +174,7 @@ export function MyReviewsClient({ reviews, statusFilter }: { reviews: MyReviewIt
                           className="h-8 rounded-full border-red-200 text-red-700 hover:bg-red-50"
                           onClick={() => handleDelete(r.id, r.title)}
                           disabled={processing === r.id}
+                          aria-busy={processing === r.id || undefined}
                         >
                           <Trash2 className="mr-1 h-3.5 w-3.5" aria-hidden="true" /> Delete
                         </Button>
@@ -307,7 +308,7 @@ function EditReviewInline({ review, onCancel, onSaved }: {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white" onClick={save} disabled={saving}>
+          <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white" onClick={save} disabled={saving} aria-busy={saving || undefined}>
             {saving ? 'Saving…' : 'Save changes'}
           </Button>
           <Button size="sm" variant="outline" onClick={onCancel} disabled={saving}>

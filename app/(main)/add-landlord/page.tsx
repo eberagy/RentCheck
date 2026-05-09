@@ -309,6 +309,7 @@ export default function AddLandlordPage() {
             type="submit"
             className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold"
             disabled={loading}
+            aria-busy={loading || undefined}
           >
             {loading ? 'Submitting…' : 'Submit Landlord'}
           </Button>
