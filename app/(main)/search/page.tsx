@@ -285,7 +285,7 @@ async function SearchResults({
                 <Link
                   key={opt.key}
                   href={`/search${qs.toString() ? `?${qs.toString()}` : ''}`}
-                  aria-current={isActive ? 'true' : undefined}
+                  aria-current={isActive ? 'page' : undefined}
                   className={`rounded-full px-3.5 py-2 text-[12.5px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 ${
                     isActive
                       ? 'bg-slate-900 text-white shadow-sm'
@@ -430,7 +430,7 @@ async function SearchResults({
                 <Link
                   key={opt.key}
                   href={`/search${qs.toString() ? `?${qs.toString()}` : ''}`}
-                  aria-current={isActive ? 'true' : undefined}
+                  aria-current={isActive ? 'page' : undefined}
                   className={`rounded-full px-3.5 py-2 text-[12.5px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy-400 focus-visible:ring-offset-2 ${
                     isActive
                       ? 'bg-slate-900 text-white shadow-sm'
