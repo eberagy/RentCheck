@@ -18,7 +18,9 @@ export default function AdminError({
   reset: () => void
 }) {
   useEffect(() => {
-    captureException(error, { where: 'admin' })
+    // Include digest so the visible "Error ID: xxxx" can be correlated
+    // to the Sentry event. Parity with (main)/error.tsx.
+    captureException(error, { where: 'admin', digest: error.digest })
   }, [error])
 
   return (

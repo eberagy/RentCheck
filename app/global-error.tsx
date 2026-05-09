@@ -15,7 +15,10 @@ export default function GlobalError({
   reset: () => void
 }) {
   useEffect(() => {
-    captureException(error, { where: 'global' })
+    // Include the Next.js digest so a user reporting the visible
+    // "Error ID: xxxx" copy can be correlated to the Sentry event.
+    // (main)/error.tsx already passes digest; bring global into parity.
+    captureException(error, { where: 'global', digest: error.digest })
   }, [error])
 
   return (
