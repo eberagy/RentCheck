@@ -201,6 +201,7 @@ export default function AdminDataSyncPage() {
             className="bg-teal-600 hover:bg-teal-700 text-white"
             onClick={runAll}
             disabled={runningAll}
+            aria-busy={runningAll || undefined}
           >
             {runningAll ? <Loader2 className="h-4 w-4 mr-1.5 animate-spin" aria-hidden="true" /> : <Zap className="h-4 w-4 mr-1.5" aria-hidden="true" />}
             Run All Now
@@ -300,6 +301,7 @@ export default function AdminDataSyncPage() {
                     )}
                     <Button size="sm" variant="outline" onClick={() => triggerSync(source.id)}
                       disabled={isTriggering || latest?.status === 'running' || runningAll}
+                      aria-busy={isTriggering || latest?.status === 'running' || undefined}
                       className="text-xs px-3"
                     >
                       {isTriggering

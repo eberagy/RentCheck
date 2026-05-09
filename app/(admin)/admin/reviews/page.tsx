@@ -199,6 +199,7 @@ export default function AdminReviewsPage() {
                 className="bg-teal-600 hover:bg-teal-700 text-white"
                 onClick={() => bulkModerate('approved', approvableSelected)}
                 disabled={bulkRunning || approvableSelected.length === 0}
+                aria-busy={bulkRunning || undefined}
                 title={approvableSelected.length < selected.size ? 'Lease-verified selections only' : undefined}
               >
                 {bulkRunning ? <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" aria-hidden="true" /> : <CheckCircle2 className="h-3.5 w-3.5 mr-1" aria-hidden="true" />}
@@ -210,6 +211,7 @@ export default function AdminReviewsPage() {
                 className="border-red-300 text-red-700 hover:bg-red-50"
                 onClick={() => bulkModerate('rejected', rejectableSelected)}
                 disabled={bulkRunning || rejectableSelected.length === 0}
+                aria-busy={bulkRunning || undefined}
               >
                 <XCircle className="h-3.5 w-3.5 mr-1" aria-hidden="true" />
                 Reject {rejectableSelected.length > 0 ? `(${rejectableSelected.length})` : ''}
