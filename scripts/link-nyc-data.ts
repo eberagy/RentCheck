@@ -44,9 +44,17 @@ async function main() {
       .not('raw_data->registrationid', 'is', null)
       .limit(50000)
 
-    regIds = Array.from(new Set((data ?? []).map((r: any) => r.raw_data?.registrationid).filter(Boolean)))
+    type RawRow = { raw_data?: { registrationid?: string } }
+    regIds = Array.from(
+      new Set(
+        ((data ?? []) as RawRow[])
+          .map(r => r.raw_data?.registrationid)
+          .filter((x): x is string => Boolean(x)),
+      ),
+    )
   } else {
-    regIds = (regRows ?? []).map((r: any) => r.registrationid)
+    type RegRow = { registrationid: string }
+    regIds = ((regRows ?? []) as RegRow[]).map(r => r.registrationid)
   }
   console.log(`   ${regIds.length} distinct registration IDs`)
 
@@ -76,7 +84,8 @@ async function main() {
     try {
       const res = await fetch(url, { signal: AbortSignal.timeout(30000) })
       if (!res.ok) { console.log(`   HTTP ${res.status} at offset ${offset}`); break }
-      const rows: any[] = await res.json()
+      type ContactRow = { registrationid?: string; corporationname?: string }
+      const rows: ContactRow[] = await res.json()
       if (!Array.isArray(rows) || rows.length === 0) break
 
       for (const row of rows) {
