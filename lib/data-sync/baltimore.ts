@@ -36,7 +36,7 @@ export async function syncBaltimore(supabase: SupabaseClient): Promise<SyncResul
       f: 'json',
     })
 
-    const res = await fetch(`${ENDPOINT}?${params.toString()}`)
+    const res = await fetch(`${ENDPOINT}?${params.toString()}`, { signal: AbortSignal.timeout(30000) })
     if (!res.ok) {
       result.errors.push(`HTTP ${res.status}: ${await res.text()}`)
       break

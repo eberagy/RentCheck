@@ -41,7 +41,7 @@ export async function syncPittsburgh(supabase: SupabaseClient): Promise<SyncResu
       LIMIT ${PAGE_SIZE} OFFSET ${offset}
     `.trim()
 
-    const res = await fetch(`${ENDPOINT}?sql=${encodeURIComponent(sql)}`)
+    const res = await fetch(`${ENDPOINT}?sql=${encodeURIComponent(sql)}`, { signal: AbortSignal.timeout(30000) })
     if (!res.ok) {
       result.errors.push(`HTTP ${res.status}: ${await res.text()}`)
       break

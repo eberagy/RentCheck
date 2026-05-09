@@ -43,7 +43,7 @@ export async function syncCourtListener(supabase: SupabaseClient): Promise<SyncR
     let url: string | null = `${BASE_URL}/search/?q=${encodeURIComponent(q)}&type=r&filed_after=${since}&format=json`
 
     while (url) {
-      const res: Response = await fetch(url, { headers })
+      const res: Response = await fetch(url, { headers, signal: AbortSignal.timeout(30000) })
       if (!res.ok) { result.errors.push(`CourtListener HTTP ${res.status} for "${q}"`); break }
 
       const data = await res.json() as { results?: SocrataRow[]; next?: string | null }

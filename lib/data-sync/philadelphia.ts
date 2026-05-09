@@ -25,7 +25,7 @@ export async function syncPhiladelphia(supabase: SupabaseClient): Promise<SyncRe
       LIMIT ${PAGE_SIZE} OFFSET ${offset}
     `
     const url = `${CARTO_ENDPOINT}?q=${encodeURIComponent(sql)}`
-    const res = await fetch(url)
+    const res = await fetch(url, { signal: AbortSignal.timeout(30000) })
     if (!res.ok) { result.errors.push(`HTTP ${res.status}: ${await res.text()}`); break }
 
     const json: { rows: SocrataRow[] } = await res.json()

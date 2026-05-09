@@ -18,7 +18,10 @@ export async function syncChicago(supabase: SupabaseClient): Promise<SyncResult>
     const url = `${ENDPOINT}?$where=violation_date>'${since}'&$limit=${PAGE_SIZE}&$offset=${offset}&$order=id`
     let rows: SocrataRow[]
     try {
-      const res = await fetch(url, { headers: { 'X-App-Token': process.env.CHICAGO_DATA_TOKEN ?? '' } })
+      const res = await fetch(url, {
+        headers: { 'X-App-Token': process.env.CHICAGO_DATA_TOKEN ?? '' },
+        signal: AbortSignal.timeout(30000),
+      })
       if (!res.ok) { result.errors.push(`HTTP ${res.status}`); break }
       rows = await res.json()
     } catch (e) { result.errors.push(e instanceof Error ? e.message : String(e)); break }

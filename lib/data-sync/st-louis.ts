@@ -19,7 +19,7 @@ export async function syncStLouis(supabase: SupabaseClient) {
       const url = `${endpoint}?$limit=${PAGE_SIZE}&$offset=${offset}&$order=:id`
       let rows: Record<string, string>[]
       try {
-        const res = await withRetry(() => fetch(url))
+        const res = await withRetry(() => fetch(url, { signal: AbortSignal.timeout(30000) }))
         if (!res.ok) break
         rows = await res.json()
         if (!rows.length) break
