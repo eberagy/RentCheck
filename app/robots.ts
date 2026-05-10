@@ -17,8 +17,41 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin/', '/dashboard/', '/api/', '/auth/'],
       },
       {
-        // Block AI training scrapers
-        userAgent: ['GPTBot', 'ChatGPT-User', 'CCBot', 'anthropic-ai', 'Claude-Web'],
+        // Block AI training + on-demand scrapers. The original list was
+        // stale (anthropic-ai/Claude-Web are legacy UAs); this version
+        // covers the canonical 2026 set.
+        //
+        //   OpenAI   — GPTBot (training), ChatGPT-User (on-demand),
+        //              OAI-SearchBot (SearchGPT index)
+        //   Anthropic — ClaudeBot (training, current primary),
+        //              anthropic-ai / Claude-Web (legacy),
+        //              Claude-User (on-demand), Claude-SearchBot
+        //   Google AI — Google-Extended (Gemini training opt-out token)
+        //   CommonCrawl — CCBot (used by many trainers)
+        //   ByteDance  — Bytespider
+        //   Perplexity — PerplexityBot (training), Perplexity-User
+        //   Apple      — Applebot-Extended (Apple Intelligence opt-out)
+        //   Meta       — Meta-ExternalAgent, Meta-ExternalFetcher
+        //   Diffbot    — Diffbot
+        userAgent: [
+          'GPTBot',
+          'ChatGPT-User',
+          'OAI-SearchBot',
+          'ClaudeBot',
+          'anthropic-ai',
+          'Claude-Web',
+          'Claude-User',
+          'Claude-SearchBot',
+          'Google-Extended',
+          'CCBot',
+          'Bytespider',
+          'PerplexityBot',
+          'Perplexity-User',
+          'Applebot-Extended',
+          'Meta-ExternalAgent',
+          'Meta-ExternalFetcher',
+          'Diffbot',
+        ],
         disallow: '/',
       },
     ],
