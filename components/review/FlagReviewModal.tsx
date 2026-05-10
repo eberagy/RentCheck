@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Flag, X, Loader2, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 const REASONS = [
   { value: 'fake', label: 'Fake or not a real tenant' },
@@ -111,10 +112,11 @@ export function FlagReviewModal({ reviewId, onClose }: FlagReviewModalProps) {
         return
       }
       setDone(true)
-    } catch {
+    } catch (err) {
       // Network failure — without this catch the button would silently
       // re-enable with no toast, same UX hole as the dispute submit
       // handler had before ca96fb8.
+      captureException(err, { where: 'FlagReviewModal:submit', reviewId })
       toast.error("Couldn't reach the server. Please try again.")
     } finally {
       setSubmitting(false)

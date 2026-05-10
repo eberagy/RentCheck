@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import { track } from '@/lib/posthog'
+import { captureException } from '@/lib/sentry'
 
 interface WatchlistButtonProps {
   landlordId?: string
@@ -89,7 +90,12 @@ export function WatchlistButton({
         toast.success(successMessage ?? 'You\'ll be notified of new violations or reviews')
         track('watchlist_added', { [target.col]: target.id })
       }
-    } catch {
+    } catch (err) {
+      // Watchlist toggle is one of the most-clicked actions on the
+      // landlord/property pages — a sustained failure here is a real
+      // engagement hit. Capture so an upstream Supabase regression
+      // shows up before users start churning silently.
+      captureException(err, { where: 'WatchlistButton:toggle', col: target.col, id: target.id })
       toast.error("Couldn't update your alerts. Try again in a moment.")
     } finally {
       setLoading(false)

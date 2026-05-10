@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, X } from 'lucide-react'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 interface Props {
   searchId: string
@@ -34,6 +35,9 @@ export function SavedSearchUnsubscribeButton({ searchId, city, stateAbbr }: Prop
       toast.success(`Unsubscribed from ${city}, ${stateAbbr}`)
       router.refresh()
     } catch (err) {
+      // CAN-SPAM-adjacent: an unsubscribe that silently fails is the same
+      // failure mode as a spam-report, so surface it loudly.
+      captureException(err, { where: 'SavedSearchUnsubscribeButton:delete', searchId })
       toast.error(err instanceof Error ? err.message : 'Could not unsubscribe')
     } finally {
       setBusy(false)

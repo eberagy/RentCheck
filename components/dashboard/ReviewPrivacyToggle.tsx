@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { captureException } from '@/lib/sentry'
 
 interface Props {
   reviewId: string
@@ -38,6 +39,7 @@ export function ReviewPrivacyToggle({ reviewId, initialAnonymous }: Props) {
       }
       toast.success(next ? 'Review is now anonymous' : 'Your name is now shown on this review')
     } catch (err) {
+      captureException(err, { where: 'ReviewPrivacyToggle:patch', reviewId })
       toast.error(err instanceof Error ? err.message : 'Could not update')
     } finally {
       setBusy(false)

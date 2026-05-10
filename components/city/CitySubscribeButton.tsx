@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Bell, Check, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
+import { captureException } from '@/lib/sentry'
 
 interface Props {
   city: string
@@ -66,6 +67,7 @@ export function CitySubscribeButton({ city, stateAbbr }: Props) {
       setStatus('subscribed')
       toast.success(`Subscribed — you'll get a weekly digest for ${city}`)
     } catch (err) {
+      captureException(err, { where: 'CitySubscribeButton:subscribe', city, stateAbbr })
       toast.error(err instanceof Error ? err.message : 'Could not subscribe')
     } finally {
       setBusy(false)
@@ -82,6 +84,7 @@ export function CitySubscribeButton({ city, stateAbbr }: Props) {
       setStatus('idle')
       toast.success(`Unsubscribed from ${city}`)
     } catch (err) {
+      captureException(err, { where: 'CitySubscribeButton:unsubscribe', city, stateAbbr })
       toast.error(err instanceof Error ? err.message : 'Could not unsubscribe')
     } finally {
       setBusy(false)
