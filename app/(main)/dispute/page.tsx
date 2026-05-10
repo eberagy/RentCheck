@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { track } from '@/lib/posthog'
+import { captureException } from '@/lib/sentry'
 
 const REASON_OPTIONS = [
   'This record does not belong to this landlord or property',
@@ -63,11 +64,13 @@ function DisputeForm() {
       if (!res.ok) { toast.error(data.error ?? 'Submission failed'); return }
       track('dispute_submitted', { record_id: recordId, reason: finalReason })
       setDone(true)
-    } catch {
+    } catch (err) {
       // Network failure or JSON parse error. The try/finally already
       // clears submitting; without this catch the button would silently
       // re-enable with no toast and the user would have no idea whether
-      // their dispute went through.
+      // their dispute went through. Capture so a sustained API regression
+      // shows up before users start filing complaints.
+      captureException(err, { where: 'dispute:submit', recordId })
       toast.error("Couldn't reach the server. Please try again.")
     } finally {
       setSubmitting(false)

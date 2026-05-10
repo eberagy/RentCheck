@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import { formatDate } from '@/lib/utils'
+import { captureException } from '@/lib/sentry'
 
 export interface MyReviewItem {
   id: string
@@ -59,6 +60,7 @@ export function MyReviewsClient({ reviews, statusFilter }: { reviews: MyReviewIt
       toast.success('Review deleted')
       router.refresh()
     } catch (err) {
+      captureException(err, { where: 'MyReviewsClient:handleDelete', reviewId })
       toast.error(err instanceof Error ? err.message : 'Failed to delete')
     } finally {
       setProcessing(null)
@@ -232,6 +234,7 @@ function EditReviewInline({ review, onCancel, onSaved }: {
       toast.success('Review updated')
       onSaved()
     } catch (err) {
+      captureException(err, { where: 'MyReviewsClient:saveEdit', reviewId: review.id })
       toast.error(err instanceof Error ? err.message : 'Failed to save')
     } finally {
       setSaving(false)

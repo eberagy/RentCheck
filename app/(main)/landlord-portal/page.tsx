@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/client'
+import { captureException } from '@/lib/sentry'
 import { formatDate } from '@/lib/utils'
 import { safeExternalUrl } from '@/lib/safe-url'
 import { toast } from 'sonner'
@@ -158,8 +159,11 @@ export default function LandlordPortalPage() {
       if (!res.ok) return
       const json = await res.json()
       setTemplates(json.templates ?? [])
-    } catch {
-      // non-fatal
+    } catch (err) {
+      // non-fatal — but capture so a Supabase outage on this read
+      // doesn't silently leave landlords thinking they have no
+      // saved templates.
+      captureException(err, { where: 'landlord-portal:loadTemplates', landlordId })
     }
   }
 
@@ -184,6 +188,7 @@ export default function LandlordPortalPage() {
       setNewTplBody('')
       await loadTemplates(landlord.id)
     } catch (err) {
+      captureException(err, { where: 'landlord-portal:createTemplate', landlordId: landlord.id })
       toast.error(err instanceof Error ? err.message : 'Failed to save template')
     } finally {
       setSavingTpl(false)
@@ -200,6 +205,7 @@ export default function LandlordPortalPage() {
       }
       await loadTemplates(landlord.id)
     } catch (err) {
+      captureException(err, { where: 'landlord-portal:deleteTemplate', templateId: id })
       toast.error(err instanceof Error ? err.message : 'Failed to delete')
     }
   }
@@ -236,6 +242,7 @@ export default function LandlordPortalPage() {
       })
       setEditingProfile(false)
     } catch (err) {
+      captureException(err, { where: 'landlord-portal:saveProfile', landlordId: landlord.id })
       toast.error(err instanceof Error ? err.message : 'Failed to save')
     } finally {
       setSavingProfile(false)
@@ -261,6 +268,7 @@ export default function LandlordPortalPage() {
       setResponseText('')
       loadData()
     } catch (err) {
+      captureException(err, { where: 'landlord-portal:submitResponse', reviewId })
       toast.error(err instanceof Error ? err.message : 'Failed to submit response')
     } finally {
       setSubmittingResponse(false)
