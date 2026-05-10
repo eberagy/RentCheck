@@ -74,7 +74,12 @@ export async function GET(req: NextRequest) {
       ? supabase
           .from('public_records')
           .select('property_id, title, status, filed_date')
-          .in('property_id', propertyIds) as unknown as Promise<{ data: RecordRow[] | null; error: unknown }>
+          .in('property_id', propertyIds)
+          // Up to 50 properties × thousands of records each could otherwise
+          // pull a huge join just to render a couple of preview chips.
+          // 500 is enough to surface "lots of violations" without bloating
+          // the search response.
+          .limit(500) as unknown as Promise<{ data: RecordRow[] | null; error: unknown }>
       : Promise.resolve({ data: [] as RecordRow[], error: null }),
   ])
 

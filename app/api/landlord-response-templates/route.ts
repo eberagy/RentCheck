@@ -51,11 +51,15 @@ export async function GET(req: NextRequest) {
   const gate = await requireVerifiedClaimant(user.id, landlordId)
   if ('error' in gate) return NextResponse.json({ error: gate.error }, { status: gate.status })
 
+  // Cap at 100 — well above the realistic per-landlord template count
+  // (the create-route enforces a per-landlord limit too). Bound exists
+  // so a misconfigured DB can't pull thousands of rows on every fetch.
   const { data, error } = await gate.service
     .from('response_templates')
     .select('id, label, body, created_at, updated_at')
     .eq('landlord_id', landlordId)
     .order('updated_at', { ascending: false })
+    .limit(100)
 
   if (error) return dbError('landlord-response-templates:list', error)
   return NextResponse.json({ templates: data ?? [] })

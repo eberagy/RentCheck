@@ -32,11 +32,15 @@ export async function GET() {
   if (!rl.success) return rateLimitResponse(rl)
 
   const service = createServiceClient()
+  // 100 saved searches is well above the typical user (the create-route
+  // also enforces a per-user cap server-side). The bound matters for
+  // anonymous-page widgets that hit this endpoint on every render.
   const { data, error } = await service
     .from('saved_searches')
     .select('id, city, state_abbr, notify_email, last_notified_at, created_at')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
+    .limit(100)
 
   if (error) return dbError('saved-searches:list', error)
   return NextResponse.json({ searches: data ?? [] })
