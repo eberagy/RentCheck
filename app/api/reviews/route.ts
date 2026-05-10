@@ -64,7 +64,13 @@ export async function GET(req: NextRequest) {
 
   type RawPublicReviewRow = { landlord_response?: string | null; landlord_response_status?: string | null }
   const safe = ((data ?? []) as unknown as RawPublicReviewRow[]).map(r => stripPrivateReviewFields(r))
-  return NextResponse.json({ reviews: safe, total: count ?? 0, page, limit })
+  // GET is public approved-only — no auth, no user-scoped fields after
+  // stripPrivateReviewFields. Edge-cache to share across viewers of the
+  // same landlord/property page. New reviews land within 60s of approval.
+  return NextResponse.json(
+    { reviews: safe, total: count ?? 0, page, limit },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }
 
 export async function POST(req: NextRequest) {

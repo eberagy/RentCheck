@@ -49,7 +49,10 @@ export async function GET(req: NextRequest) {
     // landlord page.
     if (error && error.code !== 'PGRST116') return dbError('landlords:by-id', error)
     if (!data) return NextResponse.json({ error: 'Landlord not found' }, { status: 404 })
-    return NextResponse.json({ landlord: data })
+    return NextResponse.json(
+      { landlord: data },
+      { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+    )
   }
 
   let q = supabase
@@ -66,5 +69,11 @@ export async function GET(req: NextRequest) {
   const { data, error, count } = await q
   if (error) return dbError('landlords:list', error)
 
-  return NextResponse.json({ landlords: data ?? [], total: count ?? 0, page, limit })
+  // Public filtered list — keyed by city/state/minRating/verified/page.
+  // Same caching shape as the by-id branch above; the URL varies on
+  // all filter params so different filter combos cache independently.
+  return NextResponse.json(
+    { landlords: data ?? [], total: count ?? 0, page, limit },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }

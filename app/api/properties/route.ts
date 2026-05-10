@@ -43,5 +43,10 @@ export async function GET(req: NextRequest) {
   const { data, error, count } = await q
   if (error) return dbError('properties:list', error)
 
-  return NextResponse.json({ properties: data ?? [], total: count ?? 0, page, limit })
+  // Public filtered list — keyed by landlordId/city/state/zip/page.
+  // Same s-maxage=60 SWR=300 cadence as /api/search and /api/landlords.
+  return NextResponse.json(
+    { properties: data ?? [], total: count ?? 0, page, limit },
+    { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+  )
 }

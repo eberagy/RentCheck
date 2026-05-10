@@ -19,5 +19,15 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ slu
   // across the rest of the API surface.
   if (error && error.code !== 'PGRST116') return dbError('landlords/[slug]:get', error)
   if (!data) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json({ landlord: data })
+  // Public read — slug-keyed, no auth, no per-user logic. Matches the
+  // /api/search caching cadence so repeat lookups (compare page,
+  // dashboard refreshes, etc.) hit the edge instead of the DB.
+  return NextResponse.json(
+    { landlord: data },
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+      },
+    },
+  )
 }
