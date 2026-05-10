@@ -63,10 +63,11 @@ export default function AdminResponsesPage() {
       setItems(prev => prev.filter(r => r.id !== reviewId))
       setRejectingId(null)
       setReason('')
-    } catch {
+    } catch (err) {
       // Network failure — without this catch the row stayed stuck on
       // its disabled spinner forever. Same shape as the toggleBan/
       // promoteToAdmin handlers.
+      captureException(err, { where: 'admin/responses:moderate', reviewId, action })
       toast.error("Couldn't reach the server. Please try again.")
     } finally {
       setProcessing(null)

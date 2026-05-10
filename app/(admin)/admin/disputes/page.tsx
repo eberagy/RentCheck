@@ -96,6 +96,7 @@ export default function AdminDisputesPage() {
       toast.success('Dispute resolved')
       setDisputes(prev => prev.filter(x => x.id !== disputeId))
     } catch (err) {
+      captureException(err, { where: 'admin/disputes:resolve', disputeId })
       toast.error(err instanceof Error ? err.message : 'Failed to resolve dispute')
     } finally {
       setProcessing(null)

@@ -65,7 +65,8 @@ export default function AdminLeasesPage() {
       } else {
         toast.error(json.error ?? 'Could not generate document URL')
       }
-    } catch {
+    } catch (err) {
+      captureException(err, { where: 'admin/leases:getDocUrl', reviewId })
       toast.error('Could not generate document URL')
     }
   }
@@ -89,7 +90,8 @@ export default function AdminLeasesPage() {
       }
       toast.success(verified ? 'Lease verified' : 'Lease rejected')
       setItems(prev => prev.filter(r => r.id !== reviewId))
-    } catch {
+    } catch (err) {
+      captureException(err, { where: 'admin/leases:verifyLease', reviewId, verified })
       toast.error("Couldn't reach the server. Please try again.")
     } finally {
       setProcessing(null)

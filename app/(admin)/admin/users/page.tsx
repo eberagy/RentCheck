@@ -152,10 +152,11 @@ export default function AdminUsersPage() {
       }
       toast.success(isBanned ? 'User unbanned' : 'User banned')
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, is_banned: !isBanned } : u))
-    } catch {
+    } catch (err) {
       // Network failure — without this catch the row stayed stuck on
       // its disabled spinner forever and the admin couldn't retry
       // without refreshing the page.
+      captureException(err, { where: 'admin/users:toggleBan', userId, wasBanned: isBanned })
       toast.error("Couldn't reach the server. Please try again.")
     } finally {
       setProcessing(null)
@@ -178,7 +179,8 @@ export default function AdminUsersPage() {
       }
       toast.success('User promoted to admin')
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, user_type: 'admin' } : u))
-    } catch {
+    } catch (err) {
+      captureException(err, { where: 'admin/users:promoteToAdmin', userId })
       toast.error("Couldn't reach the server. Please try again.")
     } finally {
       setProcessing(null)
@@ -422,6 +424,7 @@ function AdminNotesEditor({ user, onSaved }: { user: UserProfile; onSaved: (next
       onSaved(value || null)
       toast.success('Notes saved')
     } catch (err) {
+      captureException(err, { where: 'admin/users:saveNotes', userId: user.id })
       toast.error(err instanceof Error ? err.message : 'Failed to save')
     } finally {
       setSaving(false)

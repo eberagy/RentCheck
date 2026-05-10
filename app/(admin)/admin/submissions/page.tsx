@@ -123,6 +123,7 @@ export default function AdminSubmissionsPage() {
       }
       setSubmissions(prev => prev.filter(s => s.id !== sub.id))
     } catch (err) {
+      captureException(err, { where: 'admin/submissions:moderate', submissionId: sub.id, action })
       toast.error(err instanceof Error ? err.message : 'Failed to process')
     } finally {
       setProcessing(null)

@@ -146,6 +146,11 @@ export default function AdminDataSyncPage() {
       }
     } catch (e) {
       const msg = e instanceof Error && e.name === 'TimeoutError' ? 'timed out (>90s)' : 'network error'
+      // Capture all non-timeout errors. Timeouts are routine for slow
+      // upstream feeds and would flood Sentry; admins still see the toast.
+      if (!(e instanceof Error && e.name === 'TimeoutError')) {
+        captureException(e, { where: 'admin/data-sync:trigger', sourceId })
+      }
       toast.error(`${sourceId}: ${msg}`)
       return false
     } finally {

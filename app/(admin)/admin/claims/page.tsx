@@ -86,7 +86,8 @@ export default function AdminClaimsPage() {
       } else {
         toast.error('Could not generate document URL')
       }
-    } catch {
+    } catch (err) {
+      captureException(err, { where: 'admin/claims:getDocUrl', claimId })
       toast.error('Could not generate document URL')
     }
   }
