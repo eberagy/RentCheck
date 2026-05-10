@@ -5,6 +5,7 @@ import { getAllPosts } from '@/lib/blog'
 import { getAllScenarios } from '@/lib/rights-scenarios'
 import { canonicalSiteUrl } from '@/lib/canonical-host'
 import { citySlug } from '@/lib/cities'
+import { captureException } from '@/lib/sentry'
 
 export const revalidate = 3600
 
@@ -21,10 +22,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = createServiceClient()
 
   const [
-    { data: landlords },
-    { data: properties },
-    { data: cityRows },
-    { data: publicProfiles },
+    { data: landlords, error: landlordsErr },
+    { data: properties, error: propertiesErr },
+    { data: cityRows, error: cityErr },
+    { data: publicProfiles, error: profilesErr },
   ] = await Promise.all([
     supabase.from('landlords').select('slug, updated_at').order('review_count', { ascending: false }).limit(MAX_URLS_PER_SET),
     supabase.from('properties').select('id, updated_at').order('review_count', { ascending: false }).limit(MAX_URLS_PER_SET),
@@ -42,6 +43,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .eq('is_banned', false)
       .limit(MAX_URLS_PER_SET),
   ])
+
+  // Without these, a query failure would silently shrink the sitemap from
+  // ~2400 entries to ~11 (just static pages) — Google would interpret the
+  // missing entries as a removal signal and de-index the long tail. This
+  // is the kind of bug you find weeks later when traffic mysteriously
+  // collapses; capture early so we know within minutes.
+  if (landlordsErr) captureException(landlordsErr, { where: 'sitemap:landlords' })
+  if (propertiesErr) captureException(propertiesErr, { where: 'sitemap:properties' })
+  if (cityErr) captureException(cityErr, { where: 'sitemap:cities-rpc' })
+  if (profilesErr) captureException(profilesErr, { where: 'sitemap:public-profiles' })
 
   const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'daily' },
