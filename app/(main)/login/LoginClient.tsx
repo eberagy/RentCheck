@@ -9,6 +9,7 @@ import { Logo } from '@/components/Logo'
 import { useAuth } from '@/hooks/useAuth'
 import { createClient } from '@/lib/supabase/client'
 import { safeRedirectPath } from '@/lib/safe-redirect'
+import { captureException } from '@/lib/sentry'
 import { toast } from 'sonner'
 
 const BENEFITS = [
@@ -57,11 +58,13 @@ export default function LoginClient() {
       }
       // Success path: signInWithOAuth navigates the browser to Google.
       // Don't clear googleLoading — the page is about to unmount.
-    } catch {
+    } catch (err) {
       // Throw path: network failure, popup blocker rejecting the
       // OAuth redirect, etc. Without this catch the button stayed
       // stuck on its spinner with no toast — the user couldn't tell
-      // if anything was happening.
+      // if anything was happening. Auth-path failures are critical so
+      // capture even though the user-visible toast is generic.
+      captureException(err, { where: 'LoginClient:google-oauth' })
       toast.error("Couldn't reach Google. Please try again.")
       setGoogleLoading(false)
     }
@@ -121,11 +124,12 @@ export default function LoginClient() {
           setPassword('')
         }
       }
-    } catch {
+    } catch (err) {
       // Throw path — supabase.auth.signInWithPassword / signUp can
       // reject on network failure (DNS, TLS handshake, captive portal).
       // Without this catch the form button stayed stuck on its
       // spinner with no toast.
+      captureException(err, { where: 'LoginClient:password-auth', tab: passwordTab })
       toast.error("Couldn't reach the auth service. Please try again.")
     } finally {
       setLoading(false)
@@ -149,7 +153,8 @@ export default function LoginClient() {
       } else {
         setMagicSent(true)
       }
-    } catch {
+    } catch (err) {
+      captureException(err, { where: 'LoginClient:magic-link' })
       toast.error("Couldn't reach the auth service. Please try again.")
     } finally {
       setLoading(false)
