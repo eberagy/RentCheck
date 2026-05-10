@@ -150,5 +150,17 @@ export async function GET(req: NextRequest) {
     return 0
   })
 
-  return NextResponse.json({ results: enriched.map(e => e.r), query: q })
+  // Public, query-keyed, no user-scoped logic — safe to share-cache.
+  // s-maxage=60 cuts DB load on viral queries (e.g. "Greystone" during
+  // a press cycle) while stale-while-revalidate=300 hides the next
+  // revalidation latency from the typeahead UX. Vercel's edge cache
+  // varies on the full URL, so different ?q= values cache independently.
+  return NextResponse.json(
+    { results: enriched.map(e => e.r), query: q },
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+      },
+    },
+  )
 }
