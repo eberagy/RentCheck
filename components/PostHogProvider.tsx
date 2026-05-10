@@ -4,7 +4,7 @@ import { Suspense, useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useAuth } from '@/hooks/useAuth'
 import { identifyUser } from '@/lib/posthog'
-import { setUser as setSentryUser } from '@/lib/sentry'
+import { setUser as setSentryUser, clearUser as clearSentryUser } from '@/lib/sentry'
 
 function PostHogPageview() {
   const pathname = usePathname()
@@ -46,7 +46,17 @@ function PostHogPageview() {
 function PostHogIdentify() {
   const { user, profile } = useAuth()
   useEffect(() => {
-    if (!user) return
+    if (!user) {
+      // Sign-out path: clear PostHog + Sentry user context so the next
+      // error or event on this browser isn't misattributed to whoever
+      // was previously signed in. Without this, "user A reports a bug"
+      // could actually be "user B who signed out and never refreshed."
+      clearSentryUser()
+      import('posthog-js').then(({ default: posthog }) => {
+        if (posthog.__loaded) posthog.reset()
+      }).catch(() => {})
+      return
+    }
     identifyUser(user.id, {
       email: user.email ?? undefined,
       name: profile?.full_name ?? undefined,

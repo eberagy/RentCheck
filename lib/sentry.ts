@@ -27,3 +27,16 @@ export function setUser(id: string) {
     set({ id })
   }).catch(() => {})
 }
+
+/**
+ * Clear the Sentry user context — call on sign-out so subsequent client
+ * errors aren't misattributed to the previous user on the same browser.
+ * Without this, "user A reports a bug at /dashboard" would actually be
+ * "user B who signed out and never refreshed."
+ */
+export function clearUser() {
+  if (!process.env.NEXT_PUBLIC_SENTRY_DSN) return
+  import('@sentry/nextjs').then(({ setUser: set }) => {
+    set(null)
+  }).catch(() => {})
+}
