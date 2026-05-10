@@ -17,11 +17,15 @@ export async function GET(req: NextRequest) {
 
   // Log this run into sync_log so /admin/data-sync surfaces watchlist-alerts
   // health alongside the data sources.
-  const { data: log } = await supabase
+  const { data: log, error: logErr } = await supabase
     .from('sync_log')
     .insert({ source: 'watchlist_alerts', status: 'running', started_at: new Date().toISOString() })
     .select('id')
     .single()
+  // Without capture, a sync_log insert failure leaves logId=undefined
+  // and the cron runs successfully but with no audit trail — admins
+  // looking at /admin/data-sync wouldn't see this run at all.
+  if (logErr) captureException(logErr, { where: 'cron:watchlist-alerts:log-insert' })
   const logId = log?.id
 
   // Get public records added since last run, grouped by landlord.

@@ -29,11 +29,12 @@ export async function GET(req: NextRequest) {
   const supabase = createServiceClient()
   const startedAt = Date.now()
 
-  const { data: log } = await supabase
+  const { data: log, error: logErr } = await supabase
     .from('sync_log')
     .insert({ source: 'saved_search_alerts', status: 'running', started_at: new Date().toISOString() })
     .select('id')
     .single()
+  if (logErr) captureException(logErr, { where: 'cron:saved-search-alerts:log-insert' })
   const logId = log?.id
 
   // 7-day window, falling back to 8d when a user hasn't been notified yet

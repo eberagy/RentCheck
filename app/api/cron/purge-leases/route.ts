@@ -22,11 +22,12 @@ export async function GET(req: NextRequest) {
   const startedAt = Date.now()
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
 
-  const { data: log } = await service
+  const { data: log, error: logErr } = await service
     .from('sync_log')
     .insert({ source: 'purge_leases', status: 'running', started_at: new Date().toISOString() })
     .select('id')
     .single()
+  if (logErr) captureException(logErr, { where: 'cron:purge-leases:log-insert' })
   const logId = log?.id
 
   // 1000 per run is more than enough headroom; we run daily so the queue
