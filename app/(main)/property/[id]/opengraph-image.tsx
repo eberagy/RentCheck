@@ -3,6 +3,8 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { captureException } from '@/lib/sentry'
 
 export const runtime = 'nodejs'
+// Cache for an hour — see comment in landlord/[slug]/opengraph-image.tsx.
+export const revalidate = 3600
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 export const alt = 'Property profile on Vett — renter reviews and public records for this address'

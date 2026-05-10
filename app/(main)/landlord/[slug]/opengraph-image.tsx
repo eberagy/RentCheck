@@ -3,6 +3,11 @@ import { createServiceClient } from '@/lib/supabase/service'
 import { captureException } from '@/lib/sentry'
 
 export const runtime = 'nodejs'
+// Cache the rendered card for an hour. The metadata it embeds (avg
+// rating, review count, open violations) changes rarely; without this
+// every social share triggers a fresh DB hit + ImageResponse render
+// against the Vercel image-handler budget.
+export const revalidate = 3600
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 export const alt = 'Landlord profile on Vett — lease-verified reviews and public records'
