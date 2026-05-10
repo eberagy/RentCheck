@@ -38,8 +38,10 @@ const reviewSchema = z.object({
   ratingHonesty: z.number().min(1, 'Required').max(5),
   ratingLeaseFairness: z.number().min(1, 'Required').max(5),
   wouldRentAgain: z.enum(['yes', 'no', 'unsure'], { errorMap: () => ({ message: 'Please select one' }) }),
-  rentalPeriodStart: z.string().min(1, 'Required'),
-  rentalPeriodEnd: z.string().optional(),
+  // ISO date strings — bound matches the server-side schema in
+  // app/api/reviews/route.ts so client and server stay in lockstep.
+  rentalPeriodStart: z.string().min(1, 'Required').max(40),
+  rentalPeriodEnd: z.string().max(40).optional(),
   isCurrentTenant: z.boolean().default(false),
   confirmedGenuine: z.boolean().default(false),
   confirmedLiability: z.boolean().default(false),
