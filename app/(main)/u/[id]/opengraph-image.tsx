@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og'
 import { createServiceClient } from '@/lib/supabase/service'
+import { captureException } from '@/lib/sentry'
 
 export const runtime = 'nodejs'
 export const size = { width: 1200, height: 630 }
@@ -10,11 +11,15 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
   const p = await params
   const service = createServiceClient()
 
-  const { data: profile } = await service
+  const { data: profile, error: profileErr } = await service
     .from('profiles')
     .select('full_name, public_profile, is_banned')
     .eq('id', p.id)
     .single()
+
+  if (profileErr && profileErr.code !== 'PGRST116') {
+    captureException(profileErr, { where: 'og:user-profile', id: p.id })
+  }
 
   // Fall back to a generic Vett card if the profile isn't public.
   const isPublic = profile?.public_profile && !profile?.is_banned
@@ -25,12 +30,13 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
   if (isPublic) {
     // Same filter as the page: only the reviewer's non-anonymous reviews
     // surface on /u/[id], so the OG card should count the same set.
-    const { data: reviews } = await service
+    const { data: reviews, error: reviewsErr } = await service
       .from('reviews')
       .select('id, lease_verified')
       .eq('reviewer_id', p.id)
       .eq('status', 'approved')
       .eq('is_anonymous', false)
+    if (reviewsErr) captureException(reviewsErr, { where: 'og:user-reviews', id: p.id })
     reviewCount = reviews?.length ?? 0
     verifiedCount = reviews?.filter(r => r.lease_verified).length ?? 0
   }

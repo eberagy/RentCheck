@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og'
 import { createServiceClient } from '@/lib/supabase/service'
+import { captureException } from '@/lib/sentry'
 
 export const runtime = 'nodejs'
 export const size = { width: 1200, height: 630 }
@@ -10,11 +11,19 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
   const p = await params
   const supabase = createServiceClient()
 
-  const { data: landlord } = await supabase
+  const { data: landlord, error } = await supabase
     .from('landlords')
     .select('display_name, city, state_abbr, avg_rating, review_count, open_violation_count, is_verified')
     .eq('slug', p.slug)
     .single()
+
+  // Without this every social share for a borked slug silently falls
+  // through to the generic 'Landlord on Vett' card — we'd never know
+  // the query was broken. PGRST116 (no rows) is a legitimate state for
+  // a stale link, not an error worth alerting on.
+  if (error && error.code !== 'PGRST116') {
+    captureException(error, { where: 'og:landlord', slug: p.slug })
+  }
 
   const name = landlord?.display_name ?? 'Landlord on Vett'
   const location = [landlord?.city, landlord?.state_abbr].filter(Boolean).join(', ')

@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og'
 import { createServiceClient } from '@/lib/supabase/service'
 import { US_STATES } from '@/types'
 import { getCityAliases } from '@/lib/cities'
+import { captureException } from '@/lib/sentry'
 
 export const runtime = 'nodejs'
 export const size = { width: 1200, height: 630 }
@@ -34,12 +35,16 @@ export default async function OgImage({ params }: { params: Promise<{ state: str
   } else {
     landlordQuery = landlordQuery.ilike('city', `%${sanitize(cityName)}%`)
   }
-  const [{ count: landlordCount }, recordsResp] = await Promise.all([
+  const [{ count: landlordCount, error: landlordErr }, recordsResp] = await Promise.all([
     landlordQuery,
     aliases
       ? supabase.rpc('count_city_records_multi', { city_names: aliases, state_code: stateAbbr })
       : supabase.rpc('count_city_records', { city_name: cityName, state_code: stateAbbr }),
   ])
+  // Surface query failures so a borked RPC doesn't silently render the
+  // OG card with zero stats on every share.
+  if (landlordErr) captureException(landlordErr, { where: 'og:city-landlord-count', city: cityName, stateAbbr })
+  if (recordsResp?.error) captureException(recordsResp.error, { where: 'og:city-record-count', city: cityName, stateAbbr })
   const recordCount = Number(recordsResp?.data ?? 0)
 
   return new ImageResponse(

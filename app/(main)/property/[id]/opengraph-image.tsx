@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og'
 import { createServiceClient } from '@/lib/supabase/service'
+import { captureException } from '@/lib/sentry'
 
 export const runtime = 'nodejs'
 export const size = { width: 1200, height: 630 }
@@ -10,11 +11,15 @@ export default async function OgImage({ params }: { params: Promise<{ id: string
   const p = await params
   const supabase = createServiceClient()
 
-  const { data: property } = await supabase
+  const { data: property, error } = await supabase
     .from('properties')
     .select('address_line1, city, state_abbr, avg_rating, review_count, landlord:landlords(display_name)')
     .eq('id', p.id)
     .single()
+
+  if (error && error.code !== 'PGRST116') {
+    captureException(error, { where: 'og:property', id: p.id })
+  }
 
   const address = property?.address_line1 ?? 'Property on Vett'
   const location = [property?.city, property?.state_abbr].filter(Boolean).join(', ')
