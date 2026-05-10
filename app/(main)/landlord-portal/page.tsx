@@ -15,10 +15,9 @@ import { createClient } from '@/lib/supabase/client'
 import { captureException } from '@/lib/sentry'
 import { formatDate } from '@/lib/utils'
 import { safeExternalUrl } from '@/lib/safe-url'
+import { MAX_RESPONSE_LENGTH } from '@/lib/constants'
 import { toast } from 'sonner'
 import type { Landlord, Review, LandlordClaim } from '@/types'
-
-const MAX_RESPONSE_LENGTH = 1000
 
 function StarRow({ rating }: { rating: number }) {
   return (

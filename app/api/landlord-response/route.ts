@@ -6,9 +6,8 @@ import { sanitizeText } from '@/lib/sanitize'
 import { sendSubmissionReceivedEmail } from '@/lib/email'
 import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 import { captureException } from '@/lib/sentry'
+import { MAX_RESPONSE_LENGTH } from '@/lib/constants'
 import { z } from 'zod'
-
-const MAX_RESPONSE_LENGTH = 1000
 
 const schema = z.object({
   reviewId: z.string().uuid(),
