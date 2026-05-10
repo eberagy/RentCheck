@@ -8,10 +8,12 @@ import { captureException } from '@/lib/sentry'
 
 const schema = z.object({
   reviewId: z.string().uuid().optional(),
-  docPath: z.string().min(1).optional(),
-  filePath: z.string().min(1).optional(),
-  filename: z.string().min(1).optional(),
-  fileName: z.string().min(1).optional(),
+  // Bound storage paths and filenames so a malicious payload can't
+  // smuggle a 1MB string through .string()'s default unbounded shape.
+  docPath: z.string().min(1).max(500).optional(),
+  filePath: z.string().min(1).max(500).optional(),
+  filename: z.string().min(1).max(255).optional(),
+  fileName: z.string().min(1).max(255).optional(),
   fileSize: z.number().int().positive(),
 }).transform((value) => ({
   reviewId: value.reviewId,

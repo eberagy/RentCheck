@@ -9,8 +9,10 @@ import { captureException } from '@/lib/sentry'
 
 const schema = z.object({
   landlordId: z.string().uuid(),
-  docUrl: z.string().min(1),
-  docFilename: z.string().optional(),
+  // Storage path; bounded to keep an attacker from stuffing megabytes
+  // of garbage into the field.
+  docUrl: z.string().min(1).max(500),
+  docFilename: z.string().max(255).optional(),
   verificationType: z.enum(['utility_bill', 'government_id', 'deed', 'business_reg', 'other']),
 })
 

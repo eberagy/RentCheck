@@ -23,11 +23,15 @@ const createSchema = z.object({
   wouldRentAgain: z.boolean().nullable().optional(),
   title: z.string().min(10).max(150),
   body: z.string().min(50).max(2000),
-  rentalPeriodStart: z.string().optional(),
-  rentalPeriodEnd: z.string().optional(),
+  // ISO date strings — explicit length cap so a malicious client can't
+  // send a 1MB string through Zod's loose .string() default.
+  rentalPeriodStart: z.string().max(40).optional(),
+  rentalPeriodEnd: z.string().max(40).optional(),
   isCurrentTenant: z.boolean().default(false),
-  leaseDocPath: z.string().min(1),
-  leaseFilename: z.string().min(1),
+  // Storage paths and filenames are bounded to prevent DoS via huge
+  // metadata strings (the file itself is size-checked at upload time).
+  leaseDocPath: z.string().min(1).max(500),
+  leaseFilename: z.string().min(1).max(255),
   leaseFileSize: z.number().int().positive(),
   // Privacy-first default: hide the reviewer name + address unless the
   // reviewer explicitly opts in to showing their name on the review.
