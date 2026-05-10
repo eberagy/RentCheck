@@ -32,7 +32,11 @@ async function loadStats() {
   ] = await Promise.all([
     service
       .from('city_stats')
-      .select('state_abbr, city'),
+      .select('state_abbr, city')
+      // city_stats has one row per (city, state) — currently a few hundred
+      // rows. Cap at 5k so an unexpected schema change can't pull an
+      // unbounded set into the marketing-page Set() dedupe.
+      .limit(5000),
     service
       .from('reviews')
       .select('*', { count: 'exact', head: true })

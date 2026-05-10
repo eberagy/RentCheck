@@ -143,7 +143,11 @@ export default async function LandlordPage({ params }: LandlordPageProps) {
       .from('properties')
       .select('*')
       .eq('landlord_id', landlord.id)
-      .order('review_count', { ascending: false }),
+      .order('review_count', { ascending: false })
+      // Same rationale as the reviews limit a few lines down — guard
+      // against a portfolio landlord with thousands of properties
+      // stalling the page render.
+      .limit(1000),
     supabase
       .from('reviews')
       .select('rating_responsiveness, rating_maintenance, rating_honesty, rating_lease_fairness, would_rent_again, landlord_response_status')

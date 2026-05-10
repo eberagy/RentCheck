@@ -43,10 +43,13 @@ export default async function ComparePage({ searchParams }: ComparePageProps) {
   const landlordB = resB.data
   if (!landlordA || !landlordB) notFound()
 
-  // Fetch sub-ratings for both
+  // Fetch sub-ratings for both. Cap at 1000 — even highly-reviewed
+  // landlords are well below this; the bound just prevents this page
+  // from hauling back an entire approved-reviews table for one
+  // landlord during a comparison render.
   const [{ data: ratingsA }, { data: ratingsB }] = await Promise.all([
-    supabase.from('reviews').select('rating_responsiveness, rating_maintenance, rating_honesty, rating_lease_fairness, would_rent_again').eq('landlord_id', landlordA.id).eq('status', 'approved'),
-    supabase.from('reviews').select('rating_responsiveness, rating_maintenance, rating_honesty, rating_lease_fairness, would_rent_again').eq('landlord_id', landlordB.id).eq('status', 'approved'),
+    supabase.from('reviews').select('rating_responsiveness, rating_maintenance, rating_honesty, rating_lease_fairness, would_rent_again').eq('landlord_id', landlordA.id).eq('status', 'approved').limit(1000),
+    supabase.from('reviews').select('rating_responsiveness, rating_maintenance, rating_honesty, rating_lease_fairness, would_rent_again').eq('landlord_id', landlordB.id).eq('status', 'approved').limit(1000),
   ])
 
   type RatingRow = {
