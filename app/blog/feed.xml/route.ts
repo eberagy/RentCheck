@@ -21,6 +21,14 @@ export async function GET() {
   const siteUrl = canonicalSiteUrl()
   const posts = getAllPosts()
 
+  // RSS 2.0 best-practice: surface lastBuildDate at the channel level
+  // so feed readers (Inoreader, Feedly) can short-circuit re-fetching
+  // when nothing new has shipped. Use the newest post's publish date —
+  // getAllPosts returns newest-first.
+  const lastBuildDate = posts[0]
+    ? new Date(posts[0].publishedAt).toUTCString()
+    : new Date().toUTCString()
+
   const items = posts.map(post => `
     <item>
       <title>${escapeXml(post.title)}</title>
@@ -38,6 +46,7 @@ export async function GET() {
     <link>${siteUrl}/blog</link>
     <description>Reporting, research, and product notes from the Vett team. Renting, landlord reputation, tenant rights, public-records research.</description>
     <language>en-US</language>
+    <lastBuildDate>${lastBuildDate}</lastBuildDate>
     <atom:link href="${siteUrl}/blog/feed.xml" rel="self" type="application/rss+xml" />
 ${items}
   </channel>
