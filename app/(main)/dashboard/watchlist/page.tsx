@@ -21,6 +21,9 @@ export default async function WatchlistPage() {
   // showed up as a row with all-null landlord and was silently dropped
   // by the client (`if (!l) return null`). Fetch both sides and render
   // both kinds of card.
+  // Cap at 200 — well above any realistic watchlist size, but keeps a
+  // hostile or runaway client (or a bug that never deletes rows) from
+  // ever rendering an unbounded join across landlords + properties.
   const { data, error } = await supabase
     .from('watchlist')
     .select(`
@@ -30,6 +33,7 @@ export default async function WatchlistPage() {
     `)
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
+    .limit(200)
 
   // Without this a query failure would render the same 'no watched
   // landlords' empty state as a real empty watchlist — users would

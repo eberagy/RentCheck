@@ -1,6 +1,12 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { LayoutDashboard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+
+export const metadata: Metadata = {
+  title: 'Admin route not found · Vett',
+  robots: { index: false, follow: false },
+}
 
 // not-found.tsx for the (admin) route group. Without this, an admin who
 // hits a wrong subpath (e.g. /admin/typo) bubbles to the public-facing

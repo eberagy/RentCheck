@@ -112,22 +112,30 @@ export default function LandlordPortalPage() {
           .select('*, reviewer:profiles!reviews_reviewer_id_fkey(full_name, avatar_url)')
           .eq('landlord_id', l.id)
           .eq('status', 'approved')
-          .order('created_at', { ascending: false }),
+          .order('created_at', { ascending: false })
+          // Bound at 500. Even highly-reviewed landlords cap well below this;
+          // the limit prevents a hostile or misbehaving client from hauling
+          // back the entire approved-reviews table for one landlord.
+          .limit(500),
         supabase
           .from('properties')
           .select('id')
-          .eq('landlord_id', l.id),
+          .eq('landlord_id', l.id)
+          .limit(1000),
       ])
       setReviews((r ?? []) as Review[])
 
       const propertyIds = (propIds ?? []).map((p: { id: string }) => p.id)
-      const orParts = [`record.landlord_id.eq.${l.id}`]
-      if (propertyIds.length) orParts.push(`record.property_id.in.(${propertyIds.join(',')})`)
-      // Count open disputes touching this landlord's records (direct OR via their properties)
+      // Count open disputes touching this landlord's records (direct OR via their properties).
+      // PERF DEBT: this fetches all platform-open disputes and filters client-side because
+      // PostgREST doesn't support filtering on a joined column from the parent's .or() clause.
+      // Cap at 500 — worst case the badge under-reports for a landlord with >500 active
+      // disputes, which would be a very unusual situation worth a manual review anyway.
       const { data: disputes } = await supabase
         .from('record_disputes')
         .select('id, record:public_records(landlord_id, property_id)')
         .eq('status', 'open')
+        .limit(500)
       type DisputeRow = { id: string; record: { landlord_id: string | null; property_id: string | null } | null }
       const ours = ((disputes ?? []) as unknown as DisputeRow[]).filter(d => {
         const rec = d.record

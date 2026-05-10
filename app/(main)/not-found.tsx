@@ -1,6 +1,17 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { Search, Home, MapPin, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+
+export const metadata: Metadata = {
+  title: 'Page not found · Vett',
+  description: 'The landlord, property, or page you’re looking for doesn’t exist on Vett.',
+  // Prevent broken-link 404s from showing up in search results — the
+  // status code already tells crawlers, but Next emits the noindex meta
+  // tag on top so downstream tools (PostHog, Sentry, social previews)
+  // also skip indexing.
+  robots: { index: false, follow: false },
+}
 
 // Top-of-funnel cities to surface from a 404. Same ordering as the
 // homepage hero pills — gives a 404 user an obvious next destination

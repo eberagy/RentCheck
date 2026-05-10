@@ -23,7 +23,10 @@ export default async function MyReviewsPage({ searchParams }: { searchParams: Pr
     .eq('reviewer_id', user.id)
     .order('created_at', { ascending: false })
   if (statusFilter !== 'all') q = q.eq('status', statusFilter)
-  const { data, error } = await q
+  // 200 is far above any realistic per-user review history. Without a
+  // bound, a runaway client or an unusual super-prolific reviewer could
+  // pull thousands of rows on every dashboard render.
+  const { data, error } = await q.limit(200)
 
   // Same rationale as /dashboard/watchlist — query failure would render
   // the user's reviews list as 'no reviews yet,' looking like a brand-new
