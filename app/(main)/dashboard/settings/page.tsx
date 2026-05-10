@@ -71,6 +71,7 @@ export default function SettingsPage() {
       setProfile(prev => prev ? { ...prev, avatar_url: json.avatarUrl } : prev)
       toast.success('Photo updated')
     } catch (err) {
+      captureException(err, { where: 'dashboard/settings:avatar-upload', userId: profile.id })
       toast.error(err instanceof Error ? err.message : 'Upload failed')
     } finally {
       setUploadingAvatar(false)
@@ -87,6 +88,7 @@ export default function SettingsPage() {
       setProfile(prev => prev ? { ...prev, avatar_url: null } : prev)
       toast.success('Photo removed')
     } catch (err) {
+      captureException(err, { where: 'dashboard/settings:avatar-remove', userId: profile.id })
       toast.error(err instanceof Error ? err.message : 'Could not remove photo')
     } finally {
       setUploadingAvatar(false)
@@ -422,6 +424,12 @@ function AccountDeleteSection() {
       toast.success('Account deleted.')
       router.push('/')
     } catch (err) {
+      // GDPR Art. 17 + CCPA §1798.105 give users the right to erase. A
+      // failed delete is a compliance liability — we need to know
+      // immediately, not via the user's follow-up support email after
+      // the toast vanishes. Capture status separately so triage can
+      // distinguish 4xx (validation) from 5xx (broken delete pipeline).
+      captureException(err, { where: 'dashboard/settings:account-delete' })
       toast.error(err instanceof Error ? err.message : 'Failed to delete account')
       setDeleting(false)
     }
