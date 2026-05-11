@@ -4,12 +4,17 @@ import { NextResponse, type NextRequest } from 'next/server'
 // Routes that legitimately accept cross-origin POSTs:
 // - Stripe webhook verifies its own signature
 // - Cron + sync endpoints verify CRON_SECRET header
+// - /api/unsubscribe is the RFC 8058 one-click endpoint — mail client
+//   servers (Gmail, Yahoo, Outlook) POST here on behalf of users, by
+//   definition cross-origin. Authenticated by the HMAC-signed token
+//   in the URL, not by a session cookie.
 // Everything else under /api/ that's a state-changing request needs an
 // Origin / Referer from an allowlisted domain.
 const CROSS_ORIGIN_ALLOWED_PREFIXES = [
   '/api/stripe/webhook',
   '/api/cron/',
   '/api/sync/',
+  '/api/unsubscribe',
 ]
 
 const ALLOWED_ORIGINS = new Set<string>([
