@@ -23,14 +23,46 @@ function getResend() {
   return new Resend(process.env.RESEND_API_KEY)
 }
 
-async function sendEmail(to: string, subject: string, react: React.ReactElement) {
+interface SendOpts {
+  /** Token-signed unsubscribe identifier. When provided, emits the
+   *  RFC 8058 List-Unsubscribe + List-Unsubscribe-Post headers so
+   *  Gmail/Yahoo show the inbox-level "Unsubscribe" button.
+   *  https://datatracker.ietf.org/doc/html/rfc8058 */
+  unsubscribeToken?: string
+}
+
+async function sendEmail(
+  to: string,
+  subject: string,
+  react: React.ReactElement,
+  opts: SendOpts = {},
+) {
   if (!process.env.RESEND_API_KEY) {
     console.warn('[email] RESEND_API_KEY not set — email not sent')
     return
   }
   try {
     const html = await render(react)
-    const { error } = await getResend().emails.send({ from: FROM, to, subject, html })
+    // RFC 8058 + Gmail/Yahoo 2024 sender requirements: bulk senders
+    // need a one-click unsubscribe in the message headers, not just
+    // in the body. /api/unsubscribe handles the POST with the form
+    // body `List-Unsubscribe=One-Click`. Header is only emitted when
+    // the caller passes a token — transactional emails (welcome,
+    // claim-approved) don't need it; commercial emails (watchlist
+    // alerts, saved-search digest, city-alert confirmation) do.
+    const headers: Record<string, string> | undefined = opts.unsubscribeToken
+      ? {
+          'List-Unsubscribe': `<https://www.vettrentals.com/api/unsubscribe?token=${encodeURIComponent(opts.unsubscribeToken)}>`,
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+        }
+      : undefined
+    const { error } = await getResend().emails.send({
+      from: FROM,
+      to,
+      subject,
+      html,
+      ...(headers ? { headers } : {}),
+    })
     if (error) {
       console.error('[email] Send error:', error)
       // Resend returned-error path: bounces, domain not verified, rate
@@ -89,7 +121,12 @@ export async function sendWatchlistAlertEmail(to: string, props: {
   unsubscribeToken?: string
 }) {
   const labels = { new_review: 'New review', new_violation: 'New violation', new_court_case: 'New court case' }
-  await sendEmail(to, `${labels[props.alertType]}: ${props.landlordName}`, WatchlistAlertEmail(props) as React.ReactElement)
+  await sendEmail(
+    to,
+    `${labels[props.alertType]}: ${props.landlordName}`,
+    WatchlistAlertEmail(props) as React.ReactElement,
+    { unsubscribeToken: props.unsubscribeToken },
+  )
 }
 
 export async function sendSubmissionApprovedEmail(to: string, props: {
@@ -181,6 +218,7 @@ export async function sendCityAlertConfirmationEmail(to: string, props: { city: 
     to,
     `You're on the list for ${props.city}, ${props.stateAbbr}`,
     CityAlertConfirmationEmail(props) as React.ReactElement,
+    { unsubscribeToken: props.unsubscribeToken },
   )
 }
 
@@ -197,5 +235,6 @@ export async function sendSavedSearchDigestEmail(to: string, props: {
     to,
     `This week in ${props.city}: ${props.newReviewCount} new review${props.newReviewCount === 1 ? '' : 's'}`,
     SavedSearchDigestEmail(props) as React.ReactElement,
+    { unsubscribeToken: props.unsubscribeToken },
   )
 }
