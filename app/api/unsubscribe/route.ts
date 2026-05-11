@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { verifyUnsubscribeToken } from '@/lib/unsubscribe-token'
 import { captureException } from '@/lib/sentry'
+import { rateLimit, rateLimitResponse } from '@/lib/rate-limit'
 
 // RFC 8058 one-click unsubscribe endpoint. Gmail/Yahoo + 2024 sender
 // requirements expect a POST URL that, given a recipient-specific token
@@ -21,6 +22,15 @@ import { captureException } from '@/lib/sentry'
 // address. We never log either via Sentry context — only 'kind' tags
 // (`user` vs `email`) which are coarse enough to triage without leaking.
 export async function POST(req: NextRequest) {
+  // IP-based rate limit. HMAC verification is constant-time so a brute-
+  // force on the token isn't trivially exploitable, but a spam-loop of
+  // POSTs would still generate noise and DB writes (each kind=user
+  // request does an UPDATE even when prefs are already false). 30/min/IP
+  // is well above any legitimate mail-client behavior.
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? req.headers.get('x-real-ip') ?? 'anon'
+  const rl = rateLimit(`unsubscribe-post:${ip}`, 30, 60_000)
+  if (!rl.success) return rateLimitResponse(rl)
+
   const token = req.nextUrl.searchParams.get('token')
   if (!token) return NextResponse.json({ error: 'Missing token' }, { status: 400 })
 
