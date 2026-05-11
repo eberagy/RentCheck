@@ -90,5 +90,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(data.signedUrl, 302)
   }
 
-  return NextResponse.json({ signedUrl: data.signedUrl })
+  // Signed URLs are 1-hour single-tenant credentials and the response
+  // body contains lease-document PHI-adjacent content. Defense-in-depth
+  // no-store header so a CDN misconfiguration can't cache the JSON
+  // shape and accidentally leak the URL to another admin.
+  return NextResponse.json(
+    { signedUrl: data.signedUrl },
+    { headers: { 'Cache-Control': 'private, no-store, max-age=0' } },
+  )
 }

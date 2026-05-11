@@ -98,5 +98,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(data.signedUrl, 302)
   }
 
-  return NextResponse.json({ signedUrl: data.signedUrl })
+  // Defense-in-depth: signed URLs are short-lived single-tenant
+  // credentials and the JSON body carries PII-document URLs. no-store
+  // prevents a future CDN regression from caching the response.
+  return NextResponse.json(
+    { signedUrl: data.signedUrl },
+    { headers: { 'Cache-Control': 'private, no-store, max-age=0' } },
+  )
 }
