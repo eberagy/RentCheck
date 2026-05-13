@@ -32,7 +32,12 @@ export async function GET(_req: NextRequest) {
   // support emails.
   if (error) return dbError('watchlist:list', error)
 
-  return NextResponse.json({ watchlist: data ?? [] })
+  // User-private list — defense-in-depth no-store so a future CDN
+  // misconfiguration can't cache one user's watchlist for another.
+  return NextResponse.json(
+    { watchlist: data ?? [] },
+    { headers: { 'Cache-Control': 'private, no-store, max-age=0' } },
+  )
 }
 
 export async function POST(req: NextRequest) {

@@ -62,7 +62,11 @@ export async function GET(req: NextRequest) {
     .limit(100)
 
   if (error) return dbError('landlord-response-templates:list', error)
-  return NextResponse.json({ templates: data ?? [] })
+  // Landlord-private templates — defense-in-depth no-store.
+  return NextResponse.json(
+    { templates: data ?? [] },
+    { headers: { 'Cache-Control': 'private, no-store, max-age=0' } },
+  )
 }
 
 export async function POST(req: NextRequest) {

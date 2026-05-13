@@ -35,16 +35,22 @@ export async function GET() {
     supabase.from('reviews').select('created_at').eq('status', 'approved').gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()),
   ])
 
-  return NextResponse.json({
-    users: totalUsers ?? 0,
-    landlords: totalLandlords ?? 0,
-    properties: totalProperties ?? 0,
-    approvedReviews: totalReviews ?? 0,
-    pendingReviews: pendingReviews ?? 0,
-    pendingLeases: pendingLeases ?? 0,
-    pendingClaims: pendingClaims ?? 0,
-    publicRecords: totalRecords ?? 0,
-    openViolations: openViolations ?? 0,
-    reviewsThisWeek: (reviewsThisWeek ?? []).length,
-  })
+  return NextResponse.json(
+    {
+      users: totalUsers ?? 0,
+      landlords: totalLandlords ?? 0,
+      properties: totalProperties ?? 0,
+      approvedReviews: totalReviews ?? 0,
+      pendingReviews: pendingReviews ?? 0,
+      pendingLeases: pendingLeases ?? 0,
+      pendingClaims: pendingClaims ?? 0,
+      publicRecords: totalRecords ?? 0,
+      openViolations: openViolations ?? 0,
+      reviewsThisWeek: (reviewsThisWeek ?? []).length,
+    },
+    // Admin-only dashboard counts — keep stale numbers from drifting
+    // into a public CDN. Defense-in-depth no-store across all admin
+    // GETs after 095a7dd.
+    { headers: { 'Cache-Control': 'private, no-store, max-age=0' } },
+  )
 }

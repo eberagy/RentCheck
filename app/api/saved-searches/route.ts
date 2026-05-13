@@ -43,7 +43,12 @@ export async function GET() {
     .limit(100)
 
   if (error) return dbError('saved-searches:list', error)
-  return NextResponse.json({ searches: data ?? [] })
+  // User-private — defense-in-depth no-store. Same rationale as
+  // /api/watchlist and /api/me/export.
+  return NextResponse.json(
+    { searches: data ?? [] },
+    { headers: { 'Cache-Control': 'private, no-store, max-age=0' } },
+  )
 }
 
 export async function POST(req: NextRequest) {

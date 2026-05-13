@@ -22,5 +22,10 @@ export async function GET(req: NextRequest) {
   const { data, error } = await q.limit(50)
   if (error) return dbError('admin/submissions:list', error)
 
-  return NextResponse.json({ submissions: data ?? [] })
+  // Admin queue — contains submitter PII (full names, emails, doc
+  // URLs). Defense-in-depth no-store against any future CDN caching.
+  return NextResponse.json(
+    { submissions: data ?? [] },
+    { headers: { 'Cache-Control': 'private, no-store, max-age=0' } },
+  )
 }
