@@ -19,6 +19,17 @@ const TEXT_ONLY_CONFIG: sanitizeHtml.IOptions = {
   disallowedTagsMode: 'discard',
   // Strip HTML comments so `<!--` + script tricks don't survive.
   allowedSchemesByTag: {},
+  // CVE-class hardening: sanitize-html's default nonTextTags list
+  // doesn't include <xmp>, <noscript>, or <noframes>. With those tags
+  // stripped but their *content* preserved as text, an attacker can
+  // smuggle a literal "<script>" string through. React JSX text-escapes
+  // by default so it's not currently exploitable in this codebase, but
+  // any future raw-HTML render path would inherit the vuln. Listing
+  // these here strips the whole tag + contents. Verified by the
+  // regression test in sanitize.test.ts. Reference: the apostrophe/
+  // sanitize-html <=2.17.3 advisory ("default XSS via `xmp` raw-text
+  // passthrough").
+  nonTextTags: ['style', 'script', 'textarea', 'option', 'xmp', 'noscript', 'noframes', 'iframe'],
 }
 
 export function sanitizeText(input: string): string {

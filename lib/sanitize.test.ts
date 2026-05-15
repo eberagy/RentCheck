@@ -46,6 +46,31 @@ describe('sanitizeText', () => {
   it('strips SVG-based XSS', () => {
     expect(sanitizeText('<svg onload="alert(1)">visible</svg>')).toBe('visible')
   })
+
+  // CVE-class regression guard. sanitize-html <=2.17.3 has an unpatched
+  // advisory (GHSA: "Apostrophe has default XSS via `xmp` raw-text
+  // passthrough"). Our TEXT_ONLY_CONFIG strips ALL tags, so the xmp
+  // raw-text container shouldn't survive — but the parser oddities that
+  // motivate the advisory could regress in a future bump. Pin the
+  // expected behavior here so an upstream change breaks loudly.
+  it('strips xmp raw-text containers entirely (CVE-class regression guard)', () => {
+    expect(sanitizeText('<xmp><script>alert(1)</script></xmp>visible')).toBe('visible')
+    expect(sanitizeText('<XMP><img src=x onerror=alert(1)></XMP>after')).toBe('after')
+  })
+
+  // Defense-in-depth on a few more obscure XSS vectors that show up
+  // in OWASP cheat sheets but have historically tripped up tag-stripping
+  // libraries:
+  it('strips noscript + iframe + object + embed payloads', () => {
+    expect(sanitizeText('<noscript><script>x</script></noscript>kept')).toBe('kept')
+    expect(sanitizeText('<iframe src="javascript:alert(1)"></iframe>kept')).toBe('kept')
+    expect(sanitizeText('<object data="javascript:alert(1)"></object>kept')).toBe('kept')
+    expect(sanitizeText('<embed src="javascript:alert(1)">kept')).toBe('kept')
+  })
+
+  it('strips data: URIs even with creative casing', () => {
+    expect(sanitizeText('<a href="DATA:text/html,<script>x</script>">kept</a>')).toBe('kept')
+  })
 })
 
 describe('sanitizeStrings', () => {
