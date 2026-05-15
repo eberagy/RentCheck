@@ -187,14 +187,10 @@ export default function AdminUsersPage() {
     }
   }
 
-  // Client-side filter on top of DB results
-  const filtered = query.length > 1
-    ? users.filter(u =>
-        u.full_name?.toLowerCase().includes(query.toLowerCase()) ||
-        u.email?.toLowerCase().includes(query.toLowerCase())
-      )
-    : users
-
+  // Server already filters via .or(full_name.ilike,email.ilike) — re-filtering
+  // here on the client was redundant work that also rejected legitimate
+  // server hits (e.g. case mismatch in admin_notes which the server
+  // doesn't search). Trust the DB.
   const counts = {
     total: users.length,
     admins: users.filter(u => u.user_type === 'admin').length,
@@ -247,7 +243,7 @@ export default function AdminUsersPage() {
         <div className="flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-navy-500" aria-hidden="true" />
         </div>
-      ) : filtered.length === 0 ? (
+      ) : users.length === 0 ? (
         <div className="text-center py-20 text-slate-500">
           <User className="h-8 w-8 text-slate-300 mx-auto mb-3" aria-hidden="true" />
           <p className="font-medium">No users found</p>
@@ -255,7 +251,7 @@ export default function AdminUsersPage() {
         </div>
       ) : (
         <div className="space-y-2">
-          {filtered.map(user => (
+          {users.map(user => (
             <Card
               key={user.id}
               className={`border-slate-200 transition-all hover:shadow-sm ${user.is_banned ? 'opacity-60' : ''}`}
