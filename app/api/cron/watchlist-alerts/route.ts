@@ -160,6 +160,11 @@ export async function GET(req: NextRequest) {
       .from('watchlist')
       .select('user_id, notify_email, user:profiles(full_name, email, email_watchlist)')
       .eq('landlord_id', landlordId)
+      // Cap watchers per landlord at 5000. Per the Stripe Pro plan a single
+      // email costs ~$0.0001 from Resend, so a 50k-watcher landlord would
+      // be a real $$ event we'd want to gate behind a feature flag — not
+      // an automatic blast from a cron tick.
+      .limit(5000)
 
     if (watchersErr) {
       captureException(watchersErr, { where: 'cron:watchlist-alerts:watchers-by-landlord', landlordId })
@@ -215,6 +220,7 @@ export async function GET(req: NextRequest) {
       .from('watchlist')
       .select('user_id, notify_email, user:profiles(full_name, email, email_watchlist)')
       .eq('property_id', propertyId)
+      .limit(5000) // same cap rationale as landlord watcher loop above
 
     if (watchersErr) {
       captureException(watchersErr, { where: 'cron:watchlist-alerts:watchers-by-property', propertyId })
