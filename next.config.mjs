@@ -23,6 +23,34 @@ const nextConfig = {
     ],
   },
   async headers() {
+    // CSP applied in production only. Dev needs eval (React Refresh) and
+    // ws: (HMR) which would otherwise be blocked. Next.js App Router still
+    // emits inline <script> tags for RSC hydration so 'unsafe-inline' on
+    // script-src is unavoidable without a middleware-level nonce refactor —
+    // accepted tradeoff for the launch CSP. Net win is still that no
+    // third-party origin can inject script/img/font/connect outside the
+    // allowlist below.
+    const csp = [
+      "default-src 'self'",
+      // 'unsafe-inline' required by Next.js App Router hydration scripts.
+      // PostHog hosts both the JS bundle and ingestion at the same origin.
+      "script-src 'self' 'unsafe-inline' https://app.posthog.com https://*.posthog.com https://*.i.posthog.com",
+      // 'unsafe-inline' required by Next.js inlined critical CSS + Tailwind
+      // utility-class injection. Google Fonts CSS endpoint.
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' data: https://fonts.gstatic.com",
+      // data: for OG-image fetches in dev tools; blob: for client-side
+      // PDF/canvas (used by /api/me/export download flow on some browsers).
+      "img-src 'self' data: blob: https://*.supabase.co https://lh3.googleusercontent.com https://avatars.githubusercontent.com",
+      "connect-src 'self' https://*.supabase.co https://app.posthog.com https://*.posthog.com https://*.i.posthog.com https://*.ingest.sentry.io https://*.sentry.io",
+      "frame-ancestors 'none'",
+      "frame-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "object-src 'none'",
+      'upgrade-insecure-requests',
+    ].join('; ')
+    const isProd = process.env.NODE_ENV === 'production'
     return [
       {
         source: '/(.*)',
@@ -38,6 +66,7 @@ const nextConfig = {
           // DENY for older browsers). Stops clickjacking via embeds.
           { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
           { key: 'Cross-Origin-Embedder-Policy', value: 'unsafe-none' },
+          ...(isProd ? [{ key: 'Content-Security-Policy', value: csp }] : []),
         ],
       },
     ]
