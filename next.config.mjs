@@ -1,3 +1,5 @@
+import { withSentryConfig } from '@sentry/nextjs'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -76,4 +78,23 @@ const nextConfig = {
   },
 }
 
-export default nextConfig
+// withSentryConfig auto-loads sentry.{client,server,edge}.config.ts so
+// Sentry.init() runs in all three runtimes. Without this wrapper,
+// sentry.client.config.ts would never load and the 30+ client-side
+// captureException calls would silently no-op in production even with
+// NEXT_PUBLIC_SENTRY_DSN set.
+//
+// silent:true suppresses the source-map-upload warning when
+// SENTRY_AUTH_TOKEN isn't set — we don't upload source maps yet (a
+// separate later improvement, gated on adding the token).
+//
+// hideSourceMaps:true keeps map files out of the .next/static bundle so
+// they're not served to end users; Sentry only needs them server-side.
+export default withSentryConfig(nextConfig, {
+  silent: true,
+  hideSourceMaps: true,
+  // Tunnel through our own /monitoring route to bypass ad blockers — but
+  // we don't currently have one, so leave off. Add when client-side
+  // sample rate becomes meaningful (post-launch traffic data).
+  // tunnelRoute: '/monitoring',
+})
