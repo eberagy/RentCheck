@@ -28,23 +28,10 @@ pnpm install
 ### 2. Create Supabase project
 
 1. Go to [supabase.com](https://supabase.com) and create a new project.
-2. In the Supabase SQL Editor, run each migration file **in order**:
-
-```
-supabase/migrations/001_core_tables.sql
-supabase/migrations/002_reviews.sql
-supabase/migrations/003_public_records.sql
-supabase/migrations/004_supporting_tables.sql
-supabase/migrations/005_rls_policies.sql
-supabase/migrations/006_search_and_fts.sql
-supabase/migrations/007_triggers_functions.sql
-supabase/migrations/008_admin_columns.sql
-supabase/migrations/009_helper_functions.sql
-supabase/migrations/010_schema_fixes.sql
-supabase/migrations/011_landlord_submissions.sql
-supabase/migrations/012_notification_prefs.sql
-supabase/migrations/013_proof_doc_url.sql
-```
+2. In the Supabase SQL Editor, run **every file** in `supabase/migrations/`
+   in filename order (lexicographic — they're numbered `001_` through
+   `117_` and growing). The Supabase CLI's `db push` does this for you;
+   alternatively paste each file into the SQL Editor sequentially.
 
 3. `supabase/seed.sql` intentionally ships with no fabricated sample landlords or records.
    Use the sync jobs below to populate real public data instead.
@@ -74,7 +61,7 @@ cp .env.example .env.local
 | `NEXT_PUBLIC_SITE_URL` | ✅ | Your production URL (e.g. `https://vettrentals.com`) |
 | `NEXT_PUBLIC_POSTHOG_KEY` | ⚡ | PostHog project API key |
 | `NEXT_PUBLIC_POSTHOG_HOST` | ⚡ | Default: `https://app.posthog.com` |
-| `SENTRY_DSN` | ⚡ | From Sentry project settings |
+| `NEXT_PUBLIC_SENTRY_DSN` | ⚡ | From Sentry project settings. Public-prefixed so the client SDK can init in the browser; the DSN is not a secret. |
 | `NYC_OPEN_DATA_TOKEN` | ⚡ | [data.cityofnewyork.us](https://data.cityofnewyork.us) app token |
 | `CHICAGO_DATA_TOKEN` | ⚡ | [data.cityofchicago.org](https://data.cityofchicago.org) app token |
 | `SF_DATA_TOKEN` | ⚡ | [datasf.org](https://datasf.org) app token |
@@ -136,28 +123,25 @@ WHERE email = 'your@email.com';
 
 ## Data Sync Jobs
 
-12 sync routes at `/api/sync/[source]`, scheduled via `vercel.json`:
+~50 sync routes at `/api/sync/[source]` plus 5 internal crons
+(`/api/cron/*`), all scheduled via `vercel.json`. Coverage spans
+~25 cities + several county-level assessors, NYC HPD/DOB/marshal
+evictions, CourtListener federal cases, HUD inspections, and rolling
+city/landlord-watch maintenance jobs (`watchlist-alerts`,
+`saved-search-alerts`, `refresh-city-stats`, `purge-leases`,
+`admin-digest`).
 
-| Source ID | Data | Schedule |
-|---|---|---|
-| `nyc-hpd` | NYC HPD housing violations | Daily 3am ET |
-| `nyc-dob` | NYC DOB building complaints | Daily 3:30am ET |
-| `nyc-registration` | NYC rent registration / owner data | Daily 4am ET |
-| `chicago` | Chicago Dept of Buildings violations | Daily 4am ET |
-| `sf` | San Francisco DataSF violations | Daily 4am ET |
-| `boston` | Boston Inspectional Services | Daily 4:30am ET |
-| `philadelphia` | Philadelphia L&I violations | Daily 4:30am ET |
-| `baltimore` | Baltimore vacant-building notices | Daily 5:15am ET |
-| `pittsburgh` | Pittsburgh PLI/DOMI/ES violations | Daily 5:30am ET |
-| `austin` | Austin Code enforcement | Daily 5am ET |
-| `seattle` | Seattle SDCI violations | Daily 5am ET |
-| `los-angeles` | LA LAHD code violations | Daily 5am ET |
-| `court-listener` | Federal court cases (CourtListener v4) | Weekly Mon 2am ET |
-| `lsc-evictions` | Eviction filing data (Eviction Lab) | Monthly 1st 2am ET |
+See `vercel.json` for the full schedule. The live status of each
+source is visible at `/admin/data-sync` (admin only) and aggregated
+in the `public.sync_log` table — every run writes a row, so a
+silently-broken source surfaces as a sustained `records_added=0`.
 
-Manual trigger (admin only): `POST /api/sync/nyc-hpd`
+Manual trigger (admin only): `POST /api/sync/<source>` with the
+`CRON_SECRET` header.
 
-> **Note**: Vercel Pro required for >2 cron jobs and functions with >10s timeout (sync jobs can run up to 5 minutes).
+> **Note**: Vercel Pro is required (multiple crons + 300s function
+> limit). Some sync routes legitimately run that long on a first
+> backfill; subsequent ticks finish in under a minute.
 
 ---
 
