@@ -1,0 +1,12 @@
+# Vett — Security disclosure policy (RFC 9116)
+# Serving at /.well-known/security.txt per https://securitytxt.org
+
+Contact: mailto:security@vettrentals.com
+Expires: 2027-05-15T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://www.vettrentals.com/.well-known/security.txt
+
+# If you've found a vulnerability:
+#   - Don't access data you don't own
+#   - Don't degrade service for other users
+#   - Email us above — we'll respond within 5 business days
