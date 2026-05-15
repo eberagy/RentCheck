@@ -49,8 +49,13 @@ function normalizeBorough(b: string | undefined): string {
 export async function syncNycEvictions(supabase: SupabaseClient): Promise<SyncResult> {
   const result: SyncResult = { added: 0, updated: 0, skipped: 0, errors: [] }
 
-  // Last 18 months — captures all currently-actionable evictions.
-  const since = new Date(Date.now() - 540 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+  // Last 365 days. Was 540 (18 months) but at ~1,400 residential evictions/
+  // month on Vercel Pro's 300s limit the full window pull hit the ceiling
+  // and got auto-swept as "failed". 12 months is still all "currently
+  // actionable" evictions (NYC court archives older filings; landlords
+  // who evicted >12mo ago should already be flagged via other sources
+  // like nyc_hpd violations).
+  const since = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
 
   let offset = 0
   while (true) {

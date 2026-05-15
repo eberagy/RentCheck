@@ -35,6 +35,14 @@ export async function GET(req: NextRequest) {
   // alerts before.
   const INFORMATIONAL_TYPES = ['business_registration']
 
+  // Defense-in-depth bound: the migration 117 index on created_at DESC
+  // makes these queries cheap (index range scan), but capping at 10k each
+  // protects against a runaway daily ingest (e.g. an unprocessed NYC HPD
+  // backfill) flooding the cron with hundreds of thousands of rows and
+  // tripping the 60s pooler timeout downstream. 10k is comfortably above
+  // any realistic 25h ingest window — typical day adds <2k records total.
+  const PER_QUERY_CAP = 10_000
+
   const [
     { data: directRecords, error: directErr },
     { data: propertyLinked, error: linkedErr },
@@ -45,7 +53,8 @@ export async function GET(req: NextRequest) {
       .not('landlord_id', 'is', null)
       .not('record_type', 'in', `(${INFORMATIONAL_TYPES.map(t => `"${t}"`).join(',')})`)
       .gte('created_at', since)
-      .order('created_at', { ascending: false }),
+      .order('created_at', { ascending: false })
+      .limit(PER_QUERY_CAP),
     // Records joined through their property's landlord_id. property_id is
     // selected so property-watch entries can also be alerted (post-2026-05-02
     // WatchlistButton supports property-only watches).
@@ -56,7 +65,8 @@ export async function GET(req: NextRequest) {
       .is('landlord_id', null)
       .not('record_type', 'in', `(${INFORMATIONAL_TYPES.map(t => `"${t}"`).join(',')})`)
       .gte('created_at', since)
-      .order('created_at', { ascending: false }),
+      .order('created_at', { ascending: false })
+      .limit(PER_QUERY_CAP),
   ])
 
   // Without these branches a public_records query failure would silently
