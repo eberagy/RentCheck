@@ -54,6 +54,16 @@ export async function generateStaticParams() {
 }
 // Typo'd /landlord/* URLs (anything outside the slug regex) call
 // notFound() in getLandlord (see lib/url-guards.ts LANDLORD_SLUG_RE).
+//
+// Known soft-404 limitation: Vercel's ISR edge cache stores the
+// not-found.tsx render with status 200 instead of 404 for valid-shape
+// slugs that don't exist in the DB. notFound() IS being called (the
+// rendered body is correctly `Page not found · Vett`), but the cache
+// layer loses the status code on cold writes. SEO impact is mitigated
+// by `robots: { index: false, follow: false }` on app/(main)/not-found.tsx,
+// which keeps these URLs out of search indexes. Tracked upstream at
+// vercel/next.js#57888 — revisit once a Next.js release ships a fix
+// that doesn't require dropping ISR.
 
 // Shared loader: generateMetadata + the page component both need the
 // landlord row. React's `cache()` dedupes the fetch within a single

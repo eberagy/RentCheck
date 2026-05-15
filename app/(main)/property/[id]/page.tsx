@@ -47,8 +47,10 @@ export async function generateStaticParams() {
 }
 // Typo'd /property/* URLs (non-UUID) get null from getProperty via the
 // UUID_RE guard, which fires notFound() → the parent (main)/not-found.tsx
-// body. Returns a real 404 status now that the route is ISR rather than
-// fully dynamic.
+// body. Same soft-404 caveat as /landlord/[slug] (see comment there):
+// Vercel ISR caches the not-found render with status 200 even though
+// notFound() runs. Mitigated by noindex meta on (main)/not-found.tsx;
+// real fix is upstream Next.js (vercel/next.js#57888).
 
 // Shared loader: generateMetadata + the page component both need the
 // property row + its landlord. React cache() dedupes within a render.
